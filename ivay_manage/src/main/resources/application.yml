@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev
+
+log:
+  level:
+    root: info
+    my: debug
+  file: /data/manageLogs/admin-server.log
+  maxsize: 30MB

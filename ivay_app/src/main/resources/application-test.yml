@@ -1,0 +1,51 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.53.126.17:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    username: ivay
+    password: ivay
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filters: stat
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      stat-view-servlet:
+        allow: 127.0.0.1
+files:
+  path: ${file-path:/data/files}
+log:
+  level:
+    root: info
+    my: debug
+  file: /data/logs/admin-server.log
+  maxsize: 30MB
+
+swagger:
+  enbale: true
+
+# 定时器
+timer:
+  # 逾期费用
+  overdueFee: 0 0 0 1/1 * ?
+
+api_transfer_url: http://13.250.110.81:9095/Sandbox/FirmBanking
+api_collection_url: http://13.250.110.81:8085/Sandbox/Collection
+api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
+api_paasoo_key: nzwzxcuv
+api_paasoo_secret: 2aandS4r
+api_vmgmedia_url: http://brandsms.vn:8018/VMGAPI.asmx
+api_alias: VMGtest
+api_authenticate_user: vmgtest1
+api_authenticate_pass: vmG@123b
+risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
+keyfilepath: /usr/
