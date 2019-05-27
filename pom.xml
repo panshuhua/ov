@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- 项目基本信息：聚合工程的父工程 -->
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ivay</groupId>
+    <artifactId>ivay_integration</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ivay_integration</name>
+    <description>Parent project for ivay</description>
+    <packaging>pom</packaging>
 
     <!-- 继承说明：继承SpringBoot提供的父工程 -->
     <parent>
@@ -11,16 +18,16 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <!-- 项目基本信息：聚合工程的父工程 -->
-    <groupId>com.ivay</groupId>
-    <artifactId>ivay_integration</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>ivay_integration</name>
-    <description>Parent project for ivay</description>
-
     <!--属性设置-->
     <properties>
         <java.version>1.8</java.version>
+        <swagger.version>2.8.0</swagger.version>
+        <google.guava>23.0</google.guava>
+        <fastjson.version>1.2.47</fastjson.version>
+        <druid.version>1.1.9</druid.version>
+        <poi.version>3.17</poi.version>
+        <jwt.version>0.9.0</jwt.version>
+        <mybatis.version>1.3.2</mybatis.version>
     </properties>
 
     <!-- 模块说明：这里声明多个子模块 -->
@@ -40,19 +47,9 @@
             </dependency>
             <dependency>
                 <groupId>com.ivay</groupId>
-                <artifactId>mm-service</artifactId>
+                <artifactId>ivay_manage</artifactId>
                 <version>0.0.2-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
