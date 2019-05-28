@@ -1,6 +1,6 @@
 package com.ivay.ivay_manage.config;
 
-import com.ivay.ivay_manage.table.PageTableArgumentResolver;
+import com.ivay.ivay_common.table.PageTableArgumentResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

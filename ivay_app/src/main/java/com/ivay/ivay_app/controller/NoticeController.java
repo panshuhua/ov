@@ -1,16 +1,15 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.NoticeDao;
-import com.ivay.ivay_app.dto.NoticeReadVO;
-import com.ivay.ivay_app.dto.NoticeVO;
-import com.ivay.ivay_app.model.Notice;
-import com.ivay.ivay_app.model.Notice.Status;
-import com.ivay.ivay_app.model.SysUser;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
 import com.ivay.ivay_app.utils.UserUtil;
+import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.NoticeDao;
+import com.ivay.ivay_repository.dto.NoticeReadVO;
+import com.ivay.ivay_repository.dto.NoticeVO;
+import com.ivay.ivay_repository.model.Notice;
+import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class NoticeController {
         NoticeVO vo = new NoticeVO();
 
         Notice notice = noticeDao.getById(id);
-        if (notice == null || notice.getStatus() == Status.DRAFT) {
+        if (notice == null || notice.getStatus() == Notice.Status.DRAFT) {
             return vo;
         }
         vo.setNotice(notice);
@@ -68,7 +67,7 @@ public class NoticeController {
     @PreAuthorize("hasAuthority('notice:add')")
     public Notice updateNotice(@RequestBody Notice notice) {
         Notice no = noticeDao.getById(notice.getId());
-        if (no.getStatus() == Status.PUBLISH) {
+        if (no.getStatus() == Notice.Status.PUBLISH) {
             throw new IllegalArgumentException("发布状态的不能修改");
         }
         noticeDao.update(notice);

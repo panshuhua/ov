@@ -1,13 +1,13 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.FileInfoDao;
 import com.ivay.ivay_app.dto.LayuiFile;
-import com.ivay.ivay_app.model.FileInfo;
 import com.ivay.ivay_app.service.FileService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.FileInfoDao;
+import com.ivay.ivay_repository.model.FileInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.model.*;
 import com.ivay.ivay_manage.service.CustomerService;
-import com.ivay.ivay_manage.table.PageTableHandler;
-import com.ivay.ivay_manage.table.PageTableRequest;
-import com.ivay.ivay_manage.table.PageTableResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

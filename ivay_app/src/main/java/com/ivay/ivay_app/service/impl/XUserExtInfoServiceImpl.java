@@ -2,11 +2,11 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XUserExtInfoDao;
-import com.ivay.ivay_app.model.XUserExtInfo;
 import com.ivay.ivay_app.service.XUserExtInfoService;
 import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_app.utils.SysVariable;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_repository.dao.master.XUserExtInfoDao;
+import com.ivay.ivay_repository.model.XUserExtInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,6 @@ public class XUserExtInfoServiceImpl implements XUserExtInfoService {
 
     @Override
     public XUserExtInfo save(XUserExtInfo xUserExtInfo) {
-        // todo 作必填项校验
         xUserExtInfo.setEnableFlag(SysVariable.ENABLE_FLAG_YES);
         xUserExtInfo.setCreateTime(new Date());
         xUserExtInfo.setUpdateTime(new Date());

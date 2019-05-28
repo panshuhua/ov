@@ -1,13 +1,10 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dao.XFileInfoDao;
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XFileInfo;
 import com.ivay.ivay_app.service.XFileService;
 import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.XFileInfoDao;
+import com.ivay.ivay_repository.model.XFileInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @Api(tags = "授信-身份校验")
 @RestController
@@ -28,9 +24,6 @@ import java.util.List;
 public class XFileController {
     @Autowired
     private XFileService xFileService;
-
-    @Autowired
-    private XFileInfoDao xFileInfoDao;
 
     @Autowired
     private XUserInfoService xUserInfoService;
@@ -45,26 +38,6 @@ public class XFileController {
         Response<XFileInfo> response = new Response<>();
         response.setBo(xFileService.save(file, flag, userGid));
         return response;
-    }
-
-    //    @GetMapping("checking")
-//    @ApiOperation(value = "查询待审核文件")
-//    @PreAuthorize("hasAuthority('sys:file:query')")
-    public PageTableResponse listFiles(PageTableRequest request) {
-        return new PageTableHandler(new PageTableHandler.CountHandler() {
-
-            @Override
-            public int count(PageTableRequest request) {
-                return xFileInfoDao.count(request.getParams());
-            }
-        }, new PageTableHandler.ListHandler() {
-
-            @Override
-            public List<XFileInfo> list(PageTableRequest request) {
-                List<XFileInfo> list = xFileInfoDao.list(request.getParams(), request.getOffset(), request.getLimit());
-                return list;
-            }
-        }).handle(request);
     }
 
     @PostMapping("submit")

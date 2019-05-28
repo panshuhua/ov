@@ -1,6 +1,6 @@
 package com.ivay.ivay_app;
 
-import com.ivay.ivay_app.utils.HttpClientUtils;
+import com.ivay.ivay_common.utils.HttpClientUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +33,7 @@ public class IvayAppApplication {
                         // 默认处理非200的返回，会抛异常
                     }
                 });
-        
+
         return restTemplate;
     }
 

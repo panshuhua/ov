@@ -1,17 +1,17 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XUserBankcardInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.Response;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.model.XUserBankcardInfo;
-import com.ivay.ivay_app.model.XUserInfo;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_app.utils.MinDistance;
-import com.ivay.ivay_app.utils.SysVariable;
-import com.ivay.ivay_app.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.MinDistance;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
+import com.ivay.ivay_repository.model.XUserBankcardInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

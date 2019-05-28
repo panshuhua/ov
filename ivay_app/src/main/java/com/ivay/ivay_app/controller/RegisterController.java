@@ -1,17 +1,17 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.annotation.Decrypt;
-import com.ivay.ivay_app.annotation.Encryption;
 import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.LoginInfo;
-import com.ivay.ivay_app.model.ReturnUser;
-import com.ivay.ivay_app.model.VerifyCodeInfo;
-import com.ivay.ivay_app.model.XUser;
 import com.ivay.ivay_app.service.RegisterService;
 import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_app.valid.Password;
-import com.ivay.ivay_app.valid.Update;
+import com.ivay.ivay_common.annotation.Decrypt;
+import com.ivay.ivay_common.annotation.Encryption;
+import com.ivay.ivay_common.valid.Password;
+import com.ivay.ivay_common.valid.Update;
+import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.ReturnUser;
+import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

@@ -2,21 +2,21 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XLoanRateDao;
-import com.ivay.ivay_app.dao.XRecordLoanDao;
-import com.ivay.ivay_app.dao.XUserInfoDao;
-import com.ivay.ivay_app.model.XLoanRate;
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XUserInfo;
 import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XLoanRateService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
-import com.ivay.ivay_app.utils.DateUtils;
-import com.ivay.ivay_app.utils.JsonUtils;
-import com.ivay.ivay_app.utils.SysVariable;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_repository.dao.master.XLoanRateDao;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.XLoanRate;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XUserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +186,6 @@ public class XLoanRateServiceImpl implements XLoanRateService {
         if (config == null) {
             logger.error("提額配置获取出错");
         } else {
-            // todo 判斷 xUserInfo.getUserGid()是白名單用戶還是正常用戶
             String flag = "normal"; // 白名單 white
             Map creditConfig = (LinkedHashMap) config.get(flag);
 

@@ -1,9 +1,9 @@
 package com.ivay.ivay_app.advice;
 
-import com.ivay.ivay_app.annotation.LogAnnotation;
-import com.ivay.ivay_app.model.SysLogs;
 import com.ivay.ivay_app.service.SysLogService;
 import com.ivay.ivay_app.utils.UserUtil;
+import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_repository.model.SysLogs;
 import io.swagger.annotations.ApiOperation;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -29,7 +29,7 @@ public class LogAdvice {
     @Autowired
     private SysLogService logService;
 
-    @Around(value = "@annotation(com.ivay.ivay_app.annotation.LogAnnotation)")
+    @Around(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)")
     public Object logSave(ProceedingJoinPoint joinPoint) throws Throwable {
         SysLogs sysLogs = new SysLogs();
         sysLogs.setUser(UserUtil.getLoginUser()); // 设置当前登录用户

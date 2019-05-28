@@ -1,10 +1,10 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dao.SysLogsDao;
-import com.ivay.ivay_app.model.SysLogs;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.SysLogsDao;
+import com.ivay.ivay_repository.model.SysLogs;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +41,4 @@ public class SysLogsController {
             }
         }).handle(request);
     }
-
 }

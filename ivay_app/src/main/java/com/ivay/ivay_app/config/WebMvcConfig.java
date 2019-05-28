@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.config;
 
-import com.ivay.ivay_app.table.PageTableArgumentResolver;
-import com.ivay.ivay_app.utils.StringUtil;
+import com.ivay.ivay_common.table.PageTableArgumentResolver;
+import com.ivay.ivay_common.utils.StringUtil;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XUserExtInfo;
 import com.ivay.ivay_app.service.XUserExtInfoService;
+import com.ivay.ivay_repository.model.XUserExtInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

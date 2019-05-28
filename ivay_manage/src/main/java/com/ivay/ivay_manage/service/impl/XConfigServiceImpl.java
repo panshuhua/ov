@@ -1,12 +1,12 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.advice.BusinessException;
 import com.ivay.ivay_manage.dao.master.XConfigDao;
 import com.ivay.ivay_manage.model.XConfig;
 import com.ivay.ivay_manage.service.XConfigService;
-import com.ivay.ivay_manage.table.PageTableHandler;
-import com.ivay.ivay_manage.table.PageTableRequest;
-import com.ivay.ivay_manage.table.PageTableResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

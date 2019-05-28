@@ -19,19 +19,19 @@ import java.text.ParseException;
 @RequestMapping("/star/register")
 @Api(tags = "还款回调接口")
 public class XCollectionTransactionController {
-	@Autowired
-	private XVirtualAccountService xVirtualAccountService;
-	@Autowired
-	private XCollectionTransactionService xCollectionTransactionService;
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
-	
-	@PostMapping("noticeCollTran")
+    @Autowired
+    private XVirtualAccountService xVirtualAccountService;
+    @Autowired
+    private XCollectionTransactionService xCollectionTransactionService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    @PostMapping("noticeCollTran")
     @ApiOperation(value = "回调接口")
-    public CollectionTransactionRsp noticeCollTran(@RequestBody CollectionTransactionNotice notice) throws ParseException{
-		CollectionTransactionRsp rsp=xCollectionTransactionService.noticeCollection(notice);
+    public CollectionTransactionRsp noticeCollTran(@RequestBody CollectionTransactionNotice notice) throws ParseException {
+        CollectionTransactionRsp rsp = xCollectionTransactionService.noticeCollection(notice);
         return rsp;
     }
-	
-	 
+
+
 }

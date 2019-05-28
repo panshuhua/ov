@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.service;
 
 import com.ivay.ivay_app.dto.BeanField;
-import com.ivay.ivay_app.dto.GenerateInput;
+import com.ivay.ivay_common.dto.GenerateInput;
 
 import java.util.List;
 

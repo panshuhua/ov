@@ -1,7 +1,7 @@
 package com.ivay.ivay_manage.service;
 
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.model.XLoanRate;
-import com.ivay.ivay_manage.table.PageTableResponse;
 
 import java.util.List;
 

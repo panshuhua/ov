@@ -1,14 +1,14 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.annotation.LogAnnotation;
 import com.ivay.ivay_manage.dao.master.NoticeDao;
 import com.ivay.ivay_manage.dto.NoticeReadVO;
 import com.ivay.ivay_manage.dto.NoticeVO;
 import com.ivay.ivay_manage.model.Notice;
 import com.ivay.ivay_manage.model.SysUser;
-import com.ivay.ivay_manage.table.PageTableHandler;
-import com.ivay.ivay_manage.table.PageTableRequest;
-import com.ivay.ivay_manage.table.PageTableResponse;
 import com.ivay.ivay_manage.utils.UserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

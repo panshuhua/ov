@@ -1,7 +1,7 @@
 package com.ivay.ivay_manage.service;
 
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.model.XConfig;
-import com.ivay.ivay_manage.table.PageTableResponse;
 
 public interface XConfigService {
     /**

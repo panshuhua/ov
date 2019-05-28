@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.XBaokimTransfersInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersReq;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.model.XBaokimTransfersInfo;
 import com.ivay.ivay_app.service.XAPIService;
-import com.ivay.ivay_app.utils.*;
+import com.ivay.ivay_common.utils.*;
+import com.ivay.ivay_repository.dao.master.XBaokimTransfersInfoDao;
+import com.ivay.ivay_repository.model.XBaokimTransfersInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +25,15 @@ public class XAPIServiceImpl implements XAPIService {
     @Value("${api_transfer_url}")
     private String transferUrl;
 
+    @Value("${api_partner_code}")
+    public String api_partner_code;
+
     @Override
     public TransfersRsp validateCustomerInformation(String bankNo, String accNo, String accType) {
         TransfersReq transfersReq = new TransfersReq();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
-        transfersReq.setPartnerCode(SysVariable.API_PARTNER_CODE);
+        transfersReq.setPartnerCode(api_partner_code);
         transfersReq.setOperation(SysVariable.API_OPERATION_VALIDATE);
         transfersReq.setBankNo(bankNo);
         transfersReq.setAccNo(accNo);
@@ -97,7 +100,7 @@ public class XAPIServiceImpl implements XAPIService {
         String referenceId = UUIDUtils.getUUID();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
-        transfersReq.setPartnerCode(SysVariable.API_PARTNER_CODE);
+        transfersReq.setPartnerCode(api_partner_code);
         transfersReq.setOperation(SysVariable.API_OPERATION_TRANSFER);
         transfersReq.setReferenceId(referenceId);
         transfersReq.setBankNo(bankNo);
@@ -125,7 +128,7 @@ public class XAPIServiceImpl implements XAPIService {
         TransfersReq transfersReq = new TransfersReq();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
-        transfersReq.setPartnerCode(SysVariable.API_PARTNER_CODE);
+        transfersReq.setPartnerCode(api_partner_code);
         transfersReq.setOperation(SysVariable.API_OPERATION_TRANSFER_INFO);
         transfersReq.setReferenceId(referenceId);
         String encryptStr = transfersReq.getRequestId() + "|"
@@ -143,7 +146,7 @@ public class XAPIServiceImpl implements XAPIService {
         TransfersReq transfersReq = new TransfersReq();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
-        transfersReq.setPartnerCode(SysVariable.API_PARTNER_CODE);
+        transfersReq.setPartnerCode(api_partner_code);
         transfersReq.setOperation(SysVariable.API_OPERATION_BALANCE);
         String encryptStr = transfersReq.getRequestId() + "|"
                 + transfersReq.getRequestTime() + "|"

@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.JobDao;
-import com.ivay.ivay_app.model.JobModel;
 import com.ivay.ivay_app.service.JobService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.JobDao;
+import com.ivay.ivay_repository.model.JobModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.quartz.CronExpression;

@@ -2,7 +2,7 @@ package com.ivay.ivay_app.advice;
 
 import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.utils.StringUtil;
+import com.ivay.ivay_common.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

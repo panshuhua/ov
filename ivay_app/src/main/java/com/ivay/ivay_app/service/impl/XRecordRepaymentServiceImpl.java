@@ -2,29 +2,31 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XRecordLoanDao;
-import com.ivay.ivay_app.dao.XRecordRepaymentDao;
-import com.ivay.ivay_app.dao.XUserInfoDao;
-import com.ivay.ivay_app.dao.XVirtualAccountDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XRecordRepayment;
-import com.ivay.ivay_app.model.XUserInfo;
-import com.ivay.ivay_app.model.XVirtualAccount;
 import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
-import com.ivay.ivay_app.utils.SysVariable;
-import com.ivay.ivay_app.utils.UUIDUtils;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dao.master.XRecordRepaymentDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dao.master.XVirtualAccountDao;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
+import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.XVirtualAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +55,12 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
     @Autowired
     private XVirtualAccountService xVirtualAccountService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${update_credit_limit_url}")
+    private String update_credit_limit_url;
 
     @Override
     public XRecordRepayment getByGid(String repaymentGid, String userGid) {
@@ -116,19 +124,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         xRecordRepayment.setCreateTime(now);
         // 更新时间
         xRecordRepayment.setUpdateTime(now);
-        //XVirtualAccount xVirtualAccount=new XVirtualAccount();
         if (xRecordRepaymentDao.save(xRecordRepayment) == 1) {
-            //repayMoneyToBank(xRecordLoan, xRecordRepayment);
+
             if (xVirtualAccount == null) {
                 xVirtualAccount = createVirtualCount(xRecordLoan, xRecordRepayment);
-                if ("200".equals(xVirtualAccount.getResponseCode())) {
-                    confirmRepayment(xRecordLoan, xRecordRepayment);
-                }
+                confirmRepayment(xRecordLoan, xRecordRepayment, xVirtualAccount.getResponseCode());
             } else {
                 xVirtualAccount = updateVirtualCount(xVirtualAccount, xRecordRepayment.getRepaymentAmount());
-                if ("200".equals(xVirtualAccount.getResponseCode())) {
-                    confirmRepayment(xRecordLoan, xRecordRepayment);
-                }
+                confirmRepayment(xRecordLoan, xRecordRepayment, xVirtualAccount.getResponseCode());
             }
         } else {
             xRecordRepayment = null;
@@ -142,10 +145,10 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void repayMoneyToBank(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment) {
+    public void repayMoneyToBank(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode) {
         threadPoolService.execute(() -> {
             createVirtualCount(xRecordLoan, xRecordRepayment);
-            confirmRepayment(xRecordLoan, xRecordRepayment);
+            confirmRepayment(xRecordLoan, xRecordRepayment, responseCode);
         });
     }
 
@@ -212,11 +215,10 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     }
 
     @Override
-    //@Transactional(rollbackFor = Exception.class)
-    public void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment) {
+    public void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode) {
         Date now = new Date();
         xRecordRepayment.setUpdateTime(now);
-        if ("200".equals(BaokimResponseStatus.SUCCESS.getCode())) {
+        if (BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             // 实际扣款时间
             xRecordRepayment.setEndTime(now);
             // 还款单的还款状态
@@ -266,7 +268,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             // 还款状态
             xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);
         }
-        xRecordRepaymentDao.update(xRecordRepayment);
+        if (xRecordRepaymentDao.update(xRecordRepayment) == 1 && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
+            // todo new 还款提升授信額度
+            threadPoolService.execute(() -> {
+                Map<String, Object> params = new HashMap<>();
+                params.put("userGid", xRecordLoan.getUserGid());
+                restTemplate.postForObject(update_credit_limit_url, null, Long.class, params);
+            });
+        }
     }
 
     XRecordRepayment repaymentSuccess(String orderGid, String userGid) {

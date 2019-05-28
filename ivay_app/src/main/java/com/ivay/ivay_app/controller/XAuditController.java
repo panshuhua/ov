@@ -1,10 +1,10 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.dto.XAuditCondition;
-import com.ivay.ivay_app.dto.XAuditDetail;
 import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.model.XAuditCondition;
+import com.ivay.ivay_repository.model.XAuditDetail;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

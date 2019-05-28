@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.config;
 
-import com.ivay.ivay_app.utils.LocaleUtils;
+import com.ivay.ivay_common.utils.LocaleUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 

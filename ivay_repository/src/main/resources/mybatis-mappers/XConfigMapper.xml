@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.master.XConfigDao">
+
+    <sql id="where">
+        <where>
+            <if test="params.id != null and params.id != ''">
+                and id = #{params.id}
+            </if>
+            <if test="params.type != null and params.type != ''">
+                and type = #{params.type}
+            </if>
+            <if test="params.content != null and params.content != ''">
+                and content = #{params.content}
+            </if>
+            <if test="params.description != null and params.description != ''">
+                and description = #{params.description}
+            </if>
+            <if test="params.lang != null and params.lang != ''">
+                and description = #{params.lang}
+            </if>
+        </where>
+    </sql>
+
+    <select id="count" resultType="int">
+        select count(1) from x_config t
+        <include refid="where"/>
+    </select>
+
+    <select id="list" resultType="com.ivay.ivay_repository.model.XConfig">
+        select * from x_config t
+        <include refid="where"/>
+        <if test="params.orderBy != null and params.orderBy != ''">
+            order by ${params.orderBy} desc
+        </if>
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <update id="update">
+        update x_config t
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="lang != null">
+                lang = #{lang},
+            </if>
+        </set>
+        where t.id = #{id}
+    </update>
+
+</mapper>

@@ -1,9 +1,9 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XConfig;
 import com.ivay.ivay_app.service.XConfigService;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.model.XConfig;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

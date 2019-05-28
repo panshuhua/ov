@@ -1,14 +1,14 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.UserDao;
 import com.ivay.ivay_app.dto.UserDto;
-import com.ivay.ivay_app.model.SysUser;
 import com.ivay.ivay_app.service.UserService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
 import com.ivay.ivay_app.utils.UserUtil;
+import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.UserDao;
+import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;

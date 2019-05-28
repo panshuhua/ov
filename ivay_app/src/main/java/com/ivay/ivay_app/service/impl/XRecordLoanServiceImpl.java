@@ -2,24 +2,24 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XLoanRateDao;
-import com.ivay.ivay_app.dao.XRecordLoanDao;
-import com.ivay.ivay_app.dao.XUserBankcardInfoDao;
-import com.ivay.ivay_app.dao.XUserInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.dto.XBankAndCardInfo;
-import com.ivay.ivay_app.model.XLoanRate;
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XUserInfo;
 import com.ivay.ivay_app.service.*;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
-import com.ivay.ivay_app.utils.CommonUtil;
-import com.ivay.ivay_app.utils.JsonUtils;
-import com.ivay.ivay_app.utils.SysVariable;
-import com.ivay.ivay_app.utils.UUIDUtils;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.CommonUtil;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XLoanRateDao;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.XBankAndCardInfo;
+import com.ivay.ivay_repository.model.XLoanRate;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XUserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -399,6 +399,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             return false;
         }
         if (!updateList.isEmpty()) {
+            //todo new 需要分批批量插入，200个一组
             xRecordLoanDao.updateByBatch(updateList);
         }
         return true;

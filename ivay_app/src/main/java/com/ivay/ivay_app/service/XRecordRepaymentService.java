@@ -1,9 +1,10 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XRecordRepayment;
-import com.ivay.ivay_app.model.XVirtualAccount;
-import com.ivay.ivay_app.table.PageTableResponse;
+
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
+import com.ivay.ivay_repository.model.XVirtualAccount;
 
 public interface XRecordRepaymentService {
     /**
@@ -43,7 +44,7 @@ public interface XRecordRepaymentService {
      * @param xRecordLoan
      * @param xRecordRepayment
      */
-    void repayMoneyToBank(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment);
+    void repayMoneyToBank(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode);
 
     /**
      * 还款接口返回后，更新借款和还款表
@@ -51,5 +52,5 @@ public interface XRecordRepaymentService {
      * @param xRecordLoan
      * @param xRecordRepayment
      */
-    void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment);
+    void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode);
 }

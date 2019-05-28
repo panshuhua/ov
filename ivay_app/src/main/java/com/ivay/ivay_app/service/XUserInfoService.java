@@ -1,11 +1,7 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.dto.XAuditCondition;
-import com.ivay.ivay_app.dto.XAuditDetail;
-import com.ivay.ivay_app.model.CreditLine;
-import com.ivay.ivay_app.model.VerifyCodeInfo;
-import com.ivay.ivay_app.model.XUserInfo;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.model.*;
 
 public interface XUserInfoService {
     /**

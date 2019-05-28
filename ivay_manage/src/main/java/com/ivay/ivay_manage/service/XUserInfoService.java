@@ -1,9 +1,9 @@
 package com.ivay.ivay_manage.service;
 
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.dto.XAuditDetail;
 import com.ivay.ivay_manage.dto.XLoanQualification;
-import com.ivay.ivay_manage.table.PageTableRequest;
-import com.ivay.ivay_manage.table.PageTableResponse;
 
 public interface XUserInfoService {
     /**

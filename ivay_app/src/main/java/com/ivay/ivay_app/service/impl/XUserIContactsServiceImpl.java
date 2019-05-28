@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.XUserContactsDao;
-import com.ivay.ivay_app.model.XUserContacts;
 import com.ivay.ivay_app.service.XUserContactsService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
-import com.ivay.ivay_app.utils.DateUtils;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_repository.dao.master.XUserContactsDao;
+import com.ivay.ivay_repository.model.XUserContacts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
     @Override
     public boolean saveContacts(String gid, List<XUserContacts> contacts) {
         String updateDate = DateUtils.getNowDateYYYY_MM_DD();
-        List<XUserContacts> xUserContacts = new ArrayList<XUserContacts>();
+        List<XUserContacts> xUserContacts = new ArrayList<>();
         contacts.forEach(u -> {
             try {
                 XUserContacts xUserContact = new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());

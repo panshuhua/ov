@@ -1,21 +1,21 @@
 package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XUserInfoDao;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;
-import com.ivay.ivay_app.model.LoginInfo;
-import com.ivay.ivay_app.model.VerifyCodeInfo;
-import com.ivay.ivay_app.model.XUser;
 import com.ivay.ivay_app.service.RegisterService;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_app.utils.JsonUtils;
-import com.ivay.ivay_app.utils.MsgAuthCode;
-import com.ivay.ivay_app.utils.SysVariable;
-import com.ivay.ivay_app.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.MsgAuthCode;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -214,6 +214,7 @@ public class RegisterServiceImpl implements RegisterService {
                 //不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if ("0".equals(value)) {
                 verifyCodeInfo.setStatus("0");
+                logger.info("发送的短信验证码是：" + authCode);
                 redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
                 return verifyCodeInfo;
             }

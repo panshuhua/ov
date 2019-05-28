@@ -1,9 +1,9 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.FileInfoDao;
-import com.ivay.ivay_app.model.FileInfo;
 import com.ivay.ivay_app.service.FileService;
-import com.ivay.ivay_app.utils.FileUtil;
+import com.ivay.ivay_common.utils.FileUtil;
+import com.ivay.ivay_repository.dao.master.FileInfoDao;
+import com.ivay.ivay_repository.model.FileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,61 +16,61 @@ import java.io.IOException;
 @Service
 public class FileServiceImpl implements FileService {
 
-	private static final Logger log = LoggerFactory.getLogger("adminLogger");
+    private static final Logger log = LoggerFactory.getLogger("adminLogger");
 
-	@Value("${files.path}")
-	private String filesPath;
-	@Autowired
-	private FileInfoDao fileInfoDao;
+    @Value("${files.path}")
+    private String filesPath;
+    @Autowired
+    private FileInfoDao fileInfoDao;
 
-	@Override
-	public FileInfo save(MultipartFile file) throws IOException {
-		String fileOrigName = file.getOriginalFilename();
-		if (!fileOrigName.contains(".")) {
-			throw new IllegalArgumentException("缺少后缀名");
-		}
+    @Override
+    public FileInfo save(MultipartFile file) throws IOException {
+        String fileOrigName = file.getOriginalFilename();
+        if (!fileOrigName.contains(".")) {
+            throw new IllegalArgumentException("缺少后缀名");
+        }
 
-		String md5 = FileUtil.fileMd5(file.getInputStream());
-		FileInfo fileInfo = fileInfoDao.getById(md5);
-		if (fileInfo != null) {
-			fileInfoDao.update(fileInfo);
-			return fileInfo;
-		}
+        String md5 = FileUtil.fileMd5(file.getInputStream());
+        FileInfo fileInfo = fileInfoDao.getById(md5);
+        if (fileInfo != null) {
+            fileInfoDao.update(fileInfo);
+            return fileInfo;
+        }
 
-		fileOrigName = fileOrigName.substring(fileOrigName.lastIndexOf("."));
-		String pathname = FileUtil.getPath() + md5 + fileOrigName;
-		String fullPath = filesPath + pathname;
-		FileUtil.saveFile(file, fullPath);
+        fileOrigName = fileOrigName.substring(fileOrigName.lastIndexOf("."));
+        String pathname = FileUtil.getPath() + md5 + fileOrigName;
+        String fullPath = filesPath + pathname;
+        FileUtil.saveFile(file, fullPath);
 
-		long size = file.getSize();
-		String contentType = file.getContentType();
+        long size = file.getSize();
+        String contentType = file.getContentType();
 
-		fileInfo = new FileInfo();
-		fileInfo.setId(md5);
-		fileInfo.setContentType(contentType);
-		fileInfo.setSize(size);
-		fileInfo.setPath(fullPath);
-		fileInfo.setUrl(pathname);
-		fileInfo.setType(contentType.startsWith("image/") ? 1 : 0);
+        fileInfo = new FileInfo();
+        fileInfo.setId(md5);
+        fileInfo.setContentType(contentType);
+        fileInfo.setSize(size);
+        fileInfo.setPath(fullPath);
+        fileInfo.setUrl(pathname);
+        fileInfo.setType(contentType.startsWith("image/") ? 1 : 0);
 
-		fileInfoDao.save(fileInfo);
+        fileInfoDao.save(fileInfo);
 
-		log.debug("上传文件{}", fullPath);
+        log.debug("上传文件{}", fullPath);
 
-		return fileInfo;
+        return fileInfo;
 
-	}
+    }
 
-	@Override
-	public void delete(String id) {
-		FileInfo fileInfo = fileInfoDao.getById(id);
-		if (fileInfo != null) {
-			String fullPath = fileInfo.getPath();
-			FileUtil.deleteFile(fullPath);
+    @Override
+    public void delete(String id) {
+        FileInfo fileInfo = fileInfoDao.getById(id);
+        if (fileInfo != null) {
+            String fullPath = fileInfo.getPath();
+            FileUtil.deleteFile(fullPath);
 
-			fileInfoDao.delete(id);
-			log.debug("删除文件：{}", fileInfo.getPath());
-		}
-	}
+            fileInfoDao.delete(id);
+            log.debug("删除文件：{}", fileInfo.getPath());
+        }
+    }
 
 }

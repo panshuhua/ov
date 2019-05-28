@@ -2,9 +2,9 @@ package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.TransfersReq;
 import com.ivay.ivay_app.service.BillCommonService;
-import com.ivay.ivay_app.utils.JsonUtils;
-import com.ivay.ivay_app.utils.RSAEncryptSha1;
-import com.ivay.ivay_app.utils.SCaptcha;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.RSAEncryptSha1;
+import com.ivay.ivay_common.utils.SCaptcha;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -44,16 +44,16 @@ public class BillCommonController {
 
     @Autowired
     private BillCommonService billCommonService;
-    
-	@Autowired
-	private RestTemplate restTemplate;
-	
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Value("${api_paasoo_url}")
     private String paasooUrl;
-    
+
     @Value("${api_paasoo_key}")
     private String paasooKey;
-    
+
     @Value("${api_paasoo_secret}")
     private String paasooSecret;
 
@@ -64,25 +64,24 @@ public class BillCommonController {
         return billCommonService.getBillNo();
 
     }
-    
+
     @ApiOperation(value = "paasoo发送短信")
     //@RequestMapping(value = "/star/sendsms", method = {RequestMethod.GET})
     @GetMapping("/star/sendsms/{to}/{text}")
     @ResponseBody
-    public String sendPaasooSms(@PathVariable String text, @PathVariable String to)
-    {
-    	//接口地址
+    public String sendPaasooSms(@PathVariable String text, @PathVariable String to) {
+        //接口地址
         Map<String, Object> params = new HashMap<>();
         params.put("key", paasooKey);
         params.put("secret", paasooSecret);
         params.put("from", "SMS");
         params.put("to", to);
         params.put("text", text);
-        
-       // RestTemplate restTemplate = new RestTemplate();//此处直接autowire即可，不用new
+
+        // RestTemplate restTemplate = new RestTemplate();//此处直接autowire即可，不用new
         //JSONObject mutiData = restTemplate.getForObject(url, JSONObject.class, params);
-        
-        String ret = restTemplate.getForObject(paasooUrl,String.class,params);
+
+        String ret = restTemplate.getForObject(paasooUrl, String.class, params);
         return ret;
     }
 
@@ -194,7 +193,7 @@ public class BillCommonController {
         String BankNo = "970406";
         String AccNo = "9704060129837294";
         String AccType = "1";
-        
+
         valCustomerInfoReq.setRequestId(RequestId);
         valCustomerInfoReq.setRequestTime(RequestTime);
         valCustomerInfoReq.setPartnerCode(PartnerCode);
@@ -202,8 +201,8 @@ public class BillCommonController {
         valCustomerInfoReq.setBankNo(BankNo);
         valCustomerInfoReq.setAccNo(AccNo);
         valCustomerInfoReq.setAccType(AccType);
-        MultiValueMap<String, String> params= JsonUtils.objToLinkedMultiValueMap(valCustomerInfoReq);
-        
+        MultiValueMap<String, String> params = JsonUtils.objToLinkedMultiValueMap(valCustomerInfoReq);
+
 //        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 //
 ////        params.putAll(map);
@@ -215,7 +214,7 @@ public class BillCommonController {
 //        params.add("BankNo", BankNo);
 //        params.add("AccNo", AccNo);
 //        params.add("AccType", AccType);
-        
+
 
         String encryptStr = RequestId + "|" + RequestTime + "|"
                 + PartnerCode + "|" + Operation + "|" + BankNo + "|" + AccNo + "|" + AccType;
@@ -234,9 +233,9 @@ public class BillCommonController {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
         responseBody = client.postForObject(url, requestEntity, String.class);
         System.out.println("返回：" + responseBody);
-        
+
         System.out.println("返回valCustomerInfoRspMap：" + JsonUtils.jsonToMap(responseBody));
-        
+
         //ValCustomerInfoRsp valCustomerInfoRsp = JsonUtils.jsonToPojo(responseBody, ValCustomerInfoRsp.class);
         //System.out.println("返回valCustomerInfoRsp：" + valCustomerInfoRsp);
         return responseBody;

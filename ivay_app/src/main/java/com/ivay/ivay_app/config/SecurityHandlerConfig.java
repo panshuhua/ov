@@ -5,7 +5,7 @@ import com.ivay.ivay_app.dto.ResponseInfo;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.filter.TokenFilter;
 import com.ivay.ivay_app.service.TokenService;
-import com.ivay.ivay_app.utils.ResponseUtil;
+import com.ivay.ivay_common.utils.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

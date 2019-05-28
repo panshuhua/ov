@@ -1,14 +1,15 @@
 package com.ivay.ivay_app.controller;
 
+
 import com.google.common.collect.Maps;
-import com.ivay.ivay_app.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.RoleDao;
 import com.ivay.ivay_app.dto.RoleDto;
-import com.ivay.ivay_app.model.Role;
 import com.ivay.ivay_app.service.RoleService;
-import com.ivay.ivay_app.table.PageTableHandler;
-import com.ivay.ivay_app.table.PageTableRequest;
-import com.ivay.ivay_app.table.PageTableResponse;
+import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.RoleDao;
+import com.ivay.ivay_repository.model.Role;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
