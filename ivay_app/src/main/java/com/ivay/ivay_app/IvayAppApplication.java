@@ -33,6 +33,7 @@ public class IvayAppApplication {
                         // 默认处理非200的返回，会抛异常
                     }
                 });
+        
         return restTemplate;
     }
 
