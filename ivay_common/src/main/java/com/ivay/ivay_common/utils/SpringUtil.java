@@ -17,9 +17,7 @@ public class SpringUtil implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext = null;
 
-
     private static String keyFilePath;
-
 
     @Value("${keyfilepath}")
     public void setKeyFilePath(String keyFilePath) {
@@ -47,8 +45,7 @@ public class SpringUtil implements ApplicationContextAware {
 //		String root = System.getProperty("user.dir");
 //		String filePath = root+File.separator+"src"+File.separator+"main"+ File.separator+"resources"+ File.separator;
         //部署到服务器上的公私钥存放路径
-//        String filePath = keyFilePath;
-    	String filePath ="/usr/";
+        String filePath = keyFilePath;
         return filePath;
     }
 
