@@ -10,7 +10,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication
+// 同时注入多个模块的bean时，不同bean的包名必须相同
+@SpringBootApplication(scanBasePackages="com.ivay")
 public class IvayAppApplication {
 
     public static void main(String[] args) {

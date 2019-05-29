@@ -78,3 +78,4 @@ risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={u
 update_credit_limit_url: http://localhost:8081/audit/updateCreditLimit?userGid={userGid}
 # 公私钥路径
 keyfilepath: /usr/
+

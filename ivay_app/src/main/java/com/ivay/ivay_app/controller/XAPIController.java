@@ -2,13 +2,11 @@ package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
-import com.ivay.ivay_common.utils.RSAEncryptSha1;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
