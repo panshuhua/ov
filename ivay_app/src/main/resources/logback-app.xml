@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+    <!--配置文件中读取配置-->
+    <springProperty name="logFile" source="log.file"/>
+    <springProperty name="rootlevel" source="log.level.root"/>
+    <springProperty name="mylevel" source="log.level.my"/>
+    <springProperty name="maxFileSize" source="log.maxsize"/>
+
+    <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】 -->
+    <!-- appender是configuration的子节点，是负责写日志的组件。 -->
+    <!-- ConsoleAppender：把日志输出到控制台 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{50} -[%file:%line]- %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- RollingFileAppender：滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+    <!-- 以下的大概意思是：1.先按日期存日志，日期变了，将前一天的日志文件名重命名为XXX%日期%索引，新的日志仍然是sys.log -->
+    <!--             2.如果日期没有发生变化，但是当前日志的文件大小超过1KB时，对当前日志进行分割 重命名-->
+    <appender name="adminLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFile}</file>
+        <encoder>
+            <pattern>%d [%thread] %-5level -[%file:%line]- %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFile}.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <!-- RollingFileAppender：滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+    <!-- 以下的大概意思是：1.先按日期存日志，日期变了，将前一天的日志文件名重命名为XXX%日期%索引，新的日志仍然是sys.log -->
+    <!--             2.如果日期没有发生变化，但是当前日志的文件大小超过1KB时，对当前日志进行分割 重命名-->
+    <appender name="errorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFile}.error</file>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} -[%file:%line]- %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFile}.error.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="sqlLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFile}.sql</file>
+        <encoder>
+            <pattern>%d [%thread] %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFile}.sql.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="adminLogger" level="${mylevel}" additivity="true">
+        <appender-ref ref="adminLog"/>
+    </logger>
+
+    <logger name="com.boot.security.server.dao" level="DEBUG" additivity="true">
+        <appender-ref ref="sqlLog"/>
+    </logger>
+
+    <logger name="org.springframework.scheduling.quartz" level="error" additivity="true">
+        <appender-ref ref="adminLog"/>
+    </logger>
+
+    <logger name="com.boot.security.server" level="debug" additivity="true">
+        <appender-ref ref="adminLog"/>
+    </logger>
+
+    <root level="${rootlevel}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="errorLog"/>
+    </root>
+
+</configuration>
