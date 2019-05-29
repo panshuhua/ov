@@ -4,16 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ivay.ivay_repository.dao.risk.RiskUserDao">
 
-    <resultMap type="com.ivay.ivay_manage.model.RiskUser" id="UserResult">
-        <id     property="phone"       column="phone"      />
-        <result property="amount"     column="amount"    />        
+    <resultMap type="com.ivay.ivay_repository.model.RiskUser" id="UserResult">
+        <id property="phone" column="phone"/>
+        <result property="amount" column="amount"/>
     </resultMap>
 
-    <select id="selectUserList" parameterType="com.ivay.ivay_manage.model.RiskUser" resultMap="UserResult">
+    <select id="selectUserList" parameterType="com.ivay.ivay_repository.model.RiskUser" resultMap="UserResult">
       select * from risk_user
     </select>
-    
-    <select id="selectUserListByPhone" parameterType="com.ivay.ivay_manage.model.RiskUser" resultMap="UserResult">
+
+    <select id="selectUserListByPhone" parameterType="com.ivay.ivay_repository.model.RiskUser" resultMap="UserResult">
       select * from risk_user where phone = #{phone}
     </select>
 

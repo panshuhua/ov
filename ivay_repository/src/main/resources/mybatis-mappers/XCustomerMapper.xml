@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ivay.ivay_manage.dao.master.CustomerDao">
+<mapper namespace="com.ivay.ivay_repository.dao.master.CustomerDao">
 
 	<sql id="where">
 		<where>
@@ -26,7 +26,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="listBasicInfo" resultType="com.ivay.ivay_manage.model.XUserInfo">
+	<select id="listBasicInfo" resultType="com.ivay.ivay_repository.model.XUserInfo">
 		select * from x_user_info t
 		<include refid="where" />
 		${params.orderBy}
@@ -38,7 +38,7 @@
 		where user_gid = #{params.userGid}
 	</select>
 
-	<select id="listContactInfo" resultType="com.ivay.ivay_manage.model.XUserExtInfo">
+	<select id="listContactInfo" resultType="com.ivay.ivay_repository.model.XUserExtInfo">
 		select * from x_user_ext_info t
 		where user_gid = #{params.userGid} 
 		limit #{offset}, #{limit}
@@ -49,7 +49,7 @@
 		where user_gid = #{params.userGid}
 	</select>
 
-	<select id="listLoan" resultType="com.ivay.ivay_manage.model.XRecordLoan">
+	<select id="listLoan" resultType="com.ivay.ivay_repository.model.XRecordLoan">
 		select * from x_record_loan t
 		where user_gid = #{params.userGid} 
 		limit #{offset}, #{limit}
@@ -61,7 +61,7 @@
 		where t2.user_gid = #{params.userGid}
 	</select>
 
-	<select id="listRepay" resultType="com.ivay.ivay_manage.model.XRecordRepayment">
+	<select id="listRepay" resultType="com.ivay.ivay_repository.model.XRecordRepayment">
 		select 	t2.order_id,t1.repayment_amount,t1.end_time,t1.repayment_status from x_record_repayment t1 
 		LEFT JOIN x_record_loan t2 ON t1.record_loan_gid = t2.gid 
 		where t2.user_gid = #{params.userGid} 
@@ -74,7 +74,7 @@
 		where t1.user_gid = #{params.userGid}
 	</select>
 
-	<select id="listBank" resultType="com.ivay.ivay_manage.model.XUserBankcoadInfo">
+	<select id="listBank" resultType="com.ivay.ivay_repository.model.XUserBankcoadInfo">
 		select t2.bank_no,t2.bank_name,t1.card_no,t1.create_time from x_user_bankcoad_info t1 LEFT JOIN x_bank_info t2 on t1.bank_gid=t2.bank_gid
 		where t1.user_gid = #{params.userGid} 
 		limit #{offset}, #{limit}

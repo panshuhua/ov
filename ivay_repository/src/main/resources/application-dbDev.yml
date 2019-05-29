@@ -4,14 +4,14 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     druid:
       master:
-        url: jdbc:mysql://10.53.126.17:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-        username: ivay
-        password: ivay
-    # 从库数据源
+        url: jdbc:mysql://10.2.0.173:3306/boot_security?allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: xjd
+        password: 123456
+      # 从库数据源
       slave:
-        url: jdbc:mysql://10.53.126.17:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-        username: ivay_manage
-        password: ivay_manage
+        url: jdbc:mysql://10.2.0.173:3306/risk?allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: risk
+        password: 123456
       initialSize: 5
       minIdle: 5
       maxActive: 20
@@ -27,7 +27,7 @@ spring:
       filters: stat,wall
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       stat-view-servlet:
-        allow: 127.0.0.1      
+        allow: 127.0.0.1
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss
@@ -56,20 +56,3 @@ spring:
     password:
     protocol: smtp
     test-connection: false
-#    properties:
-#      mail.smtp.auth: true
-mybatis:
-  type-aliases-package: com.ivay.ivay_repository.model
-  mapper-locations: classpath*:/mybatis-mappers/*, classpath*:/risk/*
-  configuration:
-    mapUnderscoreToCamelCase: true
-files:
-  path: ${file-path:/data/files}
-logging:
-  config: classpath:logback-db.xml
-token:
-  expire:
-    seconds: 7200
-  jwtSecret: (XX:)_$^11244^%$_(XX:)_@@++--(XX:)_++++_.sds_(XX:)
-server:
-  port: 8081

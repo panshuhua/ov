@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: dev,dbDev
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss
@@ -34,11 +34,6 @@ spring:
     encoding: UTF-8
     fallback-to-system-locale: false
     use-code-as-default-message: true
-mybatis:
-  type-aliases-package: com.ivay.ivay_app.model
-  mapper-locations: classpath:/mybatis-mappers/*
-  configuration:
-    mapUnderscoreToCamelCase: true
 logging:
   config: classpath:logback-app.xml
 token:
@@ -51,7 +46,3 @@ server:
 # 是否对敏感信息解密
 needDecrypt: false
 
-management:
-  info:
-    git:
-      mode: full

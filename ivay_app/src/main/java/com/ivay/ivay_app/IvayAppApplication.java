@@ -12,6 +12,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication(scanBasePackages ="com.ivay.ivay_repository")
+@MapperScan("com.ivay.ivay_repository.dao.master")
 public class IvayAppApplication {
 
     public static void main(String[] args) {

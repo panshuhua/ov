@@ -20,7 +20,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="JobModel">
+	<select id="list" resultType="com.ivay.ivay_repository.model.JobModel">
 		select * from t_job t
 		<include refid="where" />
 		${params.orderBy}

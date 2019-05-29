@@ -22,7 +22,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="SysUser">
+	<select id="list" resultType="com.ivay.ivay_repository.model.SysUser">
 		select * from sys_user t
 		<include refid="where" />
 		${params.orderBy}

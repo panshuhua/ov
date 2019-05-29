@@ -26,7 +26,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="Dict">
+	<select id="list" resultType="com.ivay.ivay_repository.model.Dict">
 		select * from t_dict t
 		<include refid="where" />
 		${params.orderBy}

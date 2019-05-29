@@ -16,7 +16,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="Role">
+	<select id="list" resultType="com.ivay.ivay_repository.model.Role">
 		select * from sys_role t
 		<include refid="where" />
 		${params.orderBy}

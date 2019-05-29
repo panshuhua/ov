@@ -3,13 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ivay.ivay_repository.dao.master.SysLogsDao">
 
-	<resultMap id="BaseResultMap" type="SysLogs">
+	<resultMap id="BaseResultMap" type="com.ivay.ivay_repository.model.SysLogs">
 		<id column="id" property="id" />
 		<result column="module" property="module" />
 		<result column="remark" property="remark" />
 		<result column="flag" property="flag" />
 		<result column="createTime" property="createTime" />
-		<association property="user" javaType="SysUser">
+		<association property="user" javaType="com.ivay.ivay_repository.model.SysUser">
 			<result property="id" column="userId" />
 			<result property="username" column="username" />
 			<result property="nickname" column="nickname" />

@@ -63,4 +63,9 @@ public class XAuditController {
                                            @RequestParam int flag) {
         return xUserInfoService.queryAuditQualification(userGid, flag);
     }
+
+    @GetMapping("test")
+    public boolean test() {
+        return true;
+    }
 }

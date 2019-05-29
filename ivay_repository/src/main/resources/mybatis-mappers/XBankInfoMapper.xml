@@ -41,7 +41,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="XBankInfo">
+	<select id="list" resultType="com.ivay.ivay_repository.model.XBankInfo">
 		select * from x_bank_info t
 		<include refid="where" />
 		${params.orderBy}

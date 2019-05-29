@@ -8,3 +8,9 @@ token:
   jwtSecret: (XX:)_$^11244^%$_(XX:)_@@++--(XX:)_++++_.sds_(XX:)
 server:
   port: 8081
+
+spring:
+  security:
+    user:
+      password: admin
+      name: admin

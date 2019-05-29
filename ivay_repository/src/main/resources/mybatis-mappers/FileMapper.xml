@@ -13,7 +13,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="list" resultType="FileInfo">
+	<select id="list" resultType="com.ivay.ivay_repository.model.FileInfo">
 		select * from file_info t
 		<include refid="where" />
 		${params.orderBy}
