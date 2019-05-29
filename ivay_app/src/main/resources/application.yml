@@ -1,7 +1,7 @@
 spring:
   profiles:
     # 多模块使用include取代active
-    include: dev, comDev
+    include: dev, com
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss

@@ -1,5 +1,9 @@
 spring:
   datasource:
+    #driver-class-name: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://10.2.0.173:3306/boot_security?allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #username: xjd
+    #password: 123456
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
     druid:
@@ -56,6 +60,13 @@ spring:
     password:
     protocol: smtp
     test-connection: false
+#    properties:
+#      mail.smtp.auth: true
+mybatis:
+  type-aliases-package: com.boot.security.server.model
+  mapper-locations: classpath:/mybatis-mappers/*, classpath:/risk/*
+  configuration:
+    mapUnderscoreToCamelCase: true
 files:
   path: ${file-path:c:/files}
 logging:
