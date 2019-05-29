@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+    <property name="logFile" value="/logs/admin-server.log"/>
+    <property name="rootlevel" value="info"/>
+    <property name="mylevel" value="debug"/>
+    <property name="maxFileSize" value="30MB"/>
+
+    <appender name="sqlLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFile}.sql</file>
+        <encoder>
+            <pattern>%d [%thread] %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logFile}.sql.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.ivay.ivay_repository.dao" level="DEBUG" additivity="true">
+        <appender-ref ref="sqlLog"/>
+    </logger>
+
+    <root level="${rootlevel}">
+        <appender-ref ref="sqlLog"/>
+    </root>
+</configuration>

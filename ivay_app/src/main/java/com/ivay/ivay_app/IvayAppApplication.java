@@ -2,6 +2,7 @@ package com.ivay.ivay_app;
 
 import com.ivay.ivay_common.utils.HttpClientUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +11,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages ="com.ivay.ivay_repository")
 public class IvayAppApplication {
 
     public static void main(String[] args) {

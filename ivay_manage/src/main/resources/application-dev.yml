@@ -1,7 +1,7 @@
 files:
   path: ${file-path:c:/files}
 logging:
-  config: classpath:logback-admin.xml
+  config: classpath:logback-manage.xml
 token:
   expire:
     seconds: 7200

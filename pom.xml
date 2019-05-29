@@ -32,11 +32,10 @@
 
     <!-- 模块说明：这里声明多个子模块 -->
     <modules>
+        <module>ivay_common</module>
+        <module>ivay_repository</module>
         <module>ivay_app</module>
         <module>ivay_manage</module>
-        <module>ivay_repository</module>
-        <module>ivay_common</module>
-        <!--<module>ivay_common</module>-->
     </modules>
 
     <!-- 版本说明：这里统一管理依赖的版本号 -->

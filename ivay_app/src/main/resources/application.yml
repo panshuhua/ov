@@ -40,7 +40,7 @@ mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
 logging:
-  config: classpath:logback-admin.xml
+  config: classpath:logback-app.xml
 token:
   expire:
     seconds: 7200
