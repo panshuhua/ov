@@ -241,5 +241,21 @@
                 </executions>
             </plugin>
         </plugins>
+        <!--<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**.*</include>
+                    <include>**/*.*</include>&lt;!&ndash; i18n能读取到 &ndash;&gt;
+                    <include>**/*/*.*</include>
+                </includes>
+            </resource>
+        </resources>-->
     </build>
 </project>

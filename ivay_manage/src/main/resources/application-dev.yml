@@ -1,9 +1,3 @@
-
-mybatis:
-  type-aliases-package: com.ivay.ivay_manage.model
-  mapper-locations: classpath:/mybatis-mappers/*, classpath:/risk/*
-  configuration:
-    mapUnderscoreToCamelCase: true
 files:
   path: ${file-path:c:/files}
 logging:

@@ -17,7 +17,7 @@ public class RiskDataSourcesConfig {
 
     static final String PACKAGES = "com.ivay.ivay_repository.dao.risk";
 
-    private static final String MAPPER_LOCAL = "classpath:risk/*.xml";
+    private static final String MAPPER_LOCAL = "classpath*:risk/*.xml";
 
     @Bean(name = "slaveDataSource")
     @ConfigurationProperties("spring.datasource.druid.slave")
