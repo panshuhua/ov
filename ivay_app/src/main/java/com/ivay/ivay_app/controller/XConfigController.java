@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("star/config")
 public class XConfigController {
+    private static final Logger logger = LoggerFactory.getLogger(XConfigController.class);
     @Autowired
     private XConfigService xConfigService;
 
@@ -45,8 +48,12 @@ public class XConfigController {
     })
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
                                             @RequestParam(required = false, defaultValue = "1") int num) {
+        logger.info("此处有一个info信息");
+        logger.warn("此处有一个warn信息");
+        logger.error("此处有一个error信息");
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xConfigService.list(limit, num));
+        System.out.println("执行结束");
         return response;
     }
 }

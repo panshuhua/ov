@@ -4,14 +4,14 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     druid:
       master:
-        url: jdbc:mysql://10.53.126.17:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-        username: ivay
-        password: ivay
+        url: jdbc:mysql://152.32.161.88:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        username: ivay_test
+        password: ivay_test
       # 从库数据源
       slave:
-        url: jdbc:mysql://10.53.126.17:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-        username: ivay_manage
-        password: ivay_manage
+        url: jdbc:mysql://152.32.161.88:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        username: ivay_manage_test
+        password: ivay_manage_test
       initialSize: 5
       minIdle: 5
       maxActive: 20
@@ -28,31 +28,14 @@ spring:
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       stat-view-servlet:
         allow: 127.0.0.1
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    joda-date-time-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
-  mvc:
-    servlet:
-      load-on-startup: 1
-  redis:
-    host: localhost
-    port: 6379
-    timeout: 10s
-    lettuce:
-      pool:
-        min-idle: 0
-        max-idle: 8
-        max-active: 8
-        max-wait: -1ms
-  mail:
-    default-encoding: UTF-8
-    host: smtp.163.com
-    username:
-    password:
-    protocol: smtp
-    test-connection: false
+mybatis:
+  type-aliases-package: com.ivay.ivay_repository.model
+  mapper-locations: classpath:/mybatis-mappers/*, classpath:/risk/*
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+logging:
+  config: classpath:logback-db.xml
+
+logger:
+  filePath: /data/logs/

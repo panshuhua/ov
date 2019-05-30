@@ -1,11 +1,8 @@
+server:
+  port: 8081
+  name: ivay-manage
+
 spring:
   profiles:
     # 多模块使用include取代active
-    include: dev, com, dbDev
-
-log:
-  level:
-    root: info
-    my: debug
-  file: /data/manageLogs/admin-server.log
-  maxsize: 30MB
+    include: dev, comDev, dbDev

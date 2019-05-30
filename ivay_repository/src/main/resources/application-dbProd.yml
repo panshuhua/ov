@@ -4,14 +4,14 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     druid:
       master:
-        url: jdbc:mysql://10.2.0.173:3306/boot_security?allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
-        username: xjd
-        password: 123456
+        url: jdbc:mysql://10.53.126.17:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        username: ivay
+        password: ivay
       # 从库数据源
       slave:
-        url: jdbc:mysql://10.2.0.173:3306/risk?allowMultiQueries=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
-        username: risk
-        password: 123456
+        url: jdbc:mysql://10.53.126.17:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        username: ivay_manage
+        password: ivay_manage
       initialSize: 5
       minIdle: 5
       maxActive: 20
@@ -38,4 +38,4 @@ logging:
   config: classpath:logback-db.xml
 
 logger:
-  filePath: /logs/
+  filePath: /data/logs/

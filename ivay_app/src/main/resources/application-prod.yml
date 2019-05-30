@@ -11,12 +11,6 @@ spring:
         max-wait: -1ms        
 files:
   path: ${file-path:/data/files}
-log:
-  level:
-    root: info
-    my: debug
-  file: /data/logs/admin-server.log
-  maxsize: 30MB
 
 swagger:
   enbale: true
@@ -46,4 +40,4 @@ risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={u
 # 风控提额url
 update_credit_limit_url: http://localhost:8081/audit/updateCreditLimit?userGid={userGid}
 # 公私钥路径
-keyfilepath: /usr/prod/
+keyfilepath: /usr/key/prod/

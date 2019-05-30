@@ -1,7 +1,11 @@
+server:
+  port: 8080
+  name: ivay-app
 spring:
   profiles:
     # 多模块使用include取代active
-    include: dev, com, dbDev
+#    include: dev, comDev, dbDev
+    include: test, comTest, dbTest
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss
@@ -25,14 +29,11 @@ spring:
     encoding: UTF-8
     fallback-to-system-locale: false
     use-code-as-default-message: true
-logging:
-  config: classpath:logback-app.xml
+
 token:
   expire:
     seconds: 7200
   jwtSecret: (JUN:)_$^11244^%$_(XING:)_@@++--(KE:)_++++_.sds_(JI:)
-server:
-  port: 8080
 
 # 是否对敏感信息解密
 needDecrypt: false

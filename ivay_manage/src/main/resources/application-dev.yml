@@ -29,11 +29,8 @@ spring:
     test-connection: false
 files:
   path: ${file-path:c:/files}
-logging:
-  config: classpath:logback-manage.xml
+
 token:
   expire:
     seconds: 7200
   jwtSecret: (XX:)_$^11244^%$_(XX:)_@@++--(XX:)_++++_.sds_(XX:)
-server:
-  port: 8081

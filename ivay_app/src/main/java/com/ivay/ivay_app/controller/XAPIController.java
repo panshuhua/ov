@@ -18,18 +18,18 @@ public class XAPIController {
 
     @GetMapping("valCustomerInfoRsp")
     public TransfersRsp validateCustomerInformation(String bankNo, String accNo, String accType) {
-        bankNo = "970406";
-        accNo = "9704060129837294";
+        bankNo = "970403";
+        accNo = "060017483539";
         TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo, accNo, accType);
         return transfersRsp;
     }
 
     @GetMapping("transfers")
     public TransfersRsp transfers(String bankNo, String accNo, int requestAmount, String memo, String type) {
-        bankNo = "970406";
-        accNo = "9704060129837294";
+        bankNo = "970403";
+        accNo = "060017483539";
         memo = "test api";
-        type = "1";
+        type = "0";
         TransfersRsp transfersRsp = xapiService.transfers(bankNo, accNo, requestAmount, memo, type);
         return transfersRsp;
     }
