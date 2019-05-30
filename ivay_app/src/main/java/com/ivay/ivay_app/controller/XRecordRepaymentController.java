@@ -2,8 +2,8 @@ package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XRecordRepayment;
-import com.ivay.ivay_app.model.XVirtualAccount;
+import com.ivay.ivay_repository.model.XRecordRepayment;
+import com.ivay.ivay_repository.model.XVirtualAccount;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import io.swagger.annotations.Api;

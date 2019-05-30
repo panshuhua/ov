@@ -1,9 +1,9 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.MailDao;
-import com.ivay.ivay_app.model.Mail;
-import com.ivay.ivay_app.model.MailTo;
+import com.ivay.ivay_repository.dao.master.MailDao;
+import com.ivay.ivay_repository.model.Mail;
+import com.ivay.ivay_repository.model.MailTo;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;

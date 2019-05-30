@@ -2,20 +2,16 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XUserInfoDao;
-import com.ivay.ivay_app.dto.XAuditCondition;
-import com.ivay.ivay_app.dto.XAuditDetail;
-import com.ivay.ivay_app.model.CreditLine;
-import com.ivay.ivay_app.model.VerifyCodeInfo;
-import com.ivay.ivay_app.model.XUserInfo;
-import com.ivay.ivay_common.table.PageTableHandler;
-import com.ivay.ivay_common.table.PageTableRequest;
-import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +43,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -195,23 +191,23 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         return xUserInfoDao.update(xUserInfo);
     }
 
-	@Override
-	public VerifyCodeInfo checkIdentify(String gid,String idCard) {
-		String identityCard=xUserInfoDao.getIdentityCardByGid(gid);
-		if(idCard.equals(identityCard)){
-			//身份证校验通过，生成随机数返回
-			String authCode=MsgAuthCode.getAuthNineCode();
-			long effectiveTime=120*1000;
-			VerifyCodeInfo code=new VerifyCodeInfo();
-			code.setCodeToken(authCode);
-			code.setEffectiveTime(effectiveTime);
-			redisTemplate.opsForValue().set(gid, authCode, effectiveTime, TimeUnit.MILLISECONDS);
-			return code;
-		}
-		
-		return null;
-		
-	}
+    @Override
+    public VerifyCodeInfo checkIdentify(String gid, String idCard) {
+        String identityCard = xUserInfoDao.getIdentityCardByGid(gid);
+        if (idCard.equals(identityCard)) {
+            //身份证校验通过，生成随机数返回
+            String authCode = MsgAuthCode.getAuthNineCode();
+            long effectiveTime = 120 * 1000;
+            VerifyCodeInfo code = new VerifyCodeInfo();
+            code.setCodeToken(authCode);
+            code.setEffectiveTime(effectiveTime);
+            redisTemplate.opsForValue().set(gid, authCode, effectiveTime, TimeUnit.MILLISECONDS);
+            return code;
+        }
+
+        return null;
+
+    }
 
 
 }

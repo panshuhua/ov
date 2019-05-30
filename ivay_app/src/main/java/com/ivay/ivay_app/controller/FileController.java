@@ -1,10 +1,10 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.FileInfoDao;
+import com.ivay.ivay_repository.dao.master.FileInfoDao;
 import com.ivay.ivay_app.dto.LayuiFile;
 import com.ivay.ivay_app.dto.LayuiFile.LayuiFileData;
-import com.ivay.ivay_app.model.FileInfo;
+import com.ivay.ivay_repository.model.FileInfo;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;

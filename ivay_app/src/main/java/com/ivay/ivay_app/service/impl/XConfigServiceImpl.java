@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
-import com.ivay.ivay_app.dao.XConfigDao;
-import com.ivay.ivay_app.model.XConfig;
+import com.ivay.ivay_repository.dao.master.XConfigDao;
+import com.ivay.ivay_repository.model.XConfig;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;

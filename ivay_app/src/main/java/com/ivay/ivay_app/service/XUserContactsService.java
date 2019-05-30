@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.XUserContacts;
+import com.ivay.ivay_repository.model.XUserContacts;
 import com.ivay.ivay_common.table.PageTableResponse;
 
 import java.util.List;

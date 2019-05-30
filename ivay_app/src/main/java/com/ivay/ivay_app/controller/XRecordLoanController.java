@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XLoanRate;
-import com.ivay.ivay_app.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XLoanRate;
+import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XRecordLoanService;

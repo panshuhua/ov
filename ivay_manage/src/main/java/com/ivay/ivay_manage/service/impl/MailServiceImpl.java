@@ -1,7 +1,7 @@
 package com.ivay.ivay_manage.service.impl;
 
-import com.ivay.ivay_manage.dao.master.MailDao;
-import com.ivay.ivay_manage.model.Mail;
+import com.ivay.ivay_repository.dao.master.MailDao;
+import com.ivay.ivay_repository.model.Mail;
 import com.ivay.ivay_manage.service.MailService;
 import com.ivay.ivay_manage.service.SendMailSevice;
 import com.ivay.ivay_manage.utils.UserUtil;

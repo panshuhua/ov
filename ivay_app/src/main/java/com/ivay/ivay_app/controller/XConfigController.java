@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XConfig;
+import com.ivay.ivay_repository.model.XConfig;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_app.service.XConfigService;
 import io.swagger.annotations.Api;

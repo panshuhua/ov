@@ -2,12 +2,12 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XLoanRateDao;
-import com.ivay.ivay_app.dao.XRecordLoanDao;
-import com.ivay.ivay_app.dao.XUserInfoDao;
-import com.ivay.ivay_app.model.XLoanRate;
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XUserInfo;
+import com.ivay.ivay_repository.dao.master.XLoanRateDao;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.XLoanRate;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XLoanRateService;

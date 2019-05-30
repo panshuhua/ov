@@ -1,4 +1,4 @@
-package com.ivay.ivay_manage.dto;
+package com.ivay.ivay_repository.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,9 +1,9 @@
 package com.ivay.ivay_manage.controller;
 
-import com.ivay.ivay_manage.model.RiskUser;
-import com.ivay.ivay_manage.model.SysUser;
 import com.ivay.ivay_manage.service.RiskUserService;
 import com.ivay.ivay_manage.service.UserService;
+import com.ivay.ivay_repository.model.RiskUser;
+import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -28,21 +28,21 @@ public class BillCommonController {
 
     @Autowired
     private RiskUserService riskUserService;
-    
-	@Autowired
-	private UserService userService;
-    
+
+    @Autowired
+    private UserService userService;
+
     @PostMapping
     @RequestMapping(value = "/test/risk/list/{username}/{phone}", method = {RequestMethod.GET})
     @ApiOperation(value = "取风控人员")
     public List<RiskUser> getBillNo(@PathVariable String username, @PathVariable String phone) {
-    	SysUser sys = userService.getUser(username);
-    	log.info("~~~~日志：" + sys);
+        SysUser sys = userService.getUser(username);
+        log.info("~~~~日志：" + sys);
         //return riskUserService.selectUserListByUserId(Integer.valueOf(userId));
 
-    	return riskUserService.selectUserListByPhone(phone);
+        return riskUserService.selectUserListByPhone(phone);
     }
-    
+
 
     public static void main(String[] args) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();

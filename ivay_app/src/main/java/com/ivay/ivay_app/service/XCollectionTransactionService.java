@@ -2,7 +2,7 @@ package com.ivay.ivay_app.service;
 
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
-import com.ivay.ivay_app.model.XCollectionTransaction;
+import com.ivay.ivay_repository.model.XCollectionTransaction;
 
 import java.text.ParseException;
 

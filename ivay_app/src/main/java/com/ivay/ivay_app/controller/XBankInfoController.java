@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dao.XBankInfoDao;
 import com.ivay.ivay_app.dto.Response;
-import com.ivay.ivay_app.model.XBankInfo;
+import com.ivay.ivay_repository.model.XBankInfo;
+import com.ivay.ivay_repository.dao.master.XBankInfoDao;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class XBankInfoController {
     public XBankInfo get(@PathVariable Long id) {
         return xBankInfoDao.getById(id);
     }
-    
+
     @GetMapping("getBankList")
     @ApiOperation(value = "银行列表获取")
     public Response<List<XBankInfo>> getBankList() {

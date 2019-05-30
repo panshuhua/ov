@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.ValVirtualAccountReq;
-import com.ivay.ivay_app.model.XVirtualAccount;
+import com.ivay.ivay_repository.model.XVirtualAccount;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 import com.ivay.ivay_common.utils.HttpClientUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;

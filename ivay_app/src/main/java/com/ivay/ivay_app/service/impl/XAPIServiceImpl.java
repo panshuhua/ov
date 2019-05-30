@@ -1,10 +1,10 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.XBaokimTransfersInfoDao;
+import com.ivay.ivay_repository.dao.master.XBaokimTransfersInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersReq;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.model.XBaokimTransfersInfo;
+import com.ivay.ivay_repository.model.XBaokimTransfersInfo;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_common.utils.*;
 import org.slf4j.Logger;

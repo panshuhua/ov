@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.SysLogsDao;
-import com.ivay.ivay_app.model.SysLogs;
-import com.ivay.ivay_app.model.SysUser;
+import com.ivay.ivay_repository.dao.master.SysLogsDao;
+import com.ivay.ivay_repository.model.SysLogs;
+import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_app.service.SysLogService;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;

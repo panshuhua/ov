@@ -1,4 +1,4 @@
-package com.ivay.ivay_app.model;
+package com.ivay.ivay_repository.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Data
 @ApiModel("还款实体")
-public class XRecordRepayment {
+public class XRecordRepayment2 {
     @ApiModelProperty("还款记录gid")
     private String gid;
 
@@ -28,7 +28,7 @@ public class XRecordRepayment {
     private long repaymentAmount;
 
     @ApiModelProperty("还款状态")
-    private Integer repaymentStatus;
+    private String repaymentStatus;
 
     @ApiModelProperty("扣款结束时间")
     private Date endTime;

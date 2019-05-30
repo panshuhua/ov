@@ -1,13 +1,13 @@
 package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XUserInfoDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;
-import com.ivay.ivay_app.model.LoginInfo;
-import com.ivay.ivay_app.model.VerifyCodeInfo;
-import com.ivay.ivay_app.model.XUser;
+import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUser;
 import com.ivay.ivay_app.service.RegisterService;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XTokenService;

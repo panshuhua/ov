@@ -1,8 +1,8 @@
 package com.ivay.ivay_manage.service.impl;
 
-import com.ivay.ivay_manage.dao.master.RoleDao;
+import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_manage.dto.RoleDto;
-import com.ivay.ivay_manage.model.Role;
+import com.ivay.ivay_repository.model.Role;
 import com.ivay.ivay_manage.service.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

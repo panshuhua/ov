@@ -49,7 +49,7 @@
 		where user_gid = #{params.userGid}
 	</select>
 
-	<select id="listLoan" resultType="com.ivay.ivay_repository.model.XRecordLoan">
+	<select id="listLoan" resultType="com.ivay.ivay_repository.dto.XRecordLoan2">
 		select * from x_record_loan t
 		where user_gid = #{params.userGid} 
 		limit #{offset}, #{limit}
@@ -61,7 +61,7 @@
 		where t2.user_gid = #{params.userGid}
 	</select>
 
-	<select id="listRepay" resultType="com.ivay.ivay_repository.model.XRecordRepayment">
+	<select id="listRepay" resultType="com.ivay.ivay_repository.dto.XRecordRepayment2">
 		select 	t2.order_id,t1.repayment_amount,t1.end_time,t1.repayment_status from x_record_repayment t1 
 		LEFT JOIN x_record_loan t2 ON t1.record_loan_gid = t2.gid 
 		where t2.user_gid = #{params.userGid} 

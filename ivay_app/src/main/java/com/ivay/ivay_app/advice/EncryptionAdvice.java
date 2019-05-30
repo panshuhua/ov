@@ -2,7 +2,7 @@ package com.ivay.ivay_app.advice;
 
 import com.ivay.ivay_common.annotation.Decrypt;
 import com.ivay.ivay_common.annotation.Encrypt;
-import com.ivay.ivay_app.model.XUserInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_common.utils.AESEncryption;
 import com.ivay.ivay_common.utils.ReflectUtil;
 import com.ivay.ivay_common.valid.IdentityCard;

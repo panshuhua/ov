@@ -1,8 +1,8 @@
 package com.ivay.ivay_manage.service.impl;
 
-import com.ivay.ivay_manage.dao.master.JobDao;
+import com.ivay.ivay_repository.dao.master.JobDao;
 import com.ivay.ivay_manage.job.SpringBeanJob;
-import com.ivay.ivay_manage.model.JobModel;
+import com.ivay.ivay_repository.model.JobModel;
 import com.ivay.ivay_manage.service.JobService;
 import org.quartz.*;
 import org.slf4j.Logger;

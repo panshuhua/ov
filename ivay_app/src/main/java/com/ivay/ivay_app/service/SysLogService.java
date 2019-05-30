@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.SysLogs;
+import com.ivay.ivay_repository.model.SysLogs;
 
 /**
  * 日志service

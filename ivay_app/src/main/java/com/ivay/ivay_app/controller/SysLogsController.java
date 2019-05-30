@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dao.SysLogsDao;
-import com.ivay.ivay_app.model.SysLogs;
+import com.ivay.ivay_repository.dao.master.SysLogsDao;
+import com.ivay.ivay_repository.model.SysLogs;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;

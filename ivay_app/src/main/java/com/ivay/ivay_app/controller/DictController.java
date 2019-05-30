@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dao.DictDao;
-import com.ivay.ivay_app.model.Dict;
+import com.ivay.ivay_repository.dao.master.DictDao;
+import com.ivay.ivay_repository.model.Dict;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;

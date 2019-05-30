@@ -1,7 +1,7 @@
 package com.ivay.ivay_manage.controller;
 
-import com.ivay.ivay_manage.model.Address;
-import com.ivay.ivay_manage.model.fact.AddressCheckResult;
+import com.ivay.ivay_repository.model.Address;
+import com.ivay.ivay_repository.model.fact.AddressCheckResult;
 import io.swagger.annotations.Api;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;

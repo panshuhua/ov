@@ -1,10 +1,10 @@
 package com.ivay.ivay_manage.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ivay.ivay_manage.dao.master.TokenDao;
+import com.ivay.ivay_repository.dao.master.TokenDao;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.dto.Token;
-import com.ivay.ivay_manage.model.TokenModel;
+import com.ivay.ivay_repository.model.TokenModel;
 import com.ivay.ivay_manage.service.SysLogService;
 import com.ivay.ivay_manage.service.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;

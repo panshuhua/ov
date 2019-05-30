@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
-import com.ivay.ivay_app.dao.JobDao;
-import com.ivay.ivay_app.model.JobModel;
+import com.ivay.ivay_repository.dao.master.JobDao;
+import com.ivay.ivay_repository.model.JobModel;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;

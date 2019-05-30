@@ -3,8 +3,12 @@ package com.ivay.ivay_manage.controller;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_manage.model.*;
 import com.ivay.ivay_manage.service.CustomerService;
+import com.ivay.ivay_repository.dto.XRecordLoan2;
+import com.ivay.ivay_repository.dto.XRecordRepayment2;
+import com.ivay.ivay_repository.model.XUserBankcoadInfo;
+import com.ivay.ivay_repository.model.XUserExtInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,7 +77,7 @@ public class CustomerController {
         }, new PageTableHandler.ListHandler() {
 
             @Override
-            public List<XRecordLoan> list(PageTableRequest request) {
+            public List<XRecordLoan2> list(PageTableRequest request) {
                 return customerService.listLoan(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);
@@ -91,7 +95,7 @@ public class CustomerController {
         }, new PageTableHandler.ListHandler() {
 
             @Override
-            public List<XRecordRepayment> list(PageTableRequest request) {
+            public List<XRecordRepayment2> list(PageTableRequest request) {
                 return customerService.listRepay(request.getParams(), request.getOffset(), request.getLimit());
             }
         }).handle(request);

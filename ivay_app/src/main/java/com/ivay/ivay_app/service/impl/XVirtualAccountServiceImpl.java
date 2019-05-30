@@ -1,17 +1,17 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.TokenDao;
-import com.ivay.ivay_app.dao.XUserInfoDao;
-import com.ivay.ivay_app.dao.XVirtualAccountDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.ValVirtualAccountReq;
 import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XRecordRepayment;
-import com.ivay.ivay_app.model.XUserInfo;
-import com.ivay.ivay_app.model.XVirtualAccount;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 import com.ivay.ivay_common.utils.*;
+import com.ivay.ivay_repository.dao.master.TokenDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dao.master.XVirtualAccountDao;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
+import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.XVirtualAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
 
     @Value("${api_collection_url}")
     private String collectionUrl;
-    
+
     @Value("${api_partner_code}")
     private String apiParterCode;
 
@@ -118,54 +118,54 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
 
     }
 
-	@Override
-	public XVirtualAccount selectByOrderId(String orderId) {
-		return xVirtualAccountDao.selectByOrderId(orderId);
-	}
+    @Override
+    public XVirtualAccount selectByOrderId(String orderId) {
+        return xVirtualAccountDao.selectByOrderId(orderId);
+    }
 
-	@Override
-	public ValVirtualAccountRsp updateXVirtualAccount(XVirtualAccount xVirtualAccount,Long collectAmount) {
-		    String requestId = UUIDUtils.getRequestId();
-	        String requestTime = UUIDUtils.getRequestTime();
-	        String partnerCode = apiParterCode;
-	        String operation = SysVariable.API_OPERATION_UPDATE_VIRTUALACCOUNT;
-	        String clientIdNo = xVirtualAccount.getClientidNo();
-	        String accountType = SysVariable.API_ACC_TYPE_SECOND;  //2-根据orderId
+    @Override
+    public ValVirtualAccountRsp updateXVirtualAccount(XVirtualAccount xVirtualAccount, Long collectAmount) {
+        String requestId = UUIDUtils.getRequestId();
+        String requestTime = UUIDUtils.getRequestTime();
+        String partnerCode = apiParterCode;
+        String operation = SysVariable.API_OPERATION_UPDATE_VIRTUALACCOUNT;
+        String clientIdNo = xVirtualAccount.getClientidNo();
+        String accountType = SysVariable.API_ACC_TYPE_SECOND;  //2-根据orderId
 
 //	    	String orderId //订单id
 
-	        String accName = xVirtualAccount.getAccName();
-	        String issuedDate = "";
-	        String issuedPlace = "";
-	        String expireDate = "";  //Optional
-	        String orderId = xVirtualAccount.getOrderId();
-	        String accNo=xVirtualAccount.getAccNo();
+        String accName = xVirtualAccount.getAccName();
+        String issuedDate = "";
+        String issuedPlace = "";
+        String expireDate = "";  //Optional
+        String orderId = xVirtualAccount.getOrderId();
+        String accNo = xVirtualAccount.getAccNo();
 
-	        ValVirtualAccountReq req = new ValVirtualAccountReq();
-	        req.setRequestId(requestId);
-	        req.setRequestTime(requestTime);
-	        req.setPartnerCode(partnerCode);
-	        req.setOperation(operation);
-	        req.setAccNo(accNo);
-	        req.setAccName(accName);
-	        req.setClientIdNo(clientIdNo);
-	        req.setIssuedDate("");
-	        req.setIssuedPlace("");
-	        req.setCollectAmount(collectAmount.toString());
-	        req.setExpireDate(expireDate);
-	        req.setAccountType(accountType);
-	        req.setOrderId(orderId);
+        ValVirtualAccountReq req = new ValVirtualAccountReq();
+        req.setRequestId(requestId);
+        req.setRequestTime(requestTime);
+        req.setPartnerCode(partnerCode);
+        req.setOperation(operation);
+        req.setAccNo(accNo);
+        req.setAccName(accName);
+        req.setClientIdNo(clientIdNo);
+        req.setIssuedDate("");
+        req.setIssuedPlace("");
+        req.setCollectAmount(collectAmount.toString());
+        req.setExpireDate(expireDate);
+        req.setAccountType(accountType);
+        req.setOrderId(orderId);
 
-	        String encryptStr = requestId + "|" + requestTime + "|"+ partnerCode + "|" + accNo + "|" + accName + "|" + operation +
-	                "|" + issuedDate + "|" + issuedPlace + "|" + collectAmount + "|" + expireDate+ "|" + clientIdNo + "|" + orderId ;
+        String encryptStr = requestId + "|" + requestTime + "|" + partnerCode + "|" + accNo + "|" + accName + "|" + operation +
+                "|" + issuedDate + "|" + issuedPlace + "|" + collectAmount + "|" + expireDate + "|" + clientIdNo + "|" + orderId;
 
-	        System.out.println("加密前：" + encryptStr);
-	        String signature = RSAEncryptShaCollection.encrypt2Sha1(encryptStr);
-	        req.setSignature(signature);
+        System.out.println("加密前：" + encryptStr);
+        String signature = RSAEncryptShaCollection.encrypt2Sha1(encryptStr);
+        req.setSignature(signature);
 
-	        ValVirtualAccountRsp valVirtualAccountRsp = callCollectionApi(req);
-	        return valVirtualAccountRsp;
-	}
+        ValVirtualAccountRsp valVirtualAccountRsp = callCollectionApi(req);
+        return valVirtualAccountRsp;
+    }
 
 
 }

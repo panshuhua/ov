@@ -3,6 +3,7 @@ package com.ivay.ivay_repository.dao.master;
 import com.ivay.ivay_repository.model.*;
 import org.apache.ibatis.annotations.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -76,4 +77,60 @@ public interface XUserInfoDao {
 
     @Select("select * from x_record_loan where order_id=#{orderId}")
     XRecordLoan getUserGidByOrderId(String orderId);
+
+    @Select("select count(1) from x_user_info where identity_card=#{identityCard}")
+    int countIdentityCard(String identityCard);
+
+    @Select("select count(1) from x_user_ext_info where major_phone=#{phone}")
+    int countMajorPhone(String phone);
+
+    @Select("select count(1) from x_user_info where mac_code=#{macCode}")
+    int countOnePhone(String macCode);
+
+    //todo new �޸�
+    @Select("SELECT IFNULL(max(num),0) from ( " +
+            "select count(1) as num from x_user_contacts where user_gid=#{userGid}" +
+            " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=3 GROUP BY update_date ) temp")
+    int countContacts(String userGid);
+
+    /**
+     * ��ǰ����
+     *
+     * @param userGid
+     * @return
+     */
+    XLoanQualification getAuditQualificationObj(String userGid);
+
+    /**
+     * ���в���-��ѯ��ʷ�����������
+     *
+     * @param userGid
+     * @return
+     */
+    Integer getMaxOverdueDay(String userGid);
+
+    /**
+     * ���в���-��ѯ��ǰ���ڻ��������
+     *
+     * @param userGid
+     * @return
+     */
+    Integer getOverdueCountsNow(String userGid);
+
+    /**
+     * ���в���-���һ�ʽ��彻����������
+     *
+     * @param userGid
+     * @return
+     */
+    Integer getlastOverdueDay(String userGid);
+
+    /**
+     * ��ǰ/���в���-��ѯ��ǰ�û�gpsλ��10m������ע���û��ĸ���
+     *
+     * @param longitude
+     * @param latitude
+     * @return
+     */
+    Integer getUserCountsBygps(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude);
 }

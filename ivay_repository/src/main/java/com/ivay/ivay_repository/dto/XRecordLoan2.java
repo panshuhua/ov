@@ -1,4 +1,4 @@
-package com.ivay.ivay_manage.model;
+package com.ivay.ivay_repository.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @ApiModel("借款实体")
-public class XRecordLoan {
+public class XRecordLoan2 {
     @ApiModelProperty("借款gid")
     private String gid;
 

@@ -1,7 +1,7 @@
 package com.ivay.ivay_manage.service;
 
 import com.ivay.ivay_manage.dto.UserDto;
-import com.ivay.ivay_manage.model.SysUser;
+import com.ivay.ivay_repository.model.SysUser;
 
 public interface UserService {
 

@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.TokenDao;
-import com.ivay.ivay_app.dao.XCollectionTransactionDao;
-import com.ivay.ivay_app.dao.XUserInfoDao;
+import com.ivay.ivay_repository.dao.master.TokenDao;
+import com.ivay.ivay_repository.dao.master.XCollectionTransactionDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
-import com.ivay.ivay_app.model.XCollectionTransaction;
+import com.ivay.ivay_repository.model.XCollectionTransaction;
 import com.ivay.ivay_app.service.XCollectionTransactionService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_common.utils.DateUtils;

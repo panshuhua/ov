@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.service;
 
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_common.table.PageTableResponse;
 
 public interface XRecordLoanService {

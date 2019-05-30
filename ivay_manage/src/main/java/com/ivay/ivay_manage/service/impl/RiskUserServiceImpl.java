@@ -1,8 +1,8 @@
 package com.ivay.ivay_manage.service.impl;
 
 
-import com.ivay.ivay_manage.dao.risk.RiskUserDao;
-import com.ivay.ivay_manage.model.RiskUser;
+import com.ivay.ivay_repository.dao.risk.RiskUserDao;
+import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_manage.service.RiskUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

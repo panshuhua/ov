@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.JobModel;
+import com.ivay.ivay_repository.model.JobModel;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 

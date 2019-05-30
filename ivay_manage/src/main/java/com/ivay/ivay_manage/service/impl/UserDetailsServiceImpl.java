@@ -1,9 +1,9 @@
 package com.ivay.ivay_manage.service.impl;
 
-import com.ivay.ivay_manage.dao.master.PermissionDao;
+import com.ivay.ivay_repository.dao.master.PermissionDao;
 import com.ivay.ivay_manage.dto.LoginUser;
-import com.ivay.ivay_manage.model.Permission;
-import com.ivay.ivay_manage.model.SysUser;
+import com.ivay.ivay_repository.model.Permission;
+import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_manage.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

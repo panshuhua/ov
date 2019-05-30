@@ -1,6 +1,6 @@
 package com.ivay.ivay_manage.service;
 
-import com.ivay.ivay_manage.model.Mail;
+import com.ivay.ivay_repository.model.Mail;
 
 import java.util.List;
 

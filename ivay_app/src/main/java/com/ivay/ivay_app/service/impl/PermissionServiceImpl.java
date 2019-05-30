@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.PermissionDao;
-import com.ivay.ivay_app.model.Permission;
+import com.ivay.ivay_repository.dao.master.PermissionDao;
+import com.ivay.ivay_repository.model.Permission;
 import com.ivay.ivay_app.service.PermissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

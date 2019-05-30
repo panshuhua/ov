@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.TokenDao;
+import com.ivay.ivay_repository.dao.master.TokenDao;
 import com.ivay.ivay_app.service.BillCommonService;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.StringUtil;

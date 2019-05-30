@@ -10,6 +10,9 @@ public class XAuditDetail {
     @ApiModelProperty("用户gid")
     private String userGid;
 
+    @ApiModelProperty("电话号码")
+    private String phone;
+
     @ApiModelProperty("身份证")
     private String identityCard;
 

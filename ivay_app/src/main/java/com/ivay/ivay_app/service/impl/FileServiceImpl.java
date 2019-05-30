@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.FileInfoDao;
-import com.ivay.ivay_app.model.FileInfo;
+import com.ivay.ivay_repository.dao.master.FileInfoDao;
+import com.ivay.ivay_repository.model.FileInfo;
 import com.ivay.ivay_app.service.FileService;
 import com.ivay.ivay_common.utils.FileUtil;
 import org.slf4j.Logger;

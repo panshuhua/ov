@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.advice;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
-import com.ivay.ivay_app.model.SysLogs;
+import com.ivay.ivay_repository.model.SysLogs;
 import com.ivay.ivay_app.service.SysLogService;
 import com.ivay.ivay_app.utils.UserUtil;
 import io.swagger.annotations.ApiOperation;

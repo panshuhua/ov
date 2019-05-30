@@ -1,8 +1,8 @@
 package com.ivay.ivay_manage.service.impl;
 
-import com.ivay.ivay_manage.dao.master.UserDao;
+import com.ivay.ivay_repository.dao.master.UserDao;
 import com.ivay.ivay_manage.dto.UserDto;
-import com.ivay.ivay_manage.model.SysUser;
+import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_manage.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

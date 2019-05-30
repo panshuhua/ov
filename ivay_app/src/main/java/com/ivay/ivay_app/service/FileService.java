@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.FileInfo;
+import com.ivay.ivay_repository.model.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

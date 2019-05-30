@@ -1,10 +1,10 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dao.MailDao;
-import com.ivay.ivay_app.model.Mail;
 import com.ivay.ivay_app.service.MailService;
 import com.ivay.ivay_app.service.SendMailSevice;
 import com.ivay.ivay_app.utils.UserUtil;
+import com.ivay.ivay_repository.dao.master.MailDao;
+import com.ivay.ivay_repository.model.Mail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

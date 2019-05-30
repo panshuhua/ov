@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.XRecordLoan;
-import com.ivay.ivay_app.model.XRecordRepayment;
-import com.ivay.ivay_app.model.XVirtualAccount;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
+import com.ivay.ivay_repository.model.XVirtualAccount;
 import com.ivay.ivay_common.table.PageTableResponse;
 
 public interface XRecordRepaymentService {

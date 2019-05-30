@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.dto;
 
-import com.ivay.ivay_app.model.Role;
+import com.ivay.ivay_repository.model.Role;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dao.XUserExtInfoDao;
-import com.ivay.ivay_app.model.XUserExtInfo;
+import com.ivay.ivay_repository.dao.master.XUserExtInfoDao;
+import com.ivay.ivay_repository.model.XUserExtInfo;
 import com.ivay.ivay_app.service.XUserExtInfoService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.utils.SysVariable;

@@ -7,6 +7,8 @@ import java.util.Date;
 
 @Data
 public class XAuditCondition {
+    @ApiModelProperty("序列化")
+    private int num;
 
     @ApiModelProperty("用户gid")
     private String userGid;

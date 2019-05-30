@@ -1,11 +1,5 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dao.NoticeDao;
-import com.ivay.ivay_app.dto.NoticeReadVO;
-import com.ivay.ivay_app.dto.NoticeVO;
-import com.ivay.ivay_app.model.Notice;
-import com.ivay.ivay_app.model.Notice.Status;
-import com.ivay.ivay_app.model.SysUser;
 import com.ivay.ivay_app.utils.UserUtil;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableHandler;
@@ -13,6 +7,12 @@ import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dao.master.NoticeDao;
+import com.ivay.ivay_repository.dto.NoticeReadVO;
+import com.ivay.ivay_repository.dto.NoticeVO;
+import com.ivay.ivay_repository.model.Notice;
+import com.ivay.ivay_repository.model.Notice.Status;
+import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
