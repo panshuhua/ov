@@ -1,17 +1,18 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_common.annotation.Decrypt;
-import com.ivay.ivay_common.annotation.Encryption;
 import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.Response;
+import com.ivay.ivay_app.service.RegisterService;
+import com.ivay.ivay_app.service.XTokenService;
+import com.ivay.ivay_app.service.XUserInfoService;
+import com.ivay.ivay_common.annotation.Decrypt;
+import com.ivay.ivay_common.annotation.Encryption;
+import com.ivay.ivay_common.valid.Password;
+import com.ivay.ivay_common.valid.Update;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
 import com.ivay.ivay_repository.model.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUser;
-import com.ivay.ivay_app.service.RegisterService;
-import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_common.valid.Password;
-import com.ivay.ivay_common.valid.Update;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -43,11 +45,14 @@ public class RegisterController {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
+    @Lazy
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
     private XUserInfoService xUserInfoService;
+    @Autowired
+    private XTokenService xTokenService;
 
     @Value("${api_paasoo_url}")
     private String paasooUrl;
@@ -278,6 +283,7 @@ public class RegisterController {
         String token = (String) redisTemplate.opsForValue().get(userGid);
         if (!StringUtils.isEmpty(token)) {
             redisTemplate.delete(userGid);
+            xTokenService.deleteToken(token);
             response.setStatus(i18nService.getMessage("response.success.register.logout.code"),
                     i18nService.getMessage("response.success.register.logout.msg"));
         } else {

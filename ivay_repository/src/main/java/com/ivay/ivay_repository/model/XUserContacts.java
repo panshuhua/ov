@@ -24,8 +24,6 @@ public class XUserContacts {
     private String phoneNumber;
 
     private long id;
-    private Date createTime;
-    private Date updateTime;
 
     public XUserContacts(String userGid, String updateDate,String contactName, String phoneNumber) {
         this.userGid = userGid;

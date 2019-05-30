@@ -173,7 +173,7 @@ public class CustomerServiceImpl implements CustomerService {
                                        Integer offset, Integer limit) {
         List<XRecordLoan2> list = customerDao.listLoan(params, offset, limit);
         for (XRecordLoan2 xRecordLoan : list) {
-            String loanStatus = xRecordLoan.getLoanStatus().toString();
+            String loanStatus = xRecordLoan.getLoanStatus();
 
             if ("0".equals(loanStatus)) {
                 loanStatus = "打款失败";

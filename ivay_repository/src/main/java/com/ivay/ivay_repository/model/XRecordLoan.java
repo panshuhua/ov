@@ -58,7 +58,7 @@ public class XRecordLoan {
     @ApiModelProperty("总借款利息")
     private Long overdueInterestTotal;
 
-    @ApiModelProperty("借款狀態")
+    @ApiModelProperty("借款状态")
     private Integer loanStatus;
 
     @ApiModelProperty("借款失败原因")

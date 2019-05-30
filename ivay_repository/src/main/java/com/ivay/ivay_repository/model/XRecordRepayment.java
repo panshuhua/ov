@@ -38,6 +38,9 @@ public class XRecordRepayment {
 
     private long repaymentOverdueFee;
 
+    @ApiModelProperty("借款订单号")
+    private String orderId;
+
     private long id;
     private Date createTime;
     private Date updateTime;

@@ -3,6 +3,7 @@ package com.ivay.ivay_manage.controller;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.dto.Response;
+import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.model.XAuditDetail;
 import io.swagger.annotations.Api;
@@ -14,10 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("audit")
-@Api(tags = "审核系统")
+@Api(tags = "审核/風控系统")
 public class XAuditController {
     @Autowired
     private XUserInfoService xUserInfoService;
+
+    @Autowired
+    private XLoanRateService xLoanRateService;
 
     @PostMapping("list")
     @ApiOperation(value = "审核记录")
@@ -54,7 +58,7 @@ public class XAuditController {
     }
 
     @GetMapping("queryAuditQualification")
-    @ApiOperation(value = "风控系统")
+    @ApiOperation(value = "查詢貸款權限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0 授信 1借款", dataType = "Long", paramType = "query", defaultValue = "0")
@@ -64,8 +68,12 @@ public class XAuditController {
         return xUserInfoService.queryAuditQualification(userGid, flag);
     }
 
-    @GetMapping("test")
-    public boolean test() {
-        return true;
+    @PostMapping("updateCreditLimit")
+    @ApiOperation(value = "提額")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
+    })
+    public long updateCreditLimit(@RequestParam String userGid) {
+        return xLoanRateService.acquireCreditLimit(userGid);
     }
 }

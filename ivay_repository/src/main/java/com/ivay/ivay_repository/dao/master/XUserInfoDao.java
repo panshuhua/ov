@@ -94,7 +94,7 @@ public interface XUserInfoDao {
     int countContacts(String userGid);
 
     /**
-     * ��ǰ����
+     * 贷前策略
      *
      * @param userGid
      * @return
@@ -102,7 +102,7 @@ public interface XUserInfoDao {
     XLoanQualification getAuditQualificationObj(String userGid);
 
     /**
-     * ���в���-��ѯ��ʷ�����������
+     * 贷中策略-查询历史最大逾期天数
      *
      * @param userGid
      * @return
@@ -110,7 +110,7 @@ public interface XUserInfoDao {
     Integer getMaxOverdueDay(String userGid);
 
     /**
-     * ���в���-��ѯ��ǰ���ڻ��������
+     * 贷中策略-查询当前逾期还款的条数
      *
      * @param userGid
      * @return
@@ -118,7 +118,7 @@ public interface XUserInfoDao {
     Integer getOverdueCountsNow(String userGid);
 
     /**
-     * ���в���-���һ�ʽ��彻����������
+     * 贷中策略-最近一笔结清交易逾期天数
      *
      * @param userGid
      * @return
@@ -126,7 +126,7 @@ public interface XUserInfoDao {
     Integer getlastOverdueDay(String userGid);
 
     /**
-     * ��ǰ/���в���-��ѯ��ǰ�û�gpsλ��10m������ע���û��ĸ���
+     * 贷前/贷中策略-查询当前用户gps位置10m内所有注册用户的个数
      *
      * @param longitude
      * @param latitude

@@ -87,15 +87,12 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         xLoanQualification.setContactsNum(xUserInfoDao.countContacts(userGid));
         xLoanQualification.setOneMajorPhoneNum(xUserInfoDao.countMajorPhone(xLoanQualification.getMajorPhone()));
         xLoanQualification.setOnePhoneNum(xUserInfoDao.countOnePhone(xLoanQualification.getMacCode()));
-        // todo 根据经纬度计算10m之内的gps数量
+        // 根据经纬度计算10m之内的gps数量
         Integer gpsNum = xUserInfoDao.getUserCountsBygps(xLoanQualification.getLongitude(), xLoanQualification.getLatitude());
         if (gpsNum == null) {
             gpsNum = 0;
         }
         xLoanQualification.setOneGpsNum(gpsNum);
-
-        // todo 测试数据，需要删除
-        xLoanQualification.setContactsNum(15);
         return xLoanQualification;
     }
 
@@ -124,12 +121,16 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Override
     public boolean queryAuditQualification(String userGid, int flag) {
+        // todo new 風控管理配置
+        Map riskConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_RISK));
+        if (riskConfig == null || "false".equals(riskConfig.get("enable").toString())) {
+            return true;
+        }
+
         XLoanQualification xLoanQualification = getAuditQualificationObj(userGid, flag);
         if (flag == 1) {
             xLoanQualification = getLoanQualificationObj(xLoanQualification, userGid);
         }
-        // 贷款配置
-        Map riskConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_RISK));
 
         Map config = (LinkedHashMap) riskConfig.get(flag == 0 ? "audit" : "loan");
         for (Object key : config.keySet()) {

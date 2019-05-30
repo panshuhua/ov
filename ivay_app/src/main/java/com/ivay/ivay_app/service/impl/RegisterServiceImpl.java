@@ -1,13 +1,9 @@
 package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;
-import com.ivay.ivay_repository.model.LoginInfo;
-import com.ivay.ivay_repository.model.VerifyCodeInfo;
-import com.ivay.ivay_repository.model.XUser;
 import com.ivay.ivay_app.service.RegisterService;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XTokenService;
@@ -16,10 +12,15 @@ import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class RegisterServiceImpl implements RegisterService {
     @Autowired
     private XTokenService tokenService;
     @Autowired
+    @Lazy
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private XConfigService xConfigService;
@@ -54,6 +56,10 @@ public class RegisterServiceImpl implements RegisterService {
     private I18nService i18nService;
     @Autowired
     private XUserInfoService xUserInfoService;
+
+    //token过期秒数
+    @Value("${token.expire.seconds}")
+    private Integer expireSeconds;
 
     @Value("${api_paasoo_url}")
     private String paasooUrl;
@@ -136,10 +142,12 @@ public class RegisterServiceImpl implements RegisterService {
     public XUser getToken(XUser xUser) {
         XLoginUser xLoginUser = new XLoginUser();
         xLoginUser.setId(xUser.getId());
+        xLoginUser.setUserGid(xUser.getUserGid());
+        xLoginUser.setPhone(xUser.getPhone());
         Token token = tokenService.saveToken(xLoginUser);
         String userToken = token.getToken();
         xUser.setUserToken(userToken);
-        redisTemplate.opsForValue().set(xUser.getUserGid(), userToken, xLoginUser.getExpireTime(), TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(xUser.getUserGid(), userToken, (expireSeconds + 200) * 1000, TimeUnit.MILLISECONDS);
         return xUser;
     }
 

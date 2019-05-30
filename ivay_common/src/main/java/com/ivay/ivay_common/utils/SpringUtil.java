@@ -45,8 +45,7 @@ public class SpringUtil implements ApplicationContextAware {
 //		String root = System.getProperty("user.dir");
 //		String filePath = root+File.separator+"src"+File.separator+"main"+ File.separator+"resources"+ File.separator;
         //部署到服务器上的公私钥存放路径
-        String filePath = keyFilePath;
-        return filePath;
+        return keyFilePath;
     }
 
     public static void main(String[] args) {

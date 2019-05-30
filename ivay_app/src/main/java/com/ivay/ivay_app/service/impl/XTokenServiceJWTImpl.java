@@ -22,6 +22,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -57,12 +58,19 @@ public class XTokenServiceJWTImpl implements XTokenService {
 
     @Override
     public Token saveToken(XLoginUser xLoginUser) {
-        xLoginUser.setToken(UUID.randomUUID().toString());
-        cacheLoginUser(xLoginUser);
-        // 登陆日志
-        logService.save(xLoginUser.getId(), "登陆", true, null);
+        String phone = xLoginUser.getPhone();
+        String uuid = phone + "-" + UUID.randomUUID().toString();
+        //查询已登录的同一个用户是否存在
+        Set<String> keys = redisTemplate.keys("tokens:" + phone + "-*");
+        for (String k : keys) {
+            //已经有同一个账号的用户登录了，则删除最先登录的账号的key，重新存入新的token（把原先登录的冲掉）
+            redisTemplate.delete(k);
+        }
 
+        xLoginUser.setToken(uuid);
         String jwtToken = createJWTToken(xLoginUser);
+        xLoginUser.setUserToken(jwtToken);
+        cacheLoginUser(xLoginUser);
 
         return new Token(jwtToken, xLoginUser.getLoginTime());
     }
@@ -86,8 +94,8 @@ public class XTokenServiceJWTImpl implements XTokenService {
     private void cacheLoginUser(XLoginUser xLoginUser) {
         xLoginUser.setLoginTime(System.currentTimeMillis());
         xLoginUser.setExpireTime(xLoginUser.getLoginTime() + expireSeconds * 1000);
-        // 根据uuid将loginUser缓存
-        redisTemplate.boundValueOps(getTokenKey(xLoginUser.getToken())).set(xLoginUser, expireSeconds, TimeUnit.SECONDS);
+        // 根据uuid将xloginUser缓存
+        redisTemplate.boundValueOps(getTokenKey(xLoginUser.getToken())).set(xLoginUser, expireSeconds * 1000, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -116,8 +124,6 @@ public class XTokenServiceJWTImpl implements XTokenService {
             XLoginUser xLoginUser = redisTemplate.opsForValue().get(key);
             if (xLoginUser != null) {
                 redisTemplate.delete(key);
-                // 退出日志
-                logService.save(xLoginUser.getId(), "退出", true, null);
 
                 return true;
             }
