@@ -20,6 +20,12 @@
             <if test="params.period != null and params.period != ''">
                 and period = #{params.period}
             </if>
+            <if test="params.createTime != null and params.createTime != ''">
+                and create_time = #{params.createTime}
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and update_time = #{params.updateTime}
+            </if>
         </where>
     </sql>
 

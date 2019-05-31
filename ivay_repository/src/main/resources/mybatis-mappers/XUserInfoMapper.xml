@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ivay.ivay_repository.dao.master.XUserInfoDao">
-
     <sql id="list_condition">
         <where>
             <if test="params.id != null and params.id != ''">
@@ -176,10 +175,10 @@
                     and "3456" like concat("%", xui.user_status,"%")
                 </if>
             </if>
-            <if test="params.fromTime != null ">
+            <if test="params.fromTime != null and params.fromTime != ''">
                 and unix_timestamp(xuei.update_time) >= unix_timestamp(#{params.fromTime})
             </if>
-            <if test="params.toTime != null ">
+            <if test="params.toTime != null  and params.toTime != ''">
                 and unix_timestamp(#{params.toTime}) >= unix_timestamp(xuei.update_time)
             </if>
         </where>
@@ -194,7 +193,10 @@
     </select>
 
     <select id="auditList" resultType="com.ivay.ivay_repository.model.XAuditCondition">
-        select xui.user_gid,xui.name,xui.phone,
+        set @num=0;
+        select
+        @num:=@num+1 as num,
+        xui.user_gid,xui.name,xui.phone,
         case xui.user_status
         WHEN '2' THEN '2'
         WHEN '3' THEN '3'
@@ -207,9 +209,7 @@
         left JOIN x_user_ext_info xuei
         ON xui.user_gid=xuei.user_gid
         <include refid="audit_list_condition"/>
-        <if test="params.orderBy != null and params.orderBy != ''">
-            order by ${params.orderBy} desc
-        </if>
+        order by xuei.update_time desc
         <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
         </if>
@@ -217,7 +217,7 @@
 
     <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.model.XAuditDetail">
         select xui.user_gid,xui.phone,xui.identity_card,xui.name,xui.birthday, xui.sex,
-        fi1.url photo1_url,fi2.url photo2_url, fi3.url photo3_url
+        fi1.url photo1_url,fi2.url photo2_url, fi3.url photo3_url,xui.phone
         from x_user_info xui
         left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
         left JOIN file_info fi1 ON fi1.id=xuei.photo1_url
@@ -225,4 +225,91 @@
         left JOIN file_info fi3 ON fi3.id=xuei.photo3_url
         where xui.user_gid=#{userGid}
     </select>
+
+    <select id="getAuditQualificationObj" parameterType="java.lang.String"
+            resultType="com.ivay.ivay_repository.model.XLoanQualification">
+        SELECT
+        TIMESTAMPDIFF(YEAR,xui.birthday,now()) age,
+        xui.identity_card,
+        xui.mac_code,
+        xui.longitude,
+        xui.latitude,
+        xuei.major_phone
+        FROM x_user_info xui
+        LEFT JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
+        WHERE xui.user_gid=#{userGid}
+    </select>
+
+    <select id="getMaxOverdueDay" parameterType="java.lang.String"
+            resultType="java.lang.Integer">
+        SELECT
+		max(
+			CASE repayment_status
+			WHEN 2 THEN
+        	  DATEDIFF(last_repayment_time,due_time)
+			ELSE
+      		  DATEDIFF(date_format(now(),'%Y-%m-%d'),due_time)
+    	END
+		) over_time
+		FROM x_record_loan
+	    WHERE user_gid=#{userGid}
+    </select>
+
+    <select id="getOverdueCountsNow" parameterType="java.lang.String" resultType="java.lang.Integer">
+       SELECT count(1) FROM x_record_loan
+	   WHERE user_gid = #{userGid} 
+	   AND repayment_status != 2
+       AND DATEDIFF(
+		date_format(now(), '%Y-%m-%d'),
+ 		due_time
+ 	   ) <![CDATA[ >= ]]> 0
+ 	   AND due_time <![CDATA[ < ]]>now()
+    </select>
+
+    <select id="getlastOverdueDay" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+		(
+			CASE repayment_status
+			WHEN 2 THEN
+      			DATEDIFF(last_repayment_time,due_time)
+			ELSE
+      			DATEDIFF(date_format(now(),'%Y-%m-%d'),due_time)
+    		END
+		) over_time
+		FROM x_record_loan 
+		WHERE user_gid=#{userGid}  
+		AND loan_time in(select max(loan_time) from x_record_loan)
+    </select>
+
+    <select id="getUserCountsBygps" parameterType="java.math.BigDecimal" resultType="java.lang.Integer">
+       SELECT count(1) from (
+		  SELECT
+			 ROUND(
+				6378.138 * 2 * ASIN(
+					SQRT(
+						POW(
+							SIN(
+								(
+									#{latitude} * PI() / 180 - latitude * PI() / 180
+								) / 2
+							),
+							2
+						) + COS(#{latitude} * PI() / 180) * COS(latitude * PI() / 180) * POW(
+							SIN(
+								(
+									#{longitude} * PI() / 180 - longitude * PI() / 180
+								) / 2
+							),
+							2
+						)
+					)
+				) * 1000
+			) AS distance
+		FROM
+			x_user_info
+		HAVING
+			distance <![CDATA[ <= ]]> 10
+		) as lessten
+    </select>
+
 </mapper>

@@ -5,13 +5,13 @@ spring:
     druid:
       master:
         url: jdbc:mysql://152.32.161.88:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-        username: ivay_test
-        password: ivay_test
+        username: root
+        password: 123456
       # 从库数据源
       slave:
         url: jdbc:mysql://152.32.161.88:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-        username: ivay_manage_test
-        password: ivay_manage_test
+        username: root
+        password: 123456
       initialSize: 5
       minIdle: 5
       maxActive: 20
