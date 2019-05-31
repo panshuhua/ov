@@ -13,6 +13,7 @@
         <groupId>com.ivay</groupId>
         <artifactId>ivay_integration</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>

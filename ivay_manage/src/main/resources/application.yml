@@ -1,8 +1,9 @@
 server:
-  port: 8081
+  port: 9091
   name: ivay-manage
 
 spring:
   profiles:
     # 多模块使用include取代active
-    include: dev, comDev, dbDev
+#    include: dev, comDev, dbDev
+    include: test, comTest, dbTest
