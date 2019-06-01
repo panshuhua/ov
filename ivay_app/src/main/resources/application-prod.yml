@@ -1,6 +1,6 @@
 spring:
   redis:
-    host: localhost
+    host: 10.53.138.16
     port: 6379
     timeout: 10s
     lettuce:
@@ -9,12 +9,14 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
-    #password: ivayRedisB038
+#    database: 1
+#    password: ivayRedisB038
+
 files:
   path: ${file-path:/data/files}
 
 swagger:
-  enbale: true
+  enbale: false
 
 # 定时器
 timer:
@@ -37,6 +39,6 @@ api_alias: VMGtest
 api_authenticate_user: vmgtest1
 api_authenticate_pass: vmG@123b
 # 风控授权rl
-risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
+risk_control_url: http://10.53.138.16:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 风控提额url
-update_credit_limit_url: http://localhost:8081/audit/updateCreditLimit?userGid={userGid}
+update_credit_limit_url: http://10.53.138.16:8081/audit/updateCreditLimit?userGid={userGid}

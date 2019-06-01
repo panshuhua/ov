@@ -9,6 +9,7 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
+
 files:
   path: ${file-path:c:/files}
 
@@ -25,7 +26,7 @@ api_transfer_url: http://13.250.110.81:9095/Sandbox/FirmBanking
 api_partner_code: FINTECH
 api_request_id_prefix: FINTECHBK
 # 还款url
-api_collection_url: http://210.245.80.27:9092/Golive/Collection
+api_collection_url: http://13.250.110.81:8085/Sandbox/Collection
 # 发送短信url
 api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
 api_paasoo_key: nzwzxcuv

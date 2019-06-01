@@ -6,6 +6,7 @@ spring:
     # 多模块使用include取代active
     include: dev, comDev, dbDev
 #    include: test, comTest, dbTest
+#    include: prod, comProd, dbProd
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss
@@ -32,7 +33,7 @@ spring:
 
 token:
   expire:
-    seconds: 7200
+    seconds: 1800
   jwtSecret: (JUN:)_$^11244^%$_(XING:)_@@++--(KE:)_++++_.sds_(JI:)
 
 # 是否对敏感信息解密

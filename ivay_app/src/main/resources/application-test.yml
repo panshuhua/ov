@@ -1,6 +1,6 @@
 spring:
   redis:
-    host: localhost
+    host: 152.32.161.88
     port: 6379
     timeout: 10s
     lettuce:
@@ -8,7 +8,10 @@ spring:
         min-idle: 0
         max-idle: 8
         max-active: 8
-        max-wait: -1ms           
+        max-wait: -1ms
+#    database: 0
+#    password: ivay_test
+
 files:
   path: ${file-path:/data/files}
 

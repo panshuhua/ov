@@ -7,3 +7,4 @@ spring:
     # 多模块使用include取代active
     include: dev, comDev, dbDev
 #    include: test, comTest, dbTest
+#    include: prod, comProd, dbProd
