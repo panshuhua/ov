@@ -82,6 +82,9 @@ public class XUserInfo {
     @ApiModelProperty("纬度")
     private BigDecimal latitude;
 
+    @ApiModelProperty("社交类app的个数")
+    private Integer appNum;
+
     private long id;
     private Date createTime;
     private Date updateTime;

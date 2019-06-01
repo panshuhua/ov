@@ -53,15 +53,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 基于token，所以不需要session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.authorizeRequests()
-                .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
-                        "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
-                        "/statics/**", "/star/**", "/info")
-                .permitAll().anyRequest().authenticated();
-        http.formLogin().loginProcessingUrl("/login")
-                .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler).and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
-        http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
+		http.authorizeRequests()
+				.antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
+						"/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
+						//"/statics/**","/star/**", "/info")
+						"/statics/**","/star/register/sendVerifyCode/**","/star/register/reg/**","/star/register/login/**","/star/register/resetpwd/**", "/info")
+				.permitAll().anyRequest().authenticated();
+				http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         // 解决不允许显示在iframe的问题
         http.headers().frameOptions().disable();
         http.headers().cacheControl();

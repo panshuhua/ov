@@ -50,6 +50,7 @@ public enum BaokimResponseStatus {
     IncorrectSignature("120","Signature is incorrect"),
     IncorrectAccountType("121","AccountType is incorrect"),
     IncorrectOrderId("122","OrderId is incorrect"),
+    IncorrectTransIdRepeat("123","TransId is exists"),
     ;
 
 

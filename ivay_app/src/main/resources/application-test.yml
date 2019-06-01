@@ -39,5 +39,3 @@ api_authenticate_pass: vmG@123b
 risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 风控提额url
 update_credit_limit_url: http://localhost:8081/audit/updateCreditLimit?userGid={userGid}
-# 公私钥路径
-keyfilepath: /usr/key/test/

@@ -25,10 +25,17 @@ public interface XRecordRepaymentDao {
     int update(XRecordRepayment xRecordRepayment);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_record_repayment(gid, create_time, update_time, user_gid, record_loan_gid, repayment_type, repayment_way, repayment_amount, repayment_status, end_time, repayment_overdue_fee, fail_reason) values(#{gid}, #{createTime}, #{updateTime}, #{userGid}, #{recordLoanGid}, #{repaymentType}, #{repaymentWay}, #{repaymentAmount}, #{repaymentStatus}, #{endTime}, #{repaymentOverdueFee}, #{failReason})")
+    @Insert("insert into x_record_repayment(gid, create_time, update_time, user_gid, record_loan_gid, repayment_type, repayment_way, repayment_amount, repayment_status, end_time, repayment_overdue_fee, fail_reason,order_id) values(#{gid}, #{createTime}, #{updateTime}, #{userGid}, #{recordLoanGid}, #{repaymentType}, #{repaymentWay}, #{repaymentAmount}, #{repaymentStatus}, #{endTime}, #{repaymentOverdueFee}, #{failReason},#{orderId})")
     int save(XRecordRepayment xRecordRepayment);
 
     int count(@Param("params") Map<String, Object> params);
 
     List<XRecordRepayment> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+
+    @Select("update x_record_repayment set repayment_status=#{repaymentStatus}, fail_reason=#{failReason} where id=#{id}")
+    Integer updateRepaymentStatus(@Param("id") long id, @Param("repaymentStatus") int repaymentStatus, @Param("failReason") String failReason);
+
+    @Select("select * from x_record_repayment where order_id=#{orderId} and repayment_status=1")
+    XRecordRepayment getXRecordRepaymentByOrderId(String orderId);
+
 }

@@ -85,16 +85,36 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     @Transactional(rollbackFor = Exception.class)
     public XVirtualAccount repaymentMoney(String orderGid, String userGid, String bankShortName, long repaymentAmount, Integer deductType) {
         XRecordLoan xRecordLoan = xRecordLoanDao.getByGid(orderGid, userGid);
+        
         XVirtualAccount xVirtualAccount = xVirtualAccountService.selectByOrderId(xRecordLoan.getOrderId());
+        //查询正在还款中的记录
+        XRecordRepayment xRecordRepayment2=xRecordRepaymentDao.getXRecordRepaymentByOrderId(xRecordLoan.getOrderId());
+        
+       //正在还款中，并且虚拟账号不为空时，不需要创建虚拟账号（单次还款，不需要修改虚拟账号），直接返回
+        if(xRecordRepayment2!=null && xVirtualAccount!=null){
+        	return xVirtualAccount;
+        }
+        
+        
         if (SysVariable.REPAYMENT_STATUS_SUCCESS == xRecordLoan.getRepaymentStatus()) {
             //已经还清借款，不需要再次还款，直接返回虚拟账号
-            //XVirtualAccount xVirtualAccount=xVirtualAccountService.selectByOrderId(xRecordLoan.getOrderId());
             return xVirtualAccount;
         }
-
+        
+        //目前暂时只支持单次还款：控制用户只能一次还完所有的金额
+//        if(SysVariable.REPAYMENT_STATUS_FAIL == xRecordLoan.getRepaymentStatus() || SysVariable.REPAYMENT_STATUS_NONE == xRecordLoan.getRepaymentStatus()){
+//        	long shouldRepayAmount=xRecordLoan.getDueAmount()+xRecordLoan.getOverdueFee()+xRecordLoan.getOverdueInterest();
+//            if(repaymentAmount!=shouldRepayAmount){
+//            	throw new BusinessException(i18nService.getMessage("response.error.repay.shouldrepayamount.code"),
+//            			  i18nService.getMessage("response.error.repay.shouldrepayamount.msg"));
+//            }
+//        }
+//        
         XRecordRepayment xRecordRepayment = new XRecordRepayment();
         // 用户gid
         xRecordRepayment.setUserGid(userGid);
+        // 订单id
+        xRecordRepayment.setOrderId(xRecordLoan.getOrderId());
         // 借款gid
         xRecordRepayment.setRecordLoanGid(orderGid);
         List<XRecordRepayment> result = xRecordRepaymentDao.getSelective(xRecordRepayment);
@@ -124,19 +144,23 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         xRecordRepayment.setCreateTime(now);
         // 更新时间
         xRecordRepayment.setUpdateTime(now);
-        if (xRecordRepaymentDao.save(xRecordRepayment) == 1) {
-            
-            if (xVirtualAccount == null) {
+        
+        if(xRecordRepayment2 == null){
+    		 if (xVirtualAccount == null) {
+                 xVirtualAccount = createVirtualCount(xRecordLoan, xRecordRepayment);
+             } else {
+                 xVirtualAccount = updateVirtualCount(xVirtualAccount, xRecordRepayment);
+             } 
+    	 
+        }else{
+        	xRecordRepayment=xRecordRepayment2;
+        	if (xVirtualAccount == null) {
                 xVirtualAccount = createVirtualCount(xRecordLoan, xRecordRepayment);
-                confirmRepayment(xRecordLoan, xRecordRepayment,xVirtualAccount.getResponseCode());
             } else {
-                xVirtualAccount = updateVirtualCount(xVirtualAccount, xRecordRepayment.getRepaymentAmount());
-                confirmRepayment(xRecordLoan, xRecordRepayment,xVirtualAccount.getResponseCode());
-            }
-        } else {
-            xRecordRepayment = null;
-            xVirtualAccount = null;
+                xVirtualAccount = updateVirtualCount(xVirtualAccount, xRecordRepayment);
+            } 
         }
+        
         return xVirtualAccount;
     }
 
@@ -177,18 +201,28 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
             xVirtualAccountDao.insert(xVirtualAccount);
+            
+            //更新还款状态为还款中
+            //成功时在回调处记录
+            
             logger.info("创建虚拟账号成功");
 
         } else {
-            logger.info("创建虚拟账号失败，返回状态码：{}，错误信息：{}", valVirtualAccountRsp.getResponseCode(), valVirtualAccountRsp.getResponseMessage());
+            logger.info("创建虚拟账号失败，返回状态码：{}，错误信息：{}", responseCode, responseMsg);
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
+           //更新还款状态为还款失败
+            String failReason="创建虚拟账号信息失败，返回状态码："+responseCode+"，错误信息："+responseMsg;
+            xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);
+            xRecordRepayment.setFailReason(failReason);
+            xRecordRepaymentDao.save(xRecordRepayment); //失败时，记录失败信息
         }
         return xVirtualAccount;
     }
 
-    public XVirtualAccount updateVirtualCount(XVirtualAccount xVirtualAccount, Long collectAmount) {
+    public XVirtualAccount updateVirtualCount(XVirtualAccount xVirtualAccount, XRecordRepayment xRecordRepayment) {
+    	Long collectAmount=xRecordRepayment.getRepaymentAmount();
         ValVirtualAccountRsp valVirtualAccountRsp = xVirtualAccountService.updateXVirtualAccount(xVirtualAccount, collectAmount);
         String responseCode = valVirtualAccountRsp.getResponseCode();
         String responseMsg = valVirtualAccountRsp.getResponseMessage();
@@ -204,12 +238,17 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xVirtualAccount.setResponseMessage(responseMsg);
             xVirtualAccountDao.update(xVirtualAccount);
             logger.info("更新虚拟账号信息成功");
-
+            
         } else {
-            logger.info("更新虚拟账号信息失败，返回状态码：{}，错误信息：{}", valVirtualAccountRsp.getResponseCode(), valVirtualAccountRsp.getResponseMessage());
+            logger.info("更新虚拟账号信息失败，返回状态码：{}，错误信息：{}", responseCode,responseMsg);
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
+			//更新还款状态为还款失败
+            String failReason="更新虚拟账号信息失败，返回状态码："+responseCode+"，错误信息："+responseMsg;
+            xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);
+            xRecordRepayment.setFailReason(failReason);
+            xRecordRepaymentDao.save(xRecordRepayment); //失败时，记录失败信息
         }
         return xVirtualAccount;
     }
@@ -264,11 +303,12 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         } else {
             xRecordRepayment.setUpdateTime(now);
             // 还款失败原因
-            xRecordRepayment.setFailReason("还款失败");
+            xRecordRepayment.setFailReason("baokim调用接口失败，还款失败");
             // 还款状态
             xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);
         }
-        if (xRecordRepaymentDao.update(xRecordRepayment) == 1 && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
+        
+        if (xRecordRepaymentDao.save(xRecordRepayment) == 1 && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             // todo new 还款提升授信額度
             threadPoolService.execute(() -> {
                 Map<String, Object> params = new HashMap<>();

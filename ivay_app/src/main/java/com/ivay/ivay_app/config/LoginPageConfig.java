@@ -9,7 +9,6 @@ public class LoginPageConfig {
 
 	@RequestMapping("/")
 	public RedirectView loginPage() {
-//		return new RedirectView("/login.html");
 		return new RedirectView("/swagger-ui.html");
 	}
 }

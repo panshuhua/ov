@@ -75,11 +75,11 @@ public class SecurityHandlerConfig {
             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                                 AuthenticationException exception) throws IOException, ServletException {
                 String msg = null;
-                if (exception instanceof BadCredentialsException) {
-                    msg = "密码错误";
-                } else {
-                    msg = exception.getMessage();
-                }
+//				if (exception instanceof BadCredentialsException) {
+//					msg = "密码错误";
+//				} else {
+//					msg = exception.getMessage();
+//				}
                 ResponseInfo info = new ResponseInfo(HttpStatus.UNAUTHORIZED.value() + "", msg);
                 ResponseUtil.responseJson(response, HttpStatus.UNAUTHORIZED.value(), info);
             }

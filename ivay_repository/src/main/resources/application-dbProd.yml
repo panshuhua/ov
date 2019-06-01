@@ -33,9 +33,3 @@ mybatis:
   mapper-locations: classpath:/mybatis-mappers/*, classpath:/risk/*
   configuration:
     mapUnderscoreToCamelCase: true
-
-logging:
-  config: classpath:logback-db.xml
-
-logger:
-  filePath: /data/logs/

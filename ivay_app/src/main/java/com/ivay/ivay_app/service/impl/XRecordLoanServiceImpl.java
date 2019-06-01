@@ -5,6 +5,7 @@ import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.*;
+import com.ivay.ivay_app.utils.RedisLock;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -72,88 +73,101 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Value("${risk_control_url}")
     private String riskControlUrl;
 
+    @Autowired
+    private RedisLock redisLock;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public XRecordLoan borrowMoney(XRecordLoan xRecordLoan, String password) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
-        if (xUserInfo == null) {
-            throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
-                    i18nService.getMessage("response.error.user.checkgid.msg"));
+        if (!redisLock.tryBorrowLock(xRecordLoan.getUserGid())) {
+            throw new BusinessException(i18nService.getMessage("response.error.borrow.redisError.code"),
+                    i18nService.getMessage("response.error.borrow.redisError.msg"));
         }
-        // 校验交易密码
-        if (!bCryptPasswordEncoder.matches(password, xUserInfo.getTransPwd())) {
-            throw new BusinessException(i18nService.getMessage("response.error.borrow.tranpwd.code"),
-                    i18nService.getMessage("response.error.borrow.tranpwd.msg"));
-        }
-        // 校验可借额度
-        if (xUserInfo.getCanborrowAmount() < xRecordLoan.getLoanAmount()) {
-            throw new BusinessException(i18nService.getMessage("response.error.loanAmount.more.code"),
-                    i18nService.getMessage("response.error.loanAmount.more.msg"));
-        }
+        try {
+            // region -- 借款
+            XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+            if (xUserInfo == null) {
+                throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
+                        i18nService.getMessage("response.error.user.checkgid.msg"));
+            }
+            // 校验交易密码
+            if (!bCryptPasswordEncoder.matches(password, xUserInfo.getTransPwd())) {
+                throw new BusinessException(i18nService.getMessage("response.error.borrow.tranpwd.code"),
+                        i18nService.getMessage("response.error.borrow.tranpwd.msg"));
+            }
+            // 校验可借额度
+            if (xUserInfo.getCanborrowAmount() < xRecordLoan.getLoanAmount()) {
+                throw new BusinessException(i18nService.getMessage("response.error.loanAmount.more.code"),
+                        i18nService.getMessage("response.error.loanAmount.more.msg"));
+            }
 
-        // 校验是否有逾期借款记录
-        PageTableResponse list = borrowList(0, 1, xRecordLoan.getUserGid());
-        Date now = new Date();
-        if (list.getData() != null && !list.getData().isEmpty()) {
-            for (Object obj : list.getData()) {
-                XRecordLoan xrl = (XRecordLoan) obj;
-                if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS &&
-                        xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS &&
-                        now.getTime() > xrl.getDueTime().getTime()) {
-                    throw new BusinessException(i18nService.getMessage("response.error.borrow.hasOverDue.code"),
-                            i18nService.getMessage("response.error.borrow.hasOverDue.msg"));
+            // 校验是否有逾期借款记录
+            PageTableResponse list = borrowList(0, 1, xRecordLoan.getUserGid());
+            Date now = new Date();
+            if (list.getData() != null && !list.getData().isEmpty()) {
+                for (Object obj : list.getData()) {
+                    XRecordLoan xrl = (XRecordLoan) obj;
+                    if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS &&
+                            xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS &&
+                            now.getTime() > xrl.getDueTime().getTime()) {
+                        throw new BusinessException(i18nService.getMessage("response.error.borrow.hasOverDue.code"),
+                                i18nService.getMessage("response.error.borrow.hasOverDue.msg"));
+                    }
                 }
             }
-        }
 
-        XBankAndCardInfo card = xUserBankcardInfoDao.getBankAndCardByGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid());
-        // 校验银行卡
-        if (card == null) {
-            throw new BusinessException(i18nService.getMessage("response.error.card.lack.code"),
-                    i18nService.getMessage("response.error.card.lack.msg"));
-        }
+            XBankAndCardInfo card = xUserBankcardInfoDao.getBankAndCardByGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid());
+            // 校验银行卡
+            if (card == null) {
+                throw new BusinessException(i18nService.getMessage("response.error.card.lack.code"),
+                        i18nService.getMessage("response.error.card.lack.msg"));
+            }
 
-        xRecordLoan.setGid(UUIDUtils.getUUID());
-        // 借款单号
-        xRecordLoan.setOrderId(billCommonService.getBillNo());
-        // 借款手续费+利息
-        XLoanRate xLoanRate = xLoanRateDao.getByUserAndPeriod(xRecordLoan.getUserGid(), xRecordLoan.getLoanPeriod());
-        if (xLoanRate == null) {
-            throw new BusinessException(i18nService.getMessage("response.error.loanRate.lack.code"),
-                    i18nService.getMessage("response.error.loanRate.lack.msg"));
-        }
-        // 借款利率
-        xRecordLoan.setLoanRate(xLoanRate.getInterestRate());
-        // 砍頭息：日利率設置成0.1%
-        xRecordLoan.setInterest(xRecordLoan.getLoanAmount() / 1000 * xRecordLoan.getLoanPeriod());
-        // 借款服务费：實際借款利息-砍頭息
-        xRecordLoan.setFee(CommonUtil.longMultiplyBigDecimal(xRecordLoan.getLoanAmount(), xRecordLoan.getLoanRate()) - xRecordLoan.getInterest());
-        // 实际到账金额：总金额-手续费-砍頭息
-        xRecordLoan.setNetAmount(xRecordLoan.getLoanAmount() - xRecordLoan.getFee() - xRecordLoan.getInterest());
-        // 应还金额
-        xRecordLoan.setDueAmount(xRecordLoan.getLoanAmount());
-        // 应还逾期滞纳金
-        xRecordLoan.setOverdueFee(0L);
-        // 逾期总滞纳金
-        xRecordLoan.setOverdueFeeTotal(0L);
-        // 应还逾期计息
-        xRecordLoan.setOverdueInterest(0L);
-        // 总计息
-        xRecordLoan.setOverdueInterestTotal(xRecordLoan.getInterest());
-        // 借款状态
-        xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_WAITING);
-        // 还款状态
-        xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_NONE);
-        xRecordLoan.setCreateTime(now);
-        xRecordLoan.setUpdateTime(now);
-        // 更新可借款额度
-        xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() - xRecordLoan.getLoanAmount());
-        xUserInfo.setUpdateTime(now);
-        if (xRecordLoanDao.save(xRecordLoan) == 1 && xUserInfoDao.update(xUserInfo) == 1) {
-            // 调用合作方接口借款
-            borrowMoneyFromBank(xRecordLoan, card.getCardNo(), card.getBankNo(), card.getAccType());
-        } else {
-            xRecordLoan = null;
+            xRecordLoan.setGid(UUIDUtils.getUUID());
+            // 借款单号
+            xRecordLoan.setOrderId(billCommonService.getBillNo());
+            // 借款手续费+利息
+            XLoanRate xLoanRate = xLoanRateDao.getByUserAndPeriod(xRecordLoan.getUserGid(), xRecordLoan.getLoanPeriod());
+            if (xLoanRate == null) {
+                throw new BusinessException(i18nService.getMessage("response.error.loanRate.lack.code"),
+                        i18nService.getMessage("response.error.loanRate.lack.msg"));
+            }
+            // 借款利率
+            xRecordLoan.setLoanRate(xLoanRate.getInterestRate());
+            // 砍頭息：日利率設置成0.1%
+            xRecordLoan.setInterest(xRecordLoan.getLoanAmount() / 1000 * xRecordLoan.getLoanPeriod());
+            // 借款服务费：實際借款利息-砍頭息
+            xRecordLoan.setFee(CommonUtil.longMultiplyBigDecimal(xRecordLoan.getLoanAmount(), xRecordLoan.getLoanRate()) - xRecordLoan.getInterest());
+            // 实际到账金额：总金额-手续费-砍頭息
+            xRecordLoan.setNetAmount(xRecordLoan.getLoanAmount() - xRecordLoan.getFee() - xRecordLoan.getInterest());
+            // 应还金额
+            xRecordLoan.setDueAmount(xRecordLoan.getLoanAmount());
+            // 应还逾期滞纳金
+            xRecordLoan.setOverdueFee(0L);
+            // 逾期总滞纳金
+            xRecordLoan.setOverdueFeeTotal(0L);
+            // 应还逾期计息
+            xRecordLoan.setOverdueInterest(0L);
+            // 总计息
+            xRecordLoan.setOverdueInterestTotal(xRecordLoan.getInterest());
+            // 借款状态
+            xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_WAITING);
+            // 还款状态
+            xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_NONE);
+            xRecordLoan.setCreateTime(now);
+            xRecordLoan.setUpdateTime(now);
+            // 更新可借款额度
+            xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() - xRecordLoan.getLoanAmount());
+            xUserInfo.setUpdateTime(now);
+            if (xRecordLoanDao.save(xRecordLoan) == 1 && xUserInfoDao.update(xUserInfo) == 1) {
+                // 调用合作方接口借款
+                borrowMoneyFromBank(xRecordLoan, card.getCardNo(), card.getBankNo(), card.getAccType());
+            } else {
+                xRecordLoan = null;
+            }
+            // endregion
+        } finally {
+            redisLock.releaseLock(xRecordLoan.getUserGid());
         }
         return xRecordLoan;
     }

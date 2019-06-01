@@ -8,7 +8,8 @@ spring:
         min-idle: 0
         max-idle: 8
         max-active: 8
-        max-wait: -1ms        
+        max-wait: -1ms
+    #password: ivayRedisB038
 files:
   path: ${file-path:/data/files}
 
@@ -39,5 +40,3 @@ api_authenticate_pass: vmG@123b
 risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 风控提额url
 update_credit_limit_url: http://localhost:8081/audit/updateCreditLimit?userGid={userGid}
-# 公私钥路径
-keyfilepath: /usr/key/prod/

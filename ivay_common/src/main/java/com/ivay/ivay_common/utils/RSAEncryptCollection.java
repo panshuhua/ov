@@ -21,9 +21,11 @@ import java.security.interfaces.RSAPublicKey;
  */
 public class RSAEncryptCollection extends RSAEncrypt {
 
-    private static final String PRIVATE_KEY = "pkcs8_private0527.pem";
+    private static final String PRIVATE_KEY = "pkcs8_private0527.pem";  //dev
+//	private static final String PRIVATE_KEY = "pkcs8_partner_privatekey.pem";  //prov
 
-	private static final String PUBLIC_KEY = "bk_public_key.pem";
+	private static final String PUBLIC_KEY = "bk_public_key.pem"; //dev
+//	private static final String PUBLIC_KEY = "partner_publickey.pem";  //prov
 	
 	/**
 	 * 随机生成密钥对

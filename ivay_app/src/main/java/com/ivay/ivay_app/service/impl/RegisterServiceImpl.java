@@ -88,9 +88,9 @@ public class RegisterServiceImpl implements RegisterService {
         xUserInfo.setUpdateTime(new Date());
         xUserInfo.setPhone(loginInfo.getMobile());
         xUserInfo.setMacCode(loginInfo.getMacCode());
-        xUserInfo.setLongitude(loginInfo.getLongitude());
-        xUserInfo.setLatitude(loginInfo.getLatitude());
-
+//        xUserInfo.setLongitude(loginInfo.getLongitude());
+//        xUserInfo.setLatitude(loginInfo.getLatitude());
+        
         String password = loginInfo.getPassword();
         if (!StringUtils.isEmpty(password)) {
             xUserInfo.setPassword(bCryptPasswordEncoder.encode(password));

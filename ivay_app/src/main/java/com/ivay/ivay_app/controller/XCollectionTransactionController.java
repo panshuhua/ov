@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping("/star/register")
+@RequestMapping("/star/repay")
 @Api(tags = "还款回调接口")
 public class XCollectionTransactionController {
 	@Autowired

@@ -39,4 +39,8 @@ public interface XRecordLoanDao {
 
     @Select("SELECT min(x.last_repayment_time) FROM x_record_loan x WHERE x.user_gid=#{userGid} AND x.repayment_status='2';")
     Date getFirstRepaymentTime(String userGid);
+
+    @Select("select * from x_record_loan where order_id=#{orderId}")
+    XRecordLoan getXRecordLoanByOrderId(String orderId);
+
 }

@@ -44,7 +44,7 @@ public class XRecordRepaymentController {
         if (xVirtualAccount != null) {
             if (!"200".equals(xVirtualAccount.getResponseCode())) {
                 response.setStatus(xVirtualAccount.getResponseCode(),
-                        "调用第三方接口创建/更新虚拟账号失败，返回错误信息为：" + xVirtualAccount.getResponseMessage());
+                    i18nService.getMessage("response.error.addupdate.virtualAccount.msg") + xVirtualAccount.getResponseMessage());
             }
         } else {
             response.setStatus(i18nService.getMessage("response.error.create.virtualAccount.code"),

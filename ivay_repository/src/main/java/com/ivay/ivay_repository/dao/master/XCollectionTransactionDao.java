@@ -16,4 +16,7 @@ public interface XCollectionTransactionDao {
     @Select("select collect_amount from x_virtual_account where acc_no=#{accNo}")
     long getCollectAmount(String accNo);
 
+    @Select("select count(1) from x_collection_transaction where trans_id=#{transId}")
+    int queryByTransId(String transId);
+
 }

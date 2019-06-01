@@ -1,3 +1,9 @@
 keyfilepath: /usr/key/dev/
 api_partner_code: FINTECH
 api_request_id_prefix: FINTECHBK
+
+logging:
+  config: classpath:logback-ivay.xml
+
+logger:
+  filePath: /logs/

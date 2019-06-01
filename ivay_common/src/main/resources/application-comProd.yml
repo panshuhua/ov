@@ -1,3 +1,9 @@
 keyfilepath: /usr/key/prod/
 api_partner_code: VINFINTECH
 api_request_id_prefix: VINFINTECHBK
+
+logging:
+  config: classpath:logback-ivay.xml
+
+logger:
+  filePath: /data/logs/

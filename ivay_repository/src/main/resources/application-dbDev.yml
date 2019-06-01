@@ -34,8 +34,3 @@ mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
 
-logging:
-  config: classpath:logback-db.xml
-
-logger:
-  filePath: /logs/

@@ -133,4 +133,7 @@ public interface XUserInfoDao {
      * @return
      */
     Integer getUserCountsBygps(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude);
+
+    @Select("update x_user_info set longitude=#{longitude},latitude=#{latitude},app_num=#{appNum},update_time=#{updateTime} where user_gid=#{userGid}")
+    Integer updateGpsAppNum(XUserInfo xUserInfo);
 }

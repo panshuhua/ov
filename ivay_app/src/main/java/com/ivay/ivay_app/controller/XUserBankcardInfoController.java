@@ -75,6 +75,11 @@ public class XUserBankcardInfoController {
         // 校验身份信息
         TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo, xUserBankcardInfo.getCardNo(), xUserBankcardInfo.getAccType());
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
+            if (MinDistance.minDistance(xUserInfo.getName().trim(), transfersRsp.getAccName().trim()) > 1) {
+                response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
+                        i18nService.getMessage("response.error.bank.account.msg"));
+                return response;
+            }
             Date now = new Date();
             xUserBankcardInfo.setCreateTime(now);
             xUserBankcardInfo.setBankcardGid(UUIDUtils.getUUID());

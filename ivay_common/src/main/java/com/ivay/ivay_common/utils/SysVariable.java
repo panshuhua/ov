@@ -1,7 +1,5 @@
 package com.ivay.ivay_common.utils;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public class SysVariable {
     // 有效标志位: 有效
     public static final String ENABLE_FLAG_YES = "Y";
@@ -101,4 +99,6 @@ public class SysVariable {
     public static final String API_OPERATION_COLLTRAN_STATUSSEARCH = "9004";
     public static final String API_ACC_TYPE_FIRST = "1";
     public static final String API_ACC_TYPE_SECOND = "2";
+
+    public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";
 }
