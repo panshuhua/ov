@@ -1,6 +1,13 @@
+# 服务相关
 server:
   port: 9091
   name: ivay-manage
+
+# 数据库配置
+dataSource:
+  master: true
+  slave: true
+
 
 spring:
   profiles:
