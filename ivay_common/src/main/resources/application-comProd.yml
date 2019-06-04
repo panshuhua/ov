@@ -1,9 +1,17 @@
-keyfilepath: /usr/key/prod/
-api_partner_code: VINFINTECH
-api_request_id_prefix: VINFINTECHBK
-
+# 日志配置文件
 logging:
   config: classpath:logback-ivay.xml
 
-logger:
-  filePath: /data/logs/
+logfile:
+  # 日志存放路径
+  path: /data/logs/
+
+
+# 自定义配置
+# baokim接口私钥存放路径
+keyfilepath: /usr/prod/
+# baokim接口参数
+api_partner_code: VINFINTECH
+api_request_id_prefix: VINFINTECHBK
+
+

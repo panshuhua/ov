@@ -299,13 +299,10 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
                 return sign.verify(base64Byte);
  
            } catch (NoSuchAlgorithmException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
            } catch (SignatureException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
            } catch (InvalidKeyException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
            }
            return false;
@@ -418,7 +415,6 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 			System.out.println("加密后：" + str);
 			return str;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return encryptStr;
@@ -432,7 +428,6 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 			System.out.println("加密后：" + str);
 			return str;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return encryptStr;
@@ -447,7 +442,6 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 			System.out.println("加密后：" + str);
 			return str;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return encryptStr;
@@ -461,7 +455,6 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 			System.out.println("解密后：" + str);
 			return str;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return encryptStr;

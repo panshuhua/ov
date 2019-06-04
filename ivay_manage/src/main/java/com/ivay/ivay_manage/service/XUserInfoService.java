@@ -26,9 +26,12 @@ public interface XUserInfoService {
      * 提交审核
      *
      * @param userGid
+     * @param flag
+     * @param refuseCode
+     * @param refuseDemo
      * @return
      */
-    int auditUpdate(String userGid, int flag);
+    int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo);
 
     /**
      * 获取贷前策略实体

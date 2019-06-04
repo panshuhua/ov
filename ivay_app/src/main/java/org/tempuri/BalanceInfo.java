@@ -135,11 +135,18 @@ public class BalanceInfo  implements java.io.Serializable {
     }
 
     private Object __equalsCalc = null;
+    @Override
     public synchronized boolean equals(Object obj) {
-        if (!(obj instanceof BalanceInfo)) return false;
+        if (!(obj instanceof BalanceInfo)) {
+            return false;
+        }
         BalanceInfo other = (BalanceInfo) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
@@ -162,6 +169,7 @@ public class BalanceInfo  implements java.io.Serializable {
     }
 
     private boolean __hashCodeCalc = false;
+    @Override
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;

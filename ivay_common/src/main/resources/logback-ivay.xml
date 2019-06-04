@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <configuration>
     <!--读取配置文件属性-->
-    <springProperty name="logPath" source="logger.filePath"/>
     <springProperty name="serverName" source="server.name"/>
+    <springProperty name="logPath" source="logfile.path"/>
     <!--自定义属性-->
-    <property name="fileSize" value="30MB"/>
-    <!--<property name="serverName" value="ivay-repository"/>-->
+    <property name="logSize" value="30MB"/>
+    <property name="logHistory" value="1"/>
 
     <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】 -->
     <!-- appender：负责定义写日志格式的组件。 -->
@@ -28,7 +28,8 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logPath}/${serverName}.log_%d{yyyy-MM-dd}.%i</fileNamePattern>
-            <maxFileSize>${fileSize}</maxFileSize>
+            <maxFileSize>${logSize}</maxFileSize>
+            <maxHistory>${logHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -44,7 +45,8 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logPath}/${serverName}_error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
-            <maxFileSize>${fileSize}</maxFileSize>
+            <maxFileSize>${logSize}</maxFileSize>
+            <maxHistory>${logHistory}</maxHistory>
         </rollingPolicy>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>error</level>
@@ -57,13 +59,13 @@
     <appender name="SQL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}/${serverName}_sql.log</file>
         <encoder>
-            <pattern>%d [%thread] %msg%n
-            </pattern>
+            <pattern>%d [%thread] %msg%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${logPath}/${serverName}_sql.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
-            <maxFileSize>${fileSize}</maxFileSize>
+            <maxFileSize>${logSize}</maxFileSize>
+            <maxHistory>${logHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 

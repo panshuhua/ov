@@ -24,7 +24,6 @@ public class Base64Util {
             textByte = str.getBytes("UTF-8");
             return ENCODER.encodeToString(textByte);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return str;
         }

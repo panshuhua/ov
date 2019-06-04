@@ -43,7 +43,6 @@ public class RiskUserServiceImpl implements RiskUserService {
 
 	@Override
 	public List<RiskUser> selectUserListByPhone(String phone) {
-		// TODO Auto-generated method stub		
 		return riskUserDao.selectUserListByPhone(phone);
 	}
 }

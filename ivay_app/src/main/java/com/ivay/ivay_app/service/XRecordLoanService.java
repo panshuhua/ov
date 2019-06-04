@@ -48,6 +48,13 @@ public interface XRecordLoanService {
     boolean calcOverDueFee2();
 
     /**
+     * 测试逾期利息
+     *
+     * @return
+     */
+    boolean calcOverDueFee2ForTest(long diff);
+
+    /**
      * 确认放款
      *
      * @param xRecordLoan

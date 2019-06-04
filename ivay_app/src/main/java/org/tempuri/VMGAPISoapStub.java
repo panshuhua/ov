@@ -371,6 +371,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
         }
     }
 
+    @Override
     public org.tempuri.ApiAdsReturn adsSendSms(String[] msisdns, String alias, String message, String sendTime, String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
@@ -405,6 +406,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
 }
     }
 
+    @Override
     public org.tempuri.ApiBulkReturn adsGPCSendSms(String msisdn, String alias, String message, String sendTime, String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
@@ -439,6 +441,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
 }
     }
 
+    @Override
     public org.tempuri.ApiBulkReturn bulkSendSms(String msisdn, String alias, String message, String sendTime, String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
@@ -473,6 +476,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
 }
     }
 
+    @Override
     public org.tempuri.ApiBulkReturn bulkSendSmsWithRequestId(String requestId, String msisdn, String alias, String message, String sendTime, String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
@@ -507,6 +511,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
 }
     }
 
+    @Override
     public org.tempuri.ApiBulkBlockReturn bulkMessageBlockReciver(String[] msisdns, String alias, String message, String sendTime, String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
@@ -541,6 +546,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
 }
     }
 
+    @Override
     public org.tempuri.ApiBulkReturn bulkSendSmsTest(String msisdn, String alias, String message, String sendTime, String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
@@ -575,6 +581,7 @@ public class VMGAPISoapStub extends org.apache.axis.client.Stub implements org.t
 }
     }
 
+    @Override
     public org.tempuri.BalanceInfo getBalance(String authenticateUser, String authenticatePass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();

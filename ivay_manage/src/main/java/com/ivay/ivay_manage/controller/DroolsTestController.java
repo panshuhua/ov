@@ -51,7 +51,6 @@ public class DroolsTestController {
             int ruleFiredCount = kSession.fireAllRules();
             System.out.println("触发了" + ruleFiredCount + "条规则");
 		} finally {
-			// TODO: handle finally clause
 			kSession.dispose();
 		}
 
@@ -85,7 +84,6 @@ public class DroolsTestController {
             int ruleFiredCount = kSession.fireAllRules();
             System.out.println("触发了" + ruleFiredCount + "条规则");
 		} finally {
-			// TODO: handle finally clause
 			kSession.dispose();
 		}
 

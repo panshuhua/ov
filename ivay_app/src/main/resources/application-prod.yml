@@ -39,6 +39,6 @@ api_alias: VMGtest
 api_authenticate_user: vmgtest1
 api_authenticate_pass: vmG@123b
 # 风控授权rl
-risk_control_url: http://10.53.138.16:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
+risk_control_url: http://10.53.138.16:9091/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 风控提额url
-update_credit_limit_url: http://10.53.138.16:8081/audit/updateCreditLimit?userGid={userGid}
+update_credit_limit_url: http://10.53.138.16:9091/audit/updateCreditLimit?userGid={userGid}

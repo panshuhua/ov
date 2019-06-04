@@ -112,29 +112,29 @@
                             <i class="layui-icon">&#xe615;</i>审核通过
                         </button>
                         <button onclick="auditSubmit(0)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>审核拒绝
+                            <i class="layui-icon">&#xe615;</i>审核驳回
                         </button>
-                        <button onclick="auditSubmit(2)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>重新提交
-                        </button>
+                        <!--<button onclick="auditSubmit(2)" class="layui-btn layui-btn-sm">-->
+                        <!--<i class="layui-icon">&#xe615;</i>重新提交-->
+                        <!--</button>-->
                         <label>驳回理由：</label>
                         <select id="refuseReason">
                             <option value="">请选择</option>
-                            <option value="1001">身份证正面或反面照片模糊或拍摄角度差</option>
-                            <option value="1002">未拍摄到身份证照片</option>
-                            <option value="1003">未拍摄身份证原件(如复印件、电子版)</option>
-                            <option value="1004">手持身份证照片或活体照片模糊</option>
-                            <option value="1005">没有上传活体照片/手持照片</option>
-                            <option value="1006">活体照片/手持照片拍摄不标准</option>
-                            <option value="2001">身份证过期</option>
-                            <option value="2002">填写身份证号/姓名/生日与证件上的号码不一致</option>
-                            <option value="2003">身份证疑似造假(PS,后贴照片等)</option>
-                            <option value="2004">疑似重复申请（活体照片或手持照片或身份证照片与其他申请用户为同一人）</option>
-                            <option value="3001">活体照片或手持照片与身份证头像不一致</option>
-                            <option value="3002">活体照片与手持照片不一致</option>
-                            <option value="3003">手持照片里的本人与手持证件头像不一致</option>
-                            <option value="3004">手持证件与拍摄证件不一致</option>
-                            <option value="3005">个人信息姓名与身份证姓名不一致</option>
+                            <option value="1001">1001:身份证正面或反面照片模糊或拍摄角度差</option>
+                            <option value="1002">1002:未拍摄到身份证照片</option>
+                            <option value="1003">1003:未拍摄身份证原件(如复印件、电子版)</option>
+                            <option value="1004">1004:手持身份证照片或活体照片模糊</option>
+                            <option value="1005">1005:没有上传活体照片/手持照片</option>
+                            <option value="1006">1006:活体照片/手持照片拍摄不标准</option>
+                            <option value="2001">2001:身份证过期</option>
+                            <option value="2002">2002:填写身份证号/姓名/生日与证件上的号码不一致</option>
+                            <option value="2003">2003:身份证疑似造假(PS,后贴照片等)</option>
+                            <option value="2004">2004:疑似重复申请（活体照片或手持照片或身份证照片与其他申请用户为同一人）</option>
+                            <option value="3001">3001:活体照片或手持照片与身份证头像不一致</option>
+                            <option value="3002">3002:活体照片与手持照片不一致</option>
+                            <option value="3003">3003:手持照片里的本人与手持证件头像不一致</option>
+                            <option value="3004">3004:手持证件与拍摄证件不一致</option>
+                            <option value="3005">3005:个人信息姓名与身份证姓名不一致</option>
                         </select>
                     </div>
                 </div>
@@ -312,11 +312,9 @@
                 alert("请核实申请人信息")
                 return;
             }
-        } else {
-            if ($("#refuseReason").val() == "") {
-                alert("请选择驳回理由");
-                return;
-            }
+        } else if ($("#refuseReason").val() == "") {
+            alert("请选择驳回理由");
+            return;
         }
 
         $.ajax({

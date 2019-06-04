@@ -26,7 +26,7 @@ public class UUIDUtils {
     }
 
     public static String getRequestId() {
-        // todo 越南为东七区（差一个小时）
+        // 越南为东七区（差一个小时）
         long now = System.currentTimeMillis() - 60 * 60 * 1000L;
         String uniqueId = Long.toString(System.nanoTime());
         uniqueId = uniqueId.substring(uniqueId.length() - 6);

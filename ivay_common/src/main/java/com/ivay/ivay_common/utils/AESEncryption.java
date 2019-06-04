@@ -1,9 +1,6 @@
 package com.ivay.ivay_common.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,14 +8,16 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.lang3.StringUtils;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 
 public class AESEncryption {
 
     public static final String VIPARA = "ivay001234567890";
-	public static final String bm = "utf-8"; 
+	public static final String UTF_8 = "utf-8";
  
 	/**
 	 * 字节数组转化为大写16进制字符串
@@ -75,10 +74,9 @@ public class AESEncryption {
 			SecretKeySpec key = new SecretKeySpec(password.getBytes(), "AES");
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, key, zeroIv);
-			byte[] encryptedData = cipher.doFinal(content.getBytes(bm));
+			byte[] encryptedData = cipher.doFinal(content.getBytes(UTF_8));
 			
 			return Base64.encode(encryptedData);
-//			return byte2HexStr(encryptedData);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
@@ -92,7 +90,6 @@ public class AESEncryption {
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
  

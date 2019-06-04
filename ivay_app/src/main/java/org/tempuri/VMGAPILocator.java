@@ -24,6 +24,7 @@ public class VMGAPILocator extends org.apache.axis.client.Service implements org
     // Use to get a proxy class for VMGAPISoap
     private String VMGAPISoap_address = "http://brandsms.vn:8018/VMGAPI.asmx";
 
+    @Override
     public String getVMGAPISoapAddress() {
         return VMGAPISoap_address;
     }
@@ -39,6 +40,7 @@ public class VMGAPILocator extends org.apache.axis.client.Service implements org
         VMGAPISoapWSDDServiceName = name;
     }
 
+    @Override
     public org.tempuri.VMGAPISoap getVMGAPISoap() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
@@ -50,6 +52,7 @@ public class VMGAPILocator extends org.apache.axis.client.Service implements org
         return getVMGAPISoap(endpoint);
     }
 
+    @Override
     public org.tempuri.VMGAPISoap getVMGAPISoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
             org.tempuri.VMGAPISoapStub _stub = new org.tempuri.VMGAPISoapStub(portAddress, this);
@@ -70,6 +73,7 @@ public class VMGAPILocator extends org.apache.axis.client.Service implements org
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
      */
+    @Override
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (org.tempuri.VMGAPISoap.class.isAssignableFrom(serviceEndpointInterface)) {
@@ -89,6 +93,7 @@ public class VMGAPILocator extends org.apache.axis.client.Service implements org
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
      */
+    @Override
     public java.rmi.Remote getPort(javax.xml.namespace.QName portName, Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         if (portName == null) {
             return getPort(serviceEndpointInterface);
@@ -104,12 +109,14 @@ public class VMGAPILocator extends org.apache.axis.client.Service implements org
         }
     }
 
+    @Override
     public javax.xml.namespace.QName getServiceName() {
         return new javax.xml.namespace.QName("http://org.tempuri.org/", "VMGAPI");
     }
 
     private java.util.HashSet ports = null;
 
+    @Override
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();

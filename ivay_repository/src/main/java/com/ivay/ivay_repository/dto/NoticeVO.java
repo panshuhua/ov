@@ -31,4 +31,11 @@ public class NoticeVO implements Serializable {
         this.users = users;
     }
 
+    @Override
+    public String toString() {
+        return "NoticeVO{" +
+                "notice=" + notice +
+                ", users=" + users +
+                '}';
+    }
 }

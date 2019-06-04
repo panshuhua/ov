@@ -35,4 +35,13 @@ public class NoticeReadVO extends Notice {
     public void setIsRead(Boolean isRead) {
         this.isRead = isRead;
     }
+
+    @Override
+    public String toString() {
+        return "NoticeReadVO{" +
+                "userId=" + userId +
+                ", readTime=" + readTime +
+                ", isRead=" + isRead +
+                '}';
+    }
 }

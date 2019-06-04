@@ -100,5 +100,11 @@ public class SysVariable {
     public static final String API_ACC_TYPE_FIRST = "1";
     public static final String API_ACC_TYPE_SECOND = "2";
 
+    // redis 借款锁前缀
     public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";
+
+    public static void main(String[] args){
+        String str = "abc";
+        System.out.println(str.charAt(0));
+    }
 }

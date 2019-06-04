@@ -56,8 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
 						"/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
-						//"/statics/**","/star/**", "/info")
-						"/statics/**","/star/register/sendVerifyCode/**","/star/register/reg/**","/star/register/login/**","/star/register/resetpwd/**", "/info")
+						"/statics/**","/star/**", "/info")
+//						"/statics/**","/star/register/sendVerifyCode/**","/star/register/reg/**","/star/register/login/**","/star/register/resetpwd/**", "/info")
 				.permitAll().anyRequest().authenticated();
 				http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         // 解决不允许显示在iframe的问题

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("audit")
-@Api(tags = "审核/風控系统")
+@Api(tags = "审核/风控系统")
 public class XAuditController {
     @Autowired
     private XUserInfoService xUserInfoService;
@@ -53,12 +53,12 @@ public class XAuditController {
                                     @RequestParam(required = false) String refuseCode,
                                     @RequestParam(required = false) String refuseDemo) {
         Response<Integer> response = new Response<>();
-        response.setBo(xUserInfoService.auditUpdate(userGid, flag));
+        response.setBo(xUserInfoService.auditUpdate(userGid, flag, refuseCode, refuseDemo));
         return response;
     }
 
     @GetMapping("queryAuditQualification")
-    @ApiOperation(value = "查詢貸款權限")
+    @ApiOperation(value = "查询贷款权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0 授信 1借款", dataType = "Long", paramType = "query", defaultValue = "0")

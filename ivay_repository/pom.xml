@@ -17,12 +17,10 @@
         <dependency>
             <groupId>com.ivay</groupId>
             <artifactId>ivay_common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${mybatis.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -30,16 +28,15 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!--用于返回给前端的注释-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
         </dependency>
         <!--改为stater的方式 -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>${druid.version}</version>
         </dependency>
         <!--代码优化-->
         <dependency>

@@ -64,6 +64,7 @@ public class DroolsAutoConfiguration {
         final KieRepository kieRepository = getKieServices().getRepository();
         
         kieRepository.addKieModule(new KieModule() {
+            @Override
             public ReleaseId getReleaseId() {
                 return kieRepository.getDefaultReleaseId();
             }
@@ -81,6 +82,7 @@ public class DroolsAutoConfiguration {
         final KieRepository kieRepository = getKieServices().getRepository();
         
         kieRepository.addKieModule(new KieModule() {
+            @Override
             public ReleaseId getReleaseId() {
                 return kieRepository.getDefaultReleaseId();
             }

@@ -422,6 +422,68 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     }
 
     @Override
+    public boolean calcOverDueFee2ForTest(long diff) {
+        List<XRecordLoan> xrlList = xRecordLoanDao.list(new HashMap<>(), null, null);
+        // 滞纳金配置
+        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
+        if (config == null) {
+            logger.error("滞纳金配置获取出错");
+            return false;
+        }
+        List<XRecordLoan> updateList = new ArrayList<>();
+        try {
+            for (XRecordLoan xrl : xrlList) {
+                // 还没还清借款
+                if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS &&
+                        xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
+                    // 逾期天数
+                    long day = (System.currentTimeMillis() + diff * 3600 * 1000 * 24 - xrl.getDueTime().getTime()) / (3600 * 1000 * 24) + 1;
+                    if (day > 0 && xrl.getDueAmount() > xrl.getOverdueFee()) {
+                        long totalFee = 0L;
+
+                        // 平台管理费
+                        if (day == 1) {
+                            // 平台管理费 = 剩余本金 * 0.03
+                            totalFee = CommonUtil.longAddBigDecimal(xrl.getDueAmount(), new BigDecimal(config.get("0").toString()));
+                        }
+
+                        // 逾期计息
+                        BigDecimal interestPerDay = xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
+                        totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPerDay);
+
+                        // 逾期滞纳金
+                        for (Object key : config.keySet()) {
+                            BigDecimal value = new BigDecimal(config.get(key).toString());
+                            long start = Long.parseLong(key.toString().split("~")[0]);
+                            if (start != 0L) {
+                                long end = Long.parseLong(key.toString().split("~")[1]);
+                                if (day >= start && day <= end) {
+                                    long feePerDay = CommonUtil.longMultiplyBigDecimal(xrl.getDueAmount(), value);
+                                    totalFee += feePerDay;
+                                }
+                            }
+                        }
+                        if (xrl.getOverdueFee() + totalFee >= xrl.getDueAmount()) {
+                            xrl.setOverdueFee(xrl.getDueAmount());
+                        } else {
+                            xrl.setOverdueFee(xrl.getOverdueFee() + totalFee);
+                        }
+                        updateList.add(xrl);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("滞纳金计算过程出错");
+            return false;
+        }
+        if (!updateList.isEmpty()) {
+            //todo new 需要分批批量插入，200个一组
+            xRecordLoanDao.updateByBatch(updateList);
+        }
+        return true;
+    }
+
+    @Override
     public long getSumLoanAmount(String userGid) {
         return xRecordLoanDao.getSumLoanAmount(userGid);
     }

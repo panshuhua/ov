@@ -13,6 +13,7 @@ import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.XAuditDetail;
 import com.ivay.ivay_repository.model.XLoanQualification;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 @Service
 public class XUserInfoServiceImpl implements XUserInfoService {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XUserInfoService.class);
 
     @Resource
     private XUserInfoDao xUserInfoDao;
@@ -48,31 +49,42 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     }
 
     @Override
-    public int auditUpdate(String userGid, int flag) {
+    public int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo) {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
         if (xUserInfo == null) {
             throw new BusinessException("0014", "该用户不存在, 或已冻结");
         }
-        switch (flag) {
-            case 0:
-                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
-                break;
-            case 1:
-                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
-                if (!queryAuditQualification(userGid, 0)) {
-                    throw new BusinessException("很抱歉，该用户的授信信息未通过审核");
-                }
-                break;
-            case 2:
+        if (flag == 1) {
+            // 审核通过
+            xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
+            if (!queryAuditQualification(userGid, 0)) {
+                throw new BusinessException("很抱歉，该用户的授信信息未通过审核");
+            }
+        } else {
+//            if (flag == 0) {
+//                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
+//            }
+//            if (flag == 2) {
+//                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_RETRY);
+//            }
+            if (StringUtils.isEmpty(refuseCode)) {
+                throw new BusinessException("请选择拒绝理由");
+            }
+            if (refuseCode.charAt(0) == '1') {
+                // 1开头的 驳回重新提交
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_RETRY);
-                break;
+            } else {
+                // 2 和3 开头的 直接审核拒绝
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
+            }
+            logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}:{}.", userGid, refuseCode, refuseDemo);
         }
         xUserInfo.setUpdateTime(new Date());
         if (xUserInfoDao.update(xUserInfo) == 1 && SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
             logger.info("审核通过，开始初始化借款利率和借款额度");
             xLoanRateService.initLoanRateAndCreditLimit(userGid);
         } else {
-            logger.info("审核不通过");
+            logger.info("审核拒绝");
         }
         return flag;
     }
@@ -121,7 +133,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Override
     public boolean queryAuditQualification(String userGid, int flag) {
-        // todo new 風控管理配置
+        // 風控管理配置
         Map riskConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_RISK));
         if (riskConfig == null || "false".equals(riskConfig.get("enable").toString())) {
             return true;
@@ -185,6 +197,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                         logger.info("历史最大逾期天数和结清交易逾期天数不符");
                         return false;
                     }
+                default:
+                    logger.info("未知的类型：{}", key.toString());
             }
         }
         //当前处于逾期中，拒贷

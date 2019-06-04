@@ -87,10 +87,10 @@ public interface XUserInfoDao {
     @Select("select count(1) from x_user_info where mac_code=#{macCode}")
     int countOnePhone(String macCode);
 
-    //todo new �޸�
+    // 统计14天内 最大的联系人个数
     @Select("SELECT IFNULL(max(num),0) from ( " +
             "select count(1) as num from x_user_contacts where user_gid=#{userGid}" +
-            " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=3 GROUP BY update_date ) temp")
+            " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=14 GROUP BY update_date ) temp")
     int countContacts(String userGid);
 
     /**

@@ -1,8 +1,9 @@
 package com.ivay.ivay_app.service;
 
 
-import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_repository.model.*;
+import com.ivay.ivay_repository.model.CreditLine;
+import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 
 public interface XUserInfoService {
     /**
@@ -78,32 +79,6 @@ public interface XUserInfoService {
      * 设置交易密码
      */
     void setTransPwd(String userGid, String transPwd);
-
-    /**
-     * 获取审核记录列表
-     *
-     * @param limit
-     * @param num
-     * @param xAuditCondition
-     * @return
-     */
-    PageTableResponse auditList(int limit, int num, XAuditCondition xAuditCondition);
-
-    /**
-     * 被审核人详细信息
-     *
-     * @param userGid
-     * @return
-     */
-    XAuditDetail auditDetail(String userGid);
-
-    /**
-     * 提交审核
-     *
-     * @param userGid
-     * @return
-     */
-    int auditUpdate(String userGid, int flag);
 
     /**
      * 校验身份证号

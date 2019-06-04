@@ -111,11 +111,18 @@ public class ApiBulkReturn  implements java.io.Serializable {
     }
 
     private Object __equalsCalc = null;
+    @Override
     public synchronized boolean equals(Object obj) {
-        if (!(obj instanceof ApiBulkReturn)) return false;
+        if (!(obj instanceof ApiBulkReturn)) {
+            return false;
+        }
         ApiBulkReturn other = (ApiBulkReturn) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
         if (__equalsCalc != null) {
             return (__equalsCalc == obj);
         }
@@ -135,6 +142,7 @@ public class ApiBulkReturn  implements java.io.Serializable {
     }
 
     private boolean __hashCodeCalc = false;
+    @Override
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
