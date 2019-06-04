@@ -5,7 +5,7 @@ import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.*;
-import com.ivay.ivay_app.utils.RedisLock;
+import com.ivay.ivay_repository.utils.RedisLock;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;

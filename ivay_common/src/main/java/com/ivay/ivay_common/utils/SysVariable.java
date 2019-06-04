@@ -103,8 +103,5 @@ public class SysVariable {
     // redis 借款锁前缀
     public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";
 
-    public static void main(String[] args){
-        String str = "abc";
-        System.out.println(str.charAt(0));
-    }
+
 }

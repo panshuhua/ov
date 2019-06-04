@@ -3,6 +3,7 @@ package com.ivay.ivay_manage.service.impl;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.advice.BusinessException;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,6 +40,15 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
+        String time = request.getParams().get("toTime").toString();
+        if (!StringUtils.isEmpty(time)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(DateUtils.stringToDate_YYYY_MM_DD(time));
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            request.getParams().put("toTime", DateUtils.dateToString_YYYY_MM_DD_HH_MM_SS(calendar.getTime()));
+        }
         return new PageTableHandler((a) -> xUserInfoDao.auditCount(a.getParams()),
                 (a) -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);

@@ -3,6 +3,7 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_app.utils.RedisUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -12,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("star/api")
@@ -88,5 +91,15 @@ public class XAPIController {
                 }
             }
         }
+    }
+
+    @Resource
+    private RedisUtils redisUtils;
+
+    @PostMapping("test")
+    public boolean test(@RequestParam(required = false) String value) {
+        redisUtils.set("sx:test", "123", 60L);
+        System.out.println(redisUtils.get("sx:test"));
+        return true;
     }
 }
