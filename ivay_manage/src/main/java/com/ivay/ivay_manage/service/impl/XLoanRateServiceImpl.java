@@ -7,6 +7,10 @@ import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.advice.BusinessException;
+import com.ivay.ivay_manage.service.RiskUserService;
+import com.ivay.ivay_manage.service.ThreadPoolService;
+import com.ivay.ivay_manage.service.XConfigService;
+import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -14,10 +18,6 @@ import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XLoanRate;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XUserInfo;
-import com.ivay.ivay_manage.service.RiskUserService;
-import com.ivay.ivay_manage.service.ThreadPoolService;
-import com.ivay.ivay_manage.service.XConfigService;
-import com.ivay.ivay_manage.service.XLoanRateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,23 +147,34 @@ public class XLoanRateServiceImpl implements XLoanRateService {
         return xUserInfo.getCreditLine();
     }
 
+    /**
+     * 判断是否进行提额或初始化授信额度
+     *
+     * @param xUserInfo
+     * @return
+     */
     private boolean checkCreditLimit(XUserInfo xUserInfo) {
         if (xUserInfo.getCreditLine() == null || xUserInfo.getCreditLine() == 0) {
+            // 未初始化授信额度，返回true
             return true;
         }
-        // 提額權限判斷
+
+        // 判断提额权限
         Map<String, Object> params = new HashMap<>();
         params.put("userGid", xUserInfo.getUserGid());
         List<XRecordLoan> list = xRecordLoanDao.list(params, 1, 0);
-        // 沒借過錢，即初始化，給提額
+        // 已初始化授信额度，但没借过钱
         if (list.size() == 0) {
-            return true;
+            return false;
         }
+
+        // 计算最后一笔结清订单的逾期时间
         long overdueDay = 0;
         Date lastRepaymentDay = null;
         for (XRecordLoan xrl : list) {
+            // 已还清的借款
             if (SysVariable.REPAYMENT_STATUS_SUCCESS == xrl.getRepaymentStatus()) {
-                // 最近一筆還款
+                // 最近一笔还款
                 if (lastRepaymentDay == null || DateUtils.isDateAfter(lastRepaymentDay, xrl.getLastRepaymentTime()) < 0) {
                     lastRepaymentDay = xrl.getLastRepaymentTime();
                     // 逾期
@@ -173,14 +184,19 @@ public class XLoanRateServiceImpl implements XLoanRateService {
                 }
             }
         }
-
+        // 最近一笔结清订单的逾期天数>5不提额
         if (overdueDay > 5) {
             return false;
         }
-        Date firstRepaymentTime = xRecordLoanDao.getFirstRepaymentTime(xUserInfo.getUserGid());
+
         // 與第一次交易的天數間隔
+        Date firstRepaymentTime = xRecordLoanDao.getFirstRepaymentTime(xUserInfo.getUserGid());
+        if (firstRepaymentTime == null) {
+            return false;
+        }
         long diff = Long.parseLong(DateUtils.getTwoDay(firstRepaymentTime, new Date()));
         int count = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
+        // 根据实际还清借款时间触发, 第N次提额时间距离首笔交易时间分别不小于5*N天
         return 5 * (count + 1) <= diff;
     }
 
@@ -189,10 +205,10 @@ public class XLoanRateServiceImpl implements XLoanRateService {
         if (config == null) {
             logger.error("提額配置获取出错");
         } else {
-            // 判斷 用户 是白名單用戶還是正常用戶
-            List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
             String typeFlag = "normal";
             long borrowAmount = 0;
+            // 判斷 用户 是白名單用戶還是正常用戶
+            List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
             if (whiteList.size() > 0) {
                 typeFlag = "white";
                 borrowAmount = Long.parseLong(whiteList.get(0).getAmount());
@@ -200,6 +216,7 @@ public class XLoanRateServiceImpl implements XLoanRateService {
             Map creditConfig = (LinkedHashMap) config.get(typeFlag);
 
             if (xUserInfo.getCreditLine() == null || xUserInfo.getCreditLine() == 0) {
+                // 设置授信额度
                 if (borrowAmount == 0) {
                     borrowAmount = Long.parseLong(creditConfig.get("start").toString());
                 }
@@ -208,6 +225,7 @@ public class XLoanRateServiceImpl implements XLoanRateService {
                 xUserInfo.setCreditLineCount(0);
                 xUserInfoDao.update(xUserInfo);
             } else {
+                // 提额
                 Map<String, Object> params = new HashMap<>();
                 params.put("userGid", xUserInfo.getUserGid());
                 params.put("repaymentStatus", SysVariable.REPAYMENT_STATUS_SUCCESS);

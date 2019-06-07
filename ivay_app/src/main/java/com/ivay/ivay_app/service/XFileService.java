@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public interface XFileService {
 
-	XFileInfo save(MultipartFile file, String flag, String gid) throws IOException;
+    XFileInfo save(MultipartFile file, String flag, String gid) throws IOException;
 
-	void delete(String id);
+    void delete(String id);
 
 }

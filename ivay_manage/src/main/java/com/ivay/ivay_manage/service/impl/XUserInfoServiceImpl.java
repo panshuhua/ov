@@ -111,11 +111,16 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         xLoanQualification.setOneMajorPhoneNum(xUserInfoDao.countMajorPhone(xLoanQualification.getMajorPhone()));
         xLoanQualification.setOnePhoneNum(xUserInfoDao.countOnePhone(xLoanQualification.getMacCode()));
         // 根据经纬度计算10m之内的gps数量
-        Integer gpsNum = xUserInfoDao.getUserCountsBygps(xLoanQualification.getLongitude(), xLoanQualification.getLatitude());
-        if (gpsNum == null) {
-            gpsNum = 0;
+        if (xLoanQualification.getLongitude() != null && xLoanQualification.getLatitude() != null) {
+            Integer gpsNum = xUserInfoDao.getUserCountsBygps(xLoanQualification.getLongitude(), xLoanQualification.getLatitude());
+            if (gpsNum == null) {
+                gpsNum = 0;
+            }
+            xLoanQualification.setOneGpsNum(gpsNum);
+        } else {
+            xLoanQualification.setOneGpsNum(-1);
         }
-        xLoanQualification.setOneGpsNum(gpsNum);
+
         return xLoanQualification;
     }
 

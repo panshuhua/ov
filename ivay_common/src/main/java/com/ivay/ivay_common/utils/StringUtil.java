@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -148,6 +148,9 @@ public class StringUtil {
     // 只含数字或字母
     private static final String CHARACTER_REGEX = "\\W{1,}|_{1,}";
 
+    //只含数字/字母/下划线
+    private static final String PASSWORD_REGEX = "^[0-9a-zA-Z_]{1,}$";
+
     public static Boolean isCharacter(String input) {
         if (StringUtils.isEmpty(input)) {
             return false;
@@ -179,11 +182,57 @@ public class StringUtil {
         return str;
     }
 
-    public static void main(String[] args) {
-        Map map = new HashMap<>();
-        map.put("one", "world");
-        map.put("two", "fine");
-        System.out.println(replaceStringInParentheses("hello {one}, I'm {two}.", map));
+    /**
+     * 密码只能设置数字/字母和下划线
+     */
+    public static boolean valiPassword(String input) {
+        boolean flag = false;
+        if (StringUtils.isEmpty(input)) {
+            return false;
+        }
+        Pattern p = Pattern.compile(PASSWORD_REGEX);
+        Matcher m = p.matcher(input);
+        flag = m.find();
+        return flag;
+    }
+
+
+    /**
+     * 越南语转英文字母
+     *
+     * @param vi
+     * @return
+     */
+    public static String vietnameseToUpperEnglish(String vi) {
+        if (vi == null) {
+            return null;
+        }
+        vi = vi.trim().toUpperCase();
+        if (StringUtils.isEmpty(vi)) {
+            return "";
+        }
+        // 去掉重音符号
+        String nfdNormalizedString = Normalizer.normalize(vi, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D").replaceAll("đ", "d");
+    }
+
+    /**
+     * 去除所有的空白字符
+     *
+     * @param str
+     * @return
+     */
+    public static String replaceBlank(String str) {
+        String dest = null;
+        if (str == null) {
+            return dest;
+        } else {
+            Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+            Matcher m = p.matcher(str);
+            dest = m.replaceAll("");
+            return dest;
+        }
     }
 
 }

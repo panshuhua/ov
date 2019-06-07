@@ -14,9 +14,9 @@ import java.lang.annotation.*;
 public @interface IdentityCard {
     String message() default "validated.identityCard.error";
 
-    int min() default 8;
+    int min() default 9;
 
-    int max() default 11;
+    int max() default 12;
 
     Class<?>[] groups() default {};
 

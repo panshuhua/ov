@@ -19,24 +19,24 @@ public class DroolsTestController {
 
 //    @Resource
 //    private KieSession kieSession;
-    
+
 //    @Resource
 //    private StatelessKieSession statelessKieSession;
-    
+
     @Resource
     private KieContainer kieContainer;
-    
-    @Resource(name="middleKieContainer")
+
+    @Resource(name = "middleKieContainer")
     private KieContainer kieContainerMiddle;
 
     @ResponseBody
     @GetMapping("/droopsTestMiddle/{contactNum}/{contactMaxNum}/{nameDis}/{year}/{macNum}/{gpsNum}")
     public String testMiddle(@PathVariable int contactNum, @PathVariable int contactMaxNum, @PathVariable int nameDis,
-    		@PathVariable int year, @PathVariable int macNum, @PathVariable int gpsNum){
-    	KieSession kSession = null;
-    	AddressCheckResult result = new AddressCheckResult();
-    	try {
-        	kSession = kieContainerMiddle.newKieSession();
+                             @PathVariable int year, @PathVariable int macNum, @PathVariable int gpsNum) {
+        KieSession kSession = null;
+        AddressCheckResult result = new AddressCheckResult();
+        try {
+            kSession = kieContainerMiddle.newKieSession();
             Address address = new Address();
             address.setYear(year);
             address.setNameDis(nameDis);
@@ -44,32 +44,32 @@ public class DroolsTestController {
             address.setContactMaxNum(contactMaxNum);
             address.setMacNum(macNum);
             address.setGpsNum(gpsNum);
-     
+
             kSession.insert(address);
             kSession.insert(result);
-            
+
             int ruleFiredCount = kSession.fireAllRules();
             System.out.println("触发了" + ruleFiredCount + "条规则");
-		} finally {
-			kSession.dispose();
-		}
+        } finally {
+            kSession.dispose();
+        }
 
 
-        if(result.isContactNumResult() && result.isNameDisResult() && result.isYearResult()){
+        if (result.isContactNumResult() && result.isNameDisResult() && result.isYearResult()) {
             return "借款申请审核通过";
         }
         return "很抱歉，您的借款申请未通过审核";
 
     }
-    
+
     @ResponseBody
     @GetMapping("/droopsTestPre/{contactNum}/{contactMaxNum}/{nameDis}/{year}/{macNum}/{gpsNum}")
-    public String testPre(@PathVariable int contactNum,  @PathVariable int contactMaxNum, @PathVariable int nameDis,
-    		@PathVariable int year, @PathVariable int macNum, @PathVariable int gpsNum){
-    	KieSession kSession = null;
-    	AddressCheckResult result = new AddressCheckResult();
-    	try {
-        	kSession = kieContainer.newKieSession();
+    public String testPre(@PathVariable int contactNum, @PathVariable int contactMaxNum, @PathVariable int nameDis,
+                          @PathVariable int year, @PathVariable int macNum, @PathVariable int gpsNum) {
+        KieSession kSession = null;
+        AddressCheckResult result = new AddressCheckResult();
+        try {
+            kSession = kieContainer.newKieSession();
             Address address = new Address();
             address.setYear(year);
             address.setNameDis(nameDis);
@@ -77,23 +77,23 @@ public class DroolsTestController {
             address.setContactMaxNum(contactMaxNum);
             address.setMacNum(macNum);
             address.setGpsNum(gpsNum);
-     
+
             kSession.insert(address);
             kSession.insert(result);
-            
+
             int ruleFiredCount = kSession.fireAllRules();
             System.out.println("触发了" + ruleFiredCount + "条规则");
-		} finally {
-			kSession.dispose();
-		}
+        } finally {
+            kSession.dispose();
+        }
 
 
-        if(result.isContactNumResult() && result.isNameDisResult() && result.isMacNumResult()
-        		&& result.isYearResult() && result.isGpsNumResult()){
+        if (result.isContactNumResult() && result.isNameDisResult() && result.isMacNumResult()
+                && result.isYearResult() && result.isGpsNumResult()) {
             return "test贷前审核通过";
         }
         return "很抱歉，test贷前未通过审核";
 
     }
-    
+
 }

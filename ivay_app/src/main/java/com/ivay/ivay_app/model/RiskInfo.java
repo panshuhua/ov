@@ -5,10 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 /**
- * 风控需要报错的信息
+ * 风控需要审核的信息
  *
  * @author psh
  */
@@ -17,7 +17,7 @@ public class RiskInfo {
     @ApiModelProperty("用户gid")
     private String userGid;
     @ApiModelProperty("联系人列表")
-    private List<XUserContacts> contacts;
+    private Set<XUserContacts> contacts;
     @ApiModelProperty("经度")
     private BigDecimal longitude;
     @ApiModelProperty("纬度")

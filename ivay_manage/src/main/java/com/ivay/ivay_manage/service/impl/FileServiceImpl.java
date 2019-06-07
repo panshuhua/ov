@@ -1,9 +1,9 @@
 package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_common.utils.FileUtil;
+import com.ivay.ivay_manage.service.FileService;
 import com.ivay.ivay_repository.dao.master.FileInfoDao;
 import com.ivay.ivay_repository.model.FileInfo;
-import com.ivay.ivay_manage.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,6 +13,8 @@ import com.ivay.ivay_repository.dao.master.XUserContactsDao;
 import com.ivay.ivay_repository.model.XUserContacts;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @RequestMapping("star/xUserContactss")
 @Api(tags = "通讯录")
 public class XUserContactsController {
-
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
     @Autowired
     private XUserContactsDao xUserContactsDao;
     @Autowired
@@ -41,11 +43,12 @@ public class XUserContactsController {
     @PostMapping("add_contacts")
     @ApiOperation(value = "批量保存")
     public Response<String> saveAll(@RequestBody RiskInfo riskInfo) {
-        Response<String> response = new Response<>();
-        boolean flag = xUserContactsService.saveAll(riskInfo);
-        if (!flag) {
-            response.setStatus(i18nService.getMessage("response.error.risk.save.code"), i18nService.getMessage("response.error.risk.save.msg"));
+        logger.info("前台参数：" + riskInfo.toString());
+        if (riskInfo.getContacts() != null) {
+            logger.info("联系人：" + riskInfo.getContacts());
         }
+        Response<String> response = new Response<>();
+        xUserContactsService.saveAll(riskInfo);
         return response;
     }
 

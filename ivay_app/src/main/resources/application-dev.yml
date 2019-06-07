@@ -19,7 +19,7 @@ swagger:
 # 定时器
 timer:
   # 逾期费用
-  overdueFee: 0 0 0 1/1 * ?
+  overdueFee: 0 0 1 1/1 * ?
 
 # 借款url
 api_transfer_url: http://13.250.110.81:9095/Sandbox/FirmBanking
@@ -37,9 +37,10 @@ api_alias: VMGtest
 api_authenticate_user: vmgtest1
 api_authenticate_pass: vmG@123b
 # 风控授权rl
-risk_control_url: http://localhost:9091/audit/queryAuditQualification?userGid={userGid}&flag={flag}
+risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 风控提额url
-update_credit_limit_url: http://localhost:9091/audit/updateCreditLimit?userGid={userGid}
+update_credit_limit_url: http://localhost:8081/audit/updateCreditLimit?userGid={userGid}
 
 
-
+# 前端错误日志路径：
+errorInfo.path: /data/errorInfo/

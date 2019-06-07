@@ -23,10 +23,10 @@ public class IdentityCardValidator implements ConstraintValidator<IdentityCard, 
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        System.out.println(needDecrypt);
         if (needDecrypt) {
             s = AESEncryption.decrypt(s);
         }
+        s = StringUtil.replaceBlank(s);
         return StringUtil.isCharacter(s) && s.length() >= identityCard.min() && s.length() <= identityCard.max();
     }
 }

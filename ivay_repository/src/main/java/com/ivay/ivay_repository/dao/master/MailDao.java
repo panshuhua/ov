@@ -13,6 +13,12 @@ public interface MailDao {
     @Select("select * from t_mail t where t.id = #{id}")
     Mail getById(Long id);
 
+//	@Delete("delete from t_mail where id = #{id}")
+//	int delete(Long id);
+
+//	@Update("update t_mail t set subject = #{subject}, content = #{content}, updateTime = now() where t.id = #{id}")
+//	int update(Mail mail);
+
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into t_mail(userId, subject, content, createTime, updateTime) values(#{userId}, #{subject}, #{content}, now(), now())")
     int save(Mail mail);

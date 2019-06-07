@@ -9,6 +9,7 @@ import javax.validation.ConstraintValidatorContext;
  * 密码校验规则类
  */
 public class PasswordValidator implements ConstraintValidator<Password, String> {
+	
     private Password password;
 
     @Override
@@ -18,6 +19,13 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return s.length() == password.size() && StringUtil.isNumeric(s);
+    	boolean flag;
+    	if("0".equals(password.type())){
+    		flag = s.length() == password.size() && StringUtil.isNumeric(s);
+    	}else{
+    		flag = StringUtil.valiPassword(s);
+    	}
+    	return flag;
     }
+    
 }

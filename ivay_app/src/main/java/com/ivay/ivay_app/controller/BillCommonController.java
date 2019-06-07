@@ -58,7 +58,7 @@ public class BillCommonController {
     private String paasooSecret;
 
     @PostMapping
-    @RequestMapping(value = "/star/bill/getbillNo", method = {RequestMethod.GET})
+    @RequestMapping(value = "star/bill/getbillNo", method = {RequestMethod.GET})
     @ApiOperation(value = "取订单号")
     public String getBillNo() {
         return billCommonService.getBillNo();
@@ -66,8 +66,8 @@ public class BillCommonController {
     }
 
     @ApiOperation(value = "paasoo发送短信")
-    //@RequestMapping(value = "/star/sendsms", method = {RequestMethod.GET})
-    @GetMapping("/star/sendsms/{to}/{text}")
+    //@RequestMapping(value = "star/sendsms", method = {RequestMethod.GET})
+    @GetMapping("star/sendsms/{to}/{text}")
     @ResponseBody
     public String sendPaasooSms(@PathVariable String text, @PathVariable String to) {
         //接口地址
@@ -92,8 +92,8 @@ public class BillCommonController {
      * @description 生成图片验证码
      */
     @ApiOperation(value = "生成图片验证码")
-    // @RequestMapping(value = "/star/verification", method = {RequestMethod.POST})
-    @GetMapping("/star/verification/{macCode}")
+    // @RequestMapping(value = "star/verification", method = {RequestMethod.POST})
+    @GetMapping("star/verification/{macCode}")
     @ResponseBody
     public void verification(HttpServletRequest request, HttpServletResponse response, @PathVariable String macCode)
             throws IOException {
@@ -151,8 +151,8 @@ public class BillCommonController {
 //    private RestTemplate restTemplate;
 //
 //    @ApiOperation(value = "testHttps")
-//    // @RequestMapping(value = "/star/verification", method = {RequestMethod.POST})
-//    @GetMapping("/star/testHttps")
+//    // @RequestMapping(value = "star/verification", method = {RequestMethod.POST})
+//    @GetMapping("star/testHttps")
 //    @ResponseBody
 //    public void testHttps() {
 //        String url = "https://www.baidu.com/"; // 百度返回乱码
@@ -168,8 +168,8 @@ public class BillCommonController {
 //    }
 
     @ApiOperation(value = "testHttp")
-    // @RequestMapping(value = "/star/verification", method = {RequestMethod.POST})
-    @GetMapping("/star/testHttp")
+    // @RequestMapping(value = "star/verification", method = {RequestMethod.POST})
+    @GetMapping("star/testHttp")
     @ResponseBody
     public static String testHttp() {
         String url = "http://13.250.110.81:9095/Sandbox/FirmBanking";

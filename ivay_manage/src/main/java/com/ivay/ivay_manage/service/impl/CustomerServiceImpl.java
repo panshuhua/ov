@@ -1,13 +1,12 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.ivay.ivay_common.dto.DictType;
+import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_manage.service.CustomerService;
 import com.ivay.ivay_repository.dao.master.CustomerDao;
 import com.ivay.ivay_repository.dto.XRecordLoan2;
 import com.ivay.ivay_repository.dto.XRecordRepayment2;
-import com.ivay.ivay_repository.model.XFileInfo;
-import com.ivay.ivay_repository.model.XUserBankcoadInfo;
-import com.ivay.ivay_repository.model.XUserExtInfo;
-import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,66 +35,34 @@ public class CustomerServiceImpl implements CustomerService {
     public List<XUserInfo> listBasicInfo(Map<String, Object> params, Integer offset,
                                          Integer limit) {
         List<XUserInfo> list = customerDao.listBasicInfo(params, offset, limit);
+        String lang = (String) params.get("lang");
         for (XUserInfo xUserInfo : list) {
             //用户状态
             String userStatus = xUserInfo.getUserStatus();
-            if ("0".equals(userStatus)) {
-                userStatus = "初始状态";
-            } else if ("1".equals(userStatus)) {
-                userStatus = "注册成功";
-            } else if ("2".equals(userStatus)) {
-                userStatus = "审核中";
-            } else if ("3".equals(userStatus)) {
-                userStatus = "授信成功";
-            } else if ("4".equals(userStatus)) {
-                userStatus = "绑卡成功";
-            } else if ("5".equals(userStatus)) {
-                userStatus = "借款成功";
-            } else if ("6".equals(userStatus)) {
-                userStatus = "多次借款";
-            } else if ("7".equals(userStatus)) {
-                userStatus = "授信失败";
-            }
+            XConfig xConfig = customerDao.findConfigByType(DictType.USER_STATUS, lang);
+            Map map = JsonUtils.jsonToMap(xConfig.getContent());
+            userStatus = (String) map.get(userStatus);
             xUserInfo.setUserStatus(userStatus);
+
             //性别
             String sex = xUserInfo.getSex();
-            if ("0".equals(sex)) {
-                sex = "女";
-            } else if ("1".equals(sex)) {
-                sex = "男";
-            } else if ("2".equals(sex)) {
-                sex = "保密";
-            }
+            xConfig = customerDao.findConfigByType(DictType.SEX, lang);
+            map = JsonUtils.jsonToMap(xConfig.getContent());
+            sex = (String) map.get(sex);
             xUserInfo.setSex(sex);
+
             //学历
             String education = xUserInfo.getEducation();
-            if ("0".equals(education)) {
-                education = "未上学";
-            } else if ("1".equals(education)) {
-                education = "小学";
-            } else if ("2".equals(education)) {
-                education = "初中";
-            } else if ("3".equals(education)) {
-                education = "高中";
-            } else if ("4".equals(education)) {
-                education = "大专";
-            } else if ("5".equals(education)) {
-                education = "本科";
-            } else if ("6".equals(education)) {
-                education = "研究生及以上学历";
-            } else if ("7".equals(education)) {
-                education = "其他";
-            }
+            xConfig = customerDao.findConfigByType(DictType.EDUCATION, lang);
+            map = JsonUtils.jsonToMap(xConfig.getContent());
+            education = (String) map.get(education);
             xUserInfo.setEducation(education);
+
             //婚姻状况
             String marital = xUserInfo.getMarital();
-            if ("0".equals(marital)) {
-                marital = "未婚";
-            } else if ("1".equals(marital)) {
-                marital = "已婚";
-            } else if ("2".equals(marital)) {
-                marital = "保密";
-            }
+            xConfig = customerDao.findConfigByType(DictType.MARITAL, lang);
+            map = JsonUtils.jsonToMap(xConfig.getContent());
+            marital = (String) map.get(marital);
             xUserInfo.setMarital(marital);
         }
         return list;
@@ -112,29 +79,18 @@ public class CustomerServiceImpl implements CustomerService {
     public List<XUserExtInfo> listContactInfo(Map<String, Object> params,
                                               Integer offset, Integer limit) {
         List<XUserExtInfo> list = customerDao.listContactInfo(params, offset, limit);
+        String lang = (String) params.get("lang");
         for (XUserExtInfo xUserExtInfo : list) {
             String majorRelationship = xUserExtInfo.getMajorRelationship();
-            if ("0".equals(majorRelationship)) {
-                majorRelationship = "父母";
-            } else if ("1".equals(majorRelationship)) {
-                majorRelationship = "兄弟姐妹";
-            } else if ("2".equals(majorRelationship)) {
-                majorRelationship = "亲属";
-            } else if ("3".equals(majorRelationship)) {
-                majorRelationship = "朋友";
-            }
+            XConfig xConfig = customerDao.findConfigByType(DictType.RELATION, lang);
+            Map map = JsonUtils.jsonToMap(xConfig.getContent());
+            majorRelationship = (String) map.get(majorRelationship);
             xUserExtInfo.setMajorRelationship(majorRelationship);
 
             String bakRelationship = xUserExtInfo.getBakRelationship();
-            if ("0".equals(bakRelationship)) {
-                bakRelationship = "父母";
-            } else if ("1".equals(bakRelationship)) {
-                bakRelationship = "兄弟姐妹";
-            } else if ("2".equals(bakRelationship)) {
-                bakRelationship = "亲属";
-            } else if ("3".equals(bakRelationship)) {
-                bakRelationship = "朋友";
-            }
+            xConfig = customerDao.findConfigByType(DictType.RELATION, lang);
+            map = JsonUtils.jsonToMap(xConfig.getContent());
+            bakRelationship = (String) map.get(bakRelationship);
             xUserExtInfo.setBakRelationship(bakRelationship);
 
             //各种照片的路径
@@ -172,16 +128,12 @@ public class CustomerServiceImpl implements CustomerService {
     public List<XRecordLoan2> listLoan(Map<String, Object> params,
                                        Integer offset, Integer limit) {
         List<XRecordLoan2> list = customerDao.listLoan(params, offset, limit);
+        String lang = (String) params.get("lang");
         for (XRecordLoan2 xRecordLoan : list) {
             String loanStatus = xRecordLoan.getLoanStatus();
-
-            if ("0".equals(loanStatus)) {
-                loanStatus = "打款失败";
-            } else if ("1".equals(loanStatus)) {
-                loanStatus = "打款成功";
-            } else if ("2".equals(loanStatus)) {
-                loanStatus = "等待打款";
-            }
+            XConfig xConfig = customerDao.findConfigByType(DictType.LOAN_STATUS, lang);
+            Map map = JsonUtils.jsonToMap(xConfig.getContent());
+            loanStatus = (String) map.get(loanStatus);
             xRecordLoan.setLoanStatus(loanStatus);
         }
         return list;
@@ -198,18 +150,12 @@ public class CustomerServiceImpl implements CustomerService {
     public List<XRecordRepayment2> listRepay(Map<String, Object> params,
                                              Integer offset, Integer limit) {
         List<XRecordRepayment2> list = customerDao.listRepay(params, offset, limit);
+        String lang = (String) params.get("lang");
         for (XRecordRepayment2 xRecordRepayment : list) {
             String repaymentStatus = xRecordRepayment.getRepaymentStatus();
-
-            if ("0".equals(repaymentStatus)) {
-                repaymentStatus = "待还款";
-            } else if ("1".equals(repaymentStatus)) {
-                repaymentStatus = "还款中";
-            } else if ("2".equals(repaymentStatus)) {
-                repaymentStatus = "还款成功";
-            } else if ("3".equals(repaymentStatus)) {
-                repaymentStatus = "还款失败";
-            }
+            XConfig xConfig = customerDao.findConfigByType(DictType.REPAYMENT_STATUS, lang);
+            Map map = JsonUtils.jsonToMap(xConfig.getContent());
+            repaymentStatus = (String) map.get(repaymentStatus);
             xRecordRepayment.setRepaymentStatus(repaymentStatus);
         }
 

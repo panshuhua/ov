@@ -7,15 +7,15 @@ import com.ivay.ivay_repository.model.XCollectionTransaction;
 import java.text.ParseException;
 
 public interface XCollectionTransactionService {
-	
-   String getRequestId(String PartnerCode, String date);
-   
-   boolean checkRequestId(String requestId);
-   
-   int insert(XCollectionTransaction xCollectionTransaction);
-   
-   long getCollectAmount(String accNo);
-   
-   CollectionTransactionRsp noticeCollection(CollectionTransactionNotice notice)throws ParseException;
-   
+
+    String getRequestId(String PartnerCode, String date);
+
+    boolean checkRequestId(String requestId);
+
+    int insert(XCollectionTransaction xCollectionTransaction);
+
+    long getCollectAmount(String accNo);
+
+    CollectionTransactionRsp noticeCollection(CollectionTransactionNotice notice) throws ParseException;
+
 }

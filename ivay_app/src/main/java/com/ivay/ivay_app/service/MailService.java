@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MailService {
 
-	void save(Mail mail, List<String> toUser);
+    void save(Mail mail, List<String> toUser);
 }

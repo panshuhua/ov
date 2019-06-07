@@ -20,8 +20,8 @@ public interface XUserInfoDao {
     String getPassword(@Param("mobile") String mobile);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code,longitude,latitude,update_time)" +
-            " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode},#{longitude},#{latitude},#{updateTime})")
+    @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code,longitude,latitude,update_time,fmc_token)" +
+            " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode},#{longitude},#{latitude},#{updateTime},#{fmcToken})")
     int addUser(XUserInfo xUserInfo);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
@@ -134,6 +134,17 @@ public interface XUserInfoDao {
      */
     Integer getUserCountsBygps(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude);
 
-    @Select("update x_user_info set longitude=#{longitude},latitude=#{latitude},app_num=#{appNum},update_time=#{updateTime} where user_gid=#{userGid}")
     Integer updateGpsAppNum(XUserInfo xUserInfo);
+
+    /**
+     * 查出待审核用户
+     *
+     * @param num 天数
+     * @return
+     */
+    List<XUserInfo> toBeAuditedList(@Param("num") Integer num);
+
+    @Update("update x_user_info set fmc_token=#{fmcToken} where user_gid=#{userGid}")
+    int updateTmcToken(@Param("fmcToken") String fmcToken, @Param("userGid") String userGid);
+
 }

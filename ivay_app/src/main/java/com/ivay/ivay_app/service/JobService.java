@@ -6,9 +6,9 @@ import org.quartz.SchedulerException;
 
 public interface JobService {
 
-	void saveJob(JobModel jobModel);
+    void saveJob(JobModel jobModel);
 
-	void doJob(JobDataMap jobDataMap);
+    void doJob(JobDataMap jobDataMap);
 
-	void deleteJob(Long id) throws SchedulerException;
+    void deleteJob(Long id) throws SchedulerException;
 }

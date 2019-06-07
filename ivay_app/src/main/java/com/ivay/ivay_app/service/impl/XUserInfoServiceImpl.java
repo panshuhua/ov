@@ -2,14 +2,17 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.advice.BusinessException;
 import com.ivay.ivay_app.config.I18nService;
+import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.MsgAuthCode;
+import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.model.CreditLine;
-import com.ivay.ivay_repository.model.VerifyCodeInfo;
-import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +22,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -51,6 +57,12 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
         }
+        //去除姓名前后的空格
+        if (!StringUtils.isEmpty(xUserInfo.getName())) {
+            String name = StringUtil.vietnameseToUpperEnglish(xUserInfo.getName());
+            xUserInfo.setName(name);
+        }
+        xUserInfo.setIdentityCard(StringUtil.replaceBlank(xUserInfo.getIdentityCard()));
         if (!xUserInfo.getIdentityCard().equals(old.getIdentityCard())) {
             List<XUserInfo> list = xUserInfoDao.getByIdentityCard(xUserInfo.getIdentityCard());
             if (list.size() > 1 || (list.size() == 1 && !list.get(0).getUserGid().equals(xUserInfo.getUserGid()))) {
@@ -134,6 +146,58 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     public void setTransPwd(String userGid, String transPwd) {
         transPwd = bCryptPasswordEncoder.encode(transPwd);
         xUserInfoDao.setTransPwd(userGid, transPwd);
+    }
+
+    @Override
+    public PageTableResponse auditList(int limit, int num, XAuditCondition xAuditCondition) {
+        PageTableRequest request = new PageTableRequest();
+        request.setOffset(limit * (num - 1));
+        request.setLimit(limit);
+        Map<String, Object> params = new HashMap<>();
+        params.put("orderBy", "create_time");
+        params.put("userGid", xAuditCondition.getUserGid());
+        params.put("name", xAuditCondition.getName());
+        params.put("phone", xAuditCondition.getPhone());
+        params.put("fromTime", xAuditCondition.getFromTime());
+        params.put("toTime", xAuditCondition.getToTime());
+        params.put("auditStatus", xAuditCondition.getAuditStatus());
+        request.setParams(params);
+        return new PageTableHandler((a) -> xUserInfoDao.auditCount(a.getParams()),
+                (a) -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
+
+    @Override
+    public XAuditDetail auditDetail(String userGid) {
+        return xUserInfoDao.auditDetail(userGid);
+    }
+
+    @Resource
+    private XLoanRateService xLoanRateService;
+
+    @Override
+    public int auditUpdate(String userGid, int flag) {
+        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        if (xUserInfo == null) {
+            throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
+                    i18nService.getMessage("response.error.user.checkgid.msg"));
+        }
+        switch (flag) {
+            case 0:
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
+                break;
+            case 1:
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
+                break;
+            case 2:
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_RETRY);
+                break;
+        }
+        xUserInfo.setUpdateTime(new Date());
+        if (SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
+            xLoanRateService.initLoanRateAndCreditLimit(userGid);
+        }
+        return xUserInfoDao.update(xUserInfo);
     }
 
     @Override

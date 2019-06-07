@@ -88,8 +88,7 @@ public class RegisterServiceImpl implements RegisterService {
         xUserInfo.setUpdateTime(new Date());
         xUserInfo.setPhone(loginInfo.getMobile());
         xUserInfo.setMacCode(loginInfo.getMacCode());
-//        xUserInfo.setLongitude(loginInfo.getLongitude());
-//        xUserInfo.setLatitude(loginInfo.getLatitude());
+        xUserInfo.setFmcToken(loginInfo.getFmcToken());
         
         String password = loginInfo.getPassword();
         if (!StringUtils.isEmpty(password)) {
@@ -118,20 +117,25 @@ public class RegisterServiceImpl implements RegisterService {
     public XUser login(XUser xUser) {
         String mobile = xUser.getPhone();
         String password = xUser.getPassword();
-        if (!StringUtils.isEmpty(password)) {
-            String dbPwd = xUserInfoDao.getPassword(mobile);
+        String fmcToken = xUser.getFmcToken();
+        if(!StringUtils.isEmpty(password)){
+        	String dbPwd = xUserInfoDao.getPassword(mobile);
 
             //前端与数据库密码校验
             boolean flag = bCryptPasswordEncoder.matches(password, dbPwd);
 
             if (flag) {
                 xUser = xUserInfoDao.getLoginUser(mobile, dbPwd);
+                //更新fmcToken
+                xUserInfoDao.updateTmcToken(fmcToken, xUser.getUserGid());
                 return xUser;
             } else {
                 return null;
             }
 
         } else {
+        	//更新fmcToken
+            xUserInfoDao.updateTmcToken(xUser.getFmcToken(), xUser.getUserGid());
             return xUser;
         }
 

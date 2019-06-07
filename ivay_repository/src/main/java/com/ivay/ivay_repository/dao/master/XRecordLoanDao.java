@@ -37,7 +37,7 @@ public interface XRecordLoanDao {
             " where t.user_gid = #{userGid} AND t.loan_status='1' AND (t.repayment_status ='0' OR t.repayment_status='1')")
     long getSumLoanAmount(String userGid);
 
-    @Select("SELECT min(x.last_repayment_time) FROM x_record_loan x WHERE x.user_gid=#{userGid} AND x.repayment_status='2';")
+    @Select("SELECT min(x.last_repayment_time) FROM x_record_loan x WHERE x.user_gid=#{userGid} AND x.repayment_status='2'")
     Date getFirstRepaymentTime(String userGid);
 
     @Select("select * from x_record_loan where order_id=#{orderId}")

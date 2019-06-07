@@ -13,6 +13,8 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface Password {
     String message() default "validated.password.error";
+    
+    String type() default "0";
 
     int size() default 6;
 

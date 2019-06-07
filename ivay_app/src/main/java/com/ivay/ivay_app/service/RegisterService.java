@@ -63,12 +63,13 @@ public interface RegisterService {
      * @return
      */
     int updatePassword(String userGid, String mobile, String password);
-    
+
     /**
      * 调用第三方接口发送手机验证码
+     *
      * @param mobile
      * @return
      */
     VerifyCodeInfo sendPhoneMsg(String mobile);
-    
+
 }

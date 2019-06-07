@@ -1,6 +1,6 @@
 # 服务相关
 server:
-  port: 9090
+  port: 8080
   name: ivay-app
 
 # 数据库配置
@@ -11,9 +11,9 @@ dataSource:
 spring:
   profiles:
     # 多模块使用include取代active
-    include: dev, comDev, dbDev
-#    include: test, comTest, dbTest
-#    include: prod, comProd, dbProd
+    #    include: dev, comDev, dbDev
+    include: test, comTest, dbTest
+  #    include: prod, comProd, dbProd
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss

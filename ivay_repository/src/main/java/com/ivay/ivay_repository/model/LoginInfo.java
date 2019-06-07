@@ -1,6 +1,7 @@
 package com.ivay.ivay_repository.model;
 
 import com.ivay.ivay_common.annotation.Encryption;
+import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +18,7 @@ public class LoginInfo {
     @ApiModelProperty("用户手机号")
     private String mobile;
 
+    @Password(groups = Update.class, type = "1", message = "validated.loginpassword.error")
     @ApiModelProperty("用户登录密码")
     private String password;
 
@@ -46,5 +48,8 @@ public class LoginInfo {
 
     @ApiModelProperty("纬度")
     private BigDecimal latitude;
+
+    @ApiModelProperty("app消息推送token")
+    private String fmcToken;
 
 }

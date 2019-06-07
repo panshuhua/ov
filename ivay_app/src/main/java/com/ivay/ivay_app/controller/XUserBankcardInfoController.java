@@ -1,17 +1,18 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.Response;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_repository.model.XUserBankcardInfo;
-import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.utils.MinDistance;
+import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
+import com.ivay.ivay_repository.model.XUserBankcardInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,9 +52,19 @@ public class XUserBankcardInfoController {
     public Response<String> save(@RequestBody XUserBankcardInfo xUserBankcardInfo,
                                  @RequestParam String bankNo) {
         Response<String> response = new Response<>();
+        if (StringUtils.isEmpty(xUserBankcardInfo.getCardUserName())) {
+            logger.info("输入姓名为空");
+            response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
+                    i18nService.getMessage("response.error.bank.account.msg"));
+            return response;
+        } else {
+            // 将越南名字转化为大写字母
+            xUserBankcardInfo.setCardUserName(StringUtil.vietnameseToUpperEnglish(xUserBankcardInfo.getCardUserName()));
+        }
         // 卡号是否重复
         List<XUserBankcardInfo> list = xUserBankcardInfoDao.getByCardNo(xUserBankcardInfo.getCardNo());
         if (list != null && list.size() > 0) {
+            logger.info("卡号重复");
             response.setStatus(i18nService.getMessage("response.error.bank.repeat.code"),
                     i18nService.getMessage("response.error.bank.repeat.msg"));
             return response;
@@ -62,20 +73,23 @@ public class XUserBankcardInfoController {
 
         // 姓名和银行卡账号是否一致
         if (xUserInfo == null) {
+            logger.info("用户不存在");
             response.setStatus(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
             return response;
-        } else if (StringUtils.isEmpty(xUserInfo.getName()) || MinDistance.minDistance(xUserInfo.getName().trim(), xUserBankcardInfo.getCardUserName().trim()) > 1) {
+        } else if (StringUtils.isEmpty(xUserInfo.getName()) || MinDistance.minDistance(xUserInfo.getName(), xUserBankcardInfo.getCardUserName()) > 1) {
+            logger.info("绑定银行卡姓名与系统姓名不一致");
             response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
                     i18nService.getMessage("response.error.bank.account.msg"));
             return response;
         }
 
-        // todo 需要判断传入的accType 是否是银行支持的类型
+        // 需要判断传入的accType 是否是银行支持的类型
         // 校验身份信息
         TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo, xUserBankcardInfo.getCardNo(), xUserBankcardInfo.getAccType());
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
-            if (MinDistance.minDistance(xUserInfo.getName().trim(), transfersRsp.getAccName().trim()) > 1) {
+            if (MinDistance.minDistance(xUserBankcardInfo.getCardUserName(), transfersRsp.getAccName()) > 1) {
+                logger.info("绑定银行卡姓名校验失败");
                 response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
                         i18nService.getMessage("response.error.bank.account.msg"));
                 return response;

@@ -24,7 +24,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     @Override
     public boolean saveAll(RiskInfo riskInfo) {
-        List<XUserContacts> contacts = riskInfo.getContacts();
+        Set<XUserContacts> contacts = riskInfo.getContacts();
         String gid = riskInfo.getUserGid();
         XUserInfo xUserInfo = new XUserInfo();
         xUserInfo.setUserGid(gid);
@@ -34,21 +34,28 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         xUserInfo.setUpdateTime(new Date());
 
         String updateDate = DateUtils.getNowDateYYYY_MM_DD();
-        List<XUserContacts> xUserContacts = new ArrayList<>();
-        if (contacts != null) {
-            contacts.forEach(u -> {
-                try {
-                    XUserContacts xUserContact = new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());
-                    xUserContacts.add(xUserContact);
-                    if (xUserContacts.size() >= 200) {
-                        xUserContactsDao.insertBatchContacts(xUserContacts);
-                        xUserContacts.clear();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Set<XUserContacts> xUserContacts = new HashSet();
+        //查询当天该用户有没有上传通讯录，如果上传了就不再重复上传了 
+        int contactsCount = xUserContactsDao.findContactsByUserGid(gid, updateDate);
+        if (contactsCount <= 0) {
+            if (contacts != null) {
+                if (contacts.size() > 0) {
+                    contacts.forEach(u -> {
+                        try {
+                            XUserContacts xUserContact = new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());
+                            xUserContacts.add(xUserContact);
+                            if (xUserContacts.size() >= 200) {
+                                xUserContactsDao.insertBatchContacts(xUserContacts);
+                                xUserContacts.clear();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    });
+                    xUserContactsDao.insertBatchContacts(xUserContacts);
                 }
-                xUserContactsDao.insertBatchContacts(xUserContacts);
-            });
+            }
         }
 
         xUserInfoDao.updateGpsAppNum(xUserInfo);
@@ -65,16 +72,9 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         params.put("orderBy", "contact_name");
         params.put("userGid", gid);
         request.setParams(params);
-        return new PageTableHandler(new PageTableHandler.CountHandler() {
-            @Override
-            public int count(PageTableRequest request) {
-                return xUserContactsDao.count(request.getParams());
-            }
-        }, new PageTableHandler.ListHandler() {
-            @Override
-            public List list(PageTableRequest request) {
-                return xUserContactsDao.list(request.getParams(), request.getOffset(), request.getLimit());
-            }
-        }).handle(request);
+        return new PageTableHandler(
+                a -> xUserContactsDao.count(a.getParams()),
+                a -> xUserContactsDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 }

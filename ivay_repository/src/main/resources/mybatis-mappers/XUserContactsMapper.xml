@@ -56,9 +56,9 @@
 		where t.id = #{id}
 	</update>
 	<!-- myself:批量插入 -->
-	<insert id="insertBatchContacts" parameterType="java.util.List">
+	<insert id="insertBatchContacts" parameterType="java.util.Set">
 		insert into x_user_contacts  (user_gid, update_date, contact_name, phone_number) values
-		<foreach collection="list" item="item" index="index" separator=",">
+		<foreach collection="collection" item="item" index="index" separator=",">
 			(#{item.userGid,jdbcType=VARCHAR},
 			#{item.updateDate,jdbcType=VARCHAR},
 			#{item.contactName,jdbcType=VARCHAR},

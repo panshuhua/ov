@@ -4,9 +4,9 @@ import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.advice.BusinessException;
+import com.ivay.ivay_manage.service.XConfigService;
 import com.ivay.ivay_repository.dao.master.XConfigDao;
 import com.ivay.ivay_repository.model.XConfig;
-import com.ivay.ivay_manage.service.XConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

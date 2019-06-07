@@ -17,4 +17,11 @@
       select * from risk_user where phone = #{phone}
     </select>
 
+    <select id="selectPhoneByBatch" resultType="java.lang.String">
+      select GROUP_CONCAT(phone) from risk_user where phone in
+      <foreach collection="phones" item="phone" separator="," open="(" close=")">
+        #{phone}
+      </foreach>
+    </select>
+
 </mapper>

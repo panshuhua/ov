@@ -1,9 +1,9 @@
 package com.ivay.ivay_manage.service.impl;
 
 
+import com.ivay.ivay_manage.service.RiskUserService;
 import com.ivay.ivay_repository.dao.risk.RiskUserDao;
 import com.ivay.ivay_repository.model.RiskUser;
-import com.ivay.ivay_manage.service.RiskUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +41,8 @@ public class RiskUserServiceImpl implements RiskUserService {
 //        //int i = 10 / 0;
 //    }
 
-	@Override
-	public List<RiskUser> selectUserListByPhone(String phone) {
-		return riskUserDao.selectUserListByPhone(phone);
-	}
+    @Override
+    public List<RiskUser> selectUserListByPhone(String phone) {
+        return riskUserDao.selectUserListByPhone(phone);
+    }
 }

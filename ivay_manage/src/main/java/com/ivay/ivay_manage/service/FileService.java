@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public interface FileService {
 
-	FileInfo save(MultipartFile file) throws IOException;
+    FileInfo save(MultipartFile file) throws IOException;
 
-	void delete(String id);
+    void delete(String id);
 
 }

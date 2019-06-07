@@ -18,27 +18,27 @@
                             <td>
                                 <form class="form-inline" onsubmit="return false">
                                     <div class="form-group">
-                                        用户ID：
+                                        Id người dùng：
                                         <input id="userGid" type="text" class="form-control" placeholder="userGid">
-                                        姓名：
+                                        Tên người dùng：
                                         <input id="name" type="text" class="form-control" placeholder="name">
-                                        手机号：
+                                        Số điện thoại：
                                         <input id="phone" type="text" class="form-control" placeholder="phone">
-                                        申请时间：
+                                    </div>
+                                    <div class="form-group" style="margin:2px">
+                                        Thời gian xin：
                                         <input id="fromTime" type="text" class="form-control" placeholder="fromTime"
                                                readonly="readonly">
                                         - <input id="toTime" type="text" class="form-control" placeholder="toTime"
                                                  readonly="readonly">
-                                    </div>
-                                    <div class="form-group" style="margin:2px">
-                                        审核状态：
+                                        Tình trạng xét duyệt：
                                         <select id="auditStatus" class="form-control">
-                                            <option value="2">待审核</option>
-                                            <option value="3">审核通过</option>
-                                            <option value="7">审核不通过</option>
+                                            <option value="2">Đang chờ xét duyệt</option>
+                                            <option value="3">Xét duyệt thông qua</option>
+                                            <option value="7">Xét duyệt không thông qua</option>
                                         </select>
                                         <button id="searchBt" class="layui-btn layui-btn-sm">
-                                            <i class="layui-icon">&#xe615;</i>搜索
+                                            <i class="layui-icon">&#xe615;</i>Tìm kiếm
                                         </button>
                                     </div>
                                 </form>
@@ -55,11 +55,11 @@
                         <thead>
                         <tr>
                             <th>行号</th>
-                            <th>用户id</th>
-                            <th>姓名</th>
-                            <th>手机号</th>
-                            <th>申请时间</th>
-                            <th>操作</th>
+                            <th>Id người dùng</th>
+                            <th>Tên người dùng</th>
+                            <th>Tên người dùng</th>
+                            <th>Thời gian xin</th>
+                            <th>Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -72,20 +72,20 @@
                     <table id="dt-table2" class="table table-striped table-bordered table-hover" style="width: 100%">
                         <thead>
                         <tr>
-                            <th>手机号</th>
-                            <th>身份证号</th>
-                            <th>姓名</th>
-                            <th>出生日期</th>
-                            <th>性别</th>
+                            <th>Tên người dùng</th>
+                            <th>Số CMND</th>
+                            <th>Tên người dùng</th>
+                            <th>Ngày tháng năm sinh</th>
+                            <th>Giới tính</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <th id="detail_phone">手机号</th>
-                            <th id="detail_identityCard">身份证号</th>
-                            <th id="detail_name">姓名</th>
-                            <th id="detail_birthday">出生日期</th>
-                            <th id="detail_sex">性别</th>
+                            <th id="detail_phone">Tên người dùng</th>
+                            <th id="detail_identityCard">Số CMND</th>
+                            <th id="detail_name">Tên người dùng</th>
+                            <th id="detail_birthday">Ngày tháng năm sinh</th>
+                            <th id="detail_sex">Giới tính</th>
                         </tr>
                         </tbody>
                     </table>
@@ -97,44 +97,48 @@
                     </div>
                     <form class="form-inline" onsubmit="return false" style="margin: 2px">
                         <div class="form-group">
-                            姓名： <input id="detail_name2" type="text" class=" form-control" placeholder="name">
-                            身份证： <input id="detail_identityCard2" type="text" class=" form-control"
-                                        placeholder="identityCard">
-                            生日： <input id="detail_birthday2" type="text" class=" form-control" placeholder="birthday"
-                                       readonly="readonly">
-                            性别
-                            <input type="radio" name="sex" value="0"/>男
-                            <input type="radio" name="sex" value="1"/>女
+                            Tên người dùng：<input id="detail_name2" type="text" class=" form-control"
+                                                  placeholder="name">
+                            Số CMND：<input id="detail_identityCard2" type="text" class=" form-control"
+                                           placeholder="identityCard">
+                            Ngày tháng năm sinh：<input id="detail_birthday2" type="text" class=" form-control"
+                                                       placeholder="birthday">
+                            Giới tính：<input type="radio" name="sex" value="Male"/>Male
+                            <input type="radio" name="sex" value="Female"/>Female
                         </div>
                     </form>
                     <div class="form-group" style="margin:2px">
                         <button onclick="auditSubmit(1)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>审核通过
+                            <i class="layui-icon">&#xe615;</i>Duyệt
                         </button>
                         <button onclick="auditSubmit(0)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>审核驳回
+                            <i class="layui-icon">&#xe615;</i>Từ chối
                         </button>
-                        <!--<button onclick="auditSubmit(2)" class="layui-btn layui-btn-sm">-->
-                        <!--<i class="layui-icon">&#xe615;</i>重新提交-->
-                        <!--</button>-->
-                        <label>驳回理由：</label>
+                        <label>Lý do từ chố：</label>
                         <select id="refuseReason">
-                            <option value="">请选择</option>
-                            <option value="1001">1001:身份证正面或反面照片模糊或拍摄角度差</option>
-                            <option value="1002">1002:未拍摄到身份证照片</option>
-                            <option value="1003">1003:未拍摄身份证原件(如复印件、电子版)</option>
-                            <option value="1004">1004:手持身份证照片或活体照片模糊</option>
-                            <option value="1005">1005:没有上传活体照片/手持照片</option>
-                            <option value="1006">1006:活体照片/手持照片拍摄不标准</option>
-                            <option value="2001">2001:身份证过期</option>
-                            <option value="2002">2002:填写身份证号/姓名/生日与证件上的号码不一致</option>
-                            <option value="2003">2003:身份证疑似造假(PS,后贴照片等)</option>
-                            <option value="2004">2004:疑似重复申请（活体照片或手持照片或身份证照片与其他申请用户为同一人）</option>
-                            <option value="3001">3001:活体照片或手持照片与身份证头像不一致</option>
-                            <option value="3002">3002:活体照片与手持照片不一致</option>
-                            <option value="3003">3003:手持照片里的本人与手持证件头像不一致</option>
-                            <option value="3004">3004:手持证件与拍摄证件不一致</option>
-                            <option value="3005">3005:个人信息姓名与身份证姓名不一致</option>
+                            <option value="">Chọn lý do</option>
+                            <option value="1001">1001:Mặt trước và mặt sau của CMND không rõ, hay chụp ở góc độ kém
+                            </option>
+                            <option value="1002">1002:Chưa chụp được ảnh CMND</option>
+                            <option value="1003">1003:Chưa chụp được bản góc CMND(e.g. bản sao、bản điện tử)</option>
+                            <option value="1004">1004:Ảnh chính diện cùng CMND không rõ</option>
+                            <option value="1005">1005:Chưa đăng lên ảnh chính diện cùng CMND</option>
+                            <option value="1006">1006:Ảnh chính diện/ chính diện cùng CMND chưa đạt tiêu chuẩn</option>
+                            <option value="2001">2001:Giấy CMND quá hạn</option>
+                            <option value="2002">2002:Số CMND/ tên họ/ ngày sinh ghi mà không thống nhất với giấy CMND
+                            </option>
+                            <option value="2003">2003:Giấy CMND giả(Photoshop、dán ảnh phía sau)</option>
+                            <option value="2004">2004:Bị trùng lặp(ảnh hoạt hình hoặc ảnh cầm tay hoặc ảnh giấy CMND
+                                trùng với ảnh người xin khác)
+                            </option>
+                            <option value="3001">3001:Ảnh chính diện không thống nhất với ảnh trên CMND</option>
+                            <option value="3002">3002:Ảnh hoạt hình không thống nhất với ảnh chính diện</option>
+                            <option value="3003">3003:Người trong ảnh chính diện cùng CMND không thống nhất với ảnh đại
+                                diện giấy chứng kiến cầm tay
+                            </option>
+                            <option value="3004">3004:Ảnh chính diện không thống nhất với ảnh CMND</option>
+                            <option value="3005">3005:Tên họ thông tin cá nhân không thông nhất với tên họ giấy CMND
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -155,6 +159,55 @@
     var pers = checkPermission();
     var domain = window.location.protocol + "//" + window.location.host;
     var handle_id = "";
+    // 初始化国际化语言
+    // var i18n = {
+    //     "zh": {
+    //         "userGid": "用户id",
+    //         "name": "名字",
+    //         "phone": "电话",
+    //         "applyTime": "申请时间",
+    //         "auditStatus": "审核状态",
+    //         "search": "搜索",
+    //         "operation": "操作",
+    //         "identityCard": "身份证",
+    //         "birthday": "生日",
+    //         "sex": "性别",
+    //         "confirm": "确认",
+    //         "refuse": "拒绝",
+    //         "refuseDemo": "驳回理由"
+    //     },
+    //     "en": {
+    //         "userGid": "用户iden",
+    //         "name": "姓名en",
+    //         "phone": "电话en",
+    //         "applyTime": "申请时间en",
+    //         "auditStatus": "审核状态en",
+    //         "search": "搜索en",
+    //         "operation": "操作en",
+    //         "identityCard": "身份证en",
+    //         "birthday": "生日en",
+    //         "sex": "性别en",
+    //         "confirm": "确认en",
+    //         "refuse": "拒绝en",
+    //         "refuseDemo": "驳回理由en"
+    //     },
+    //     "vi": {
+    //         "userGid": "用户idvi",
+    //         "name": "姓名vi",
+    //         "phone": "电话vi",
+    //         "applyTime": "申请时间vi",
+    //         "auditStatus": "审核状态vi",
+    //         "search": "搜索vi",
+    //         "operation": "操作vi",
+    //         "identityCard": "身份证vi",
+    //         "birthday": "生日vi",
+    //         "sex": "性别vi",
+    //         "confirm": "确认vi",
+    //         "refuse": "拒绝vi",
+    //         "refuseDemo": "驳回理由vi"
+    //     }
+    // };
+    // window.lang = (navigator.language || navigator.userLanguage).substr(0, 2);
 
     // 初始化审核列表
     var example;
@@ -164,9 +217,9 @@
             "searching": false,
             "processing": false,
             "serverSide": true,
-            "language": {
-                "url": "/js/plugin/datatables/Chinese.lang"
-            },
+            // "language": {
+            //     "url": "/js/plugin/datatables/Chinese.lang"
+            // },
             "ajax": {
                 "url": "/audit/list",
                 "type": "post",
@@ -188,14 +241,14 @@
                         layer.msg(message);
                     } else if (code == 401) {
                         localStorage.removeItem("token");
-                        layer.msg("token过期，请先登录", {shift: -1, time: 1000}, function () {
+                        layer.msg("token expire, please login first", {shift: -1, time: 1000}, function () {
                             location.href = '/login.html';
                         });
                     } else if (code == 403) {
-                        console.log("未授权:" + message);
-                        layer.msg('未授权');
+                        console.log("not authorized:" + message);
+                        layer.msg('not authorized');
                     } else if (code == 500) {
-                        layer.msg('系统错误：' + message);
+                        layer.msg('system error：' + message);
                     }
                 }
             },
@@ -212,7 +265,7 @@
                     "orderable": false,
                     "render": function (data, type, row) {
                         var gid = row['userGid'];
-                        return "<button id='showDetail' class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
+                        return "<button id='showDetail' class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\"' + ")' >Chi tiết<i class='fa fa-edit'></i></button>&nbsp;";
                     }
                 }
             ],
@@ -236,7 +289,6 @@
         laydate.render({
             elem: '#detail_birthday2'
         });
-
     });
 
     // 搜索审核列表
@@ -260,11 +312,11 @@
 
     // 清空审核详情
     function initDetail() {
-        $("#detail_name").text("姓名");
-        $("#detail_identityCard").text("身份证");
-        $("#detail_birthday").text("生日");
-        $("#detail_phone").text("电话");
-        $("#detail_sex").text("性别");
+        $("#detail_name").text("Tên người dùng");
+        $("#detail_identityCard").text("Số CMND");
+        $("#detail_birthday").text("Ngày tháng năm sinh");
+        $("#detail_phone").text("Số điện thoại");
+        $("#detail_sex").text("Giới tính");
         $("#detail_name2").val("");
         $("#detail_identityCard2").val("");
         $("#detail_birthday2").val("");
@@ -288,14 +340,14 @@
                     $("#detail_identityCard").text(data.bo.identityCard);
                     $("#detail_birthday").text(data.bo.birthday);
                     $("#detail_phone").text(data.bo.phone);
-                    $("#detail_sex").text(data.bo.sex);
+                    $("#detail_sex").text(data.bo.sex == 0 ? 'Male' : 'Female');
                     $("#photo1").attr("src", domain + "/statics" + data.bo.photo1Url);
                     $("#photo2").attr("src", domain + "/statics" + data.bo.photo2Url);
                     $("#photo3").attr("src", domain + "/statics" + data.bo.photo3Url);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("审核详情查询报错了。")
+                alert("Audit system error")
             }
         });
     }
@@ -303,17 +355,29 @@
     // 审核
     function auditSubmit(flag) {
         if (flag == 1) {
-            if ($("#detail_name2").val() != $("#detail_name").text() ||
-                $("#detail_identityCard2").val() != $("#detail_identityCard").text() ||
-                $("input[name='sex']:checked").val() != $("#detail_sex").text() ||
+            if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != $("#detail_name").text().replace(/\s/g, '').toUpperCase()) {
+                console.log($("#detail_name2").val())
+                console.log($("#detail_name").text())
+                alert("Please check the user name")
+                return;
+            }
+            if ($("#detail_identityCard2").val().replace(/\s/g, '').toUpperCase() != $("#detail_identityCard").text().replace(/\s/g, '').toUpperCase()) {
+                alert("Please check the ID Card No")
+                return;
+            }
+            if ($("input[name='sex']:checked").val() != $("#detail_sex").text()) {
+                alert("Please check the Gender")
+                return;
+            }
+            if (
                 $("#detail_birthday2").val() == "" ||
                 $("#detail_birthday").text().indexOf($("#detail_birthday2").val()) == -1
             ) {
-                alert("请核实申请人信息")
+                alert("Please check the birthday")
                 return;
             }
         } else if ($("#refuseReason").val() == "") {
-            alert("请选择驳回理由");
+            alert("Please select refuse reason");
             return;
         }
 
@@ -330,7 +394,7 @@
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("审核报错了。")
+                alert("Audit system error.")
             }
         });
     }

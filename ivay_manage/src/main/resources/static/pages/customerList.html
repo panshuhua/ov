@@ -20,19 +20,22 @@
 								<td>
 									<form class="form-inline" onsubmit="return false">
 										<div class="form-group">
-											       手机号： <input id="mobile" type="text" class="form-control"
+										        <span class="phone"></span>:
+											    <input id="mobile" type="text" class="form-control"
 												placeholder="mobile">
-												姓名： <input id="name" type="text" class="form-control"
+												<span class="name"></span>:
+												<input id="name" type="text" class="form-control"
 												placeholder="name">
-												身份证号： <input id="identityCard" type="text" class="form-control"
+												<span class="identityCard"></span>： <input id="identityCard" type="text" class="form-control"
 												placeholder="identityCard">
-												出生日期： <input id="birthday" type="text" class="form-control"
+												<span class="birthday"></span>: <input id="birthday" type="text" class="form-control"
 												placeholder="birthday">
 												<!-- 借款合同号： <input id="orderGid" type="text" class="form-control"
 												placeholder="orderGid"> -->
 											<button id="searchBt" class="layui-btn layui-btn-sm">
-												<i class="layui-icon">&#xe615;</i>搜索
+												<i class="layui-icon">&#xe615;</i><span class="search"></span>
 											</button>
+										    
 										</div>
 									</form>
 								</td>
@@ -53,18 +56,18 @@
 								</tr>
 								<tr>
 									<th>用户gid</th>
-									<th>姓名</th>
-									<th>手机号</th>
-									<th>身份证号</th>
-									<th>用户状态</th>
-									<th>用户总额度</th>
-									<th>出生日期</th>
-									<th>性别</th>
-									<th>学历</th>
-									<th>婚姻状况</th>
-									<th>居住地</th>
-									<th>每月收入</th>
-									<th>操作</th>
+									<th><span class="name"></span></th>
+									<th><span class="phone"></span></th>
+									<th><span class="identityCard"></span></th>
+									<th><span class="userStatus"></span></th>
+									<th><span class="creditLine"></span></th>
+									<th><span class="birthday"></span></th>
+									<th><span class="sex"></span></th>
+									<th><span class="education"></span></th>
+									<th><span class="marital"></span></th>
+									<th><span class="place"></span></th>
+									<th><span class="income"></span></th>
+									<th><span class="operation"></span></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -78,18 +81,18 @@
 							class="table table-striped table-bordered table-hover"
 							style="width: 100%">
 							<thead>
-								<!-- <tr>
-									<th>主要联系人关系</th>
-									<th>主要联系人姓名</th>
-									<th>主要联系人电话</th>
-									<th>备用联系人关系</th>
-									<th>备用联系人姓名</th>
-									<th>备用联系人电话</th>
-									<th>正面照</th>
-									<th>反面照</th>
-									<th>手持照</th>
-									<th>操作</th>
-								</tr> -->
+								<tr>
+									<th><span class="majorRelationship"></span></th>
+									<th><span class="majorName"></span></th>
+									<th><span class="majorPhone"></span></th>
+									<th><span class="bakRelationship"></span></th>
+									<th><span class="bakName"></span></th>
+									<th><span class="bakPhone"></span></th>
+									<th><span class="photo1Url"></span></th>
+									<th><span class="photo2Url"></span></th>
+									<th><span class="photo3Url"></span></th>
+									<th><span class="operation"></span></th>
+								</tr>
 							</thead>
 							<tbody>
 							</tbody>
@@ -105,14 +108,14 @@
 								<tr>
 								</tr>
 								<tr>
-									<th>借款gid</th>
-									<th>订单号/合同号</th>
-									<th>借款时间</th>
-									<th>借款金额</th>
-									<th>借款状态</th>
-									<th>最后一次还款时间</th>
-									<th>借款天数</th>
-									<th>操作</th>
+									<th><span class="borrowgid"></span></th>
+									<th><span class="orderId"></span></th>
+									<th><span class="loanTime"></span></th>
+									<th><span class="loanAmount"></span></th>
+									<th><span class="loanStatus"></span></th>
+									<th><span class="lastRepaymentTime"></span></th>
+									<th><span class="loanPeriod"></span></th>
+									<th><span class="operation"></span></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -129,11 +132,11 @@
 								<tr>
 								</tr>
 								<tr>
-									<th>订单号/合同号</th>
-									<th>还款金额</th>
-									<th>还款时间</th>
-									<th>还款状态</th>
-									<th>操作</th>
+									<th><span class="orderId"></span></th>
+									<th><span class="repaymentAmount"></span></th>
+									<th><span class="endTime"></span></th>
+									<th><span class="repaymentStatus"></span></th>
+									<th><span class="operation"></span></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -150,11 +153,11 @@
 								<tr>
 								</tr>
 								<tr>
-									<th>银行编号</th>
-									<th>银行名</th>
-									<th>银行卡号</th>
-									<th>银行卡绑卡时间</th>
-									<th>操作</th>
+									<th><span class="bankNo"></span></th>
+									<th><span class="bankName"></span></th>
+									<th><span class="cardNo"></span></th>
+									<th><span class="tiedTime"></span></th>
+									<th><span class="operation"></span></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -177,7 +180,87 @@
 	src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/jquery.i18n.properties-1.0.9.js"></script>
 <script type="text/javascript">
+
+var lang="en";
+
+loadProperties(lang);
+
+function loadProperties(types) {
+	 $.i18n.properties({
+		 name:'messages',    //属性文件名     命名格式： 文件名_国家代号.properties
+		 path:'i18n/',   //注意这里路径是你属性文件的所在文件夹
+		 mode:'map',
+		 language:types,     //这就是国家代号 name+language刚好组成属性文件名：strings+zh -> strings_zh.properties
+		 callback:function(){
+			$('.phone').html($.i18n.prop('customer.phone'));
+			$('.name').html($.i18n.prop('customer.name'));
+			$('.identityCard').html($.i18n.prop('customer.identityCard'));
+			$('.birthday').html($.i18n.prop('customer.birthday'));
+			$('.search').html($.i18n.prop('customer.search'));
+			$('.language').html($.i18n.prop('customer.language'));
+			$('.userStatus').html($.i18n.prop('customer.userStatus'));
+			$('.creditLine').html($.i18n.prop('customer.creditLine'));
+			$('.sex').html($.i18n.prop('customer.sex'));
+			$('.education').html($.i18n.prop('customer.education'));
+			$('.marital').html($.i18n.prop('customer.marital'));
+			$('.place').html($.i18n.prop('customer.place'));
+			$('.income').html($.i18n.prop('customer.income'));
+			$('.operation').html($.i18n.prop('customer.operation'));
+			$('.majorName').html($.i18n.prop('customer.majorName'));
+			$('.majorPhone').html($.i18n.prop('customer.majorPhone'));
+			$('.bakRelationship').html($.i18n.prop('customer.bakRelationship'));
+			$('.bakName').html($.i18n.prop('customer.bakName'));
+			$('.bakPhone').html($.i18n.prop('customer.bakPhone'));
+			$('.photo1Url').html($.i18n.prop('customer.photo1Url'));
+			$('.photo2Url').html($.i18n.prop('customer.photo2Url'));
+			$('.photo3Url').html($.i18n.prop('customer.photo3Url'));
+			$('.borrowgid').html($.i18n.prop('customer.borrowgid'));
+			$('.orderId').html($.i18n.prop('customer.orderId'));
+			$('.loanTime').html($.i18n.prop('customer.loanTime'));
+			$('.loanAmount').html($.i18n.prop('customer.loanAmount'));
+			$('.loanStatus').html($.i18n.prop('customer.loanStatus'));
+			$('.lastRepaymentTime').html($.i18n.prop('customer.lastRepaymentTime'));
+			$('.loanPeriod').html($.i18n.prop('customer.loanPeriod'));
+			$('.repaymentAmount').html($.i18n.prop('customer.repaymentAmount'));
+			$('.endTime').html($.i18n.prop('customer.endTime'));
+			$('.repaymentStatus').html($.i18n.prop('customer.repaymentStatus'));
+			$('.bankNo').html($.i18n.prop('customer.bankNo'));
+			$('.bankName').html($.i18n.prop('customer.bankName'));
+			$('.cardNo').html($.i18n.prop('customer.cardNo'));
+			$('.tiedTime').html($.i18n.prop('customer.tiedTime'));
+			$('.contacts').html($.i18n.prop('customer.contacts'));
+			$('.borrowRecord').html($.i18n.prop('customer.borrowRecord'));
+			$('.repaymentRecord').html($.i18n.prop('customer.repaymentRecord'));
+			$('.bankcardInfo').html($.i18n.prop('customer.bankcardInfo'));
+		 }
+	 });
+	 
+}
+
+function loadProperties1(types) {
+	 $.i18n.properties({
+		 name:'messages',    //属性文件名     命名格式： 文件名_国家代号.properties
+		 path:'i18n/',   //注意这里路径是你属性文件的所在文件夹
+		 mode:'map',
+		 language:types,     //这就是国家代号 name+language刚好组成属性文件名：strings+zh -> strings_zh.properties
+		 callback:function(){
+			$('.contacts').html($.i18n.prop('customer.contacts'));
+			$('.borrowRecord').html($.i18n.prop('customer.borrowRecord'));
+			$('.repaymentRecord').html($.i18n.prop('customer.repaymentRecord'));
+			$('.bankcardInfo').html($.i18n.prop('customer.bankcardInfo'));
+		 }
+	 });
+}
+
+//切换语言
+$("#lang").on('change',function(){
+	sessionStorage.setItem("lang",$(this).val());
+	loadProperties($(this).val());
+	init();
+});
+
 var pers = checkPermission();
 var photoDomain = window.location.protocol + "//" + window.location.host + "/statics";
 
@@ -192,8 +275,12 @@ function init(){
         	"searching": false,
         	"processing": false,
         	"serverSide" : true,
+        	"retrieve":true,
         	"language": {
-                "url": "/js/plugin/datatables/Chinese.lang"
+                //"url": "/js/plugin/datatables/Chinese.lang"
+               /*  "sZeroRecords":"没有匹配结果",
+                "sInfoEmpty":"显示第_START_至_END_项结果，共_TOTAL_项",
+                "sEmptyTable":"表中数据为空" */
             },
         	"ajax": {
         		//"url" : "/dicts",
@@ -205,6 +292,7 @@ function init(){
         			d.identityCard = $("#identityCard").val();
         			d.birthday = $("#birthday").val();
         			d.orderGid = $("#orderGid").val();
+        			d.lang=lang;
     			},
     			"error":function(xhr, textStatus, errorThrown){
     				var msg = xhr.responseText;
@@ -247,10 +335,10 @@ function init(){
 					"orderable":false,
 			        "render": function (data, type, row) {
              		          var gid = row['userGid'];
-             		          var button1="<button id='editrow1' class='btn btn-success' type='button'  onclick='showContact("+'\"'+gid+'\"'+")' >联系人<i class='fa fa-edit'></i></button>&nbsp;";
-             		          var button2="<button id='editrow2' class='btn btn-success' type='button'  onclick='showLoan("+'\"'+gid+'\"'+")' >借款记录<i class='fa fa-edit'></i></button>&nbsp;";
-             		          var button3="<button id='editrow3' class='btn btn-success' type='button'  onclick='showRepay("+'\"'+gid+'\"'+")' >还款记录<i class='fa fa-edit'></i></button>&nbsp;";
-             		          var button4="<button id='editrow4' class='btn btn-success' type='button'  onclick='showBank("+'\"'+gid+'\"'+")' >银行卡信息<i class='fa fa-edit'></i></button>&nbsp;";
+             		          var button1="<button id='editrow1' class='btn btn-success' type='button'  onclick='showContact("+'\"'+gid+'\"'+")' >contacts<i class='fa fa-edit'></i></button>&nbsp;";
+             		          var button2="<button id='editrow2' class='btn btn-success' type='button'  onclick='showLoan("+'\"'+gid+'\"'+")'>borrowRecord</span><i class='fa fa-edit'></i></button>&nbsp;";
+             		          var button3="<button id='editrow3' class='btn btn-success' type='button'  onclick='showRepay("+'\"'+gid+'\"'+")'>repaymentRecord</span><i class='fa fa-edit'></i></button>&nbsp;";
+             		          var button4="<button id='editrow4' class='btn btn-success' type='button'  onclick='showBank("+'\"'+gid+'\"'+")'>bankcardInfo<i class='fa fa-edit'></i></button>&nbsp;";
              		        return  button1+button2+button3+button4;
 			        }
 				},
@@ -258,6 +346,18 @@ function init(){
             ],
            "order": [[ 1, "asc" ]]
         } );
+	
+	//修改请求参数后再重新加载数据-解决上述ajax请求只能调用一次的问题
+    /* var param = {
+        "lang":lang,
+        "mobile":$("#mobile").val(),
+        "name":$("#name").val(),
+        "identityCard":$("#identityCard").val(),
+        "birthday":$("#birthday").val(),
+	    "orderGid":$("#orderGid").val(),
+    };
+    example.settings()[0].ajax.data = param;
+    example.ajax.reload(); */
 }
 
 /* layui.use('layer', function(){
@@ -287,9 +387,8 @@ $("#searchBt").click(function(){
 //查看紧急联系人信息
 function showContact(gid){
 	$("#contact").css("display","block");
-	$("#dt-table2 thead").html("<tr><th>主要联系人关系</th><th>主要联系人姓名</th><th>主要联系人电话</th><th>备用联系人关系</th><th>备用联系人姓名</th><th>备用联系人电话</th><th>正面照</th><th>反面照</th><th>手持照</th><th>操作</th></tr>");
 	$('#dt-table2 tbody').empty();
-
+    
 	example2=
 	$('#dt-table2').DataTable({
     	"searching": false,
@@ -297,12 +396,12 @@ function showContact(gid){
     	"serverSide" : true,
     	"retrieve":true,  //防止重新加载dataTable时出现警告：destroy/retrieve
     	"language": {
-            "url": "/js/plugin/datatables/Chinese.lang"
+            //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
     		"url" : "/customer/listContactInfos",
     		"type":"get",
-    		"data":{"userGid":gid},
+    		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
 				var msg = xhr.responseText;
 				console.log(msg);
@@ -332,27 +431,27 @@ function showContact(gid){
 			{"data" : "bakRelationship", "defaultContent" : ""},
 			{"data" : "bakName", "defaultContent" : ""},
 			{"data" : "bakPhone", "defaultContent" : ""},
-			{"data" : "photo1Url", "defaultContent" : "正面照", render: function(data, type, row) {
+			{"data" : "photo1Url", "defaultContent" : "front photo", render: function(data, type, row) {
 				if(data!='' & data!=null){
-					return '<a href="'+photoDomain+data+'"'+'target="_blank"'+'>' + '点击链接查看正面照' + '</a>';
+					return '<a href="'+photoDomain+data+'"'+'target="_blank"'+'>' + 'view  front photo' + '</a>';
 				}else{
-					return '<a href="#">'+"没有上传正面照"+'</a>';
+					return '<a href="#">'+"No positive photo were uploaded"+'</a>';
 				}
 			  }
 			},
-			{"data" : "photo2Url", "defaultContent" : "反面照", render: function(data, type, row) {
+			{"data" : "photo2Url", "defaultContent" : "reverse photo", render: function(data, type, row) {
 				if(data!='' & data!=null){
-					return '<a href="'+photoDomain+data+'"'+'target="_blank"'+'>' + '点击链接查看反面照' + '</a>';
+					return '<a href="'+photoDomain+data+'"'+'target="_blank"'+'>' + 'view reverse photo' + '</a>';
 				}else{
-					return '<a href="#">'+"没有上传反面照"+'</a>';
+					return '<a href="#">'+"No reverse photo were uploaded"+'</a>';
 				}
 			  }
 			},
-			{"data" : "photo3Url", "defaultContent" : "手持照", render: function(data, type, row) {
+			{"data" : "photo3Url", "defaultContent" : "handheld photo", render: function(data, type, row) {
 				if(data!='' & data!=null){
-					return '<a href="'+photoDomain+data+'"'+'target="_blank"'+'>' + '点击链接查看手持照' + '</a>';
+					return '<a href="'+photoDomain+data+'"'+'target="_blank"'+'>' + 'view handheld photo' + '</a>';
 				}else{
-					return '<a href="#">'+"没有上传手持照"+'</a>';
+					return '<a href="#">'+"No handheld photos were uploaded"+'</a>';
 				}
 			  }
 			},
@@ -375,6 +474,7 @@ function showContact(gid){
 	//修改请求参数后再重新加载数据-解决上述ajax请求只能调用一次的问题
     var param = {
         "userGid": gid,
+        "lang":lang,
     };
     example2.settings()[0].ajax.data = param;
     example2.ajax.reload();
@@ -383,6 +483,7 @@ function showContact(gid){
 function showLoan(gid){
 	$("#loan").css("display","block");
 	$('#dt-table3 tbody').empty();
+	 
 	example3=
 	$('#dt-table3').DataTable({
     	"searching": false,
@@ -390,12 +491,12 @@ function showLoan(gid){
     	"serverSide" : true,
     	"retrieve":true,
     	"language": {
-            "url": "/js/plugin/datatables/Chinese.lang"
+            //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
     		"url" : "/customer/listLoans",
     		"type":"get",
-    		"data":{"userGid":gid},
+    		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
 				var msg = xhr.responseText;
 				console.log(msg);
@@ -443,6 +544,7 @@ function showLoan(gid){
 
 	    var param = {
 	        "userGid": gid,
+	        "lang":lang,
 	    };
 	    example3.settings()[0].ajax.data = param;
 	    example3.ajax.reload();
@@ -451,6 +553,7 @@ function showLoan(gid){
 function showRepay(gid){
 	$("#repay").css("display","block");
 	$('#dt-table4 tbody').empty();
+	
 	example4=
 	$('#dt-table4').DataTable({
     	"searching": false,
@@ -458,12 +561,12 @@ function showRepay(gid){
     	"serverSide" : true,
     	"retrieve":true,
     	"language": {
-            "url": "/js/plugin/datatables/Chinese.lang"
+            //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
     		"url" : "/customer/listRepays",
     		"type":"get",
-    		"data":{"userGid":gid},
+    		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
 				var msg = xhr.responseText;
 				console.log(msg);
@@ -508,6 +611,7 @@ function showRepay(gid){
 
         var param = {
             "userGid": gid,
+            "lang":lang,
         };
         example4.settings()[0].ajax.data = param;
         example4.ajax.reload();
@@ -516,6 +620,7 @@ function showRepay(gid){
 function showBank(gid){
 	$("#bank").css("display","block");
 	$('#dt-table5 tbody').empty();
+	
 	example5=
 	$('#dt-table5').DataTable({
     	"searching": false,
@@ -523,12 +628,12 @@ function showBank(gid){
     	"serverSide" : true,
     	"retrieve":true,
     	"language": {
-            "url": "/js/plugin/datatables/Chinese.lang"
+            //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
     		"url" : "/customer/listBanks",
     		"type":"get",
-    		"data":{"userGid":gid},
+    		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
 				var msg = xhr.responseText;
 				console.log(msg);
@@ -573,10 +678,12 @@ function showBank(gid){
 
         var param = {
             "userGid": gid,
+            "lang":lang,
         };
         example2.settings()[0].ajax.data = param;
         example2.ajax.reload();
 }
 
 init();
+
 </script>

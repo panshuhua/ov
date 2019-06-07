@@ -31,7 +31,7 @@ public class XVirtualAccountController {
 	private String requestIdPrefix;
 	
     @ApiOperation(value = "testHttp53")
-    @GetMapping("/star/testHttp53")
+    @GetMapping("star/testHttp53")
     @ResponseBody
     public String testHttp53(@RequestParam String url,@RequestParam String operation,@RequestParam String id) {
     	XVirtualAccount xVirtualAccount=xVirtualAccountService.queryVirtualAccount(id);
@@ -79,7 +79,7 @@ public class XVirtualAccountController {
     }
     
     @ApiOperation(value = "testHttp54")
-    @GetMapping("/star/testHttp54")
+    @GetMapping("star/testHttp54")
     @ResponseBody
     public String testHttp54(@RequestParam String url,@RequestParam String operation,@RequestParam String id) {
     	XVirtualAccount xVirtualAccount=xVirtualAccountService.queryVirtualAccount(id);
@@ -126,7 +126,7 @@ public class XVirtualAccountController {
     }
     
     @ApiOperation(value = "testHttp55")
-    @GetMapping("/star/testHttp55")
+    @GetMapping("star/testHttp55")
     @ResponseBody
     public String testHttp55(@RequestParam String url,@RequestParam String operation,@RequestParam String id) {
     	XVirtualAccount xVirtualAccount=xVirtualAccountService.queryVirtualAccount(id);
@@ -155,7 +155,7 @@ public class XVirtualAccountController {
     }
     
     @ApiOperation(value = "testHttp56")
-    @GetMapping("/star/testHttp56")
+    @GetMapping("star/testHttp56")
     @ResponseBody
     public String testHttp56(@RequestParam String url,@RequestParam String operation,@RequestParam String id) {
     	Date date=new Date();

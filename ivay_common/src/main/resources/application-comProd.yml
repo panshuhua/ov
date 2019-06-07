@@ -5,6 +5,7 @@ logging:
 logfile:
   # 日志存放路径
   path: /data/logs/
+  totalSizeCap: 10GB
 
 
 # 自定义配置

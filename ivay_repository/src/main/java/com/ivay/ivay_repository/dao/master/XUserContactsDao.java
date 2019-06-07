@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface XUserContactsDao {
@@ -25,5 +26,9 @@ public interface XUserContactsDao {
 
     List<XUserContacts> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
 
-    boolean insertBatchContacts(List<XUserContacts> xUserContacts);
+    boolean insertBatchContacts(Set<XUserContacts> xUserContacts);
+
+    @Select("select count(1) from x_user_contacts where user_gid=#{userGid} and update_date=#{updateDate}")
+    int findContactsByUserGid(@Param("userGid") String userGid, @Param("updateDate") String updateDate);
+
 }

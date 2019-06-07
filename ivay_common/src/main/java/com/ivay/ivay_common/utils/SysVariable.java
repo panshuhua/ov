@@ -104,4 +104,6 @@ public class SysVariable {
     public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";
 
 
+    // 角色配置
+    public static final String ROLE_OVAY_AUDIT = "ovayAudit";
 }

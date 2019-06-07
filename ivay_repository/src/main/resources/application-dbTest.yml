@@ -4,12 +4,12 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     druid:
       master:
-        url: jdbc:mysql://152.32.161.88:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        url: jdbc:mysql://localhost:3306/ivay?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
         username: root
         password: 123456
       # 从库数据源
       slave:
-        url: jdbc:mysql://152.32.161.88:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        url: jdbc:mysql://localhost:3306/ivay_manage?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
         username: root
         password: 123456
       initialSize: 5

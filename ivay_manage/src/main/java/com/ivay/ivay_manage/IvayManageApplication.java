@@ -8,5 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class IvayManageApplication {
     public static void main(String[] args) {
         SpringApplication.run(IvayManageApplication.class, args);
+		System.out.println("manage start...");
     }
 }

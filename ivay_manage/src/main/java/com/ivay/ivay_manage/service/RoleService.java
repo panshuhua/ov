@@ -4,7 +4,7 @@ import com.ivay.ivay_manage.dto.RoleDto;
 
 public interface RoleService {
 
-	void saveRole(RoleDto roleDto);
+    void saveRole(RoleDto roleDto);
 
-	void deleteRole(Long id);
+    void deleteRole(Long id);
 }

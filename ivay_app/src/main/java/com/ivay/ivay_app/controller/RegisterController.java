@@ -7,6 +7,7 @@ import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.annotation.Decrypt;
 import com.ivay.ivay_common.annotation.Encryption;
+import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
 import com.ivay.ivay_repository.model.LoginInfo;
@@ -29,10 +30,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/star/register")
+@RequestMapping("star/register")
 @Api(tags = "注册")
 @Validated
 public class RegisterController {
@@ -71,7 +73,10 @@ public class RegisterController {
     @Encryption
     public Response<VerifyCodeInfo> sendRegisterCode(@RequestParam @Decrypt String mobile,
                                                      @RequestParam Integer optType,
-                                                     @RequestParam(required = false) String macCode) {
+                                                     @RequestParam(required = false) String macCode
+            , HttpServletRequest request) {
+        logger.info("前台传过来的请求头：" + request.getHeader("Accept-Language"));
+
         Response<VerifyCodeInfo> response = new Response<>();
         //注册发送验证码
         if (optType == 1) {
@@ -79,6 +84,7 @@ public class RegisterController {
             //如果用户已注册，则提示已注册
             if (!StringUtils.isEmpty(userGid)) {
                 response.setStatus(i18nService.getMessage("response.error.register.isregister.code"), i18nService.getMessage("response.error.register.isregister.msg"));
+                logger.info(response.getStatus().getMessage() + "：---------------------------");
                 return response;
             }
         }
@@ -114,7 +120,8 @@ public class RegisterController {
 
     @PostMapping("reg")
     @ApiOperation(value = "用户注册")
-    public Response<ReturnUser> register(@Validated({Update.class}) @RequestBody LoginInfo loginInfo) {
+    public Response<ReturnUser> register(@RequestBody LoginInfo loginInfo, HttpServletRequest request) {
+        logger.info("前台传过来的请求头：" + request.getHeader("Accept-Language"));
         Response<ReturnUser> response = new Response<>();
         String mobile = loginInfo.getMobile();
 
@@ -131,6 +138,7 @@ public class RegisterController {
             if (existTime < 0) {
                 response.setStatus(i18nService.getMessage("response.error.register.verify.code"),
                         i18nService.getMessage("response.error.register.verify.msg"));
+                logger.info(response.getStatus().getMessage() + "：============================");
                 return response;
             }
 
@@ -145,12 +153,14 @@ public class RegisterController {
                     if (!"1".equals(isVerifyCodeLogin)) {
                         response.setStatus(i18nService.getMessage("response.error.register.isregister.code"),
                                 i18nService.getMessage("response.error.register.isregister.msg"));
+                        logger.info(response.getStatus().getMessage() + "：---------------------------");
                     } else {
                         //短信验证码登录：已经注册过，直接登录
                         XUser xUser = new XUser();
                         xUser.setPhone(mobile);
                         xUser.setUserGid(userGid);
                         xUser.setCreateTime(new Date());
+                        xUser.setFmcToken(loginInfo.getFmcToken());
                         xUser = registerService.login(xUser);
                         xUser = registerService.getToken(xUser);
                         ReturnUser user = setReturnUser(xUser);
@@ -163,8 +173,13 @@ public class RegisterController {
                     return response;
 
                 } else {
-                    //密码注册-自动登录
+                    //密码注册-自动登录：这里才需要校验密码
                     if (!StringUtils.isEmpty(password)) {
+                        if (!StringUtil.valiPassword(password)) {
+                            response.setStatus(i18nService.getMessage("response.error.register.passworderror.code"),
+                                    i18nService.getMessage("response.error.register.passworderror.msg"));
+                            return response;
+                        }
                         XUser xUser = registerService.registerLogin(loginInfo);
                         ReturnUser user = setReturnUser(xUser);
                         user.setNeedverifyMapCode(0);
@@ -219,6 +234,7 @@ public class RegisterController {
         String mobile = loginInfo.getMobile();
         String password = loginInfo.getPassword();
         String needCheckVerify = loginInfo.getNeedCheckVerify();
+        logger.info("前台传过来的fmcToken:" + loginInfo.getFmcToken() + "============================");
         boolean isCorrect = true;
         //老用户新设备登录，需要校验手机验证码
         String verifyCode = loginInfo.getVerifyCode();
@@ -230,6 +246,7 @@ public class RegisterController {
                 if (existTime < 0) {
                     response.setStatus(i18nService.getMessage("response.error.register.verify.code"),
                             i18nService.getMessage("response.error.register.verify.msg"));
+                    logger.info(response.getStatus().getMessage() + "：============================");
                     return response;
                 }
                 isCorrect = registerService.checkCode(mobile, verifyCode);
@@ -245,6 +262,7 @@ public class RegisterController {
             XUser xUser = new XUser();
             xUser.setPhone(mobile);
             xUser.setPassword(password);
+            xUser.setFmcToken(loginInfo.getFmcToken());
             if (isCorrect) {
                 xUser.setNeedverifyMapCode(0);
                 xUser = registerService.login(xUser);
@@ -304,7 +322,7 @@ public class RegisterController {
     @Encryption
     public Response<String> resetPwd(@RequestParam String mobile,
                                      @RequestParam String verifyCode,
-                                     @RequestParam @Password String password) {
+                                     @RequestParam @Password(type = "1", message = "validated.loginpassword.error") String password) {
         Response<String> response = new Response<>();
         //判断手机号和验证码是否匹配
         boolean isCorrect = true;
@@ -314,6 +332,7 @@ public class RegisterController {
             if (existTime < 0) {
                 response.setStatus(i18nService.getMessage("response.error.register.verify.code"),
                         i18nService.getMessage("response.error.register.verify.msg"));
+                logger.info(response.getStatus().getMessage() + "：============================");
                 return response;
             }
             isCorrect = registerService.checkCode(mobile, verifyCode);
