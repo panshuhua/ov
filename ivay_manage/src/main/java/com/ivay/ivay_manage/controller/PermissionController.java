@@ -3,7 +3,7 @@ package com.ivay.ivay_manage.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.ivay.ivay_manage.annotation.LogAnnotation;
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.service.PermissionService;
 import com.ivay.ivay_manage.utils.UserUtil;

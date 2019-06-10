@@ -1,7 +1,7 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.GenerateInput;
-import com.ivay.ivay_manage.annotation.LogAnnotation;
 import com.ivay.ivay_manage.dto.BeanField;
 import com.ivay.ivay_manage.dto.GenerateDetail;
 import com.ivay.ivay_manage.service.GenerateService;

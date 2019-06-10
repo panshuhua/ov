@@ -1,13 +1,13 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_manage.annotation.LogAnnotation;
+import com.ivay.ivay_manage.service.MailService;
 import com.ivay.ivay_repository.dao.master.MailDao;
 import com.ivay.ivay_repository.model.Mail;
 import com.ivay.ivay_repository.model.MailTo;
-import com.ivay.ivay_manage.service.MailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
