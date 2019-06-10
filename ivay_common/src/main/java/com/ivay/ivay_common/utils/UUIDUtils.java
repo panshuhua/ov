@@ -16,10 +16,19 @@ public class UUIDUtils {
 	
 	private static String apiRequestIdPrefix;
 	
+	private static String ebayApiRequestIdPrefix;
+	
 	@Value("${api_request_id_prefix}")
 	public  void setApiRequestIdPrefix(String apiRequestIdPrefix) {
 		UUIDUtils.apiRequestIdPrefix = apiRequestIdPrefix;
 	}
+	
+	@Value("${ebay_api_request_id_prefix}")
+	public  void setEbayApiRequestIdPrefix(String ebayApiRequestIdPrefix) {
+		UUIDUtils.ebayApiRequestIdPrefix = ebayApiRequestIdPrefix;
+	}
+
+
 
 	public static String getUUID() {
         return UUID.randomUUID().toString().replace("-", "");
@@ -31,6 +40,14 @@ public class UUIDUtils {
         String uniqueId = Long.toString(System.nanoTime());
         uniqueId = uniqueId.substring(uniqueId.length() - 6);
         return  apiRequestIdPrefix+ DateUtils.timeMillisToString(now, "yyyyMMdd") + uniqueId;
+    }
+    
+    public static String getEbayRequestId() {
+        // 越南为东七区（差一个小时）
+        long now = System.currentTimeMillis() - 60 * 60 * 1000L;
+        String uniqueId = Long.toString(System.nanoTime());
+        uniqueId = uniqueId.substring(uniqueId.length() - 6);
+        return  ebayApiRequestIdPrefix+ DateUtils.timeMillisToString(now, "yyyyMMdd") + uniqueId;
     }
 
     public static String getRequestTime() {
