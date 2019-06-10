@@ -44,9 +44,9 @@ public class SecurityHandlerConfig {
     @Bean
     public AuthenticationSuccessHandler loginSuccessHandler() {
         return new AuthenticationSuccessHandler() {
-
             @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            public void onAuthenticationSuccess(HttpServletRequest request,
+                                                HttpServletResponse response,
                                                 Authentication authentication) throws IOException, ServletException {
                 LoginUser loginUser = (LoginUser) authentication.getPrincipal();
 

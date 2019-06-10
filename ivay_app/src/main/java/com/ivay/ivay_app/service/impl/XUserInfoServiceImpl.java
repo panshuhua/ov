@@ -1,10 +1,12 @@
 package com.ivay.ivay_app.service.impl;
 
+import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -17,10 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -49,6 +53,15 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private ThreadPoolService threadPoolService;
+
+    @Value("${auto_audit_url}")
+    private String auto_audit_url;
 
     @Override
     public XUserInfo update(XUserInfo xUserInfo) {
@@ -102,7 +115,17 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Override
     public int submit(String gid) {
-        return updateUserStatus(gid, SysVariable.USER_STATUS_CHECKING);
+        // 修改本地数据库
+        int flag = updateUserStatus(gid, SysVariable.USER_STATUS_CHECKING);
+        if (flag == 1) {
+            logger.info("调用manage服务进行自动审计...");
+            threadPoolService.execute(() -> {
+                Map<String, Object> params = new HashMap<>();
+                params.put("userGid", gid);
+                restTemplate.postForObject(auto_audit_url, null, Response.class, params);
+            });
+        }
+        return flag;
     }
 
     /**

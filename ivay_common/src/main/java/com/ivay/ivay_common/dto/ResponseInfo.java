@@ -9,6 +9,9 @@ public class ResponseInfo implements Serializable {
     private String code;
     private String message;
 
+    public ResponseInfo() {
+    }
+
     public ResponseInfo(String code, String message) {
         super();
         this.code = code;

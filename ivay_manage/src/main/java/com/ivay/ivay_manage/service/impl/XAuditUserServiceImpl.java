@@ -9,6 +9,8 @@ import com.ivay.ivay_manage.service.XAuditUserService;
 import com.ivay.ivay_repository.dao.master.XAuditUserDao;
 import com.ivay.ivay_repository.model.XAuditUser;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @Service
 public class XAuditUserServiceImpl implements XAuditUserService {
+    private static final Logger logger = LoggerFactory.getLogger(XAuditUserService.class);
     @Autowired
     private XAuditUserDao xAuditUserDao;
 
@@ -27,7 +30,7 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     }
 
     @Override
-    public int delete(String ids) {
+    public int deleteAudit(String ids) {
         if (StringUtils.isEmpty(ids)) {
             return 0;
         }
@@ -35,17 +38,27 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     }
 
     @Override
+    public int deleteUser(String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return 0;
+        }
+        return xAuditUserDao.deleteUser(ids.split(","));
+    }
+
+    @Override
     public XAuditUser update(String auditId, String userGid) {
         // 查出所有的审计员
         List<String> auditIds = xAuditUserDao.getSysUserByRole(SysVariable.ROLE_OVAY_AUDIT);
-        if (auditIds.isEmpty() || !auditIds.contains(auditId)) {
-            throw new BusinessException("审计员不存在，请先增加");
+        if (auditIds.isEmpty()) {
+            logger.info("不存在审计员");
+            return null;
+        } else if (StringUtils.isEmpty(auditId)) {
+            // 若不指定审计员则随机分配
+            auditId = auditIds.get((int) (1 + Math.random() * (auditIds.size())));
+        } else if (!auditIds.contains(auditId)) {
+            throw new BusinessException("审计员({})不存在", auditId);
         }
 
-        // 若不指定审计员则随机分配
-        if (StringUtils.isEmpty(auditId)) {
-            auditId = auditIds.get((int) (1 + Math.random() * (auditIds.size())));
-        }
         // 查询用户是否已分配
         XAuditUser xAuditUser = xAuditUserDao.getByUserGid(userGid);
         Date now = new Date();

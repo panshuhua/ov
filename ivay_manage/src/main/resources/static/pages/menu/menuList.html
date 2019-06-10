@@ -65,7 +65,7 @@ initMenuList();
 function initMenuList(){
 	$.ajax({
 		type : 'get',
-		url : '/permissions',
+		url : '/manage/permissions',
 		contentType: "application/json; charset=utf-8",  
 		async:false,
 		success : function(data) {
@@ -122,7 +122,7 @@ function del(id){
     }, function() {
         $.ajax({
             type : 'delete',
-            url : '/permissions/' + id,
+            url : '/manage/permissions/' + id,
             success : function(data) {
                 location.reload();
             }

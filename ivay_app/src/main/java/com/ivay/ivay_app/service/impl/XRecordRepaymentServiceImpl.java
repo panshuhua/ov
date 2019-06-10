@@ -309,7 +309,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         }
         
         if (xRecordRepaymentDao.save(xRecordRepayment) == 1 && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
-            // todo new 还款提升授信額度
+            // 还款提升授信額度
             threadPoolService.execute(() -> {
                 Map<String, Object> params = new HashMap<>();
                 params.put("userGid", xRecordLoan.getUserGid());

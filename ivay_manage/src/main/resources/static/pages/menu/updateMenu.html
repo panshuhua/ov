@@ -103,7 +103,7 @@
 		if(id != ""){
 			$.ajax({
 				type : 'get',
-				url : '/permissions/'+id,
+				url : '/manage/permissions/'+id,
 				async : false,
 				success : function(data) {
 					$("#id").val(data.id);
@@ -154,7 +154,7 @@
 
 			$.ajax({
 				type : 'put',
-				url : '/permissions/',
+				url : '/manage/permissions/',
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {

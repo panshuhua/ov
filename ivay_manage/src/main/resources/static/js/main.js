@@ -1,7 +1,7 @@
 initMenu();
 function initMenu(){
 	 $.ajax({  
-	     url:"/permissions/current",  
+	     url:"/manage/permissions/current",
 	     type:"get",  
 	     async:false,
 	     success:function(data){

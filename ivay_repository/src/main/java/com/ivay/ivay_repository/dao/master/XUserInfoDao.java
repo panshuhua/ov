@@ -10,13 +10,13 @@ import java.util.Map;
 @Mapper
 public interface XUserInfoDao {
 
-    @Select("select * from x_user_info where phone=#{mobile} and password=#{password}")
+    @Select("select * from x_user_info where phone=#{mobile} and password=#{password} and enable_flag='Y'")
     XUser getLoginUser(@Param("mobile") String mobile, @Param("password") String password);
 
-    @Select("select user_gid from x_user_info where phone=#{mobile}")
+    @Select("select user_gid from x_user_info where phone=#{mobile} and enable_flag='Y'")
     String getUserGid(@Param("mobile") String mobile);
 
-    @Select("select password from x_user_info where phone=#{mobile}")
+    @Select("select password from x_user_info where phone=#{mobile} and enable_flag='Y'")
     String getPassword(@Param("mobile") String mobile);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
@@ -33,6 +33,9 @@ public interface XUserInfoDao {
 
     @Select("select * from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y' and t.account_status='0'")
     XUserInfo getByGid(String gid);
+
+    @Select("select phone from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y' and t.account_status='0'")
+    String getPhone(String gid);
 
     @Select("select * from x_user_info t where t.identity_card = #{identityCard}")
     List<XUserInfo> getByIdentityCard(String identityCard);

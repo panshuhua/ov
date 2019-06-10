@@ -9,18 +9,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Component
-@Configuration
-@EnableScheduling
+//@Component
+//@Configuration
+//@EnableScheduling
 public class BackgroundScheduleTask {
     private static final Logger logger = LoggerFactory.getLogger(BackgroundScheduleTask.class);
 
@@ -36,7 +32,7 @@ public class BackgroundScheduleTask {
     @Autowired
     private XUserInfoService xUserInfoService;
 
-    @Scheduled(cron = "${timer.autoAudit}")
+//    @Scheduled(cron = "${timer.autoAudit}")
     private void autoAudit() {
         logger.info("开始执行自动审核...");
         List<XUserInfo> list = xUserInfoDao.toBeAuditedList(1);
@@ -72,10 +68,5 @@ public class BackgroundScheduleTask {
             }
         }
         logger.info("自动审核结束...");
-    }
-
-    public static void main(String[] args) {
-
-
     }
 }

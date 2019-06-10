@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * 用户相关接口
  *
@@ -84,20 +82,10 @@ public class UserController {
     @ApiOperation(value = "用户列表")
     @PreAuthorize("hasAuthority('sys:user:query')")
     public PageTableResponse listUsers(PageTableRequest request) {
-        return new PageTableHandler(new PageTableHandler.CountHandler() {
-
-            @Override
-            public int count(PageTableRequest request) {
-                return userDao.count(request.getParams());
-            }
-        }, new PageTableHandler.ListHandler() {
-
-            @Override
-            public List<SysUser> list(PageTableRequest request) {
-                List<SysUser> list = userDao.list(request.getParams(), request.getOffset(), request.getLimit());
-                return list;
-            }
-        }).handle(request);
+        return new PageTableHandler(
+                a -> userDao.count(a.getParams()),
+                a -> userDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 
     @ApiOperation(value = "当前登录用户")

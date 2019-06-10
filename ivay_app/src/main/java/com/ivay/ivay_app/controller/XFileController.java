@@ -70,7 +70,7 @@ public class XFileController {
     }
 
     @PostMapping("submit")
-    @ApiOperation(value = "提交审核")
+    @ApiOperation(value = "确认提交授信信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })

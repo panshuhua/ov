@@ -45,14 +45,22 @@ public class XAuditUserController {
         return response;
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("deleteAudit")
     @ApiOperation(value = "删除某个审计员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ids", value = "审计员id，可批量处理", dataType = "String", paramType = "query")
     })
-    public void delete(@RequestParam String ids) {
-        Response<Integer> response = new Response<>();
-        response.setBo(xAuditUserService.delete(ids));
+    public void deleteAudit(@RequestParam String ids) {
+        xAuditUserService.deleteAudit(ids);
+    }
+
+    @DeleteMapping("deleteUser")
+    @ApiOperation(value = "删除被某个审计员审计的用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "ids", value = "用户gid，可批量处理", dataType = "String", paramType = "query")
+    })
+    public void deleteUser(@RequestParam String ids) {
+        xAuditUserService.deleteUser(ids);
     }
 
     @GetMapping("list")

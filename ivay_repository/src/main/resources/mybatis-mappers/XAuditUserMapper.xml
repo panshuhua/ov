@@ -86,4 +86,13 @@
             #{id}
         </foreach>
     </delete>
+
+    <delete id="deleteUser">
+        UPDATE x_audit_user xau
+        SET xau.enable_flag='N'
+        WHERE xau.user_gid in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

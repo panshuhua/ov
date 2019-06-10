@@ -7,10 +7,9 @@ import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.service.XConfigService;
-import com.ivay.ivay_manage.service.XLoanRateService;
-import com.ivay.ivay_manage.service.XUserInfoService;
+import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAuditDetail;
 import com.ivay.ivay_repository.model.XLoanQualification;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -21,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class XUserInfoServiceImpl implements XUserInfoService {
@@ -38,6 +34,14 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     @Autowired
     private XConfigService xConfigService;
 
+    @Autowired
+    private XUserInfoService xUserInfoService;
+
+    @Autowired
+    private RiskUserService riskUserService;
+    @Autowired
+    private XAuditUserService xAuditUserService;
+
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
         String time = request.getParams().get("toTime").toString();
@@ -45,8 +49,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(DateUtils.stringToDate_YYYY_MM_DD(time));
             calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MINUTE, 58);
+            calendar.set(Calendar.SECOND, 58);
             request.getParams().put("toTime", DateUtils.dateToString_YYYY_MM_DD_HH_MM_SS(calendar.getTime()));
         }
         return new PageTableHandler((a) -> xUserInfoDao.auditCount(a.getParams()),
@@ -225,4 +229,41 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         return true;
     }
 
+    /**
+     * 对提交提交用户进行自动审核处理
+     *
+     * @param userGid
+     * @return
+     */
+    @Override
+    public boolean autoAudit(String userGid) {
+        String phone = xUserInfoDao.getPhone(userGid);
+        if (StringUtils.isEmpty(phone)) {
+            throw new BusinessException("找不到当前用户的电话号码");
+        }
+
+        // region -- 白名单用户自动授权
+        List<RiskUser> whiteList = riskUserService.selectUserListByPhone(phone);
+        if (whiteList.size() > 0) {
+            logger.info("{}: 白名单用户，执行自动审核---start", phone);
+            if (xUserInfoService.auditUpdate(userGid, 1, null, null) == 1) {
+                logger.info("{}: 审核成功...", phone);
+            } else {
+                logger.info("{}: 审核失败...", phone);
+            }
+        }
+        // endregion
+
+        // region -- 非白名单用户分配审计员
+        else {
+            logger.info("{}: 非白名单用户，分配审计员...", phone);
+            if (xAuditUserService.update(null, userGid) != null) {
+                logger.info("{}: 分配审计员成功...", phone);
+            } else {
+                logger.info("{}: 分配审计员失败...", phone);
+            }
+        }
+        // endregion
+        return true;
+    }
 }

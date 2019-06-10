@@ -24,13 +24,13 @@
                                         <input id="name" type="text" class="form-control" placeholder="name">
                                         手机号：
                                         <input id="phone" type="text" class="form-control" placeholder="phone">
+                                    </div>
+                                    <div class="form-group" style="margin:2px">
                                         申请时间：
                                         <input id="fromTime" type="text" class="form-control" placeholder="fromTime"
                                                readonly="readonly">
                                         - <input id="toTime" type="text" class="form-control" placeholder="toTime"
                                                  readonly="readonly">
-                                    </div>
-                                    <div class="form-group" style="margin:2px">
                                         审核状态：
                                         <select id="auditStatus" class="form-control">
                                             <option value="2">待审核</option>
@@ -102,9 +102,8 @@
                                         placeholder="identityCard">
                             生日： <input id="detail_birthday2" type="text" class=" form-control" placeholder="birthday"
                                        readonly="readonly">
-                            性别
-                            <input type="radio" name="sex" value="0"/>男
-                            <input type="radio" name="sex" value="1"/>女
+                            性别：<input type="radio" name="sex" value="0"/>Male
+                            <input type="radio" name="sex" value="1"/>Female
                         </div>
                     </form>
                     <div class="form-group" style="margin:2px">
@@ -288,7 +287,7 @@
                     $("#detail_identityCard").text(data.bo.identityCard);
                     $("#detail_birthday").text(data.bo.birthday);
                     $("#detail_phone").text(data.bo.phone);
-                    $("#detail_sex").text(data.bo.sex);
+                    $("#detail_sex").text(data.bo.sex == 0 ? 'Male' : 'Female');
                     $("#photo1").attr("src", domain + "/statics" + data.bo.photo1Url);
                     $("#photo2").attr("src", domain + "/statics" + data.bo.photo2Url);
                     $("#photo3").attr("src", domain + "/statics" + data.bo.photo3Url);
@@ -303,13 +302,25 @@
     // 审核
     function auditSubmit(flag) {
         if (flag == 1) {
-            if ($("#detail_name2").val() != $("#detail_name").text() ||
-                $("#detail_identityCard2").val() != $("#detail_identityCard").text() ||
-                $("input[name='sex']:checked").val() != $("#detail_sex").text() ||
+            if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != $("#detail_name").text().replace(/\s/g, '').toUpperCase()) {
+                console.log($("#detail_name2").val())
+                console.log($("#detail_name").text())
+                alert("Please check the user name")
+                return;
+            }
+            if ($("#detail_identityCard2").val().replace(/\s/g, '').toUpperCase() != $("#detail_identityCard").text().replace(/\s/g, '').toUpperCase()) {
+                alert("Please check the ID Card No")
+                return;
+            }
+            if ($("input[name='sex']:checked").val() != $("#detail_sex").text()) {
+                alert("Please check the Gender")
+                return;
+            }
+            if (
                 $("#detail_birthday2").val() == "" ||
                 $("#detail_birthday").text().indexOf($("#detail_birthday2").val()) == -1
             ) {
-                alert("请核实申请人信息")
+                alert("Please check the birthday")
                 return;
             }
         } else if ($("#refuseReason").val() == "") {

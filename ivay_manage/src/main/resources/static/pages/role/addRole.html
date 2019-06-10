@@ -74,7 +74,7 @@
 			if(id != ""){
 				$.ajax({
 					type : 'get',
-					url : '/roles/'+id,
+					url : '/manage/roles/'+id,
 					async : false,
 					success : function(data) {
 						$("#id").val(data.id);
@@ -102,7 +102,7 @@
 
 			$.ajax({
 				type : 'post',
-				url : '/roles',
+				url : '/manage/roles',
 				contentType: "application/json; charset=utf-8",  
 				data : JSON.stringify(formdata),
 				success : function(data) {

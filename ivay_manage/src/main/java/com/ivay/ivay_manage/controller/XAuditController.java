@@ -41,7 +41,7 @@ public class XAuditController {
     }
 
     @PostMapping("update")
-    @ApiOperation(value = "提交审核")
+    @ApiOperation(value = "提交审核结果")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0拒绝 1通过 2 重新提交", dataType = "Long", paramType = "query", defaultValue = "1"),
@@ -75,5 +75,16 @@ public class XAuditController {
     })
     public long updateCreditLimit(@RequestParam String userGid) {
         return xLoanRateService.acquireCreditLimit(userGid);
+    }
+
+    @PostMapping("autoAudit")
+    @ApiOperation(value = "自动审核")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
+    })
+    public Response<Boolean> autoAudit(@RequestParam String userGid) {
+        Response<Boolean> response = new Response<>();
+        response.setBo(xUserInfoService.autoAudit(userGid));
+        return response;
     }
 }

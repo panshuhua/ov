@@ -24,6 +24,9 @@ public interface XAuditUserDao {
     // 批量逻辑删除
     int deleteByBatch(@Param("ids") String[] ids);
 
+    // 批量逻辑删除
+    int deleteUser(@Param("ids") String[] ids);
+
     int update(XAuditUser xAuditUser);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")

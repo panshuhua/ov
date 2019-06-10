@@ -88,7 +88,7 @@ function init(){
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
         	"ajax": {
-        		"url" : "/roles",
+        		"url" : "/manage/roles",
         		"type":"get",
         		"data":function(d){
     				d.name = $('#name').val();
@@ -146,7 +146,7 @@ function del(id){
     }, function() {
         $.ajax({
             type : 'delete',
-            url : '/roles/'+id,
+            url : '/manage/roles/'+id,
             success : function(data) {
                 example.ajax.reload();
                 layer.msg("删除成功");

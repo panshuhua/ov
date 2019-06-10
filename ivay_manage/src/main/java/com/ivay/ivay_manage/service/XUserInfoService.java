@@ -23,7 +23,7 @@ public interface XUserInfoService {
     XAuditDetail auditDetail(String userGid);
 
     /**
-     * 提交审核
+     * 提交审核结果
      *
      * @param userGid
      * @param flag
@@ -58,6 +58,14 @@ public interface XUserInfoService {
      * @return
      */
     XLoanQualification getLoanQualificationObj(XLoanQualification xLoanQualification, String userGid);
+
+    /**
+     * 对提交提交用户进行自动审核处理
+     *
+     * @param userGid
+     * @return
+     */
+    boolean autoAudit(String userGid);
 
 }
 

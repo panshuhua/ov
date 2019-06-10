@@ -50,7 +50,7 @@ public interface XUserInfoService {
     int updateUserStatus(String gid, String status);
 
     /**
-     * 提交审核
+     * 确认提交授信信息
      *
      * @param gid
      * @return
@@ -98,7 +98,7 @@ public interface XUserInfoService {
     XAuditDetail auditDetail(String userGid);
 
     /**
-     * 提交审核
+     * 提交审核结果
      *
      * @param userGid
      * @return

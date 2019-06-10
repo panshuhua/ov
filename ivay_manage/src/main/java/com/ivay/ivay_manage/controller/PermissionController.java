@@ -29,11 +29,12 @@ import java.util.stream.Collectors;
  */
 @Api(tags = "权限")
 @RestController
-@RequestMapping("/permissions")
+@RequestMapping("manage/permissions")
 public class PermissionController {
 
     @Autowired
     private PermissionDao permissionDao;
+
     @Autowired
     private PermissionService permissionService;
 

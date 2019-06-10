@@ -42,5 +42,9 @@ api_authenticate_pass: vmG@123b
 risk_control_url: http://10.53.104.178:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 风控提额url
 update_credit_limit_url: http://10.53.104.178:8081/audit/updateCreditLimit?userGid={userGid}
+# 授信自动审计url
+auto_audit_url: http://10.53.104.178:8081/audit/autoAudit?userGid={userGid}
+
+
 # 前端错误日志路径：
 errorInfo.path: /data/errorInfo/

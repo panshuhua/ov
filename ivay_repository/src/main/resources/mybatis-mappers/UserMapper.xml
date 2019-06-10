@@ -3,8 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ivay.ivay_repository.dao.master.UserDao">
 
-	<sql id="where">
+	<sql id="list_condition">
 		<where>
+			t.enable_flag = "Y"
 			<if test="params.username != null and params.username != ''">
 				and t.username like concat('%', #{params.username}, '%')
 			</if>
@@ -19,12 +20,12 @@
 
 	<select id="count" resultType="int">
 		select count(1) from sys_user t
-		<include refid="where" />
+		<include refid="list_condition" />
 	</select>
 
 	<select id="list" resultType="com.ivay.ivay_repository.model.SysUser">
 		select * from sys_user t
-		<include refid="where" />
+		<include refid="list_condition" />
 		${params.orderBy}
 		limit #{offset}, #{limit}
 	</select>

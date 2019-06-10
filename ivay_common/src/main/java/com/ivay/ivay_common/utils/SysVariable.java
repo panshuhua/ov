@@ -105,5 +105,7 @@ public class SysVariable {
 
 
     // 角色配置
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_OVAY_ADMIN = "ovayAdmin";
     public static final String ROLE_OVAY_AUDIT = "ovayAudit";
 }

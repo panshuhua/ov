@@ -10,18 +10,20 @@ import java.util.Map;
 public interface RoleDao {
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into sys_role(name, description, createTime, updateTime) values(#{name}, #{description}, now(),now())")
+    @Insert("insert into sys_role(name, description, createTime, updateTime,enable_flag)" +
+            "values(#{name}, #{description}, now(),now()),'Y'")
     int save(Role role);
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<Role> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+    List<Role> list(@Param("params") Map<String, Object> params,
+                    @Param("offset") Integer offset,
                     @Param("limit") Integer limit);
 
-    @Select("select * from sys_role t where t.id = #{id}")
+    @Select("select * from sys_role t where t.id = #{id} and t.enable_flag='Y'")
     Role getById(Long id);
 
-    @Select("select * from sys_role t where t.name = #{name}")
+    @Select("select * from sys_role t where t.name = #{name} and t.enable_flag='Y'")
     Role getRole(String name);
 
     @Update("update sys_role t set t.name = #{name}, t.description = #{description}, updateTime = now() where t.id = #{id}")
@@ -33,7 +35,8 @@ public interface RoleDao {
     @Delete("delete from sys_role_permission where roleId = #{roleId}")
     int deleteRolePermission(Long roleId);
 
-    int saveRolePermission(@Param("roleId") Long roleId, @Param("permissionIds") List<Long> permissionIds);
+    int saveRolePermission(@Param("roleId") Long roleId,
+                           @Param("permissionIds") List<Long> permissionIds);
 
     @Delete("delete from sys_role where id = #{id}")
     int delete(Long id);

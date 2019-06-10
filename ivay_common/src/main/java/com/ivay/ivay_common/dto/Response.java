@@ -7,10 +7,10 @@ import java.io.Serializable;
 
 @ApiModel
 public class Response<T> implements Serializable {
-    @ApiModelProperty(value = "返回狀態")
+    @ApiModelProperty(value = "返回状态")
     private ResponseInfo status = new ResponseInfo("200", "OK");
 
-    @ApiModelProperty(value = "返回對象")
+    @ApiModelProperty(value = "返回对象")
     private T bo;
 
     public T getBo() {

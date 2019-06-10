@@ -24,7 +24,15 @@ public interface XAuditUserService {
      * @param ids
      * @return
      */
-    int delete(String ids);
+    int deleteAudit(String ids);
+
+    /**
+     * 删除被某个审计员审计的用户
+     *
+     * @param ids
+     * @return
+     */
+    int deleteUser(String ids);
 
     /**
      * 为某个用户分配一个审计员,不设置审计员则随机分配

@@ -5,8 +5,6 @@ import com.ivay.ivay_app.dto.RoleDto;
 import com.ivay.ivay_app.service.RoleService;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableHandler;
-import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
-import com.ivay.ivay_common.table.PageTableHandler.ListHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dao.master.RoleDao;
@@ -46,20 +44,10 @@ public class RoleController {
     @ApiOperation(value = "角色列表")
     @PreAuthorize("hasAuthority('sys:role:query')")
     public PageTableResponse listRoles(PageTableRequest request) {
-        return new PageTableHandler(new CountHandler() {
-
-            @Override
-            public int count(PageTableRequest request) {
-                return roleDao.count(request.getParams());
-            }
-        }, new ListHandler() {
-
-            @Override
-            public List<Role> list(PageTableRequest request) {
-                List<Role> list = roleDao.list(request.getParams(), request.getOffset(), request.getLimit());
-                return list;
-            }
-        }).handle(request);
+        return new PageTableHandler(
+                a -> roleDao.count(a.getParams()),
+                a -> roleDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 
     @GetMapping("/{id}")
