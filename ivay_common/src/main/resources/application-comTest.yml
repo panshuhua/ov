@@ -1,0 +1,17 @@
+# 日志配置文件
+logging:
+  config: classpath:logback-ivay.xml
+
+logfile:
+  # 日志存放路径
+  path: /data/logs/
+  totalSizeCap: 10GB
+
+
+# 自定义配置
+# baokim接口私钥存放路径
+keyfilepath: /usr/key/test/
+# baokim接口参数
+api_partner_code: FINTECH
+api_request_id_prefix: FINTECHBK
+

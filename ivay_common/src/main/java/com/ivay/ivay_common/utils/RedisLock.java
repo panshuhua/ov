@@ -1,6 +1,5 @@
-package com.ivay.ivay_repository.utils;
+package com.ivay.ivay_common.utils;
 
-import com.ivay.ivay_common.utils.SysVariable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.connection.ReturnType;

@@ -12,8 +12,8 @@ dataSource:
 spring:
   profiles:
     # 多模块使用include取代active
-    #    include: dev, comDev, dbDev
-    include: test, comTest, dbTest
+    include: dev, comDev, dbDev
+#    include: test, comTest, dbTest
 #    include: prod, comProd, dbProd
 
 # 增加定时器

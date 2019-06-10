@@ -1,4 +1,4 @@
-package com.ivay.ivay_app.utils;
+package com.ivay.ivay_common.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;

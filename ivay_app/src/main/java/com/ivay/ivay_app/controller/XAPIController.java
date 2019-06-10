@@ -3,7 +3,7 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_app.utils.RedisUtils;
+import com.ivay.ivay_common.utils.RedisUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
