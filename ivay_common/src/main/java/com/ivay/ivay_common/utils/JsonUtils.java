@@ -117,6 +117,9 @@ public class JsonUtils {
     public static LinkedMultiValueMap<String, String> objToLinkedMultiValueMap(Object obj) {
         LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
         Field[] fields = obj.getClass().getDeclaredFields();    // 获取f对象对应类中的所有属性域
+        Field[] fields2 = obj.getClass().getSuperclass().getDeclaredFields(); //获取f对象对应的父类中的所有属性域（设定只有一层）
+        
+        //循环自身的属性
         for (int i = 0, len = fields.length; i < len; i++) {
             String varName = fields[i].getName();
             //varName = varName.toLowerCase();					// 将key置为小写，默认为对象的属性
@@ -137,6 +140,29 @@ public class JsonUtils {
                 ex.printStackTrace();
             }
         }
+        
+        //循环父类的属性
+        for (int i = 0, len = fields2.length; i < len; i++) {
+            String varName = fields2[i].getName();
+            //varName = varName.toLowerCase();					// 将key置为小写，默认为对象的属性
+            if ("serialVersionUID".equals(varName)) {
+                continue;
+            }
+            try {
+                boolean accessFlag = fields2[i].isAccessible();    // 获取原来的访问控制权限
+                fields2[i].setAccessible(true);                    // 修改访问控制权限
+                Object o = fields2[i].get(obj);                    // 获取在对象f中属性fields[i]对应的对象中的变量
+                if (o != null) {
+                    map.add(varName, o.toString());
+                }
+                fields2[i].setAccessible(accessFlag);            // 恢复访问控制权限
+            } catch (IllegalArgumentException ex) {
+                ex.printStackTrace();
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
         return map;
     }
 
