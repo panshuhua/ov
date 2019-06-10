@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dto.Response;
+import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_app.service.RegisterService;
 import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;

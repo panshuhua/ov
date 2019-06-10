@@ -32,11 +32,6 @@ spring:
     password:
     protocol: smtp
     test-connection: false
-  messages:
-    basename: i18n/messages
-    encoding: UTF-8
-    fallback-to-system-locale: false
-    use-code-as-default-message: true
 
 token:
   expire:

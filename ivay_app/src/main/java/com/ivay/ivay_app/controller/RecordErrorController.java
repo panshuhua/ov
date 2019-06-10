@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.ErrorMsg;
-import com.ivay.ivay_app.dto.Response;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_app.service.RecordErrorService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;

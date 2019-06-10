@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.advice.BusinessException;
-import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_repository.dao.master.XUserExtInfoDao;
-import com.ivay.ivay_repository.model.XUserExtInfo;
 import com.ivay.ivay_app.service.XUserExtInfoService;
 import com.ivay.ivay_app.service.XUserInfoService;
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_repository.dao.master.XUserExtInfoDao;
+import com.ivay.ivay_repository.model.XUserExtInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

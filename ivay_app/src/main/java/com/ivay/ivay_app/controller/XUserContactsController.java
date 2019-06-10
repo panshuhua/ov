@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dto.Response;
+import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_app.model.RiskInfo;
 import com.ivay.ivay_app.service.XUserContactsService;
 import com.ivay.ivay_common.table.PageTableHandler;

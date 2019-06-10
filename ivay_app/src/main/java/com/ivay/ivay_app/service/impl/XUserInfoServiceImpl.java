@@ -1,10 +1,10 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.advice.BusinessException;
-import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;

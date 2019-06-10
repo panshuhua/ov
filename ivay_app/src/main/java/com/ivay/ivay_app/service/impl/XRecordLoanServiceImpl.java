@@ -1,18 +1,14 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.advice.BusinessException;
-import com.ivay.ivay_app.config.I18nService;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.*;
-import com.ivay.ivay_common.utils.RedisLock;
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.CommonUtil;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;

@@ -79,7 +79,7 @@
     </logger>
 
     <!--所有业务的日志-->
-    <logger name="com.ivay" level="debug" additivity="true">
+    <logger name="com.ivay" level="info" additivity="true">
         <appender-ref ref="FILE_LOG"/>
         <appender-ref ref="ERROR_LOG"/>
     </logger>

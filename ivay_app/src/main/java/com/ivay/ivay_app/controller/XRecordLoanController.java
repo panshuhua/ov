@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dto.Response;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_repository.model.XLoanRate;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_common.table.PageTableResponse;

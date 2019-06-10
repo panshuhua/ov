@@ -1,6 +1,6 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.config.I18nService;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;

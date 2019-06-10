@@ -1,12 +1,12 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.advice.BusinessException;
 import com.ivay.ivay_manage.service.RiskUserService;
 import com.ivay.ivay_manage.service.ThreadPoolService;
 import com.ivay.ivay_manage.service.XConfigService;

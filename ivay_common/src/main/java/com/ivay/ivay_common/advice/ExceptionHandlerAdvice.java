@@ -1,7 +1,7 @@
-package com.ivay.ivay_app.advice;
+package com.ivay.ivay_common.advice;
 
-import com.ivay.ivay_app.config.I18nService;
-import com.ivay.ivay_app.dto.Response;
+import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

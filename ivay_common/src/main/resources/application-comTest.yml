@@ -7,6 +7,12 @@ logfile:
   path: /data/logs/
   totalSizeCap: 10GB
 
+spring:
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+    use-code-as-default-message: true
 
 # 自定义配置
 # baokim接口私钥存放路径

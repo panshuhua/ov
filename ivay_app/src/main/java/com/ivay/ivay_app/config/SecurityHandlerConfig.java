@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.config;
 
 import com.ivay.ivay_app.dto.LoginUser;
-import com.ivay.ivay_app.dto.ResponseInfo;
+import com.ivay.ivay_common.dto.ResponseInfo;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.filter.TokenFilter;
 import com.ivay.ivay_app.service.TokenService;

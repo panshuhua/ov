@@ -3,6 +3,8 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.utils.RedisUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -96,10 +98,17 @@ public class XAPIController {
     @Resource
     private RedisUtils redisUtils;
 
+    @Autowired
+    private I18nService i18nService;
+
     @PostMapping("test")
     public boolean test(@RequestParam(required = false) String value) {
-        redisUtils.set("sx:test", "123", 60L);
-        System.out.println(redisUtils.get("sx:test"));
-        return true;
+        logger.info("你好");
+        logger.warn("hi");
+        logger.error("mo xi mo xi");
+//        redisUtils.set("sx:test", "123", 60L);
+//        System.out.println(redisUtils.get("sx:test"));
+        throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
+                i18nService.getMessage("response.error.user.checkgid.msg"));
     }
 }

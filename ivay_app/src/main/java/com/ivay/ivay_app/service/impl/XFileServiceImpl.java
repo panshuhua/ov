@@ -1,14 +1,14 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.advice.BusinessException;
-import com.ivay.ivay_app.config.I18nService;
+import com.ivay.ivay_app.service.XFileService;
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.utils.FileUtil;
+import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XFileInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserExtInfoDao;
 import com.ivay.ivay_repository.model.XFileInfo;
 import com.ivay.ivay_repository.model.XUserExtInfo;
-import com.ivay.ivay_app.service.XFileService;
-import com.ivay.ivay_common.utils.FileUtil;
-import com.ivay.ivay_common.utils.SysVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

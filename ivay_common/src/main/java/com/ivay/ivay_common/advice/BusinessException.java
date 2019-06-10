@@ -1,4 +1,4 @@
-package com.ivay.ivay_app.advice;
+package com.ivay.ivay_common.advice;
 
 /**
  * 自定义业务异常类
