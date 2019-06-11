@@ -51,5 +51,13 @@ public interface XAuditUserService {
      * @param request
      * @return
      */
-    PageTableResponse list(PageTableRequest request);
+    PageTableResponse listAudit(PageTableRequest request);
+
+    /**
+     * 获取某审计员可审计名单
+     *
+     * @param request
+     * @return
+     */
+    PageTableResponse listUser(PageTableRequest request);
 }

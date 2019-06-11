@@ -9,6 +9,7 @@ import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.*;
+import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserRiskDao;
 import com.ivay.ivay_repository.model.RiskUser;
@@ -49,6 +50,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     @Autowired
     private I18nService i18nService;
 
+    @Autowired
+    private RoleService roleService;
+
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
         String time = request.getParams().get("toTime").toString();
@@ -56,12 +60,18 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(DateUtils.stringToDate_YYYY_MM_DD(time));
             calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 58);
-            calendar.set(Calendar.SECOND, 58);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
             request.getParams().put("toTime", DateUtils.dateToString_YYYY_MM_DD_HH_MM_SS(calendar.getTime()));
         }
-        return new PageTableHandler((a) -> xUserInfoDao.auditCount(a.getParams()),
-                (a) -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
+
+        // 设置角色与登录用户id
+        request.getParams().put("role", roleService.getLoginUserAuditRole());
+        request.getParams().put("loginId", UserUtil.getLoginUser().getId());
+
+        return new PageTableHandler(
+                a -> xUserInfoDao.auditCount(a.getParams()),
+                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 

@@ -34,17 +34,6 @@ public class XAuditUserController {
         return response;
     }
 
-    @GetMapping("listUser")
-    @ApiOperation(value = "获取某审计员可审计名单")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "auditId", value = "审计员id", dataType = "String", paramType = "query")
-    })
-    public Response<List<XAuditUser>> get(@RequestParam String auditId) {
-        Response<List<XAuditUser>> response = new Response<>();
-        response.setBo(xAuditUserService.getBySysUserId(auditId));
-        return response;
-    }
-
     @DeleteMapping("deleteAudit")
     @ApiOperation(value = "删除某个审计员")
     @ApiImplicitParams({
@@ -65,8 +54,24 @@ public class XAuditUserController {
 
     @GetMapping("listAudit")
     @ApiOperation(value = "获得所有的审计员")
-    public PageTableResponse list(PageTableRequest request) {
-        return xAuditUserService.list(request);
+    public PageTableResponse listAudit(PageTableRequest request) {
+        return xAuditUserService.listAudit(request);
     }
 
+    @GetMapping("listUser")
+    @ApiOperation(value = "获取某审计员可审计名单")
+    public PageTableResponse listUser(PageTableRequest request) {
+        return xAuditUserService.listUser(request);
+    }
+
+    @GetMapping("get")
+    @ApiOperation(value = "获取某审计员可审计名单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "auditId", value = "审计员id", dataType = "String", paramType = "query")
+    })
+    public Response<List<XAuditUser>> get(@RequestParam String auditId) {
+        Response<List<XAuditUser>> response = new Response<>();
+        response.setBo(xAuditUserService.getBySysUserId(auditId));
+        return response;
+    }
 }

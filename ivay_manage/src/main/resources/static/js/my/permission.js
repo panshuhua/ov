@@ -1,20 +1,33 @@
 function checkPermission() {
-	var pers = [];
-	$.ajax({
-		type : 'get',
-		url : '/manage/permissions/owns',
-		contentType : "application/json; charset=utf-8",
-		async : false,
-		success : function(data) {
-			pers = data;
-			$("[permission]").each(function() {
-				var per = $(this).attr("permission");
-				if ($.inArray(per, data) < 0) {
-					$(this).hide();
-				}
-			});
-		}
-	});
-	
-	return pers;
+    var pers = [];
+    $.ajax({
+        type: 'get',
+        url: '/manage/permissions/owns',
+        contentType: "application/json; charset=utf-8",
+        async: false,
+        success: function (data) {
+            pers = data;
+            $("[permission]").each(function () {
+                var per = $(this).attr("permission");
+                if ($.inArray(per, data) < 0) {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+    return pers;
+}
+
+function getLoginUserRole() {
+    var pers = [];
+    $.ajax({
+        type: 'get',
+        url: '/manage/permissions/getLoginUserRole',
+        contentType: "application/json; charset=utf-8",
+        async: false,
+        success: function (data) {
+            pers = data;
+        }
+    });
+    return pers;
 }

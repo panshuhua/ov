@@ -90,13 +90,22 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     }
 
     @Override
-    public PageTableResponse list(PageTableRequest request) {
+    public PageTableResponse listAudit(PageTableRequest request) {
         Map param = request.getParams();
+        // 查询审计员
         param.put("type", SysVariable.ROLE_OVAY_AUDIT);
         request.setParams(param);
         return new PageTableHandler(
                 a -> xAuditUserDao.count(a.getParams()),
                 b -> xAuditUserDao.list(b.getParams(), b.getOffset(), b.getLimit())
+        ).handle(request);
+    }
+
+    @Override
+    public PageTableResponse listUser(PageTableRequest request) {
+        return new PageTableHandler(
+                a -> xAuditUserDao.countUser(a.getParams()),
+                b -> xAuditUserDao.listUser(b.getParams(), b.getOffset(), b.getLimit())
         ).handle(request);
     }
 }

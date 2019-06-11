@@ -1,6 +1,7 @@
 package com.ivay.ivay_common.table;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,6 +16,10 @@ public class PageTableRequest implements Serializable {
     private Integer offset;
     private Integer limit;
     private Map<String, Object> params;
+
+    public PageTableRequest() {
+        this.params = new HashMap<>();
+    }
 
     public Integer getOffset() {
         return offset;

@@ -2,6 +2,7 @@ package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_repository.model.XAuditUser;
+import com.ivay.ivay_repository.model.XUserInfo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -39,6 +40,13 @@ public interface XAuditUserDao {
     List<SysUser> list(@Param("params") Map<String, Object> params,
                        @Param("offset") Integer offset,
                        @Param("limit") Integer limit);
+
+    // 查出某一角色的所有用户信息
+    int countUser(@Param("params") Map<String, Object> params);
+
+    List<XUserInfo> listUser(@Param("params") Map<String, Object> params,
+                             @Param("offset") Integer offset,
+                             @Param("limit") Integer limit);
 
     /**
      * 查出某一角色的所有用户id

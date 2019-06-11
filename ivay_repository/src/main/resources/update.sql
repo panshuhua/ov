@@ -28,7 +28,7 @@ CREATE INDEX username ON sys_user (username);
 INSERT INTO `sys_role` VALUES ('2', 'ovayAdmin', 'OVAY系统超级管理员权限', NOW(), NOW(), 'Y');
 INSERT INTO `sys_role` VALUES ('3', 'ovayAudit', '审核系统使用权限', NOW(), NOW(), 'Y');
 
---新增：社交类app个数表
+-- 新增：社交类app个数表
 CREATE TABLE `x_user_app_num` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_gid` varchar(32) NOT NULL COMMENT '用户gid',
@@ -38,7 +38,7 @@ CREATE TABLE `x_user_app_num` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
---x_config表风控规则数据修改：添加社交类app规则
+-- x_config表风控规则数据修改：添加社交类app规则
 UPDATE `x_config` SET `id`='11', `type`='riskManage', `lang`=NULL, `content`='{\"enable\": true,\"audit\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"10~\",\"majorRelation\":\"0~2\",\"appNum\":\"0~\"},\"loan\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"6~\",\"majorRelation\":\"0~2\",\"overdueDay\":\"0~30\",\"overdueDay2\":\"0~5\",\"appNum\":\"0~\"}}', `description`='风控配置：audit授权配置，loan借款配置，enable是否启动风控' WHERE (`id`='11');
 
 
@@ -48,4 +48,4 @@ ALTER TABLE x_user_info ADD `refuse_type` char(1) DEFAULT NULL COMMENT '审核�
 ALTER TABLE x_user_info ADD `audit_time` datetime DEFAULT NULL COMMENT '审核时间';
 
 
-
+-- 更新 审核状态 配置

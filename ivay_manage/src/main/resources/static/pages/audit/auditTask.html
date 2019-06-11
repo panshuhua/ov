@@ -82,6 +82,7 @@
     var pers = checkPermission();
 
     var example;
+
     // 初始化审计员列表
     function initAudit() {
         example = $('#dt-table').DataTable({
@@ -149,6 +150,7 @@
     });
 
     var example2;
+
     // 审计员审计用户列表
     function showDetail(gid) {
         example2 = $('#dt-table2').DataTable({
@@ -159,7 +161,7 @@
                 "url": "/js/plugin/datatables/Chinese.lang"
             },
             "ajax": {
-                "url": "/manage/xAuditUsers/get",
+                "url": "/manage/xAuditUsers/listUser",
                 "type": "get",
                 "data": function (d) {
                     d.auditId = gid;

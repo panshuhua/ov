@@ -1,16 +1,12 @@
 package com.ivay.ivay_manage.controller;
 
 import com.google.common.collect.Maps;
-import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.dto.RoleDto;
 import com.ivay.ivay_manage.service.RoleService;
-import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.model.Role;
 import io.swagger.annotations.Api;
@@ -67,29 +63,8 @@ public class RoleController {
     @ApiOperation(value = "所有角色")
     @PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
     public List<Role> roles() {
-        LoginUser loginUser = UserUtil.getLoginUser();
-        if (loginUser == null) {
-            throw new BusinessException("not login.");
-        }
-        List<Role> roles = roleDao.listByUserId(loginUser.getId());
-        if (roles.size() == 0) {
-            throw new BusinessException("not find role.");
-        }
-        // admin 能查看管理所有角色
-        // ovayAdmin 不能查看admin，能管理和查看所有ovayAdmin和ovayAudit角色
-        String role = SysVariable.ROLE_OVAY_AUDIT;
-        for (Role r : roles) {
-            if (SysVariable.ROLE_ADMIN.equals(r.getName())) {
-                role = SysVariable.ROLE_ADMIN;
-                break;
-            }
-            if (SysVariable.ROLE_OVAY_ADMIN.equals(r.getName())) {
-                role = SysVariable.ROLE_OVAY_ADMIN;
-            }
-        }
-
         Map<String, Object> map = Maps.newHashMap();
-        map.put("role", role);
+        map.put("role", roleService.getLoginUserAuditRole());
         return roleDao.list(map, null, null);
     }
 
