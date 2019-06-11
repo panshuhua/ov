@@ -1,6 +1,5 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_app.model.RiskInfo;
 import com.ivay.ivay_app.service.XUserContactsService;
@@ -29,8 +28,6 @@ public class XUserContactsController {
     private XUserContactsDao xUserContactsDao;
     @Autowired
     private XUserContactsService xUserContactsService;
-    @Autowired
-    private I18nService i18nService;
 
     @PostMapping("save")
     @ApiOperation(value = "保存")
