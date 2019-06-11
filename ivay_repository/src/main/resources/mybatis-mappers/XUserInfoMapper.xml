@@ -323,7 +323,7 @@
 		) as lessten
     </select>
 
-    <select id="updateGpsAppNum">
+    <select id="updateGps">
       update x_user_info set 
       <if test="longitude!=null and longitude!='' or longitude==0">
       longitude=#{longitude},
@@ -331,9 +331,9 @@
       <if test="latitude!=null and latitude!='' or latitude==0">
       latitude=#{latitude},
       </if>
-      <if test="appNum!=null and appNum!='' or appNum==0">
+     <!--  <if test="appNum!=null and appNum!='' or appNum==0">
       app_num=#{appNum},
-      </if>
+      </if> -->
       update_time=#{updateTime} 
       where user_gid=#{userGid}
     </select>

@@ -24,4 +24,6 @@ public class RiskInfo {
     private BigDecimal latitude;
     @ApiModelProperty("社交类app的个数")
     private Integer appNum;
+    @ApiModelProperty("风控数据类型")
+    private String type;
 }

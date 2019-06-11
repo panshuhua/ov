@@ -37,6 +37,8 @@ public class XLoanQualification {
 
     @ApiModelProperty("社交app数量")
     public int appCount;
+    @ApiModelProperty("14天内社交类app的最大数量")
+    public int appMaxCount;
     public List<String> appList;
     @ApiModelProperty("姓名与绑卡姓名的编辑距离")
     public int nameDistance;

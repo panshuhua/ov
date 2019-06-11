@@ -1,4 +1,4 @@
--- 审计员角色分配 2019-6-10
+﻿-- 审计员角色分配 2019-6-10
 
 -- DDL：删除无用表
 DROP TABLE IF EXISTS `user`;
@@ -28,3 +28,12 @@ CREATE INDEX username ON sys_user (username);
 INSERT INTO `sys_role` VALUES ('2', 'ovayAdmin', 'OVAY系统超级管理员权限', NOW(), NOW(), 'Y');
 INSERT INTO `sys_role` VALUES ('3', 'ovayAudit', '审核系统使用权限', NOW(), NOW(), 'Y');
 
+--新增：社交类app个数表
+CREATE TABLE `x_user_app_num` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_gid` varchar(32) NOT NULL COMMENT '用户gid',
+  `app_num` int(10) DEFAULT NULL COMMENT '社交类app的个数',
+  `enable_flag` char(1) DEFAULT 'Y',
+  `update_date` varchar(50) DEFAULT NULL COMMENT '上传日期',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;

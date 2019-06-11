@@ -9,6 +9,7 @@ import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dao.master.XUserRiskDao;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAuditDetail;
 import com.ivay.ivay_repository.model.XLoanQualification;
@@ -41,6 +42,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     private RiskUserService riskUserService;
     @Autowired
     private XAuditUserService xAuditUserService;
+    @Resource
+    private XUserRiskDao xUserRiskDao;
 
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
@@ -125,6 +128,11 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             xLoanQualification.setOneGpsNum(-1);
         }
 
+        //实时计算社交类app个数
+        String updateDate = DateUtils.dateToString_YYYY_MM_DD(new Date());
+        Integer appNumCount=xUserRiskDao.queryAppNum(userGid, updateDate);
+        xLoanQualification.setAppCount(appNumCount);
+        
         return xLoanQualification;
     }
 
@@ -148,6 +156,12 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             lastOverdueDay = 0;
         }
         xLoanQualification.setLastOverdueDay(lastOverdueDay);
+        
+        // 实时计算14天内社交类app的最大个数
+        String updateDate = DateUtils.dateToString_MM_DD(new Date());
+        Integer appMaxCount=xUserRiskDao.queryMaxAppNum(userGid, updateDate);
+        xLoanQualification.setAppMaxCount(appMaxCount);
+        
         return xLoanQualification;
     }
 
@@ -181,7 +195,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     // 实时计算的联系人个数<10且14天内的最大联系人个数<10,拒贷（人数使用配置）
                     if (xLoanQualification.getContactsNum() < min || xLoanQualification.getContactsNum() > max) {
                         logger.info("联系人个数不符");
-                        return false;
+                        //return false;
                     }
                     break;
                 case "gps":
@@ -205,6 +219,12 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                         return false;
                     }
                     break;
+                case "appNum":
+                	//社交类app的个数不符
+                	if(xLoanQualification.getAppCount() <= min || xLoanQualification.getAppMaxCount() <= min) {
+                		logger.info("社交类app个数不符");
+                		return false;
+                	}
                 case "overdueDay":
                     //历史最大逾期天数>=30天，拒贷
                     if (xLoanQualification.getMaxOverdueDay() >= max) {

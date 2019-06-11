@@ -95,7 +95,7 @@ public interface XUserInfoDao {
             "select count(1) as num from x_user_contacts where user_gid=#{userGid}" +
             " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=14 GROUP BY update_date ) temp")
     int countContacts(String userGid);
-
+    
     /**
      * 贷前策略
      *
@@ -137,7 +137,7 @@ public interface XUserInfoDao {
      */
     Integer getUserCountsBygps(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude);
 
-    Integer updateGpsAppNum(XUserInfo xUserInfo);
+    Integer updateGps(XUserInfo xUserInfo);
 
     /**
      * 查出待审核用户
