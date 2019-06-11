@@ -37,3 +37,6 @@ CREATE TABLE `x_user_app_num` (
   `update_date` varchar(50) DEFAULT NULL COMMENT '上传日期',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+
+--x_config表风控规则数据修改：添加社交类app规则
+UPDATE `x_config` SET `id`='11', `type`='riskManage', `lang`=NULL, `content`='{\"enable\": true,\"audit\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"10~\",\"majorRelation\":\"0~2\",\"appNum\":\"0~\"},\"loan\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"6~\",\"majorRelation\":\"0~2\",\"overdueDay\":\"0~30\",\"overdueDay2\":\"0~5\",\"appNum\":\"0~\"}}', `description`='风控配置：audit授权配置，loan借款配置，enable是否启动风控' WHERE (`id`='11');
