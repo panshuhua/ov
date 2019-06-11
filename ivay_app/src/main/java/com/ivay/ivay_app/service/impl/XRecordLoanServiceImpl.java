@@ -17,6 +17,7 @@ import com.ivay.ivay_repository.model.XBankAndCardInfo;
 import com.ivay.ivay_repository.model.XLoanRate;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,7 +182,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             params.put("userGid", xRecordLoan.getUserGid());
             params.put("flag", 1);
             String ret = restTemplate.getForObject(riskControlUrl, String.class, params);
-            if ("true".equals(ret)) {
+            if (StringUtils.isEmpty(ret)) {
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());
                 try {
                     transfersRsp = xapiService.transfers(bankNo,  // 银行代码
@@ -200,7 +201,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 }
             } else {
                 transfersRsp.setResponseCode(i18nService.getMessage("response.error.borrow.riskcheck.code"));
-                transfersRsp.setResponseMessage(i18nService.getMessage("response.error.borrow.riskcheck.msg"));
+                transfersRsp.setResponseMessage(i18nService.getMessage("response.error.borrow.riskcheck.msg") + ": " + ret);
             }
             confirmLoan(xRecordLoan, transfersRsp);
         });

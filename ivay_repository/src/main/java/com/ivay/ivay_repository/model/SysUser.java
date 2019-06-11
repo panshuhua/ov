@@ -1,8 +1,8 @@
 package com.ivay.ivay_repository.model;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 
 public class SysUser extends BaseEntity<Long> {
 
@@ -20,6 +20,18 @@ public class SysUser extends BaseEntity<Long> {
 	private Integer sex;
 	private Integer status;
 	private String intro;
+
+	// 可审核用户人数
+	private int count;
+
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
 
 	public String getUsername() {
 		return username;
@@ -114,5 +126,4 @@ public class SysUser extends BaseEntity<Long> {
 		int VALID = 1;
 		int LOCKED = 2;
 	}
-
 }

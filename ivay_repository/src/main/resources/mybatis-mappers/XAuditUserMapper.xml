@@ -37,7 +37,10 @@
     </select>
 
     <select id="list" resultType="com.ivay.ivay_repository.model.SysUser">
-        SELECT t.* FROM sys_user t
+        SELECT t.*,
+        ( SELECT count(1) FROM x_audit_user xau
+        WHERE xau.enable_flag='Y' AND xau.sys_user_id=t.id GROUP BY xau.sys_user_id) count
+        FROM sys_user t
         <include refid="list_condition"/>
         ${params.orderBy}
         limit #{offset}, #{limit}

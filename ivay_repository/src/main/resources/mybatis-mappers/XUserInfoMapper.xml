@@ -67,6 +67,15 @@
             <if test="params.transPwd != null and params.transPwd != ''">
                 and trans_pwd = #{params.transPwd}
             </if>
+            <if test="params.refuseReason != null and params.refuseReason != ''">
+                and refuse_reason = #{params.refuseReason}
+            </if>
+            <if test="params.refuseType != null and params.refuseType != ''">
+                and refuse_type = #{params.refuseType}
+            </if>
+            <if test="params.auditTime != null and params.auditTime != ''">
+                and audit_time = #{params.auditTime}
+            </if>
         </where>
     </sql>
 
@@ -130,6 +139,15 @@
             <if test="transPwd != null">
                 trans_pwd = #{transPwd},
             </if>
+            <if test="refuseReason != null">
+                refuse_reason = #{refuseReason},
+            </if>
+            <if test="refuseType != null">
+                refuse_type = #{refuseType},
+            </if>
+            <if test="auditTime != null">
+                audit_time = #{auditTime},
+            </if>
         </set>
         where t.user_gid = #{userGid} and enable_flag = "Y"
     </update>
@@ -159,7 +177,8 @@
     <select id="toBeAuditedList" resultType="com.ivay.ivay_repository.model.XUserInfo">
         SELECT x.*
         FROM x_user_info x
-        WHERE x.account_status='0' AND x.user_status="2" AND (x.credit_line IS null OR x.credit_line=0) AND x.enable_flag="Y"
+        WHERE x.account_status='0' AND x.user_status="2" AND (x.credit_line IS null OR x.credit_line=0) AND
+        x.enable_flag="Y"
         <if test="num !=null and num!=0">
             AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_time) &lt;= #{num,jdbcType=INTEGER}
         </if>

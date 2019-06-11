@@ -1,6 +1,7 @@
 package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -45,6 +46,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     @Resource
     private XUserRiskDao xUserRiskDao;
 
+    @Autowired
+    private I18nService i18nService;
+
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
         String time = request.getParams().get("toTime").toString();
@@ -67,24 +71,26 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     }
 
     @Override
-    public int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo) {
+    public int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo, String type) {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
         if (xUserInfo == null) {
-            throw new BusinessException("0014", "该用户不存在, 或已冻结");
+            throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
+                    i18nService.getMessage("response.error.user.checkgid.msg"));
         }
-        if (flag == 1) {
+        if (flag == SysVariable.AUDIT_PASS) {
             // 审核通过
-            xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
-            if (!queryAuditQualification(userGid, 0)) {
+            String demo = queryRiskQualificationDemo(userGid, SysVariable.RISK_TYPE_AUDIT);
+            if (!StringUtils.isEmpty(demo)) {
+                xUserInfo.setRefuseType(SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+                xUserInfo.setAuditTime(new Date());
+                xUserInfo.setRefuseReason(demo);
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
+                xUserInfoDao.update(xUserInfo);
                 throw new BusinessException("很抱歉，该用户的授信信息未通过审核");
             }
+            xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
         } else {
-//            if (flag == 0) {
-//                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
-//            }
-//            if (flag == 2) {
-//                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_RETRY);
-//            }
+            // 审核拒绝
             if (StringUtils.isEmpty(refuseCode)) {
                 throw new BusinessException("请选择拒绝理由");
             }
@@ -95,9 +101,16 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                 // 2 和3 开头的 直接审核拒绝
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
             }
+            // 拒绝理由
+            xUserInfo.setRefuseReason(refuseDemo);
             logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}:{}.", userGid, refuseCode, refuseDemo);
         }
-        xUserInfo.setUpdateTime(new Date());
+        Date now = new Date();
+        xUserInfo.setUpdateTime(now);
+        // 审核时间
+        xUserInfo.setAuditTime(now);
+        // 审核类型
+        xUserInfo.setRefuseType(type);
         if (xUserInfoDao.update(xUserInfo) == 1 && SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
             logger.info("审核通过，开始初始化借款利率和借款额度");
             xLoanRateService.initLoanRateAndCreditLimit(userGid);
@@ -130,9 +143,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         //实时计算社交类app个数
         String updateDate = DateUtils.dateToString_YYYY_MM_DD(new Date());
-        Integer appNumCount=xUserRiskDao.queryAppNum(userGid, updateDate);
+        Integer appNumCount = xUserRiskDao.queryAppNum(userGid, updateDate);
         xLoanQualification.setAppCount(appNumCount);
-        
+
         return xLoanQualification;
     }
 
@@ -156,29 +169,29 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             lastOverdueDay = 0;
         }
         xLoanQualification.setLastOverdueDay(lastOverdueDay);
-        
+
         // 实时计算14天内社交类app的最大个数
         String updateDate = DateUtils.dateToString_MM_DD(new Date());
-        Integer appMaxCount=xUserRiskDao.queryMaxAppNum(userGid, updateDate);
+        Integer appMaxCount = xUserRiskDao.queryMaxAppNum(userGid, updateDate);
         xLoanQualification.setAppMaxCount(appMaxCount);
-        
+
         return xLoanQualification;
     }
 
     @Override
-    public boolean queryAuditQualification(String userGid, int flag) {
+    public String queryRiskQualificationDemo(String userGid, int flag) {
         // 風控管理配置
         Map riskConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_RISK));
         if (riskConfig == null || "false".equals(riskConfig.get("enable").toString())) {
-            return true;
+            return null;
         }
 
         XLoanQualification xLoanQualification = getAuditQualificationObj(userGid, flag);
-        if (flag == 1) {
+        if (flag == SysVariable.RISK_TYPE_LOAN) {
             xLoanQualification = getLoanQualificationObj(xLoanQualification, userGid);
         }
 
-        Map config = (LinkedHashMap) riskConfig.get(flag == 0 ? "audit" : "loan");
+        Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
         for (Object key : config.keySet()) {
             String[] values = config.get(key).toString().split("~");
             int min = Integer.parseInt(values[0]);
@@ -187,55 +200,55 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                 case "age":
                     // 年龄<18或者年龄>50岁时，则拒贷
                     if (xLoanQualification.getAge() < min || xLoanQualification.getAge() > max) {
-                        logger.info("年龄不符");
-                        return false;
+                        logger.info("年龄不符: {}", xLoanQualification.getAge());
+                        return "年龄不符: " + xLoanQualification.getAge();
                     }
                     break;
                 case "contact":
                     // 实时计算的联系人个数<10且14天内的最大联系人个数<10,拒贷（人数使用配置）
                     if (xLoanQualification.getContactsNum() < min || xLoanQualification.getContactsNum() > max) {
-                        logger.info("联系人个数不符");
-                        //return false;
+                        logger.info("联系人个数不符: {}", xLoanQualification.getContactsNum());
+                        return "联系人个数不符: " + xLoanQualification.getContactsNum();
                     }
                     break;
                 case "gps":
                     // 近一个月同一gps(精确到10m)注册用户数>1，拒贷
                     if (xLoanQualification.getOneGpsNum() < min || xLoanQualification.getOneGpsNum() > max) {
-                        logger.info("近一个月同一gps(精确到10m)注册用户数不符");
-                        return false;
+                        logger.info("近一个月同一gps(精确到10m)注册用户数不符: {}", xLoanQualification.getOneGpsNum());
+                        return "近一个月同一gps(精确到10m)注册用户数不符: " + xLoanQualification.getOneGpsNum();
                     }
                     break;
                 case "macCode":
                     // 近一个月同一设备id注册用户数>1，拒贷
                     if (xLoanQualification.getOnePhoneNum() < min || xLoanQualification.getOnePhoneNum() > max) {
-                        logger.info("近一个月同一设备id注册用户数不符");
-                        return false;
+                        logger.info("近一个月同一设备id注册用户数不符: {}", xLoanQualification.getOnePhoneNum());
+                        return "近一个月同一设备id注册用户数不符: " + xLoanQualification.getOnePhoneNum();
                     }
                     break;
                 case "majorRelation":
                     // 亲密联系人号码出现次数> 2，拒贷（人数使用配置）
                     if (xLoanQualification.getOneMajorPhoneNum() < min || xLoanQualification.getOneMajorPhoneNum() > max) {
-                        logger.info("亲密联系人号码出现次数不符");
-                        return false;
+                        logger.info("亲密联系人号码出现次数不符: {}", xLoanQualification.getOneMajorPhoneNum());
+                        return "亲密联系人号码出现次数不符: " + xLoanQualification.getOneMajorPhoneNum();
                     }
                     break;
                 case "appNum":
-                	//社交类app的个数不符
-                	if(xLoanQualification.getAppCount() <= min || xLoanQualification.getAppMaxCount() <= min) {
-                		logger.info("社交类app个数不符");
-                		return false;
-                	}
+                    //社交类app的个数不符
+                    if (xLoanQualification.getAppCount() <= min || xLoanQualification.getAppMaxCount() <= min) {
+                        logger.info("社交类app个数不符: {}", xLoanQualification.getAppCount());
+                        return "社交类app个数不符: " + xLoanQualification.getAppCount();
+                    }
                 case "overdueDay":
                     //历史最大逾期天数>=30天，拒贷
                     if (xLoanQualification.getMaxOverdueDay() >= max) {
-                        logger.info("历史最大逾期天数不符");
-                        return false;
+                        logger.info("历史最大逾期天数不符: {}", xLoanQualification.getMaxOverdueDay());
+                        return "历史最大逾期天数不符: " + xLoanQualification.getMaxOverdueDay();
                     }
                 case "overdueDay2":
                     //历史最大逾期天数在[15,30)天且最近一笔结清交易逾期天数大于5天，拒贷
                     if (xLoanQualification.getMaxOverdueDay() >= 15 && xLoanQualification.getMaxOverdueDay() < 30 && xLoanQualification.getLastOverdueDay() > max) {
-                        logger.info("历史最大逾期天数和结清交易逾期天数不符");
-                        return false;
+                        logger.info("历史最大逾期天数和结清交易逾期天数不符: {}", xLoanQualification.getMaxOverdueDay());
+                        return "历史最大逾期天数和结清交易逾期天数不符: " + xLoanQualification.getMaxOverdueDay();
                     }
                 default:
                     logger.info("未知的类型：{}", key.toString());
@@ -244,9 +257,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         //当前处于逾期中，拒贷
         if (xLoanQualification.isOverdueFlag()) {
             logger.info("当前处于逾期中");
-            return false;
+            return "有逾期借款未还";
         }
-        return true;
+        return null;
     }
 
     /**
@@ -266,7 +279,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         List<RiskUser> whiteList = riskUserService.selectUserListByPhone(phone);
         if (whiteList.size() > 0) {
             logger.info("{}: 白名单用户，执行自动审核---start", phone);
-            if (xUserInfoService.auditUpdate(userGid, 1, null, null) == 1) {
+            if (xUserInfoService.auditUpdate(userGid, 1, null, null, SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
                 logger.info("{}: 审核成功...", phone);
             } else {
                 logger.info("{}: 审核失败...", phone);

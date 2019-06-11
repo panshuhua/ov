@@ -94,8 +94,9 @@ public class XAuditUserServiceImpl implements XAuditUserService {
         Map param = request.getParams();
         param.put("type", SysVariable.ROLE_OVAY_AUDIT);
         request.setParams(param);
-        return new PageTableHandler((a) -> xAuditUserDao.count(a.getParams()),
-                (b) -> xAuditUserDao.list(b.getParams(), b.getOffset(), b.getLimit())
+        return new PageTableHandler(
+                a -> xAuditUserDao.count(a.getParams()),
+                b -> xAuditUserDao.list(b.getParams(), b.getOffset(), b.getLimit())
         ).handle(request);
     }
 }

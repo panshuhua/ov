@@ -1,4 +1,4 @@
-﻿-- 审计员角色分配 2019-6-10
+-- 审计员角色分配 2019-6-10
 
 -- DDL：删除无用表
 DROP TABLE IF EXISTS `user`;
@@ -40,3 +40,12 @@ CREATE TABLE `x_user_app_num` (
 
 --x_config表风控规则数据修改：添加社交类app规则
 UPDATE `x_config` SET `id`='11', `type`='riskManage', `lang`=NULL, `content`='{\"enable\": true,\"audit\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"10~\",\"majorRelation\":\"0~2\",\"appNum\":\"0~\"},\"loan\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"6~\",\"majorRelation\":\"0~2\",\"overdueDay\":\"0~30\",\"overdueDay2\":\"0~5\",\"appNum\":\"0~\"}}', `description`='风控配置：audit授权配置，loan借款配置，enable是否启动风控' WHERE (`id`='11');
+
+
+-- 增加审核说明
+ALTER TABLE x_user_info ADD `refuse_reason` varchar(512) CHARACTER SET utf8 DEFAULT NULL COMMENT '审核拒绝原因';
+ALTER TABLE x_user_info ADD `refuse_type` char(1) DEFAULT NULL COMMENT '审核类型：0人工审核 1 自动审核';
+ALTER TABLE x_user_info ADD `audit_time` datetime DEFAULT NULL COMMENT '审核时间';
+
+
+

@@ -36,7 +36,9 @@ public interface XAuditUserDao {
     // 查出某一角色的所有用户信息
     int count(@Param("params") Map<String, Object> params);
 
-    List<SysUser> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<SysUser> list(@Param("params") Map<String, Object> params,
+                       @Param("offset") Integer offset,
+                       @Param("limit") Integer limit);
 
     /**
      * 查出某一角色的所有用户id

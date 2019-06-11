@@ -34,7 +34,7 @@ public class XAuditUserController {
         return response;
     }
 
-    @GetMapping("get")
+    @GetMapping("listUser")
     @ApiOperation(value = "获取某审计员可审计名单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "auditId", value = "审计员id", dataType = "String", paramType = "query")
@@ -63,11 +63,10 @@ public class XAuditUserController {
         xAuditUserService.deleteUser(ids);
     }
 
-    @GetMapping("list")
+    @GetMapping("listAudit")
     @ApiOperation(value = "获得所有的审计员")
     public PageTableResponse list(PageTableRequest request) {
         return xAuditUserService.list(request);
     }
-
 
 }
