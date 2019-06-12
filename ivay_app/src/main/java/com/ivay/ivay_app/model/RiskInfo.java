@@ -26,4 +26,10 @@ public class RiskInfo {
     private Integer appNum;
     @ApiModelProperty("风控数据类型")
     private String type;
+    @ApiModelProperty("mac地址")
+    private String macAddress;
+    @ApiModelProperty("手机品牌")
+    private String phoneBrand;
+    @ApiModelProperty("手机流量类型")
+    private String trafficWay;
 }
