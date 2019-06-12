@@ -84,9 +84,18 @@ public class XUserInfo {
 
     @ApiModelProperty("社交类app的个数")
     private Integer appNum;
-    
+
     @ApiModelProperty("app消息推送token")
     private String fmcToken;
+
+    @ApiModelProperty("审核拒绝原因")
+    private String refuseReason;
+
+    @ApiModelProperty("审核类型：0人工审核 1 自动审核")
+    private String refuseType;
+
+    @ApiModelProperty("审核时间")
+    private Date auditTime;
 
     private long id;
     private Date createTime;
