@@ -10,3 +10,4 @@ public class RiskDataType {
     public static final String GPS = "gps";         //gps信息
     public static final String OTHER = "other";     //mac地址/手机品牌/使用什么手机流量
 }
+

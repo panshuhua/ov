@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.ivay.ivay_repository.model;
 
 import java.math.BigDecimal;
@@ -24,3 +25,21 @@ public class XUserRisk {
    private Date createTime;
    private Date updateTime;
 }
+=======
+package com.ivay.ivay_repository.model;
+
+import java.math.BigDecimal;
+
+import lombok.Data;
+
+@Data
+public class XUserRisk {
+   private String userGid;
+   private String macCode;
+   private BigDecimal longitude;
+   private BigDecimal latitude;
+   private String macAddress;
+   private String phoneBrand;
+   private String trafficWay;
+}
+>>>>>>> branch 'master' of https://gitee.com/loveanime/ivay_integration.git
