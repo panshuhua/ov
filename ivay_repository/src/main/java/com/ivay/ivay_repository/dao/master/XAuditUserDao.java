@@ -2,7 +2,6 @@ package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_repository.model.XAuditUser;
-import com.ivay.ivay_repository.model.XUserInfo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -22,6 +21,9 @@ public interface XAuditUserDao {
     @Delete("delete from x_audit_user where id = #{id}")
     int delete(Long id);
 
+    @Delete("delete from x_audit_user where enable_flag='Y'")
+    int deleteAll();
+
     // 批量逻辑删除
     int deleteByBatch(@Param("ids") String[] ids);
 
@@ -29,6 +31,8 @@ public interface XAuditUserDao {
     int deleteUser(@Param("ids") String[] ids);
 
     int update(XAuditUser xAuditUser);
+
+    int reAssignAudit(@Param("acceptId") String acceptId, @Param("handleId") String handleId);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into x_audit_user(sys_user_id, user_gid, create_time, update_time, enable_flag) values(#{sysUserId}, #{userGid}, #{createTime}, #{updateTime}, #{enableFlag})")
@@ -40,13 +44,6 @@ public interface XAuditUserDao {
     List<SysUser> list(@Param("params") Map<String, Object> params,
                        @Param("offset") Integer offset,
                        @Param("limit") Integer limit);
-
-    // 查出某一角色的所有用户信息
-    int countUser(@Param("params") Map<String, Object> params);
-
-    List<XUserInfo> listUser(@Param("params") Map<String, Object> params,
-                             @Param("offset") Integer offset,
-                             @Param("limit") Integer limit);
 
     /**
      * 查出某一角色的所有用户id

@@ -55,14 +55,16 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
-        String time = request.getParams().get("toTime").toString();
-        if (!StringUtils.isEmpty(time)) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(DateUtils.stringToDate_YYYY_MM_DD(time));
-            calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            request.getParams().put("toTime", DateUtils.dateToString_YYYY_MM_DD_HH_MM_SS(calendar.getTime()));
+        Object time = request.getParams().get("toTime");
+        if (time != null) {
+            if (!StringUtils.isEmpty(time.toString())) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(DateUtils.stringToDate_YYYY_MM_DD(time.toString()));
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                request.getParams().put("toTime", DateUtils.dateToString_YYYY_MM_DD_HH_MM_SS(calendar.getTime()));
+            }
         }
 
         // 设置角色与登录用户id
@@ -300,7 +302,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         // region -- 非白名单用户分配审计员
         else {
             logger.info("{}: 非白名单用户，分配审计员...", phone);
-            if (xAuditUserService.update(null, userGid) != null) {
+            if (xAuditUserService.assignAuditForUser(null, userGid) != null) {
                 logger.info("{}: 分配审计员成功...", phone);
             } else {
                 logger.info("{}: 分配审计员失败...", phone);

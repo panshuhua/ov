@@ -6,6 +6,7 @@ import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.XAuditUserService;
+import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XAuditUserDao;
 import com.ivay.ivay_repository.model.XAuditUser;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,9 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     private static final Logger logger = LoggerFactory.getLogger(XAuditUserService.class);
     @Autowired
     private XAuditUserDao xAuditUserDao;
+
+    @Autowired
+    private XUserInfoService xUserInfoService;
 
     @Override
     public XAuditUser getById(Long id) {
@@ -46,7 +50,7 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     }
 
     @Override
-    public XAuditUser update(String auditId, String userGid) {
+    public XAuditUser assignAuditForUser(String auditId, String userGid) {
         // 查出所有的审计员
         List<String> auditIds = xAuditUserDao.getSysUserByRole(SysVariable.ROLE_OVAY_AUDIT);
         if (auditIds.isEmpty()) {
@@ -78,6 +82,34 @@ public class XAuditUserServiceImpl implements XAuditUserService {
         return xAuditUser;
     }
 
+    /**
+     * 将某审计员的审核人员重新分配
+     *
+     * @param acceptId
+     * @param handleId
+     * @return
+     */
+    @Override
+    public boolean reAssignAudit(String acceptId, String handleId) {
+        if (StringUtils.isEmpty(handleId)) {
+            return false;
+        } else if (handleId.equals(acceptId)) {
+            return true;
+        }
+        if (StringUtils.isEmpty(acceptId)) {
+            // 查出所有的审计员
+            List<String> auditIds = xAuditUserDao.getSysUserByRole(SysVariable.ROLE_OVAY_AUDIT);
+            if (auditIds.size() == 0) {
+                xAuditUserDao.deleteAll();
+                return false;
+            }
+            acceptId = auditIds.get((int) (Math.random() * (auditIds.size())));
+            logger.info("随机分配审计员id：{}", acceptId);
+        }
+        xAuditUserDao.reAssignAudit(acceptId, handleId);
+        return false;
+    }
+
     @Override
     public XAuditUser save(XAuditUser xAuditUser) {
         xAuditUserDao.save(xAuditUser);
@@ -103,9 +135,6 @@ public class XAuditUserServiceImpl implements XAuditUserService {
 
     @Override
     public PageTableResponse listUser(PageTableRequest request) {
-        return new PageTableHandler(
-                a -> xAuditUserDao.countUser(a.getParams()),
-                b -> xAuditUserDao.listUser(b.getParams(), b.getOffset(), b.getLimit())
-        ).handle(request);
+        return xUserInfoService.auditList(request);
     }
 }

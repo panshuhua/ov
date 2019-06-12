@@ -29,7 +29,9 @@ public interface RoleDao {
     @Update("update sys_role t set t.name = #{name}, t.description = #{description}, updateTime = now() where t.id = #{id}")
     int update(Role role);
 
-    @Select("select * from sys_role r inner join sys_role_user ru on r.id = ru.roleId where ru.userId = #{userId}")
+    @Select("select * from sys_role r" +
+            " inner join sys_role_user ru on r.id = ru.roleId" +
+            " where ru.userId = #{userId}")
     List<Role> listByUserId(Long userId);
 
     @Delete("delete from sys_role_permission where roleId = #{roleId}")

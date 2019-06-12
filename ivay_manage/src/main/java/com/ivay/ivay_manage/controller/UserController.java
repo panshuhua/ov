@@ -4,10 +4,14 @@ import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.UserDto;
 import com.ivay.ivay_manage.service.UserService;
+import com.ivay.ivay_manage.service.XAuditUserService;
 import com.ivay.ivay_manage.utils.UserUtil;
+import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.dao.master.UserDao;
+import com.ivay.ivay_repository.model.Role;
 import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +21,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 用户相关接口
@@ -33,8 +39,14 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private RoleDao roleDao;
+
+    @Autowired
+    private XAuditUserService xAuditUserService;
 
     @LogAnnotation
     @PostMapping
@@ -54,7 +66,25 @@ public class UserController {
     @ApiOperation(value = "修改用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
     public SysUser updateUser(@RequestBody UserDto userDto) {
-        return userService.updateUser(userDto);
+        List<Role> roleList = roleDao.listByUserId(userDto.getId());
+        SysUser sysUser = userService.updateUser(userDto);
+        if (isDelOvayAuditRight(roleList, userDto.getRoleIds())) {
+            // 为被当前审计员审核的人员重新分配审计员
+            xAuditUserService.reAssignAudit(null, userDto.getId().toString());
+        }
+        return sysUser;
+    }
+
+    private boolean isDelOvayAuditRight(List<Role> oldRoleList, List<Long> newRoleId) {
+        Role ovayAudit = roleDao.getRole(SysVariable.ROLE_OVAY_AUDIT);
+        if (!newRoleId.contains(ovayAudit.getId())) {
+            for (Role r : oldRoleList) {
+                if (r.getId().equals(ovayAudit.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @LogAnnotation

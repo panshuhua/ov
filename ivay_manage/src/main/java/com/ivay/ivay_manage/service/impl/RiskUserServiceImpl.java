@@ -29,18 +29,6 @@ public class RiskUserServiceImpl implements RiskUserService {
         return riskUserDao.selectUserList();
     }
 
-//    @Override
-//    public List<RiskUser> selectUserListByUserId(Integer userId){
-//    	return riskUserDao.selectUserListByUserId(userId);
-//    }
-//    
-//    @Override
-//    @Transactional(value = "slaveTransactionManager")
-//    public void update(RiskUser user) {
-//    	riskUserDao.update(user);
-//        //int i = 10 / 0;
-//    }
-
     @Override
     public List<RiskUser> selectUserListByPhone(String phone) {
         return riskUserDao.selectUserListByPhone(phone);

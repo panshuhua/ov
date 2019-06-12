@@ -124,4 +124,5 @@ public class SysVariable {
     // 风控类型
     public static final int RISK_TYPE_AUDIT = 0;
     public static final int RISK_TYPE_LOAN = 1;
+
 }

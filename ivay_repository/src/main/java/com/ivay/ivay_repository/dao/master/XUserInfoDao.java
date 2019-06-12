@@ -50,11 +50,15 @@ public interface XUserInfoDao {
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XUserInfo> list(@Param("params") Map<String, Object> params,
+                         @Param("offset") Integer offset,
+                         @Param("limit") Integer limit);
 
     int auditCount(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> auditList(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XUserInfo> auditList(@Param("params") Map<String, Object> params,
+                              @Param("offset") Integer offset,
+                              @Param("limit") Integer limit);
 
     @Select("select user_gid,credit_line,credit_line_count,canborrow_amount,user_status from x_user_info t" +
             "where t.user_gid = #{gid} and t.enable_flag='Y'")

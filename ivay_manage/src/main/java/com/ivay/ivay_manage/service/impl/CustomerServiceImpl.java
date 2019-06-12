@@ -171,7 +171,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<XUserBankcoadInfo> listBank(Map<String, Object> params,
-                                            Integer offset, Integer limit) {
+                                            Integer offset,
+                                            Integer limit) {
         return customerDao.listBank(params, offset, limit);
     }
 

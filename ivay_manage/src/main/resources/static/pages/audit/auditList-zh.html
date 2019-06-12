@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
-    <link rel="stylesheet" type="text/css" media="screen" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="../css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="../layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all"/>
 </head>
 <body>
 <div>
@@ -149,16 +149,15 @@
 </body>
 </html>
 
-<script type="text/javascript" src="../js/libs/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../js/jq.js"></script>
-<script type="text/javascript" src="../js/plugin/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="../layui/layui.js"></script>
-<script type="text/javascript" src="../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
     var pers = checkPermission();
     var roles = getLoginUserRole();
-    console.log(roles)
     for (i = 0; i < roles.length; i++) {
         $("#auditId").append("<option value='" + i + "'>" + roles[i].username + "</option>");
     }
@@ -259,7 +258,6 @@
     function searchList() {
         initDetail();
         i = $("#auditId").val() != "-1" ? roles[$("#auditId").val()].id : "";
-        console.log(i)
         example.settings()[0].ajax.data = {
             "userGid": $("#userGid").val(),
             "name": $("#name").val(),
@@ -318,8 +316,6 @@
     function auditSubmit(flag) {
         if (flag == 1) {
             if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != $("#detail_name").text().replace(/\s/g, '').toUpperCase()) {
-                console.log($("#detail_name2").val())
-                console.log($("#detail_name").text())
                 alert("Please check the user name")
                 return;
             }

@@ -41,7 +41,16 @@ public interface XAuditUserService {
      * @param userGid
      * @return
      */
-    XAuditUser update(String auditId, String userGid);
+    XAuditUser assignAuditForUser(String auditId, String userGid);
+
+    /**
+     * 将某审计员的审核人员重新分配
+     *
+     * @param acceptId
+     * @param handleId
+     * @return
+     */
+    boolean reAssignAudit(String acceptId, String handleId);
 
     XAuditUser save(XAuditUser xAuditUser);
 
