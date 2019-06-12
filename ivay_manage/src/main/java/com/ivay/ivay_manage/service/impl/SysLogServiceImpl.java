@@ -33,7 +33,7 @@ public class SysLogServiceImpl implements SysLogService {
     @Override
     public void save(SysLogs sysLogs) {
 //		SysUser user = UserUtil.getLoginUser();
-        if (sysLogs == null || sysLogs.getUser() == null || sysLogs.getUser().getId() == null) {
+        if (sysLogs == null) {
             return;
         }
 
@@ -51,7 +51,6 @@ public class SysLogServiceImpl implements SysLogService {
 
         SysUser user = new SysUser();
         user.setId(userId);
-        sysLogs.setUser(user);
 
         sysLogsDao.save(sysLogs);
 

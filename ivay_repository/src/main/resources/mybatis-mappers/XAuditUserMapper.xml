@@ -7,6 +7,7 @@
         LEFT JOIN sys_role_user sru ON t.id = sru.userId
         LEFT JOIN sys_role sr ON sr.id = sru.roleId
         <where>
+            t.enable_flag = "Y"
             <if test="params.type != null and params.type != ''">
                 and sr.name = #{params.type}
             </if>
@@ -25,9 +26,6 @@
             <if test="params.updateTime != null and params.updateTime != ''">
                 and update_time = #{params.updateTime}
             </if>
-            <if test="params.enableFlag != null and params.enableFlag != ''">
-                and enable_flag = #{params.enableFlag}
-            </if>
         </where>
     </sql>
 
@@ -37,10 +35,15 @@
     </select>
 
     <select id="list" resultType="com.ivay.ivay_repository.model.SysUser">
-        SELECT t.* FROM sys_user t
+        SELECT t.*,
+        ( SELECT count(1) FROM x_audit_user xau
+        WHERE xau.enable_flag='Y' AND xau.sys_user_id=t.id GROUP BY xau.sys_user_id) count
+        FROM sys_user t
         <include refid="list_condition"/>
-        ${params.orderBy}
-        limit #{offset}, #{limit}
+        <if test="limit != null and limit != 0">
+            ${params.orderBy}
+            limit #{offset}, #{limit}
+        </if>
     </select>
 
     <update id="update">
@@ -63,6 +66,12 @@
             </if>
         </set>
         where t.id = #{id}
+    </update>
+
+    <update id="reAssignAudit">
+        update x_audit_user t
+        set sys_user_id = #{acceptId}
+        where t.sys_user_id = #{handleId} and t.enable_flag = 'Y'
     </update>
 
     <select id="getSysUserByRole" resultType="java.lang.String">

@@ -15,7 +15,7 @@ import io.swagger.annotations.Api;
 @RestController
 @RequestMapping("star/ebayApi")
 @Api(tags = "Ebay接口联调 - test")
-public class EbayAPITestController {
+public class XEbayAPITestController {
 	@Autowired
     private XEbayAPIService xEbayApiService;
 

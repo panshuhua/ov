@@ -108,4 +108,21 @@ public class SysVariable {
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";
     public static final String ROLE_OVAY_AUDIT = "ovayAudit";
+
+
+    // 审核拒绝类型
+    // 0人工审核
+    public static final String AUDIT_REFUSE_TYPE_MANUAL = "0";
+    // 1 自动审核
+    public static final String AUDIT_REFUSE_TYPE_AUTO = "1";
+    //  0 拒绝
+    public static final int AUDIT_REFUSE = 0;
+    // 1 通过
+    public static final int AUDIT_PASS = 1;
+
+
+    // 风控类型
+    public static final int RISK_TYPE_AUDIT = 0;
+    public static final int RISK_TYPE_LOAN = 1;
+
 }

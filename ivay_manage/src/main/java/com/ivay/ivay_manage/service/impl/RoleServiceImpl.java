@@ -1,7 +1,10 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.dto.RoleDto;
 import com.ivay.ivay_manage.service.RoleService;
+import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.model.Role;
 import org.slf4j.Logger;
@@ -73,4 +76,33 @@ public class RoleServiceImpl implements RoleService {
         log.debug("删除角色id:{}", id);
     }
 
+    /**
+     * 获取当前用户的最高角色，用户审计
+     *
+     * @return
+     */
+    @Override
+    public String getLoginUserAuditRole() {
+        LoginUser loginUser = UserUtil.getLoginUser();
+        if (loginUser == null) {
+            return null;
+        }
+        List<Role> roles = roleDao.listByUserId(loginUser.getId());
+        if (roles.size() == 0) {
+            return null;
+        }
+        // admin 能查看管理所有角色
+        // ovayAdmin 不能查看admin，能管理和查看所有ovayAdmin和ovayAudit角色
+        String role = SysVariable.ROLE_OVAY_AUDIT;
+        for (Role r : roles) {
+            if (SysVariable.ROLE_ADMIN.equals(r.getName())) {
+                role = SysVariable.ROLE_ADMIN;
+                break;
+            }
+            if (SysVariable.ROLE_OVAY_ADMIN.equals(r.getName())) {
+                role = SysVariable.ROLE_OVAY_ADMIN;
+            }
+        }
+        return role;
+    }
 }

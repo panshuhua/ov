@@ -2,17 +2,13 @@ package com.ivay.ivay_manage.controller;
 
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_manage.dto.Response;
 import com.ivay.ivay_manage.service.XAuditUserService;
-import com.ivay.ivay_repository.model.XAuditUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("manage/xAuditUsers")
@@ -22,27 +18,22 @@ public class XAuditUserController {
     @Autowired
     private XAuditUserService xAuditUserService;
 
-    @PutMapping("update")
-    @ApiOperation(value = "为某个用户分配一个审计员")
+    @PostMapping("update")
+    @ApiOperation(value = "重新分配审计员")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "auditId", value = "审计员id,不设置则随机分配", dataType = "String", paramType = "query", required = false),
-            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "flag", value = "0将某审计员的全部用户重新分配  1将某个用户重新分配", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "handleId", value = "要处理的审计员id或用户id", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "acceptId", value = "被指派的审计员id, 不指定则随机分配", dataType = "String", paramType = "query", required = false)
     })
-    public Response<XAuditUser> update(@RequestParam(required = false) String auditId, @RequestParam String userGid) {
-        Response<XAuditUser> response = new Response<>();
-        response.setBo(xAuditUserService.update(auditId, userGid));
-        return response;
-    }
-
-    @GetMapping("get")
-    @ApiOperation(value = "获取某审计员可审计名单")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "auditId", value = "审计员id", dataType = "String", paramType = "query")
-    })
-    public Response<List<XAuditUser>> get(@RequestParam String auditId) {
-        Response<List<XAuditUser>> response = new Response<>();
-        response.setBo(xAuditUserService.getBySysUserId(auditId));
-        return response;
+    public boolean update(@RequestParam String flag,
+                          @RequestParam String handleId,
+                          @RequestParam(required = false) String acceptId) {
+        if ("1".equals(flag)) {
+            xAuditUserService.assignAuditForUser(acceptId, handleId);
+        }else {
+            xAuditUserService.reAssignAudit(acceptId, handleId);
+        }
+        return true;
     }
 
     @DeleteMapping("deleteAudit")
@@ -63,11 +54,15 @@ public class XAuditUserController {
         xAuditUserService.deleteUser(ids);
     }
 
-    @GetMapping("list")
+    @GetMapping("listAudit")
     @ApiOperation(value = "获得所有的审计员")
-    public PageTableResponse list(PageTableRequest request) {
-        return xAuditUserService.list(request);
+    public PageTableResponse listAudit(PageTableRequest request) {
+        return xAuditUserService.listAudit(request);
     }
 
-
+    @GetMapping("listUser")
+    @ApiOperation(value = "获取某审计员可审计名单")
+    public PageTableResponse listUser(PageTableRequest request) {
+        return xAuditUserService.listUser(request);
+    }
 }

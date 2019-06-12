@@ -30,7 +30,7 @@ public class LogAdvice {
     @Around(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)")
     public Object logSave(ProceedingJoinPoint joinPoint) throws Throwable {
         SysLogs sysLogs = new SysLogs();
-        sysLogs.setUser(UserUtil.getLoginUser()); // 设置当前登录用户
+//        sysLogs.setUser(UserUtil.getLoginUser()); // 设置当前登录用户
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
         String module = null;
@@ -58,9 +58,9 @@ public class LogAdvice {
             sysLogs.setRemark(e.getMessage());
             throw e;
         } finally {
-            if (sysLogs.getUser() != null) {
-                //logService.save(sysLogs);
-            }
+//            if (sysLogs.getUser() != null) {
+//                //logService.save(sysLogs);
+//            }
         }
 
     }

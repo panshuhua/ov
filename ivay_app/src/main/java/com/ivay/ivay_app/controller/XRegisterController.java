@@ -7,6 +7,7 @@ import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.annotation.Decrypt;
 import com.ivay.ivay_common.annotation.Encryption;
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
@@ -28,7 +29,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -37,7 +37,7 @@ import java.util.Date;
 @RequestMapping("star/register")
 @Api(tags = "注册")
 @Validated
-public class RegisterController {
+public class XRegisterController {
     private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
@@ -49,8 +49,6 @@ public class RegisterController {
     @Autowired
     @Lazy
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
-    private RestTemplate restTemplate;
     @Autowired
     private XUserInfoService xUserInfoService;
     @Autowired
@@ -71,6 +69,7 @@ public class RegisterController {
             @ApiImplicitParam(name = "macCode", value = "设备id", dataType = "String", paramType = "query")
     })
     @Encryption
+    @LogAnnotation(module="发送短信验证码")
     public Response<VerifyCodeInfo> sendRegisterCode(@RequestParam @Decrypt String mobile,
                                                      @RequestParam Integer optType,
                                                      @RequestParam(required = false) String macCode
@@ -120,6 +119,7 @@ public class RegisterController {
 
     @PostMapping("reg")
     @ApiOperation(value = "用户注册")
+    @LogAnnotation(module="用户注册与短信验证码登录")
     public Response<ReturnUser> register(@RequestBody LoginInfo loginInfo, HttpServletRequest request) {
         logger.info("前台传过来的请求头：" + request.getHeader("Accept-Language"));
         Response<ReturnUser> response = new Response<>();
@@ -229,6 +229,7 @@ public class RegisterController {
 
     @PostMapping("login")
     @ApiOperation(value = "用户登录")
+    @LogAnnotation(module="用户登录(用户名和密码登录)")
     public Response<ReturnUser> login(@Validated({Update.class}) @RequestBody LoginInfo loginInfo) {
         Response<ReturnUser> response = new Response<>();
         String mobile = loginInfo.getMobile();
@@ -296,7 +297,8 @@ public class RegisterController {
 
     @GetMapping("/logout/{userGid}")
     @ApiOperation(value = "用户注销")
-    public Response<String> logout(@PathVariable String userGid) {
+    @LogAnnotation(module="用户退出")
+    public Response<String> logout(@PathVariable String userGid,HttpServletRequest request) {
         Response<String> response = new Response<>();
         String token = (String) redisTemplate.opsForValue().get(userGid);
         if (!StringUtils.isEmpty(token)) {
@@ -320,6 +322,7 @@ public class RegisterController {
             @ApiImplicitParam(name = "password", value = "新设的密码", dataType = "String", paramType = "query", required = true)
     })
     @Encryption
+    @LogAnnotation(module="重设登录密码")
     public Response<String> resetPwd(@RequestParam String mobile,
                                      @RequestParam String verifyCode,
                                      @RequestParam @Password(type = "1", message = "validated.loginpassword.error") String password) {

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
-    <link rel="stylesheet" type="text/css" media="screen" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="../css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="../layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all"/>
 </head>
 <body>
 <div>
@@ -24,6 +24,10 @@
                                         <input id="name" type="text" class="form-control" placeholder="name">
                                         手机号：
                                         <input id="phone" type="text" class="form-control" placeholder="phone">
+                                        审计员：
+                                        <select id="auditId" class="form-control">
+                                            <option value="-1">请选择</option>
+                                        </select>
                                     </div>
                                     <div class="form-group" style="margin:2px">
                                         申请时间：
@@ -36,6 +40,7 @@
                                             <option value="2">待审核</option>
                                             <option value="3">审核通过</option>
                                             <option value="7">审核不通过</option>
+                                            <option value="8">驳回重新提交</option>
                                         </select>
                                         <button id="searchBt" class="layui-btn layui-btn-sm">
                                             <i class="layui-icon">&#xe615;</i>搜索
@@ -144,16 +149,21 @@
 </body>
 </html>
 
-<script type="text/javascript" src="../js/libs/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="../js/jq.js"></script>
-<script type="text/javascript" src="../js/plugin/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
-<script type="text/javascript" src="../layui/layui.js"></script>
-<script type="text/javascript" src="../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript">
     var pers = checkPermission();
-    var domain = window.location.protocol + "//" + window.location.host;
-    var handle_id = "";
+    var roles = getLoginUserRole();
+    for (i = 0; i < roles.length; i++) {
+        $("#auditId").append("<option value='" + i + "'>" + roles[i].username + "</option>");
+    }
+
+    var DOMAIN = window.location.protocol + "//" + window.location.host;
+    var USER_GID = "";
 
     // 初始化审核列表
     var example;
@@ -176,6 +186,7 @@
                     d.fromTime = $("#fromTime").val();
                     d.toTime = $("#toTime").val();
                     d.auditStatus = $("#auditStatus").val();
+                    d.auditId = $("#auditId").val() != "-1" ? roles[$("#auditId").val()].id : "";
                 },
                 "error": function (xhr, textStatus, errorThrown) {
                     var msg = xhr.responseText;
@@ -246,13 +257,15 @@
     // 搜索列表
     function searchList() {
         initDetail();
+        i = $("#auditId").val() != "-1" ? roles[$("#auditId").val()].id : "";
         example.settings()[0].ajax.data = {
             "userGid": $("#userGid").val(),
             "name": $("#name").val(),
             "phone": $("#phone").val(),
             "fromTime": $("#fromTime").val(),
             "toTime": $("#toTime").val(),
-            "auditStatus": $("#auditStatus").val()
+            "auditStatus": $("#auditStatus").val(),
+            "auditId": i
         };
         example.ajax.reload();
     }
@@ -267,7 +280,7 @@
         $("#detail_name2").val("");
         $("#detail_identityCard2").val("");
         $("#detail_birthday2").val("");
-        handle_id = "";
+        USER_GID = "";
         $('#detail').css("display", "none");
     }
 
@@ -281,16 +294,16 @@
                 if (data.status.code != "200") {
                     alert(data.status.message);
                 } else {
-                    handle_id = data.bo.userGid;
+                    USER_GID = data.bo.userGid;
                     $("#detail").css("display", "block");
                     $("#detail_name").text(data.bo.name);
                     $("#detail_identityCard").text(data.bo.identityCard);
                     $("#detail_birthday").text(data.bo.birthday);
                     $("#detail_phone").text(data.bo.phone);
                     $("#detail_sex").text(data.bo.sex == 0 ? 'Male' : 'Female');
-                    $("#photo1").attr("src", domain + "/statics" + data.bo.photo1Url);
-                    $("#photo2").attr("src", domain + "/statics" + data.bo.photo2Url);
-                    $("#photo3").attr("src", domain + "/statics" + data.bo.photo3Url);
+                    $("#photo1").attr("src", DOMAIN + "/statics" + data.bo.photo1Url);
+                    $("#photo2").attr("src", DOMAIN + "/statics" + data.bo.photo2Url);
+                    $("#photo3").attr("src", DOMAIN + "/statics" + data.bo.photo3Url);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -303,8 +316,6 @@
     function auditSubmit(flag) {
         if (flag == 1) {
             if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != $("#detail_name").text().replace(/\s/g, '').toUpperCase()) {
-                console.log($("#detail_name2").val())
-                console.log($("#detail_name").text())
                 alert("Please check the user name")
                 return;
             }
@@ -329,7 +340,7 @@
         }
 
         $.ajax({
-            url: "/audit/update?userGid=" + handle_id + "&flag=" + flag
+            url: "/audit/update?userGid=" + USER_GID + "&flag=" + flag
                 + "&refuseCode=" + $("#refuseReason").val() +
                 "&refuseDemo=" + $("#refuseReason").find("option:selected").text(),
             type: "post",

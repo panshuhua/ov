@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../../css/dialog.css" type="text/css">
+</head>
+<body>
+<div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div>
+            <header style="height: 100%">
+                <div align="left">
+                    <table style="width: 100%">
+                        <tr>
+                            <td>
+                                <form class="form-inline" onsubmit="return false">
+                                    <div class="form-group">
+                                        审计员姓名：
+                                        <input id="condition_name" type="text" class="form-control" placeholder="name">
+                                        <button id="searchBt" class="layui-btn layui-btn-sm">
+                                            <i class="layui-icon">&#xe615;</i>搜索
+                                        </button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </header>
+
+            <div>
+                <!-- 审计员列表 -->
+                <div class="widget-body no-padding">
+                    <table id="dt-table" class="table table-striped table-bordered table-hover" style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>审计员姓名</th>
+                            <th>昵称</th>
+                            <th>电话</th>
+                            <th>邮箱</th>
+                            <th>当前审计人数</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- 审计员可审计清单 -->
+                <div class="widget-body no-padding" id="userList" style="display: none;">
+                    <table id="dt-table2" class="table table-striped table-bordered table-hover" style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>用户gid</th>
+                            <th>姓名</th>
+                            <th>电话</th>
+                            <th>申请时间</th>
+                            <th>审核状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialog" style="display: none;">
+    审计员：
+    <select id="auditId" class="form-control"></select>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dialog.js"></script>
+<script type="text/javascript">
+    var pers = checkPermission();
+
+    // 单击审计名单时
+    var current_handle_audit_id = ""
+
+    var example;
+
+    // 初始化审计员列表
+    function initAudit() {
+        example = $('#dt-table').DataTable({
+            "searching": false,
+            "processing": false,
+            "serverSide": true,
+            "language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+            "ajax": {
+                "url": "/manage/xAuditUsers/listAudit",
+                "type": "get",
+                "data": function (d) {
+                    d.name = $("#condition_name").val();
+                },
+                "error": function (xhr, textStatus, errorThrown) {
+                    var msg = xhr.responseText;
+                    console.log(msg);
+                    var response = JSON.parse(msg);
+                    var code = response.code;
+                    var message = response.message;
+                    if (code == 400) {
+                        layer.msg(message);
+                    } else if (code == 401) {
+                        localStorage.removeItem("token");
+                        layer.msg("token过期，请先登录", {shift: -1, time: 1000}, function () {
+                            location.href = '/login.html';
+                        });
+                    } else if (code == 403) {
+                        console.log("未授权:" + message);
+                        layer.msg('未授权');
+                    } else if (code == 500) {
+                        layer.msg('系统错误：' + message);
+                    }
+                }
+            },
+            "dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",
+            "columns": [
+                {"data": "id", "defaultContent": "", "visible": false},
+                {"data": "username", "defaultContent": ""},
+                {"data": "nickname", "defaultContent": ""},
+                {"data": "telephone", "defaultContent": ""},
+                {"data": "email", "defaultContent": ""},
+                {"data": "count", "defaultContent": ""},
+                {
+                    "data": "",
+                    "defaultContent": "",
+                    "orderable": false,
+                    "render": function (data, type, row) {
+                        var id = row['id'];
+                        return "<button id='initUser' class='btn btn-success' type='button' onclick='initUser(" + '\"' + id + '\"' + ")' >审计名单<i class='fa fa-edit'></i></button>&nbsp;" +
+                            "<button id='assignAudit' class='btn btn-success' type='button' onclick='assignAudit(" + '\"' + id + '\"' + ")' >重新指派<i class='fa fa-edit'></i></button>&nbsp;";
+                    }
+                }
+            ],
+            "order": [[1, "asc"]]
+        });
+    }
+
+    // 搜索审计员列表
+    $("#searchBt").click(function () {
+        $("#userList").css("display", "none");
+        $('#dt-table2 tbody').empty();
+        example.settings()[0].ajax.data = {
+            "condition_name": $("#condition_name").val()
+        };
+        example.ajax.reload();
+    });
+
+    var example2;
+
+    // 审计员审计用户列表
+    function initUser(gid) {
+        $("#userList").css("display", "block");
+        $('#dt-table2 tbody').empty();
+        current_handle_audit_id = gid
+
+        example2 = $('#dt-table2').DataTable({
+            "searching": false,
+            "processing": false,
+            "serverSide": true,
+            "retrieve": true,  //防止重新加载dataTable时出现警告：destroy/retrieve
+            "language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+            "ajax": {
+                "url": "/manage/xAuditUsers/listUser",
+                "type": "get",
+                "data": function (d) {
+                    d.auditId = gid;
+                },
+                "error": function (xhr, textStatus, errorThrown) {
+                    var msg = xhr.responseText;
+                    console.log(msg);
+                    var response = JSON.parse(msg);
+                    var code = response.code;
+                    var message = response.message;
+                    if (code == 400) {
+                        layer.msg(message);
+                    } else if (code == 401) {
+                        localStorage.removeItem("token");
+                        layer.msg("token过期，请先登录", {shift: -1, time: 1000}, function () {
+                            location.href = '/login.html';
+                        });
+                    } else if (code == 403) {
+                        console.log("未授权:" + message);
+                        layer.msg('未授权');
+                    } else if (code == 500) {
+                        layer.msg('系统错误：' + message);
+                    }
+                }
+            },
+            "dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",
+            "columns": [
+                {"data": "id", "defaultContent": "", "visible": false},
+                {"data": "userGid", "defaultContent": ""},
+                {"data": "name", "defaultContent": ""},
+                {"data": "phone", "defaultContent": ""},
+                {"data": "createTime", "defaultContent": ""},
+                {"data": "auditStatus", "defaultContent": ""},
+                {
+                    "data": "",
+                    "defaultContent": "",
+                    "orderable": false,
+                    "render": function (data, type, row) {
+                        var userGid = row['userGid'];
+                        var status = row['auditStatus'];
+                        var dom = "";
+                        if ("3456".indexOf(status) == -1) {
+                            dom = "<button id='assignUser' class='btn btn-success' type='button' onclick='assignUser(" + '\"' + userGid + '\"' + ")' >重新指派<i class='fa fa-edit'></i></button>&nbsp;"
+                        }
+                        return dom;
+                    }
+                }
+            ],
+            "order": [[1, "asc"]]
+        });
+
+        //修改请求参数后再重新加载数据-解决上述ajax请求只能调用一次的问题
+        example2.settings()[0].ajax.data = {"auditId": gid};
+        example2.ajax.reload();
+    }
+
+    var con = document.getElementById('dialog');
+
+    /**
+     * 把某审计员的全部用户重新分配给某个审计员
+     * @param id
+     */
+    function assignAudit(auditId) {
+        assign(auditId, "0")
+    }
+
+    /**
+     * 把某个用户重新分配给某个审计员
+     * @param userGid
+     */
+    function assignUser(userGid) {
+        assign(userGid, "1")
+    }
+
+    /**
+     * 重新分配审计员
+     * @param handleId 要处理的id
+     * @param flag 0将某审计员的全部用户重新分配  1将某个用户重新分配
+     */
+    function assign(handleId, flag) {
+        $("#dialog").attr("style", "display:block");
+        var dom_audit_id = $("#auditId");
+        dom_audit_id.empty();
+        dom_audit_id.append("<option value='-1'>随机分配</option>");
+        var roles = getLoginUserRole();
+        for (i = 0; i < roles.length; i++) {
+            dom_audit_id.append("<option value='" + i + "'>" + roles[i].username + "</option>");
+        }
+        var d = dialog({
+            title: '指派给',
+            width: 500,
+            cancel: true, //为true等价于function(){}
+            ok: function () {
+                $.ajax({
+                    type: 'post',
+                    url: '/manage/xAuditUsers/update',
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    data: {
+                        flag: flag,
+                        acceptId: dom_audit_id.val() != "-1" ? roles[dom_audit_id.val()].id : "",
+                        handleId: handleId
+                    },
+                    async: false,
+                    success: function (data) {
+                        $("#searchBt").trigger("click")
+                        if (flag == '1') {
+                            initUser(current_handle_audit_id);
+                        }
+                    }
+                })
+            }
+        });
+        d.show();
+        d.content(con);
+    }
+
+    initAudit();
+</script>

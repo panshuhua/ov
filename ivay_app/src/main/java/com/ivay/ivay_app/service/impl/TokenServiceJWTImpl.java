@@ -60,8 +60,6 @@ public class TokenServiceJWTImpl implements TokenService {
 	public Token saveToken(LoginUser loginUser) {
 		loginUser.setToken(UUID.randomUUID().toString());
 		cacheLoginUser(loginUser);
-		// 登陆日志
-		logService.save(loginUser.getId(), "登陆", true, null);
 
 		String jwtToken = createJWTToken(loginUser);
 
@@ -117,8 +115,6 @@ public class TokenServiceJWTImpl implements TokenService {
 			LoginUser loginUser = redisTemplate.opsForValue().get(key);
 			if (loginUser != null) {
 				redisTemplate.delete(key);
-				// 退出日志
-				logService.save(loginUser.getId(), "退出", true, null);
 
 				return true;
 			}

@@ -3,17 +3,27 @@ package com.ivay.ivay_repository.model;
 public class SysLogs extends BaseEntity<Long> {
 
 	private static final long serialVersionUID = -7809315432127036583L;
-	private SysUser user;
+	private String userGid;
+	private String phone;
 	private String module;
 	private Boolean flag;
 	private String remark;
+	private String requestId;
 
-	public SysUser getUser() {
-		return user;
+	public String getUserGid() {
+		return userGid;
 	}
 
-	public void setUser(SysUser user) {
-		this.user = user;
+	public void setUserGid(String userGid) {
+		this.userGid = userGid;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getModule() {
@@ -39,5 +49,14 @@ public class SysLogs extends BaseEntity<Long> {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+	
 
 }

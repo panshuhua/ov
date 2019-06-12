@@ -41,7 +41,16 @@ public interface XAuditUserService {
      * @param userGid
      * @return
      */
-    XAuditUser update(String auditId, String userGid);
+    XAuditUser assignAuditForUser(String auditId, String userGid);
+
+    /**
+     * 将某审计员的审核人员重新分配
+     *
+     * @param acceptId
+     * @param handleId
+     * @return
+     */
+    boolean reAssignAudit(String acceptId, String handleId);
 
     XAuditUser save(XAuditUser xAuditUser);
 
@@ -51,5 +60,13 @@ public interface XAuditUserService {
      * @param request
      * @return
      */
-    PageTableResponse list(PageTableRequest request);
+    PageTableResponse listAudit(PageTableRequest request);
+
+    /**
+     * 获取某审计员可审计名单
+     *
+     * @param request
+     * @return
+     */
+    PageTableResponse listUser(PageTableRequest request);
 }

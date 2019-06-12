@@ -1,18 +1,22 @@
 package com.ivay.ivay_repository.dao.master;
 
-import com.ivay.ivay_repository.model.SysLogs;
+import java.util.List;
+import java.util.Map;
+
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-import java.util.Map;
+import com.ivay.ivay_repository.model.SysLogs;
 
 @Mapper
 public interface SysLogsDao {
 
-    @Insert("insert into sys_logs(userId, module, flag, remark, createTime) values(#{user.id}, #{module}, #{flag}, #{remark}, now())")
+	@Options(useGeneratedKeys = true, keyProperty = "id")
+    @Insert("insert into sys_logs(user_gid, module, flag, remark, createTime,phone,request_id) values(#{userGid}, #{module}, #{flag}, #{remark}, now(),#{phone},#{requestId})")
     int save(SysLogs sysLogs);
 
     int count(@Param("params") Map<String, Object> params);

@@ -2,6 +2,7 @@ package com.ivay.ivay_manage.controller;
 
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.Response;
 import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_manage.service.XUserInfoService;
@@ -44,7 +45,7 @@ public class XAuditController {
     @ApiOperation(value = "提交审核结果")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "flag", value = "0拒绝 1通过 2 重新提交", dataType = "Long", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "flag", value = "0拒绝 1通过", dataType = "Long", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "refuseCode", value = "驳回理由code", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "refuseDemo", value = "驳回理由msg", dataType = "String", paramType = "query", required = false)
     })
@@ -53,7 +54,7 @@ public class XAuditController {
                                     @RequestParam(required = false) String refuseCode,
                                     @RequestParam(required = false) String refuseDemo) {
         Response<Integer> response = new Response<>();
-        response.setBo(xUserInfoService.auditUpdate(userGid, flag, refuseCode, refuseDemo));
+        response.setBo(xUserInfoService.auditUpdate(userGid, flag, refuseCode, refuseDemo, SysVariable.AUDIT_REFUSE_TYPE_MANUAL));
         return response;
     }
 
@@ -63,9 +64,10 @@ public class XAuditController {
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0 授信 1借款", dataType = "Long", paramType = "query", defaultValue = "0")
     })
-    public boolean queryAuditQualification(@RequestParam String userGid,
-                                           @RequestParam int flag) {
-        return xUserInfoService.queryAuditQualification(userGid, flag);
+    public String queryAuditQualification(@RequestParam String userGid,
+                                          @RequestParam int flag) {
+        // 获得某人的风控审核结果，返回未通过审核的理由，空字符串表示通过审核
+        return xUserInfoService.queryRiskQualificationDemo(userGid, flag);
     }
 
     @PostMapping("updateCreditLimit")
