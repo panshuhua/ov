@@ -2,7 +2,7 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
+    time-zone: GMT+7
   servlet:
     multipart:
       max-file-size: 100MB

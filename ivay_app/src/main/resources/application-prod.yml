@@ -11,6 +11,10 @@ spring:
         max-wait: -1ms
 #    database: 1
 #    password: ivayRedisB038
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+7
 
 files:
   path: ${file-path:/data/files}
