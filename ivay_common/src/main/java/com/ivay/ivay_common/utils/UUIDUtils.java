@@ -1,10 +1,10 @@
 package com.ivay.ivay_common.utils;
 
-import java.util.Calendar;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * @作者: xx
@@ -13,24 +13,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UUIDUtils {
-	
-	private static String apiRequestIdPrefix;
-	
-	private static String ebayApiRequestIdPrefix;
-	
-	@Value("${api_request_id_prefix}")
-	public  void setApiRequestIdPrefix(String apiRequestIdPrefix) {
-		UUIDUtils.apiRequestIdPrefix = apiRequestIdPrefix;
-	}
-	
-	@Value("${ebay_api_request_id_prefix}")
-	public  void setEbayApiRequestIdPrefix(String ebayApiRequestIdPrefix) {
-		UUIDUtils.ebayApiRequestIdPrefix = ebayApiRequestIdPrefix;
-	}
 
+    private static String apiRequestIdPrefix;
 
+    private static String ebayApiRequestIdPrefix;
 
-	public static String getUUID() {
+    @Value("${api_request_id_prefix}")
+    public void setApiRequestIdPrefix(String apiRequestIdPrefix) {
+        UUIDUtils.apiRequestIdPrefix = apiRequestIdPrefix;
+    }
+
+    @Value("${ebay_api_request_id_prefix}")
+    public void setEbayApiRequestIdPrefix(String ebayApiRequestIdPrefix) {
+        UUIDUtils.ebayApiRequestIdPrefix = ebayApiRequestIdPrefix;
+    }
+
+    public static String getUUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
@@ -39,15 +37,15 @@ public class UUIDUtils {
         long now = System.currentTimeMillis() - 60 * 60 * 1000L;
         String uniqueId = Long.toString(System.nanoTime());
         uniqueId = uniqueId.substring(uniqueId.length() - 6);
-        return  apiRequestIdPrefix+ DateUtils.timeMillisToString(now, "yyyyMMdd") + uniqueId;
+        return apiRequestIdPrefix + DateUtils.timeMillisToString(now, "yyyyMMdd") + uniqueId;
     }
-    
+
     public static String getEbayRequestId() {
         // 越南为东七区（差一个小时）
         long now = System.currentTimeMillis() - 60 * 60 * 1000L;
         String uniqueId = Long.toString(System.nanoTime());
         uniqueId = uniqueId.substring(uniqueId.length() - 6);
-        return  ebayApiRequestIdPrefix+ DateUtils.timeMillisToString(now, "yyyyMMdd") + uniqueId;
+        return ebayApiRequestIdPrefix + DateUtils.timeMillisToString(now, "yyyyMMdd") + uniqueId;
     }
 
     public static String getRequestTime() {
@@ -70,5 +68,5 @@ public class UUIDUtils {
         System.out.println("格式前的UUID ： " + UUID.randomUUID().toString());
         System.out.println("格式化后的UUID ：" + getUUID());
     }
-    
+
 }

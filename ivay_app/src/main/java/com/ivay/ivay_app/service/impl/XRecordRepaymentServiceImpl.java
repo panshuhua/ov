@@ -35,7 +35,7 @@ import java.util.Map;
 
 @Service
 public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XRecordRepaymentService.class);
     @Autowired
     private XRecordRepaymentDao xRecordRepaymentDao;
 

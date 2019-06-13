@@ -38,7 +38,7 @@ import java.util.Date;
 @Api(tags = "注册")
 @Validated
 public class XRegisterController {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XRegisterController.class);
 
     @Autowired
     private I18nService i18nService;

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class XVirtualAccountServiceImpl implements XVirtualAccountService {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XVirtualAccountService.class);
 
     @Autowired
     TokenDao tokenDao;
@@ -60,8 +60,8 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());  //accountType=1时需要
 
         String accName = xUserInfo.getName();
-        if(accName!=null){
-        	accName=accName.trim();
+        if (accName != null) {
+            accName = accName.trim();
         }
 //    	Date birthday=xUserInfo.getBirthday();
 //    	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
@@ -138,10 +138,10 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
 //	    	String orderId //订单id
 
         String accName = xVirtualAccount.getAccName();
-	        if(accName!=null){
-	        	accName=accName.trim();
-	        }
-	        String issuedDate = "";
+        if (accName != null) {
+            accName = accName.trim();
+        }
+        String issuedDate = "";
         String issuedPlace = "";
         String expireDate = "";  //Optional
         String orderId = xVirtualAccount.getOrderId();
