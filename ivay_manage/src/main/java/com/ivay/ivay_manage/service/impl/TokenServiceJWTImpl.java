@@ -2,7 +2,6 @@ package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.dto.Token;
-import com.ivay.ivay_manage.service.SysLogService;
 import com.ivay.ivay_manage.service.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
