@@ -12,7 +12,7 @@ dataSource:
 spring:
   profiles:
     # 多模块使用include取代active
-    include: dev, comDev, dbDev
+    include: dev, comDev, dbLoc
 #    include: test, comTest, dbTest
 #    include: prod, comProd, dbProd
 

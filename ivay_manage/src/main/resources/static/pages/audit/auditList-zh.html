@@ -28,7 +28,8 @@
                                         <span id="audit_select_box" style="display: none">
                                             审计员：
                                             <select id="auditId" class="form-control">
-                                                <option value="-1">请选择</option>
+                                                <option value="-1">全部</option>
+                                                <option value="-2">未分配审计员</option>
                                             </select>
                                         </span>
                                     </div>
@@ -114,7 +115,7 @@
                             <input type="radio" name="sex" value="1"/>Female
                         </div>
                     </form>
-                    <div class="form-group" style="margin:2px">
+                    <div id="auditBtn" class="form-group" style="margin:2px">
                         <button onclick="auditSubmit(1)" class="layui-btn layui-btn-sm">
                             <i class="layui-icon">&#xe615;</i>审核通过
                         </button>
@@ -242,7 +243,8 @@
                     "orderable": false,
                     "render": function (data, type, row) {
                         var gid = row['userGid'];
-                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
+                        var status = row['auditStatus'];
+                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\",' + '\"' + status + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
                         if (role.toLowerCase() == "admin" || role.toLowerCase() == "ovayadmin") {
                             operation += "<button class='btn btn-success' type='button' onclick='assignUser(" + '\"' + gid + '\"' + ")' >指派给<i class='fa fa-edit'></i></button>&nbsp;";
                         }
@@ -282,7 +284,15 @@
     function searchList() {
         initDetail();
         auditSelectIndex = $("#auditId").val();
-        auditSelectId = auditSelectIndex != "-1" ? auditList[auditSelectIndex].id : "";
+        if (auditSelectIndex == "-1") {
+            // 所有审计员
+            auditSelectId = ""
+        } else if (auditSelectIndex == "-2") {
+            // 未指定审计员
+            auditSelectId = "-2"
+        } else {
+            auditSelectId = auditList[auditSelectIndex].id;
+        }
         example.settings()[0].ajax.data = {
             "userGid": $("#userGid").val(),
             "name": $("#name").val(),
@@ -310,7 +320,7 @@
     }
 
     // 查看审核详情
-    function showDetail(gid) {
+    function showDetail(gid, status) {
         initDetail();
         $.ajax({
             url: "/audit/detail?userGid=" + gid,
@@ -381,7 +391,6 @@
             }
         });
     }
-
 
     /**
      * 把某个用户重新分配给某个审计员

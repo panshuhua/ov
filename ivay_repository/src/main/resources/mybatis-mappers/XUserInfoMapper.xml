@@ -217,7 +217,16 @@
             </if>
 
             <if test="params.auditId != null and params.auditId != ''">
-                and xau.sys_user_id=#{params.auditId}
+                and xau.sys_user_id
+                <choose>
+                    <when test="params.auditId == '-2'">
+--                     未指定审计员
+                        is null
+                    </when>
+                    <otherwise>
+                        =#{params.auditId}
+                    </otherwise>
+                </choose>
             </if>
             <if test="params.role != null and params.role != ''">
                 <if test="params.role == 'ovayAudit'">
@@ -238,16 +247,19 @@
         set @num=0;
         select
         @num:=@num+1 as num,
-        xui.user_gid,xui.name,xui.phone,
+        xui.user_gid,
+        xui.name,
+        xui.phone,
         case xui.user_status
-        WHEN '2' THEN '待审核'
-        WHEN '3' THEN '审核通过'
-        WHEN '4' THEN '审核通过'
-        WHEN '5' THEN '审核通过'
-        WHEN '6' THEN '审核通过'
-        WHEN '7' THEN '审核拒绝'
-        WHEN '8' THEN '驳回重新提交'
-        END audit_status,xuei.update_time create_time
+        WHEN '2' THEN '2'
+        WHEN '3' THEN '3'
+        WHEN '4' THEN '3'
+        WHEN '5' THEN '3'
+        WHEN '6' THEN '3'
+        WHEN '7' THEN '7'
+        WHEN '8' THEN '8'
+        END audit_status,
+        xuei.update_time create_time
         from x_user_info xui
         <include refid="audit_list_condition"/>
         order by xuei.update_time desc
