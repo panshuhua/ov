@@ -67,6 +67,15 @@
             <if test="params.transPwd != null and params.transPwd != ''">
                 and trans_pwd = #{params.transPwd}
             </if>
+            <if test="params.refuseReason != null and params.refuseReason != ''">
+                and refuse_reason = #{params.refuseReason}
+            </if>
+            <if test="params.refuseType != null and params.refuseType != ''">
+                and refuse_type = #{params.refuseType}
+            </if>
+            <if test="params.auditTime != null and params.auditTime != ''">
+                and audit_time = #{params.auditTime}
+            </if>
         </where>
     </sql>
 
@@ -130,6 +139,15 @@
             <if test="transPwd != null">
                 trans_pwd = #{transPwd},
             </if>
+            <if test="refuseReason != null">
+                refuse_reason = #{refuseReason},
+            </if>
+            <if test="refuseType != null">
+                refuse_type = #{refuseType},
+            </if>
+            <if test="auditTime != null">
+                audit_time = #{auditTime},
+            </if>
         </set>
         where t.user_gid = #{userGid} and enable_flag = "Y"
     </update>
@@ -159,15 +177,21 @@
     <select id="toBeAuditedList" resultType="com.ivay.ivay_repository.model.XUserInfo">
         SELECT x.*
         FROM x_user_info x
-        WHERE x.account_status='0' AND x.user_status="2" AND (x.credit_line IS null OR x.credit_line=0) AND x.enable_flag="Y"
+        WHERE x.account_status='0' AND x.user_status="2" AND (x.credit_line IS null OR x.credit_line=0) AND
+        x.enable_flag="Y"
         <if test="num !=null and num!=0">
             AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_time) &lt;= #{num,jdbcType=INTEGER}
         </if>
     </select>
 
     <sql id="audit_list_condition">
+        left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
+        left JOIN x_audit_user xau ON xui.user_gid=xau.user_gid
         <where>
-            xui.user_status >=2 and xui.account_status=0
+            xui.user_status >=2
+            and xui.account_status=0
+            and xui.enable_flag='Y'
+            and xuei.enable_flag='Y'
             <if test="params.phone != null and params.phone != ''">
                 and xui.phone like concat("%",#{params.phone},"%")
             </if>
@@ -188,8 +212,18 @@
             <if test="params.fromTime != null and params.fromTime != ''">
                 and unix_timestamp(xuei.update_time) >= unix_timestamp(#{params.fromTime})
             </if>
-            <if test="params.toTime != null  and params.toTime != ''">
+            <if test="params.toTime != null and params.toTime != ''">
                 and unix_timestamp(#{params.toTime}) >= unix_timestamp(xuei.update_time)
+            </if>
+
+            <if test="params.auditId != null and params.auditId != ''">
+                and xau.sys_user_id=#{params.auditId}
+            </if>
+            <if test="params.role != null and params.role != ''">
+                <if test="params.role == 'ovayAudit'">
+                    and xau.sys_user_id = #{params.loginId}
+                    and xau.enable_flag='Y'
+                </if>
             </if>
         </where>
     </sql>
@@ -197,8 +231,6 @@
     <select id="auditCount" resultType="int">
         select count(1)
         from x_user_info xui
-        left JOIN x_user_ext_info xuei
-        ON xui.user_gid=xuei.user_gid
         <include refid="audit_list_condition"/>
     </select>
 
@@ -208,16 +240,15 @@
         @num:=@num+1 as num,
         xui.user_gid,xui.name,xui.phone,
         case xui.user_status
-        WHEN '2' THEN '2'
-        WHEN '3' THEN '3'
-        WHEN '4' THEN '3'
-        WHEN '5' THEN '3'
-        WHEN '6' THEN '3'
-        WHEN '7' THEN '7'
+        WHEN '2' THEN '待审核'
+        WHEN '3' THEN '审核通过'
+        WHEN '4' THEN '审核通过'
+        WHEN '5' THEN '审核通过'
+        WHEN '6' THEN '审核通过'
+        WHEN '7' THEN '审核拒绝'
+        WHEN '8' THEN '驳回重新提交'
         END audit_status,xuei.update_time create_time
         from x_user_info xui
-        left JOIN x_user_ext_info xuei
-        ON xui.user_gid=xuei.user_gid
         <include refid="audit_list_condition"/>
         order by xuei.update_time desc
         <if test="limit != null and limit != 0">
@@ -324,17 +355,17 @@
     </select>
 
     <select id="updateGps">
-      update x_user_info set 
-      <if test="longitude!=null and longitude!='' or longitude==0">
-      longitude=#{longitude},
-      </if>
-      <if test="latitude!=null and latitude!='' or latitude==0">
-      latitude=#{latitude},
-      </if>
-     <!--  <if test="appNum!=null and appNum!='' or appNum==0">
-      app_num=#{appNum},
-      </if> -->
-      update_time=#{updateTime} 
-      where user_gid=#{userGid}
+        update x_user_info set
+        <if test="longitude!=null and longitude!='' or longitude==0">
+            longitude=#{longitude},
+        </if>
+        <if test="latitude!=null and latitude!='' or latitude==0">
+            latitude=#{latitude},
+        </if>
+        <!--  <if test="appNum!=null and appNum!='' or appNum==0">
+         app_num=#{appNum},
+         </if> -->
+        update_time=#{updateTime}
+        where user_gid=#{userGid}
     </select>
 </mapper>

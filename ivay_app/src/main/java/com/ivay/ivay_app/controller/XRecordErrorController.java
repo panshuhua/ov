@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("star/error")
 @Api(tags = "记录错误日志")
-public class RecordErrorController {
+public class XRecordErrorController {
 
     @Autowired
     private RecordErrorService recordErrorService;

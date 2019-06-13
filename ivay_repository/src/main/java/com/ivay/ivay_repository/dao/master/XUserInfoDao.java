@@ -20,15 +20,19 @@ public interface XUserInfoDao {
     String getPassword(@Param("mobile") String mobile);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code,longitude,latitude,update_time,fmc_token)" +
-            " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode},#{longitude},#{latitude},#{updateTime},#{fmcToken})")
+    @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code," +
+            "longitude,latitude,update_time,fmc_token,refuse_reason,refuse_type,audit_time)" +
+            " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode}," +
+            "#{longitude},#{latitude},#{updateTime},#{fmcToken},#{refuseReason},#{refuseType},#{auditTime})")
     int addUser(XUserInfo xUserInfo);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into x_user_info(phone, user_gid, name, identity_card, birthday, sex, education, marital, place, income," +
-            " create_time, update_time,user_status,account_status, enable_flag,credit_line,credit_line_count,canborrow_amount,trans_pwd)" +
+            " create_time, update_time,user_status,account_status, enable_flag,credit_line,credit_line_count,canborrow_amount,trans_pwd," +
+            "refuse_reason,refuse_type,audit_time)" +
             " values(#{phone}, #{userGid}, #{name}, #{identityCard}, #{birthday}, #{sex}, #{education}, #{marital}, #{place}, #{income}," +
-            " #{createTime}, #{updateTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{credit_line},#{credit_line_count},#{canborrow_amount},#{trans_pwd})")
+            " #{createTime}, #{updateTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{credit_line},#{credit_line_count},#{canborrow_amount},#{trans_pwd}," +
+            "#{refuseReason},#{refuseType},#{auditTime})")
     int save(XUserInfo xUserInfo);
 
     @Select("select * from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y' and t.account_status='0'")
@@ -46,13 +50,18 @@ public interface XUserInfoDao {
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XUserInfo> list(@Param("params") Map<String, Object> params,
+                         @Param("offset") Integer offset,
+                         @Param("limit") Integer limit);
 
     int auditCount(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> auditList(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XUserInfo> auditList(@Param("params") Map<String, Object> params,
+                              @Param("offset") Integer offset,
+                              @Param("limit") Integer limit);
 
-    @Select("select user_gid,credit_line,credit_line_count,canborrow_amount,user_status from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y'")
+    @Select("select user_gid,credit_line,credit_line_count,canborrow_amount,user_status from x_user_info t" +
+            "where t.user_gid = #{gid} and t.enable_flag='Y'")
     CreditLine getCreditLine(String gid);
 
     @Select("select user_status from x_user_info where user_gid=#{gid}")
