@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="../../css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="../../layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../../css/dialog.css" type="text/css">
 </head>
 <body>
 <div>
@@ -24,10 +25,12 @@
                                         <input id="name" type="text" class="form-control" placeholder="name">
                                         手机号：
                                         <input id="phone" type="text" class="form-control" placeholder="phone">
-                                        审计员：
-                                        <select id="auditId" class="form-control">
-                                            <option value="-1">请选择</option>
-                                        </select>
+                                        <span id="audit_select_box" style="display: none">
+                                            审计员：
+                                            <select id="auditId" class="form-control">
+                                                <option value="-1">请选择</option>
+                                            </select>
+                                        </span>
                                     </div>
                                     <div class="form-group" style="margin:2px">
                                         申请时间：
@@ -118,9 +121,6 @@
                         <button onclick="auditSubmit(0)" class="layui-btn layui-btn-sm">
                             <i class="layui-icon">&#xe615;</i>审核驳回
                         </button>
-                        <!--<button onclick="auditSubmit(2)" class="layui-btn layui-btn-sm">-->
-                        <!--<i class="layui-icon">&#xe615;</i>重新提交-->
-                        <!--</button>-->
                         <label>驳回理由：</label>
                         <select id="refuseReason">
                             <option value="">请选择</option>
@@ -146,6 +146,10 @@
         </div>
     </div>
 </div>
+<div id="auditDialog" style="display: none;">
+    审计员：
+    <select id="assignAuditId" class="form-control"></select>
+</div>
 </body>
 </html>
 
@@ -155,20 +159,36 @@
 <script type="text/javascript" src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="../../layui/layui.js"></script>
 <script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/dialog.js"></script>
 <script type="text/javascript">
-    var pers = checkPermission();
-    var roles = getLoginUserRole();
-    for (i = 0; i < roles.length; i++) {
-        $("#auditId").append("<option value='" + i + "'>" + roles[i].username + "</option>");
-    }
-
+    // 后台地址
     var DOMAIN = window.location.protocol + "//" + window.location.host;
+
+    // 获得用户权限
+    checkPermission();
+
+    // 管理员增加审计员下拉框
+    var role = getLoginAuditRole();
+    if (role.toLowerCase() == "admin" || role.toLowerCase() == "ovayadmin") {
+        var auditList = getAllAudit();
+        $("#audit_select_box").css("display", "inline");
+        for (i = 0; i < auditList.length; i++) {
+            $("#auditId").append("<option value='" + i + "'>" + auditList[i].username + "</option>");
+        }
+    }
+    // 下拉框审计员
+    var auditSelectIndex;
+    var auditSelectId;
+
+    // 单击审核详情的用户gid
     var USER_GID = "";
 
     // 初始化审核列表
     var example;
 
     function init() {
+        auditSelectIndex = $("#auditId").val();
+        auditSelectId = auditSelectIndex != "-1" ? auditList[auditSelectIndex].id : "";
         example = $('#dt-table').DataTable({
             "searching": false,
             "processing": false,
@@ -186,7 +206,7 @@
                     d.fromTime = $("#fromTime").val();
                     d.toTime = $("#toTime").val();
                     d.auditStatus = $("#auditStatus").val();
-                    d.auditId = $("#auditId").val() != "-1" ? roles[$("#auditId").val()].id : "";
+                    d.auditId = auditSelectId;
                 },
                 "error": function (xhr, textStatus, errorThrown) {
                     var msg = xhr.responseText;
@@ -222,7 +242,11 @@
                     "orderable": false,
                     "render": function (data, type, row) {
                         var gid = row['userGid'];
-                        return "<button id='showDetail' class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
+                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
+                        if (role.toLowerCase() == "admin" || role.toLowerCase() == "ovayadmin") {
+                            operation += "<button class='btn btn-success' type='button' onclick='assignUser(" + '\"' + gid + '\"' + ")' >指派给<i class='fa fa-edit'></i></button>&nbsp;";
+                        }
+                        return operation;
                     }
                 }
             ],
@@ -257,7 +281,8 @@
     // 搜索列表
     function searchList() {
         initDetail();
-        i = $("#auditId").val() != "-1" ? roles[$("#auditId").val()].id : "";
+        auditSelectIndex = $("#auditId").val();
+        auditSelectId = auditSelectIndex != "-1" ? auditList[auditSelectIndex].id : "";
         example.settings()[0].ajax.data = {
             "userGid": $("#userGid").val(),
             "name": $("#name").val(),
@@ -265,7 +290,7 @@
             "fromTime": $("#fromTime").val(),
             "toTime": $("#toTime").val(),
             "auditStatus": $("#auditStatus").val(),
-            "auditId": i
+            "auditId": auditSelectId
         };
         example.ajax.reload();
     }
@@ -284,7 +309,7 @@
         $('#detail').css("display", "none");
     }
 
-    //查看审核详情
+    // 查看审核详情
     function showDetail(gid) {
         initDetail();
         $.ajax({
@@ -356,6 +381,57 @@
             }
         });
     }
+
+
+    /**
+     * 把某个用户重新分配给某个审计员
+     * @param userGid
+     */
+    function assignUser(userGid) {
+        assign(userGid, "1")
+    }
+
+    var con = document.getElementById('auditDialog');
+
+    /**
+     * 重新分配审计员
+     * @param handleId 要处理的id
+     * @param flag 0将某审计员的全部用户重新分配  1将某个用户重新分配
+     */
+    function assign(handleId, flag) {
+        $("#auditDialog").attr("style", "display:block");
+        var dom_audit_id = $("#assignAuditId");
+        dom_audit_id.empty();
+        dom_audit_id.append("<option value='-1'>随机分配</option>");
+        var audits = getAllAudit();
+        for (i = 0; i < audits.length; i++) {
+            dom_audit_id.append("<option value='" + i + "'>" + audits[i].username + "</option>");
+        }
+        var d = dialog({
+            title: '指派给',
+            width: 500,
+            cancel: true, //为true等价于function(){}
+            ok: function () {
+                $.ajax({
+                    type: 'post',
+                    url: '/manage/xAuditUsers/update',
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    data: {
+                        flag: flag,
+                        acceptId: dom_audit_id.val() != "-1" ? audits[dom_audit_id.val()].id : "",
+                        handleId: handleId
+                    },
+                    async: false,
+                    success: function (data) {
+                        $("#searchBt").trigger("click")
+                    }
+                })
+            }
+        });
+        d.show();
+        d.content(con);
+    }
+
 
     init();
 </script>

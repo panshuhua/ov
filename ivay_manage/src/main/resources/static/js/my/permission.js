@@ -18,15 +18,29 @@ function checkPermission() {
     return pers;
 }
 
-function getLoginUserRole() {
-    var pers = [];
+function getLoginAuditRole() {
+    var pers = "";
     $.ajax({
         type: 'get',
-        url: '/manage/permissions/getLoginUserRole',
+        url: '/manage/permissions/getLoginAuditRole',
         contentType: "application/json; charset=utf-8",
         async: false,
         success: function (data) {
             pers = data;
+        }
+    });
+    return pers;
+}
+
+function getAllAudit() {
+    var pers = [];
+    $.ajax({
+        type: 'get',
+        url: '/manage/xAuditUsers/listAudit',
+        contentType: "application/json; charset=utf-8",
+        async: false,
+        success: function (data) {
+            pers = data.data;
         }
     });
     return pers;

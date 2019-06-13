@@ -27,9 +27,15 @@ public class XAPIController {
 
     @GetMapping("valCustomerInfoRsp")
     public TransfersRsp validateCustomerInformation(String bankNo, String accNo, String accType) {
-        bankNo = "970403";
-        accNo = "060017483539";
-        accType = "0";
+        if (StringUtils.isEmpty(bankNo)) {
+            bankNo = "970403";
+        }
+        if (StringUtils.isEmpty(accNo)) {
+            accNo = "060017483539";
+        }
+        if (StringUtils.isEmpty(accType)) {
+            accType = "0";
+        }
         TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo, accNo, accType);
         return transfersRsp;
     }

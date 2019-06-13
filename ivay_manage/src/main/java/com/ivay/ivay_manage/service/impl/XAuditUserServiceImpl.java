@@ -58,7 +58,7 @@ public class XAuditUserServiceImpl implements XAuditUserService {
             return null;
         } else if (StringUtils.isEmpty(auditId)) {
             // 若不指定审计员则随机分配
-            auditId = auditIds.get((int) (1 + Math.random() * (auditIds.size())));
+            auditId = auditIds.get((int) (Math.random() * (auditIds.size())));
         } else if (!auditIds.contains(auditId)) {
             throw new BusinessException("审计员({})不存在", auditId);
         }

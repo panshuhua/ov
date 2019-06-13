@@ -6,6 +6,7 @@ import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.UserDto;
+import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_manage.service.XAuditUserService;
 import com.ivay.ivay_manage.utils.UserUtil;
@@ -47,6 +48,9 @@ public class UserController {
 
     @Autowired
     private XAuditUserService xAuditUserService;
+
+    @Autowired
+    private RoleService roleService;
 
     @LogAnnotation
     @PostMapping
@@ -112,6 +116,8 @@ public class UserController {
     @ApiOperation(value = "用户列表")
     @PreAuthorize("hasAuthority('sys:user:query')")
     public PageTableResponse listUsers(PageTableRequest request) {
+        // 设置角色
+        request.getParams().put("role", roleService.getLoginUserAuditRole());
         return new PageTableHandler(
                 a -> userDao.count(a.getParams()),
                 a -> userDao.list(a.getParams(), a.getOffset(), a.getLimit())

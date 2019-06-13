@@ -4,9 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.ivay.ivay_common.annotation.LogAnnotation;
-import com.ivay.ivay_common.table.PageTableRequest;
-import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.service.PermissionService;
 import com.ivay.ivay_manage.service.RoleService;
@@ -14,7 +11,6 @@ import com.ivay.ivay_manage.service.XAuditUserService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.PermissionDao;
 import com.ivay.ivay_repository.model.Permission;
-import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -225,15 +220,9 @@ public class PermissionController {
     @Autowired
     private XAuditUserService xAuditUserService;
 
-    @GetMapping("getLoginUserRole")
-    @ApiOperation("校验当前用户的权限")
-    public List<SysUser> getLoginUserRole() {
-        List<SysUser> list = new ArrayList<>();
-        String role = roleService.getLoginUserAuditRole();
-        if (SysVariable.ROLE_OVAY_ADMIN.equals(role) || SysVariable.ROLE_ADMIN.equals(role)) {
-            PageTableResponse response = xAuditUserService.listAudit(new PageTableRequest());
-            list = response.getData();
-        }
-        return list;
+    @GetMapping("getLoginAuditRole")
+    @ApiOperation("获取当前用户的审计权限")
+    public String getLoginUserRole() {
+        return roleService.getLoginUserAuditRole();
     }
 }

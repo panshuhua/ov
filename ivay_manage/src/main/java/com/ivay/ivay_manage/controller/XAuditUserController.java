@@ -31,7 +31,7 @@ public class XAuditUserController {
                           @RequestParam(required = false) String acceptId) {
         if ("1".equals(flag)) {
             xAuditUserService.assignAuditForUser(acceptId, handleId);
-        }else {
+        } else {
             xAuditUserService.reAssignAudit(acceptId, handleId);
         }
         return true;
@@ -58,6 +58,7 @@ public class XAuditUserController {
     @GetMapping("listAudit")
     @ApiOperation(value = "获得所有的审计员")
     public PageTableResponse listAudit(PageTableRequest request) {
+        request.setLimit(0);
         return xAuditUserService.listAudit(request);
     }
 

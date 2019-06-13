@@ -135,7 +135,7 @@
                         "render": function (data, type, row) {
                             var id = row['id'];
                             var href = "updateUser.html?id=" + id;
-                            var edit = buttonEdit(href, "sys:user:add", pers) + buttonDel(id, "sys:role:del", pers);
+                            var edit = buttonEdit(href, "sys:user:add", pers) + buttonDel(id, "sys:user:add", pers);
                             return edit;
                         }
                     }

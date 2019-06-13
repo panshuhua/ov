@@ -72,9 +72,9 @@
         </div>
     </div>
 </div>
-<div id="dialog" style="display: none;">
+<div id="auditDialog" style="display: none;">
     审计员：
-    <select id="auditId" class="form-control"></select>
+    <select id="assignAuditId" class="form-control"></select>
 </div>
 </body>
 </html>
@@ -237,8 +237,6 @@
         example2.ajax.reload();
     }
 
-    var con = document.getElementById('dialog');
-
     /**
      * 把某审计员的全部用户重新分配给某个审计员
      * @param id
@@ -255,19 +253,20 @@
         assign(userGid, "1")
     }
 
+    var con = document.getElementById('auditDialog');
     /**
      * 重新分配审计员
      * @param handleId 要处理的id
      * @param flag 0将某审计员的全部用户重新分配  1将某个用户重新分配
      */
     function assign(handleId, flag) {
-        $("#dialog").attr("style", "display:block");
-        var dom_audit_id = $("#auditId");
+        $("#auditDialog").attr("style", "display:block");
+        var dom_audit_id = $("#assignAuditId");
         dom_audit_id.empty();
         dom_audit_id.append("<option value='-1'>随机分配</option>");
-        var roles = getLoginUserRole();
-        for (i = 0; i < roles.length; i++) {
-            dom_audit_id.append("<option value='" + i + "'>" + roles[i].username + "</option>");
+        var audits = getAllAudit();
+        for (i = 0; i < audits.length; i++) {
+            dom_audit_id.append("<option value='" + i + "'>" + audits[i].username + "</option>");
         }
         var d = dialog({
             title: '指派给',
@@ -280,7 +279,7 @@
                     contentType: "application/x-www-form-urlencoded; charset=utf-8",
                     data: {
                         flag: flag,
-                        acceptId: dom_audit_id.val() != "-1" ? roles[dom_audit_id.val()].id : "",
+                        acceptId: dom_audit_id.val() != "-1" ? audits[dom_audit_id.val()].id : "",
                         handleId: handleId
                     },
                     async: false,
