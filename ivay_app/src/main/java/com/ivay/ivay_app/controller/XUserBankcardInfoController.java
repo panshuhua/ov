@@ -1,5 +1,6 @@
 package com.ivay.ivay_app.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_common.dto.Response;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @Api(tags = "现金贷绑卡")
@@ -49,8 +52,9 @@ public class XUserBankcardInfoController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "result => 1 已经设置了交易密碼，0 还沒设置之交易密碼")
     })
+    @LogAnnotation(module="添加银行卡")
     public Response<String> save(@RequestBody XUserBankcardInfo xUserBankcardInfo,
-                                 @RequestParam String bankNo) {
+                                 @RequestParam String bankNo,HttpServletRequest request) {
         Response<String> response = new Response<>();
         if (StringUtils.isEmpty(xUserBankcardInfo.getCardUserName())) {
             logger.info("输入姓名为空");
@@ -113,7 +117,8 @@ public class XUserBankcardInfoController {
 
     @GetMapping("list/{userGid}")
     @ApiOperation(value = "根据userGid获取个人银行卡列表")
-    public Response<List<XUserBankcardInfo>> getCardList(@PathVariable String userGid) {
+    @LogAnnotation(module="根据userGid获取个人银行卡列表")
+    public Response<List<XUserBankcardInfo>> getCardList(@PathVariable String userGid,HttpServletRequest request) {
         Response<List<XUserBankcardInfo>> response = new Response<>();
         response.setBo(xUserBankcardInfoDao.getByUserGid(userGid));
         return response;
@@ -121,7 +126,8 @@ public class XUserBankcardInfoController {
 
     @PostMapping("deleteCard")
     @ApiOperation(value = "删除某人的某张银行卡")
-    public Response<Integer> delete(@RequestBody XUserBankcardInfo xUserBankcardInfo) {
+    @LogAnnotation(module="删除某人的某张银行卡")
+    public Response<Integer> delete(@RequestBody XUserBankcardInfo xUserBankcardInfo,HttpServletRequest request) {
         int num = xUserBankcardInfoDao.delete(xUserBankcardInfo.getBankcardGid(), xUserBankcardInfo.getUserGid());
         Response<Integer> rsp = new Response<>();
         rsp.setBo(num);
@@ -133,7 +139,8 @@ public class XUserBankcardInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "bankcardGid", value = "银行卡gid", dataType = "String", paramType = "query")
     })
-    public Response<Integer> deletes(@RequestParam String bankcardGid) {
+    @LogAnnotation(module="删除某张银行卡所有的绑定")
+    public Response<Integer> deletes(@RequestParam String bankcardGid,HttpServletRequest request) {
         int num = xUserBankcardInfoDao.deletes(bankcardGid);
         Response<Integer> rsp = new Response<>();
         rsp.setBo(num);
@@ -142,7 +149,8 @@ public class XUserBankcardInfoController {
 
     @PostMapping("getCardStatus")
     @ApiOperation(value = "获取银行卡绑定结果")
-    public Response<List<XUserBankcardInfo>> getCardStatus(@RequestBody XUserBankcardInfo xUserBankcardInfo) {
+    @LogAnnotation(module="获取银行卡绑定结果")
+    public Response<List<XUserBankcardInfo>> getCardStatus(@RequestBody XUserBankcardInfo xUserBankcardInfo,HttpServletRequest request) {
         Response<List<XUserBankcardInfo>> response = new Response<>();
         response.setBo(xUserBankcardInfoDao.getByCardGid(xUserBankcardInfo.getBankcardGid(),
                 xUserBankcardInfo.getUserGid()));

@@ -1,5 +1,6 @@
 package com.ivay.ivay_app.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_repository.model.XUserExtInfo;
 import com.ivay.ivay_app.service.XUserExtInfoService;
@@ -7,6 +8,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +26,8 @@ public class XUserExtInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })
-    public Response<XUserExtInfo> get(@RequestParam String userGid) {
+    @LogAnnotation(module="获取用户扩展信息")
+    public Response<XUserExtInfo> get(@RequestParam String userGid,HttpServletRequest request) {
         Response<XUserExtInfo> response = new Response<>();
         response.setBo(xUserExtInfoService.getByGid(userGid));
         return response;
@@ -30,7 +35,8 @@ public class XUserExtInfoController {
 
     @PostMapping("save")
     @ApiOperation(value = "保存")
-    public Response<XUserExtInfo> update(@RequestBody XUserExtInfo xUserExtInfo) {
+    @LogAnnotation(module="保存用户扩展信息")
+    public Response<XUserExtInfo> update(@RequestBody XUserExtInfo xUserExtInfo,HttpServletRequest request) {
         Response<XUserExtInfo> response = new Response<>();
         response.setBo(xUserExtInfoService.update(xUserExtInfo));
         return response;
@@ -41,7 +47,8 @@ public class XUserExtInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })
-    public void delete(@RequestParam String userGid) {
+    @LogAnnotation(module="删除用户扩展信息")
+    public void delete(@RequestParam String userGid,HttpServletRequest request) {
         xUserExtInfoService.delete(userGid);
     }
 }

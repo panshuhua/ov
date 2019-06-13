@@ -1,5 +1,6 @@
 package com.ivay.ivay_app.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_app.model.RiskInfo;
 import com.ivay.ivay_app.service.XUserContactsService;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("star/xUserContactss")
@@ -39,7 +42,8 @@ public class XUserContactsController {
 
     @PostMapping("add_contacts")
     @ApiOperation(value = "批量保存")
-    public Response<String> saveAll(@RequestBody RiskInfo riskInfo) {
+    @LogAnnotation(module="上传联系人/GPS/社交类app的个数等风控信息")
+    public Response<String> saveAll(@RequestBody RiskInfo riskInfo,HttpServletRequest request) {
         logger.info("前台参数：" + riskInfo.toString());
         if (riskInfo.getContacts() != null) {
             logger.info("联系人：" + riskInfo.getContacts());
