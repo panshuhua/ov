@@ -29,7 +29,7 @@ public interface XUserInfoDao {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into x_user_info(phone, user_gid, name, identity_card, birthday, sex, education, marital, place, income," +
             " create_time, update_time,user_status,account_status, enable_flag,credit_line,credit_line_count,canborrow_amount,trans_pwd," +
-            "refuse_reason,refuse_type,audit_time)" +
+            " refuse_reason,refuse_type,audit_time)" +
             " values(#{phone}, #{userGid}, #{name}, #{identityCard}, #{birthday}, #{sex}, #{education}, #{marital}, #{place}, #{income}," +
             " #{createTime}, #{updateTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{credit_line},#{credit_line_count},#{canborrow_amount},#{trans_pwd}," +
             "#{refuseReason},#{refuseType},#{auditTime})")
@@ -61,7 +61,7 @@ public interface XUserInfoDao {
                               @Param("limit") Integer limit);
 
     @Select("select user_gid,credit_line,credit_line_count,canborrow_amount,user_status from x_user_info t" +
-            "where t.user_gid = #{gid} and t.enable_flag='Y'")
+            " where t.user_gid = #{gid} and t.enable_flag='Y'")
     CreditLine getCreditLine(String gid);
 
     @Select("select user_status from x_user_info where user_gid=#{gid}")

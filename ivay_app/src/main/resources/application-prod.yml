@@ -9,8 +9,8 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
-#    database: 1
-#    password: ivayRedisB038
+  #    database: 1
+  #    password: ivayRedisB038
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss
@@ -28,9 +28,14 @@ timer:
   overdueFee: 0 0 1 1/1 * ?
 
 # 借款url
+#baokim
 api_transfer_url: http://210.245.83.82:9095/Golive/FirmBanking
 api_partner_code: VINFINTECH
 api_request_id_prefix: VINFINTECHBK
+#ebay
+ebay_api_transfer_url:
+ebay_api_partner_code:
+ebay_api_request_id_prefix:
 # 还款url
 api_collection_url: http://210.245.80.27:9092/Golive/Collection
 # 发送短信url

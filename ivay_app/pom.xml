@@ -16,6 +16,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <!--跳过测试-->
+        <skipTests>true</skipTests>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.ivay</groupId>
@@ -191,10 +196,10 @@
         </dependency>
         <!-- firebase消息推送 -->
         <dependency>
-		  <groupId>com.google.firebase</groupId>
-		  <artifactId>firebase-admin</artifactId>
-		  <version>6.8.0</version>
-		</dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>6.8.0</version>
+        </dependency>
     </dependencies>
 
     <build>
