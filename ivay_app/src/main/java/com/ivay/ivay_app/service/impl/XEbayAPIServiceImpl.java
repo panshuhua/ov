@@ -1,47 +1,40 @@
 package com.ivay.ivay_app.service.impl;
 
-import javax.annotation.Resource;
-
-import org.apache.commons.collections4.map.MultiValueMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
 import com.alibaba.fastjson.JSON;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.EbayTransfersReq;
 import com.ivay.ivay_app.dto.EbayTransfersRsp;
 import com.ivay.ivay_app.service.XEbayAPIService;
 import com.ivay.ivay_common.utils.HttpClientUtils;
-import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.RSAEncryptSha1;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
 import com.ivay.ivay_repository.dao.master.XBaokimTransfersInfoDao;
 import com.ivay.ivay_repository.model.XEbayTransfersInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 @Service
-public class XEbayAPIServiceImpl implements XEbayAPIService{
-	private static final Logger logger = LoggerFactory.getLogger(XAPIServiceImpl.class);
-	
-	@Resource
-	private XBaokimTransfersInfoDao xBaokimTransfersInfoDao;
-	
-	@Value("${ebay_api_transfer_url}")
-	private String transferUrl;
+public class XEbayAPIServiceImpl implements XEbayAPIService {
+    private static final Logger logger = LoggerFactory.getLogger(XAPIServiceImpl.class);
+
+    @Resource
+    private XBaokimTransfersInfoDao xBaokimTransfersInfoDao;
+
+    @Value("${ebay_api_transfer_url}")
+    private String transferUrl;
 
     @Value("${ebay_api_partner_code}")
     public String api_partner_code;
-    
-	@Override
-	public EbayTransfersRsp validateCustomerInformation(String bankNo, String accNo, String accType) {
-	    EbayTransfersReq transfersReq = new EbayTransfersReq(); 
-	    transfersReq.setRequestId(UUIDUtils.getEbayRequestId());
+
+    @Override
+    public EbayTransfersRsp validateCustomerInformation(String bankNo, String accNo, String accType) {
+        EbayTransfersReq transfersReq = new EbayTransfersReq();
+        transfersReq.setRequestId(UUIDUtils.getEbayRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
         transfersReq.setPartnerCode(api_partner_code);
         transfersReq.setOperation(SysVariable.API_OPERATION_VALIDATE);
@@ -58,16 +51,16 @@ public class XEbayAPIServiceImpl implements XEbayAPIService{
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
         return callTransfersApi(transferUrl, transfersReq);
-	}
-	
-	private EbayTransfersRsp callTransfersApi(String url, EbayTransfersReq transfersReq) {
-		String json = HttpClientUtils.postForObject(transferUrl, transfersReq);
-		EbayTransfersRsp transfersRsp = JSON.parseObject(json, EbayTransfersRsp.class);
+    }
+
+    private EbayTransfersRsp callTransfersApi(String url, EbayTransfersReq transfersReq) {
+        String json = HttpClientUtils.postForObject(transferUrl, transfersReq);
+        EbayTransfersRsp transfersRsp = JSON.parseObject(json, EbayTransfersRsp.class);
         loggerTransferInfo(transfersReq, transfersRsp);
         return transfersRsp;
     }
 
-	 /**
+    /**
      * 调用接口交易接口时，需要记录请求信息
      *
      * @param transfersReq
@@ -90,30 +83,30 @@ public class XEbayAPIServiceImpl implements XEbayAPIService{
             transfersRsp.setReferenceId(transfersReq.getReferenceId());
             logger.info("交易接口请求超时，没有返回");
         } else {
-        	xEbayTransfersInfo.setTransactionId(transfersRsp.getTransactionId());
-        	xEbayTransfersInfo.setTransactionTime(transfersRsp.getTransactionTime());
-        	xEbayTransfersInfo.setBankNo(transfersRsp.getBankNo());
-        	xEbayTransfersInfo.setAccNo(transfersRsp.getAccNo());
-        	xEbayTransfersInfo.setAccName(transfersRsp.getAccName());
-        	xEbayTransfersInfo.setAccType(transfersRsp.getAccType());
-        	xEbayTransfersInfo.setRequestAmount(transfersRsp.getRequestAmount());
-        	xEbayTransfersInfo.setTransferAmount(transfersRsp.getTransferAmount());
+            xEbayTransfersInfo.setTransactionId(transfersRsp.getTransactionId());
+            xEbayTransfersInfo.setTransactionTime(transfersRsp.getTransactionTime());
+            xEbayTransfersInfo.setBankNo(transfersRsp.getBankNo());
+            xEbayTransfersInfo.setAccNo(transfersRsp.getAccNo());
+            xEbayTransfersInfo.setAccName(transfersRsp.getAccName());
+            xEbayTransfersInfo.setAccType(transfersRsp.getAccType());
+            xEbayTransfersInfo.setRequestAmount(transfersRsp.getRequestAmount());
+            xEbayTransfersInfo.setTransferAmount(transfersRsp.getTransferAmount());
         }
         xEbayTransfersInfo.setResponseCode(transfersRsp.getResponseCode());
         xEbayTransfersInfo.setResponseMessage(transfersRsp.getResponseMessage());
         xEbayTransfersInfo.setReferenceId(transfersRsp.getReferenceId());
-        if(transfersRsp.getSubResponseCode()!=null) {
-        	 xEbayTransfersInfo.setSubErrorCode(transfersRsp.getSubResponseCode().getErrorCode());
-             xEbayTransfersInfo.setSubErrorMessage(transfersRsp.getSubResponseCode().getMessage());
+        if (transfersRsp.getSubResponseCode() != null) {
+            xEbayTransfersInfo.setSubErrorCode(transfersRsp.getSubResponseCode().getErrorCode());
+            xEbayTransfersInfo.setSubErrorMessage(transfersRsp.getSubResponseCode().getMessage());
         }
         xEbayTransfersInfo.setReason(transfersRsp.getReason());
         xBaokimTransfersInfoDao.saveEbayInfo(xEbayTransfersInfo);
     }
-	
-	@Override
-	public EbayTransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType,
-			String accountName,String contractNumber,String extend) {
-		EbayTransfersReq transfersReq = new EbayTransfersReq();
+
+    @Override
+    public EbayTransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType,
+                                      String accountName, String contractNumber, String extend) {
+        EbayTransfersReq transfersReq = new EbayTransfersReq();
         String referenceId = UUIDUtils.getUUID();
         transfersReq.setRequestId(UUIDUtils.getEbayRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
@@ -142,11 +135,11 @@ public class XEbayAPIServiceImpl implements XEbayAPIService{
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
         return callTransfersApi(transferUrl, transfersReq);
-	}
+    }
 
-	@Override
-	public EbayTransfersRsp transfersInfo(String referenceId) {
-		EbayTransfersReq transfersReq = new EbayTransfersReq();
+    @Override
+    public EbayTransfersRsp transfersInfo(String referenceId) {
+        EbayTransfersReq transfersReq = new EbayTransfersReq();
         transfersReq.setRequestId(UUIDUtils.getEbayRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
         transfersReq.setPartnerCode(api_partner_code);
@@ -159,12 +152,12 @@ public class XEbayAPIServiceImpl implements XEbayAPIService{
                 + transfersReq.getReferenceId();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-	    return callTransfersApi(transferUrl, transfersReq);
-	}
+        return callTransfersApi(transferUrl, transfersReq);
+    }
 
-	@Override
-	public EbayTransfersRsp balance() {
-		EbayTransfersReq transfersReq = new EbayTransfersReq();
+    @Override
+    public EbayTransfersRsp balance() {
+        EbayTransfersReq transfersReq = new EbayTransfersReq();
         transfersReq.setRequestId(UUIDUtils.getEbayRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
         transfersReq.setPartnerCode(api_partner_code);
@@ -176,6 +169,6 @@ public class XEbayAPIServiceImpl implements XEbayAPIService{
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
         return callTransfersApi(transferUrl, transfersReq);
-	}
+    }
 
 }
