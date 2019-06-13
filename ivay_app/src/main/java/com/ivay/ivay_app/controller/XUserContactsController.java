@@ -1,9 +1,9 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.model.RiskInfo;
-import com.ivay.ivay_app.service.XUserContactsService;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
+import com.ivay.ivay_app.model.RiskInfo;
+import com.ivay.ivay_app.service.XUserContactsService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;
@@ -18,14 +18,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("star/xUserContactss")
 @Api(tags = "通讯录")
 public class XUserContactsController {
-    private static final Logger logger = LoggerFactory.getLogger(XUserContactsController.class);
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
     @Autowired
     private XUserContactsDao xUserContactsDao;
     @Autowired

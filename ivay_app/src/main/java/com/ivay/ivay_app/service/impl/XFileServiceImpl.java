@@ -23,7 +23,7 @@ import java.util.Date;
 
 @Service
 public class XFileServiceImpl implements XFileService {
-    private static final Logger logger = LoggerFactory.getLogger(XFileService.class);
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
     private XFileInfoDao xFileInfoDao;

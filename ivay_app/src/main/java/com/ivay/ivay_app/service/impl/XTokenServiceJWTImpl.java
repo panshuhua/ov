@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class XTokenServiceJWTImpl implements XTokenService {
 
-    private static final Logger log = LoggerFactory.getLogger(XTokenService.class);
+    private static final Logger log = LoggerFactory.getLogger("adminLogger");
 
     /**
      * token过期秒数

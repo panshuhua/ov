@@ -20,7 +20,5 @@ keyfilepath: /usr/prod/
 # baokim接口参数
 api_partner_code: VINFINTECH
 api_request_id_prefix: VINFINTECHBK
-# ebay接口参数
-ebay_api_partner_code:
-ebay_api_request_id_prefix:
+
 

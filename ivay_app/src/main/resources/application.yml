@@ -31,7 +31,7 @@ spring:
 
 token:
   expire:
-    seconds: 1800
+    seconds: 259200
   jwtSecret: (JUN:)_$^11244^%$_(XING:)_@@++--(KE:)_++++_.sds_(JI:)
 
 # 是否对敏感信息解密

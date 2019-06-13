@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class XUserInfoServiceImpl implements XUserInfoService {
 
-    private static final Logger logger = LoggerFactory.getLogger(XUserInfoService.class);
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
     private I18nService i18nService;

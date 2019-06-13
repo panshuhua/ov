@@ -15,6 +15,7 @@ spring:
     time-zone: GMT+8
 
 
+
 files:
   path: ${file-path:c:/files}
 

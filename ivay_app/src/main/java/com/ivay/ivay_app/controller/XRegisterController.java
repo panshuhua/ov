@@ -2,7 +2,7 @@ package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_app.service.RegisterService;
+import com.ivay.ivay_app.service.XRegisterService;
 import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.annotation.Decrypt;
@@ -38,12 +38,12 @@ import java.util.Date;
 @Api(tags = "注册")
 @Validated
 public class XRegisterController {
-    private static final Logger logger = LoggerFactory.getLogger(XRegisterController.class);
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
     private I18nService i18nService;
     @Autowired
-    private RegisterService registerService;
+    private XRegisterService registerService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
@@ -74,8 +74,8 @@ public class XRegisterController {
                                                      @RequestParam Integer optType,
                                                      @RequestParam(required = false) String macCode
             , HttpServletRequest request) {
-        logger.info("前台传过来的请求头：" + request.getHeader("Accept-Language"));
-
+       
+        logger.info("进入发送短信验证码的方法：" + "手机号：" + mobile + "----------------");
         Response<VerifyCodeInfo> response = new Response<>();
         //注册发送验证码
         if (optType == 1) {
@@ -96,7 +96,7 @@ public class XRegisterController {
                 return response;
             }
         }
-        logger.info("进入发送短信验证码的方法：" + "手机号：" + mobile + "----------------");
+       
         String existCode = (String) redisTemplate.opsForValue().get(mobile);
         logger.info("该手机号码已存在的验证码：" + existCode + "------------");
         if (!StringUtils.isEmpty(existCode)) {
