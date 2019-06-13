@@ -158,5 +158,17 @@ public interface XUserInfoDao {
 
     @Update("update x_user_info set fmc_token=#{fmcToken} where user_gid=#{userGid}")
     int updateTmcToken(@Param("fmcToken") String fmcToken, @Param("userGid") String userGid);
+    
+    //查询审核通过的用户的fmc_token
+    @Select("select fmc_token from x_user_info where user_status='3'")
+    List<String> findAuditPassUsers();
+    
+    //查询放款成功的用户的fmc_token
+    @Select("select fmc_token from x_user_info where user_status='5'")
+    List<String> findLoanSuccessUsers();
+    
+    //查询到期还款的用户的fmc_token
+    @Select("select u.fmc_token from x_record_loan r LEFT JOIN  x_user_info u ON r.user_gid=u.user_gid where r.due_time<=now()")
+    List<String> findShouldRepaymentUsers();
 
 }

@@ -57,3 +57,8 @@ auto_audit_url: http://10.53.104.178:8081/audit/autoAudit?userGid={userGid}
 
 # 前端错误日志路径：
 errorInfo.path: /data/errorInfo/
+
+#firebase SDK路径：
+firebase_sdk_url: /usr/firebase/ovay-release-firebase-adminsdk-3evco-943d00a328.json
+#firebase ovay项目地址：
+firebase_project_url: https://ovay-release.firebaseio.com
