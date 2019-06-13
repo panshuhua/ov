@@ -16,6 +16,3 @@ spring:
 #    include: test, comTest, dbTest
 #    include: prod, comProd, dbProd
 
-# 增加定时器
-timer:
-  autoAudit: 0 */10 * * * ?
