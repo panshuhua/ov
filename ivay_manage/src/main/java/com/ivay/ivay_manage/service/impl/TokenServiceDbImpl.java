@@ -42,8 +42,6 @@ public class TokenServiceDbImpl implements TokenService {
     private Integer expireSeconds;
     @Autowired
     private TokenDao tokenDao;
-    @Autowired
-    private SysLogService logService;
     /**
      * 私钥
      */
@@ -67,8 +65,6 @@ public class TokenServiceDbImpl implements TokenService {
         model.setVal(JSONObject.toJSONString(loginUser));
 
         tokenDao.save(model);
-        // 登陆日志
-        logService.save(loginUser.getId(), "登陆", true, null);
 
         String jwtToken = createJWTToken(loginUser);
 
@@ -123,7 +119,6 @@ public class TokenServiceDbImpl implements TokenService {
             LoginUser loginUser = toLoginUser(model);
             if (loginUser != null) {
                 tokenDao.delete(uuid);
-                logService.save(loginUser.getId(), "退出", true, null);
 
                 return true;
             }
