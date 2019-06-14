@@ -109,10 +109,9 @@
                             姓名： <input id="detail_name2" type="text" class=" form-control" placeholder="name">
                             身份证： <input id="detail_identityCard2" type="text" class=" form-control"
                                         placeholder="identityCard">
-                            生日： <input id="detail_birthday2" type="text" class=" form-control" placeholder="birthday"
-                                       readonly="readonly">
-                            性别：<input type="radio" name="sex" value="0"/>Male
-                            <input type="radio" name="sex" value="1"/>Female
+                            生日： <input id="detail_birthday2" type="text" class=" form-control" placeholder="birthday">
+                            性别：<input type="radio" name="sex" value="Male"/>Male
+                            <input type="radio" name="sex" value="Female"/>Female
                         </div>
                     </form>
                     <div id="auditBtn" class="form-group" style="margin:2px">
@@ -272,7 +271,6 @@
         laydate.render({
             elem: '#detail_birthday2'
         });
-
     });
 
     // 搜索审核列表
@@ -440,7 +438,6 @@
         d.show();
         d.content(con);
     }
-
 
     init();
 </script>

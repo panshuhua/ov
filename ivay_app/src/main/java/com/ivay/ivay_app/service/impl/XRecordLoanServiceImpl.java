@@ -380,7 +380,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         // 平台管理费
                         if (day == 1) {
                             // 平台管理费 = 剩余本金 * 0.03
-                            totalFee = CommonUtil.longAddBigDecimal(xrl.getDueAmount(), new BigDecimal(config.get("0").toString()));
+                            totalFee = CommonUtil.longMultiplyBigDecimal(xrl.getDueAmount(), new BigDecimal(config.get("0").toString()));
                             logger.info("用户: {}, 平台管理费: {}", xrl.getUserGid(), totalFee);
                         }
 
@@ -417,7 +417,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             return false;
         }
         if (!updateList.isEmpty()) {
-            //todo new 需要分批批量插入，200个一组
+            //todo 需要分批批量插入，200个一组
             xRecordLoanDao.updateByBatch(updateList);
         }
         return true;
