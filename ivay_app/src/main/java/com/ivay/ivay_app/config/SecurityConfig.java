@@ -12,10 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
  * spring security配置
@@ -26,13 +23,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
  */
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
-    @Autowired
-    private AuthenticationFailureHandler authenticationFailureHandler;
-    @Autowired
-    private LogoutSuccessHandler logoutSuccessHandler;
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
@@ -57,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
                         "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
                         "/statics/**", "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**",
-                        "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**", "/star/error/**","/star/appVersion/**",
+                        "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**",
+                        "/star/error/**", "/star/appVersion/**",
 //                        "/star/**","/info")  //开发时调试用
                         "/info")  //部署时用
                 .permitAll().anyRequest().authenticated();

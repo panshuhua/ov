@@ -33,7 +33,7 @@ import java.util.*;
 
 @Service
 public class XRecordLoanServiceImpl implements XRecordLoanService {
-    private static final Logger logger = LoggerFactory.getLogger(XRecordLoanServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(XRecordLoanService.class);
     @Resource
     private XRecordLoanDao xRecordLoanDao;
 
@@ -373,6 +373,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                     if (now > xrl.getDueTime().getTime() && xrl.getDueAmount() > xrl.getOverdueFee()) {
                         // 逾期天数
                         long day = (now - xrl.getDueTime().getTime()) / (3600 * 1000 * 24) + 1;
+                        logger.info("用户: {}, 逾期天数: {}", xrl.getUserGid(), day);
 
                         long totalFee = 0L;
 
@@ -380,11 +381,13 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         if (day == 1) {
                             // 平台管理费 = 剩余本金 * 0.03
                             totalFee = CommonUtil.longAddBigDecimal(xrl.getDueAmount(), new BigDecimal(config.get("0").toString()));
+                            logger.info("用户: {}, 平台管理费: {}", xrl.getUserGid(), totalFee);
                         }
 
                         // 逾期计息
                         BigDecimal interestPerDay = xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
                         totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPerDay);
+                        logger.info("用户: {}, 一天的逾期计息: {}", xrl.getUserGid(), interestPerDay.toString());
 
                         // 逾期滞纳金
                         for (Object key : config.keySet()) {
@@ -395,6 +398,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                                 if (day >= start && day <= end) {
                                     long feePerDay = CommonUtil.longMultiplyBigDecimal(xrl.getDueAmount(), value);
                                     totalFee += feePerDay;
+                                    logger.info("用户: {}, 一天的逾期滞纳金: {}", xrl.getUserGid(), feePerDay);
                                 }
                             }
                         }
@@ -403,6 +407,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         } else {
                             xrl.setOverdueFee(xrl.getOverdueFee() + totalFee);
                         }
+                        logger.info("用户: {}, 总逾期费用: {}", xrl.getUserGid(), xrl.getOverdueFee());
                         updateList.add(xrl);
                     }
                 }

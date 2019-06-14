@@ -3,7 +3,6 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.utils.RedisUtils;
 import io.swagger.annotations.Api;
@@ -108,13 +107,30 @@ public class XAPIController {
     private I18nService i18nService;
 
     @PostMapping("test")
-    public boolean test(@RequestParam(required = false) String value) {
-        logger.info("你好");
-        logger.warn("hi");
-        logger.error("mo xi mo xi");
-//        redisUtils.set("sx:test", "123", 60L);
-//        System.out.println(redisUtils.get("sx:test"));
-        throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
-                i18nService.getMessage("response.error.user.checkgid.msg"));
+    public boolean test() {
+        boolean flag = false;
+        int count = 0;
+        String start = "开始计算逾期费用---start";
+        while (!flag) {
+            if (count > 0) {
+                start = "正在进行第" + count + "次重试--start";
+            }
+            logger.info(start);
+            flag = xRecordLoanService.calcOverDueFee2();
+            logger.info("逾期费用计算结束---{}", flag ? "成功" : "失败");
+            if (!flag) {
+                if ((count++ > 5)) {
+                    flag = true;
+                    logger.error("逾期费用计算出错，请及时查看");
+                } else {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception ex) {
+                        logger.error("逾期费用计算暂停异常: {}", ex);
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 
 @Service
 public class XAPIServiceImpl implements XAPIService {
-    private static final Logger logger = LoggerFactory.getLogger(XAPIServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(XAPIService.class);
 
 
     @Resource

@@ -1,25 +1,24 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.ivay.ivay_app.service.XFirebaseNoticeService;
+import com.ivay.ivay_app.utils.FirebaseUtil;
+import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.ivay.ivay_app.service.XFirebaseNoticeService;
-import com.ivay.ivay_app.utils.FirebaseUtil;
-import com.ivay.ivay_common.config.I18nService;
-import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 	
-	private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeService.class);
 	 
 	@Autowired
 	XUserInfoDao xUserInfoDao;

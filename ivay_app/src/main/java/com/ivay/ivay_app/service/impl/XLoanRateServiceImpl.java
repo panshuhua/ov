@@ -28,7 +28,7 @@ import java.util.*;
 
 @Service
 public class XLoanRateServiceImpl implements XLoanRateService {
-    private static final Logger logger = LoggerFactory.getLogger(XLoanRateServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(XLoanRateService.class);
 
     @Resource
     private XLoanRateDao xLoanRateDao;
