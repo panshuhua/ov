@@ -120,9 +120,10 @@ public class SysVariable {
     // 1 通过
     public static final int AUDIT_PASS = 1;
 
-
     // 风控类型
+    // 授信
     public static final int RISK_TYPE_AUDIT = 0;
+    // 借款
     public static final int RISK_TYPE_LOAN = 1;
 
 }

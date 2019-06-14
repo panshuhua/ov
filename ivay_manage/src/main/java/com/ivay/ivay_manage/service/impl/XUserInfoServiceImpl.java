@@ -83,6 +83,16 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         return xUserInfoDao.auditDetail(userGid);
     }
 
+    /**
+     * 提交审核结果
+     *
+     * @param userGid
+     * @param flag
+     * @param refuseCode
+     * @param refuseDemo
+     * @param type       审核类型 0人工 1自动
+     * @return
+     */
     @Override
     public int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo, String type) {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
@@ -90,8 +100,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
         }
+
+        // 审核通过
         if (flag == SysVariable.AUDIT_PASS) {
-            // 审核通过
             String demo = queryRiskQualificationDemo(userGid, SysVariable.RISK_TYPE_AUDIT);
             if (!StringUtils.isEmpty(demo)) {
                 xUserInfo.setRefuseType(SysVariable.AUDIT_REFUSE_TYPE_AUTO);
@@ -191,6 +202,13 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         return xLoanQualification;
     }
 
+    /**
+     * 获得某人的风控审核结果，空字符串表示通过审核
+     *
+     * @param userGid
+     * @param flag    0 贷前策略 1 贷中策略
+     * @return 返回未通过审核的理由
+     */
     @Override
     public String queryRiskQualificationDemo(String userGid, int flag) {
         // 風控管理配置
