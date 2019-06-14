@@ -7,13 +7,17 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.Response;
 import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_manage.service.XUserInfoService;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.XAuditDetail;
+import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -28,7 +32,7 @@ public class XAuditController {
 
     @PostMapping("list")
     @ApiOperation(value = "审核记录")
-    @LogAnnotation(module="审核记录")
+    @LogAnnotation(module = "审核记录")
     public PageTableResponse auditList(PageTableRequest request) {
         return xUserInfoService.auditList(request);
     }
@@ -38,7 +42,7 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    @LogAnnotation(module="审核详情")
+    @LogAnnotation(module = "审核详情")
     public Response<XAuditDetail> detail(@RequestParam String userGid) {
         Response<XAuditDetail> response = new Response<>();
         response.setBo(xUserInfoService.auditDetail(userGid));
@@ -53,7 +57,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "refuseCode", value = "驳回理由code", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "refuseDemo", value = "驳回理由msg", dataType = "String", paramType = "query", required = false)
     })
-    @LogAnnotation(module="提交审核结果")
+    @LogAnnotation(module = "提交审核结果")
     public Response<Integer> update(@RequestParam String userGid,
                                     @RequestParam int flag,
                                     @RequestParam(required = false) String refuseCode,
@@ -69,7 +73,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0 授信 1借款", dataType = "Long", paramType = "query", defaultValue = "0")
     })
-    @LogAnnotation(module="查询贷款权限")
+    @LogAnnotation(module = "查询贷款权限")
     public String queryAuditQualification(@RequestParam String userGid,
                                           @RequestParam int flag) {
         // 获得某人的风控审核结果，返回未通过审核的理由，空字符串表示通过审核
@@ -81,7 +85,7 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    @LogAnnotation(module="提额")
+    @LogAnnotation(module = "提额")
     public long updateCreditLimit(@RequestParam String userGid) {
         return xLoanRateService.acquireCreditLimit(userGid);
     }
@@ -91,10 +95,25 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    @LogAnnotation(module="自动审核")
+    @LogAnnotation(module = "自动审核")
     public Response<Boolean> autoAudit(@RequestParam String userGid) {
         Response<Boolean> response = new Response<>();
         response.setBo(xUserInfoService.autoAudit(userGid));
         return response;
     }
+
+
+    @Autowired
+    private XUserInfoDao xUserInfoDao;
+
+    @PostMapping("riskRefuseList")
+    @ApiOperation(value = "被风控规则拒绝得名单")
+    @LogAnnotation(module = "被风控规则拒绝得名单")
+    public PageTableResponse riskRefuseList(PageTableRequest request) {
+        request.getParams().put("refuseType", SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+        request.getParams().put("orderBy", null);
+        List<XUserInfo> list = xUserInfoDao.list(request.getParams(), request.getOffset(), request.getLimit());
+        return new PageTableResponse(list.size(), request.getOffset(), list);
+    }
+
 }

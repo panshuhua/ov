@@ -17,7 +17,6 @@
 		   <if test="params.birthday !='' and params.birthday !=null">
 		      and birthday like concat('%', #{params.birthday} ,'%')
 		   </if>
-			
 		</where>
 	</sql>
 	

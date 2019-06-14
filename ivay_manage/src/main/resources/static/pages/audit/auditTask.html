@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
@@ -63,6 +63,40 @@
                             <th>申请时间</th>
                             <th>审核状态</th>
                             <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div>
+            <header style="height: 100%">
+                <div align="left">
+                    <div class="form-group">
+                        <button id="refuseListBtn" class="layui-btn layui-btn-sm">
+                            <i class="layui-icon">&#xe615;</i>查看风控拒绝名单
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div>
+                <div class="widget-body no-padding">
+                    <table id="dt-table3" class="table table-striped table-bordered table-hover" style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>用户gid</th>
+                            <th>用户姓名</th>
+                            <th>社交app个数</th>
+                            <th>住址</th>
+                            <th>经度</th>
+                            <th>维度</th>
+                            <th>手机码</th>
+                            <th>手机号码</th>
+                            <th>拒绝理由</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
@@ -254,6 +288,7 @@
     }
 
     var con = document.getElementById('auditDialog');
+
     /**
      * 重新分配审计员
      * @param handleId 要处理的id
@@ -297,4 +332,64 @@
     }
 
     initAudit();
+
+    var example3;
+
+    // 审计员审计用户列表
+    function initRiskRefuseList(gid) {
+        example3 = $('#dt-table3').DataTable({
+            "searching": false,
+            "processing": false,
+            "serverSide": true,
+            "retrieve": true,  //防止重新加载dataTable时出现警告：destroy/retrieve
+            "language": {
+                "url": "/js/plugin/datatables/Chinese.lang"
+            },
+            "ajax": {
+                "url": "/audit/riskRefuseList",
+                "type": "post",
+                "error": function (xhr, textStatus, errorThrown) {
+                    var msg = xhr.responseText;
+                    console.log(msg);
+                    var response = JSON.parse(msg);
+                    var code = response.code;
+                    var message = response.message;
+                    if (code == 400) {
+                        layer.msg(message);
+                    } else if (code == 401) {
+                        localStorage.removeItem("token");
+                        layer.msg("token过期，请先登录", {shift: -1, time: 1000}, function () {
+                            location.href = '/login.html';
+                        });
+                    } else if (code == 403) {
+                        console.log("未授权:" + message);
+                        layer.msg('未授权');
+                    } else if (code == 500) {
+                        layer.msg('系统错误：' + message);
+                    }
+                }
+            },
+            "dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",
+            "columns": [
+                {"data": "userGid", "defaultContent": ""},
+                {"data": "name", "defaultContent": ""},
+                {"data": "appNum", "defaultContent": ""},
+                {"data": "place", "defaultContent": ""},
+                {"data": "longitude", "defaultContent": ""},
+                {"data": "latitude", "defaultContent": ""},
+                {"data": "macCode", "defaultContent": ""},
+                {"data": "phone", "defaultContent": ""},
+                {"data": "refuseReason", "defaultContent": ""}
+            ],
+            "order": [[1, "asc"]]
+        });
+
+        //修改请求参数后再重新加载数据-解决上述ajax请求只能调用一次的问题
+        example3.ajax.reload();
+    }
+
+    $("#refuseListBtn").click(function () {
+        $('#dt-table3 tbody').empty();
+        initRiskRefuseList()
+    });
 </script>

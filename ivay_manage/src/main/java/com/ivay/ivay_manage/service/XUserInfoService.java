@@ -68,6 +68,5 @@ public interface XUserInfoService {
      * @return
      */
     boolean autoAudit(String userGid);
-
 }
 
