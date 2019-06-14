@@ -19,15 +19,15 @@
                             <td>
                                 <form class="form-inline" onsubmit="return false">
                                     <div class="form-group">
-                                        用户ID：
-                                        <input id="userGid" type="text" class="form-control" placeholder="userGid">
-                                        姓名：
-                                        <input id="name" type="text" class="form-control" placeholder="name">
-                                        手机号：
-                                        <input id="phone" type="text" class="form-control" placeholder="phone">
-                                        <span id="audit_select_box" style="display: none">
+                                        用户ID：<input id="condition_userGid" type="text" class="form-control"
+                                                    placeholder="userGid">
+                                        姓名：<input id="condition_name" type="text" class="form-control"
+                                                  placeholder="name">
+                                        手机号：<input id="condition_phone" type="text" class="form-control"
+                                                   placeholder="phone">
+                                        <span id="condition_audit_box" style="display: none">
                                             审计员：
-                                            <select id="auditId" class="form-control">
+                                            <select id="condition_auditId" class="form-control">
                                                 <option value="-1">全部</option>
                                                 <option value="-2">未分配审计员</option>
                                             </select>
@@ -35,18 +35,18 @@
                                     </div>
                                     <div class="form-group" style="margin:2px">
                                         申请时间：
-                                        <input id="fromTime" type="text" class="form-control" placeholder="fromTime"
-                                               readonly="readonly">
-                                        - <input id="toTime" type="text" class="form-control" placeholder="toTime"
-                                                 readonly="readonly">
+                                        <input id="condition_fromTime" type="text" class="form-control"
+                                               placeholder="fromTime" readonly="readonly">
+                                        - <input id="condition_toTime" type="text" class="form-control"
+                                                 placeholder="toTime" readonly="readonly">
                                         审核状态：
-                                        <select id="auditStatus" class="form-control">
+                                        <select id="condition_auditStatus" class="form-control">
                                             <option value="2">待审核</option>
                                             <option value="3">审核通过</option>
                                             <option value="7">审核不通过</option>
                                             <option value="8">驳回重新提交</option>
                                         </select>
-                                        <button id="searchBt" class="layui-btn layui-btn-sm">
+                                        <button id="searchBtn" class="layui-btn layui-btn-sm">
                                             <i class="layui-icon">&#xe615;</i>搜索
                                         </button>
                                     </div>
@@ -78,27 +78,6 @@
 
                 <!-- 审核详情 -->
                 <div id="detail" class="widget-body no-padding" style="display: none">
-                    <table id="dt-table2" class="table table-striped table-bordered table-hover" style="width: 100%">
-                        <thead>
-                        <tr>
-                            <th>手机号</th>
-                            <th>身份证号</th>
-                            <th>姓名</th>
-                            <th>出生日期</th>
-                            <th>性别</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th id="detail_phone">手机号</th>
-                            <th id="detail_identityCard">身份证号</th>
-                            <th id="detail_name">姓名</th>
-                            <th id="detail_birthday">出生日期</th>
-                            <th id="detail_sex">性别</th>
-                        </tr>
-                        </tbody>
-                    </table>
-
                     <div>
                         <img id="photo1" src="" width="30%" height="300px" alt="photo1"/>
                         <img id="photo2" src="" width="30%" height="300px" alt="photo2"/>
@@ -110,8 +89,8 @@
                             身份证： <input id="detail_identityCard2" type="text" class=" form-control"
                                         placeholder="identityCard">
                             生日： <input id="detail_birthday2" type="text" class=" form-control" placeholder="birthday">
-                            性别：<input type="radio" name="sex" value="Male"/>Male
-                            <input type="radio" name="sex" value="Female"/>Female
+                            性别：<input type="radio" name="sex" value="0"/>Male
+                            <input type="radio" name="sex" value="1"/>Female
                         </div>
                     </form>
                     <div id="auditBtn" class="form-group" style="margin:2px">
@@ -146,7 +125,7 @@
         </div>
     </div>
 </div>
-<div id="auditDialog" style="display: none;">
+<div id="auditDialog_box" style="display: none;">
     审计员：
     <select id="assignAuditId" class="form-control"></select>
 </div>
@@ -162,33 +141,40 @@
 <script type="text/javascript" src="../../js/dialog.js"></script>
 <script type="text/javascript">
     // 后台地址
-    var DOMAIN = window.location.protocol + "//" + window.location.host;
+    var LOCALHOST = window.location.protocol + "//" + window.location.host;
 
     // 获得用户权限
     checkPermission();
 
+    // 获取当前登录用户得权限
+    var LOGIN_ROLE = getLoginAuditRole();
+
+    // 根据角色判断是否是审计管理员
+    function hasAuditAdminRight(par) {
+        return par.toLowerCase() == "admin" || par.toLowerCase() == "ovayadmin";
+    }
+
     // 管理员增加审计员下拉框
-    var role = getLoginAuditRole();
-    if (role.toLowerCase() == "admin" || role.toLowerCase() == "ovayadmin") {
-        var auditList = getAllAudit();
-        $("#audit_select_box").css("display", "inline");
-        for (i = 0; i < auditList.length; i++) {
-            $("#auditId").append("<option value='" + i + "'>" + auditList[i].username + "</option>");
+    var condition_auditList = [];
+    if (hasAuditAdminRight(LOGIN_ROLE)) {
+        condition_auditList = getAllAudit();
+        $("#condition_audit_box").css("display", "inline");
+        for (i = 0; i < condition_auditList.length; i++) {
+            $("#condition_auditId").append("<option value='" + i + "'>" + condition_auditList[i].username + "</option>");
         }
     }
-    // 下拉框审计员
-    var auditSelectIndex;
-    var auditSelectId;
+    // 下拉框选中审计员
+    var condition_auditId;
 
     // 单击审核详情的用户gid
-    var USER_GID = "";
+    var handle_userGid = "";
 
     // 初始化审核列表
     var example;
 
     function init() {
-        auditSelectIndex = $("#auditId").val();
-        auditSelectId = auditSelectIndex != "-1" ? auditList[auditSelectIndex].id : "";
+        var index = $("#condition_auditId").val();
+        condition_auditId = index != "-1" ? condition_auditList[index].id : "";
         example = $('#dt-table').DataTable({
             "searching": false,
             "processing": false,
@@ -200,13 +186,13 @@
                 "url": "/audit/list",
                 "type": "post",
                 "data": function (d) {
-                    d.userGid = $("#userGid").val();
-                    d.name = $("#name").val();
-                    d.phone = $("#phone").val();
-                    d.fromTime = $("#fromTime").val();
-                    d.toTime = $("#toTime").val();
-                    d.auditStatus = $("#auditStatus").val();
-                    d.auditId = auditSelectId;
+                    d.userGid = $("#condition_userGid").val();
+                    d.name = $("#condition_name").val();
+                    d.phone = $("#condition_phone").val();
+                    d.fromTime = $("#condition_fromTime").val();
+                    d.toTime = $("#condition_toTime").val();
+                    d.auditStatus = $("#condition_auditStatus").val();
+                    d.auditId = condition_auditId;
                 },
                 "error": function (xhr, textStatus, errorThrown) {
                     var msg = xhr.responseText;
@@ -244,7 +230,7 @@
                         var gid = row['userGid'];
                         var status = row['auditStatus'];
                         var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\",' + '\"' + status + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
-                        if (role.toLowerCase() == "admin" || role.toLowerCase() == "ovayadmin") {
+                        if (hasAuditAdminRight(LOGIN_ROLE)) {
                             operation += "<button class='btn btn-success' type='button' onclick='assignUser(" + '\"' + gid + '\"' + ")' >指派给<i class='fa fa-edit'></i></button>&nbsp;";
                         }
                         return operation;
@@ -274,46 +260,51 @@
     });
 
     // 搜索审核列表
-    $("#searchBt").click(function () {
+    $("#searchBtn").click(function () {
         searchList()
     });
 
-    // 搜索列表
+    // 审核列表
     function searchList() {
         initDetail();
-        auditSelectIndex = $("#auditId").val();
-        if (auditSelectIndex == "-1") {
+        var index = $("#condition_auditId").val();
+        if (index == "-1") {
             // 所有审计员
-            auditSelectId = ""
-        } else if (auditSelectIndex == "-2") {
+            condition_auditId = ""
+        } else if (index == "-2") {
             // 未指定审计员
-            auditSelectId = "-2"
+            condition_auditId = "-2"
         } else {
-            auditSelectId = auditList[auditSelectIndex].id;
+            condition_auditId = condition_auditList[index].id;
         }
         example.settings()[0].ajax.data = {
-            "userGid": $("#userGid").val(),
-            "name": $("#name").val(),
-            "phone": $("#phone").val(),
-            "fromTime": $("#fromTime").val(),
-            "toTime": $("#toTime").val(),
-            "auditStatus": $("#auditStatus").val(),
-            "auditId": auditSelectId
+            "userGid": $("#condition_userGid").val(),
+            "name": $("#condition_name").val(),
+            "phone": $("#condition_phone").val(),
+            "fromTime": $("#condition_fromTime").val(),
+            "toTime": $("#condition_toTime").val(),
+            "auditStatus": $("#condition_auditStatus").val(),
+            "auditId": condition_auditId
         };
         example.ajax.reload();
     }
 
+    // 审核详情信息
+    var detail_name = "";
+    var detail_identityCard = "";
+    var detail_birthday = "";
+    var detail_sex = "";
+
     // 清空审核详情
     function initDetail() {
-        $("#detail_name").text("姓名");
-        $("#detail_identityCard").text("身份证");
-        $("#detail_birthday").text("生日");
-        $("#detail_phone").text("电话");
-        $("#detail_sex").text("性别");
+        detail_name = "";
+        detail_identityCard = "";
+        detail_birthday = "";
+        detail_sex = "";
+        handle_userGid = "";
         $("#detail_name2").val("");
         $("#detail_identityCard2").val("");
         $("#detail_birthday2").val("");
-        USER_GID = "";
         $('#detail').css("display", "none");
     }
 
@@ -327,16 +318,15 @@
                 if (data.status.code != "200") {
                     alert(data.status.message);
                 } else {
-                    USER_GID = data.bo.userGid;
                     $("#detail").css("display", "block");
-                    $("#detail_name").text(data.bo.name);
-                    $("#detail_identityCard").text(data.bo.identityCard);
-                    $("#detail_birthday").text(data.bo.birthday);
-                    $("#detail_phone").text(data.bo.phone);
-                    $("#detail_sex").text(data.bo.sex == 0 ? 'Male' : 'Female');
-                    $("#photo1").attr("src", DOMAIN + "/statics" + data.bo.photo1Url);
-                    $("#photo2").attr("src", DOMAIN + "/statics" + data.bo.photo2Url);
-                    $("#photo3").attr("src", DOMAIN + "/statics" + data.bo.photo3Url);
+                    detail_name = data.bo.name;
+                    detail_identityCard = data.bo.identityCard;
+                    detail_birthday = data.bo.birthday;
+                    detail_sex = data.bo.sex;
+                    handle_userGid = data.bo.userGid;
+                    $("#photo1").attr("src", LOCALHOST + "/statics" + data.bo.photo1Url);
+                    $("#photo2").attr("src", LOCALHOST + "/statics" + data.bo.photo2Url);
+                    $("#photo3").attr("src", LOCALHOST + "/statics" + data.bo.photo3Url);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -348,23 +338,23 @@
     // 审核
     function auditSubmit(flag) {
         if (flag == 1) {
-            if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != $("#detail_name").text().replace(/\s/g, '').toUpperCase()) {
-                alert("Please check the user name")
+            if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != detail_name.replace(/\s/g, '').toUpperCase()) {
+                alert("Please check the user name");
                 return;
             }
-            if ($("#detail_identityCard2").val().replace(/\s/g, '').toUpperCase() != $("#detail_identityCard").text().replace(/\s/g, '').toUpperCase()) {
-                alert("Please check the ID Card No")
+            if ($("#detail_identityCard2").val().replace(/\s/g, '').toUpperCase() != detail_identityCard.replace(/\s/g, '').toUpperCase()) {
+                alert("Please check the ID Card No");
                 return;
             }
-            if ($("input[name='sex']:checked").val() != $("#detail_sex").text()) {
-                alert("Please check the Gender")
+            if ($("input[name='sex']:checked").val() != detail_sex) {
+                alert("Please check the Gender");
                 return;
             }
             if (
                 $("#detail_birthday2").val() == "" ||
-                $("#detail_birthday").text().indexOf($("#detail_birthday2").val()) == -1
+                detail_birthday.indexOf($("#detail_birthday2").val()) == -1
             ) {
-                alert("Please check the birthday")
+                alert("Please check the birthday");
                 return;
             }
         } else if ($("#refuseReason").val() == "") {
@@ -373,7 +363,7 @@
         }
 
         $.ajax({
-            url: "/audit/update?userGid=" + USER_GID + "&flag=" + flag
+            url: "/audit/update?userGid=" + handle_userGid + "&flag=" + flag
                 + "&refuseCode=" + $("#refuseReason").val() +
                 "&refuseDemo=" + $("#refuseReason").find("option:selected").text(),
             type: "post",
@@ -398,7 +388,7 @@
         assign(userGid, "1")
     }
 
-    var con = document.getElementById('auditDialog');
+    var con = document.getElementById('auditDialog_box');
 
     /**
      * 重新分配审计员
@@ -406,13 +396,13 @@
      * @param flag 0将某审计员的全部用户重新分配  1将某个用户重新分配
      */
     function assign(handleId, flag) {
-        $("#auditDialog").attr("style", "display:block");
+        $("#auditDialog_box").attr("style", "display:block");
         var dom_audit_id = $("#assignAuditId");
         dom_audit_id.empty();
         dom_audit_id.append("<option value='-1'>随机分配</option>");
-        var audits = getAllAudit();
-        for (i = 0; i < audits.length; i++) {
-            dom_audit_id.append("<option value='" + i + "'>" + audits[i].username + "</option>");
+        var assign_auditList = getAllAudit();
+        for (i = 0; i < assign_auditList.length; i++) {
+            dom_audit_id.append("<option value='" + i + "'>" + assign_auditList[i].username + "</option>");
         }
         var d = dialog({
             title: '指派给',
@@ -425,12 +415,12 @@
                     contentType: "application/x-www-form-urlencoded; charset=utf-8",
                     data: {
                         flag: flag,
-                        acceptId: dom_audit_id.val() != "-1" ? audits[dom_audit_id.val()].id : "",
+                        acceptId: dom_audit_id.val() != "-1" ? assign_auditList[dom_audit_id.val()].id : "",
                         handleId: handleId
                     },
                     async: false,
                     success: function (data) {
-                        $("#searchBt").trigger("click")
+                        $("#searchBtn").trigger("click")
                     }
                 })
             }
