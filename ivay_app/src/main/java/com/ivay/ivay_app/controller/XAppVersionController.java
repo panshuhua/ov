@@ -1,8 +1,7 @@
 package com.ivay.ivay_app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,7 @@ public class XAppVersionController {
 	@Autowired
 	XAppVersionUpdateService xAppVersionUpdateService;
 	
-	@PostMapping("update")
+	@GetMapping("update")
 	@ApiOperation("更新app版本")
     public Response<XVersionUpdate> updateAppVersion(@RequestParam String versionNumber){
 		 Response<XVersionUpdate> response=new Response<XVersionUpdate>();

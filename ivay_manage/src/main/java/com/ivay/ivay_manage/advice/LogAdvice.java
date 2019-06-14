@@ -6,6 +6,9 @@ import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.model.SysLogs;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -72,7 +75,12 @@ public class LogAdvice {
     public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
     	SysLogs sysLogs = new SysLogs();
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        sysLogs.setRemark("manage错误信息："+e.getMessage());
+        //获取堆栈信息
+	    StringWriter stringWriter = new StringWriter();
+	    PrintWriter printWriter = new PrintWriter(stringWriter);
+	    e.printStackTrace(printWriter);
+	    StringBuffer error = stringWriter.getBuffer();
+        sysLogs.setRemark("manage错误信息："+e.getMessage()+"\n"+error.toString());
         sysLogs.setFlag(false);
         String module = null;
         LogAnnotation logAnnotation = methodSignature.getMethod().getDeclaredAnnotation(LogAnnotation.class);
