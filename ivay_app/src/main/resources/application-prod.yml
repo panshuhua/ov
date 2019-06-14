@@ -36,7 +36,7 @@ api_request_id_prefix: VINFINTECHBK
 #ebay
 ebay_api_transfer_url:
 ebay_api_partner_code:
-ebay_api_request_id_prefix:
+
 # 还款url
 api_collection_url: http://210.245.80.27:9092/Golive/Collection
 # 发送短信url
