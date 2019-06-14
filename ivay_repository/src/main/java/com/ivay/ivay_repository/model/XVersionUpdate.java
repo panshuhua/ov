@@ -8,8 +8,7 @@ import lombok.Data;
  */
 @Data
 public class XVersionUpdate {
-   private String userGid;
    private String versionNumber;
    private String versionContent;
-   private String needUpdate;
+   private boolean needUpdate;
 }

@@ -1,5 +1,8 @@
 package com.ivay.ivay_app.advice;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
@@ -143,7 +146,43 @@ public class LogAdvice {
     public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
     	SysLogs sysLogs = new SysLogs();
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        sysLogs.setRemark("app操作失败，错误信息："+e.getMessage());
+        Object[] args = joinPoint.getArgs(); // 参数值
+        String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
+        String phone="";
+        for(int i=0;i<argNames.length;i++){
+        	//发送短信验证码，重设密码
+        	if("mobile".equals(argNames[i])){
+        		phone=(String) args[i];
+        	}
+        	//登录与注册
+        	if("loginInfo".equals(argNames[i])){
+        		LoginInfo loginInfo=(LoginInfo)args[i];
+        		phone=loginInfo.getMobile();
+        	}
+        	
+        	//其他接口，参数必须加上request
+        	if("request".equals(argNames[i])){
+        		HttpServletRequest req=(HttpServletRequest)args[i];
+                String token = TokenFilter.getToken(req);
+                XLoginUser xLoginUser = tokenService.getLoginUser(token);
+                if(xLoginUser!=null){
+                	 String userGid=xLoginUser.getUserGid();
+                     sysLogs.setUserGid(userGid);
+                }
+               
+        	}
+        }
+        
+        sysLogs.setPhone(phone);
+
+        //获取堆栈信息
+	    StringWriter stringWriter = new StringWriter();
+	    PrintWriter printWriter = new PrintWriter(stringWriter);
+	    e.printStackTrace(printWriter);
+	    StringBuffer error = stringWriter.getBuffer();
+	    //String errInfo=error.toString().substring(0, 1000);
+	    
+        sysLogs.setRemark("app操作失败，错误信息："+e.getMessage()+"\n"+error.toString());
         sysLogs.setFlag(false);
         String module = null;
         LogAnnotation logAnnotation = methodSignature.getMethod().getDeclaredAnnotation(LogAnnotation.class);
