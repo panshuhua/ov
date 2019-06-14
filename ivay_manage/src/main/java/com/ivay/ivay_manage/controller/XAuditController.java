@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
@@ -27,6 +28,7 @@ public class XAuditController {
 
     @PostMapping("list")
     @ApiOperation(value = "审核记录")
+    @LogAnnotation(module="审核记录")
     public PageTableResponse auditList(PageTableRequest request) {
         return xUserInfoService.auditList(request);
     }
@@ -36,6 +38,7 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
+    @LogAnnotation(module="审核详情")
     public Response<XAuditDetail> detail(@RequestParam String userGid) {
         Response<XAuditDetail> response = new Response<>();
         response.setBo(xUserInfoService.auditDetail(userGid));
@@ -50,6 +53,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "refuseCode", value = "驳回理由code", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "refuseDemo", value = "驳回理由msg", dataType = "String", paramType = "query", required = false)
     })
+    @LogAnnotation(module="提交审核结果")
     public Response<Integer> update(@RequestParam String userGid,
                                     @RequestParam int flag,
                                     @RequestParam(required = false) String refuseCode,
@@ -65,6 +69,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0 授信 1借款", dataType = "Long", paramType = "query", defaultValue = "0")
     })
+    @LogAnnotation(module="查询贷款权限")
     public String queryAuditQualification(@RequestParam String userGid,
                                           @RequestParam int flag) {
         // 获得某人的风控审核结果，返回未通过审核的理由，空字符串表示通过审核
@@ -76,6 +81,7 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
+    @LogAnnotation(module="提额")
     public long updateCreditLimit(@RequestParam String userGid) {
         return xLoanRateService.acquireCreditLimit(userGid);
     }
@@ -85,6 +91,7 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
+    @LogAnnotation(module="自动审核")
     public Response<Boolean> autoAudit(@RequestParam String userGid) {
         Response<Boolean> response = new Response<>();
         response.setBo(xUserInfoService.autoAudit(userGid));

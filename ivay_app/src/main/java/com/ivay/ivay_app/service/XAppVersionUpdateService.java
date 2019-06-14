@@ -6,4 +6,6 @@ public interface XAppVersionUpdateService {
 	
     int save(XVersionUpdate xVersionUpdate);
     
+    XVersionUpdate findUpdate(String versionNumber);
+    
 }

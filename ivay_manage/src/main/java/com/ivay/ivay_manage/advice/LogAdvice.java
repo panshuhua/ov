@@ -5,7 +5,10 @@ import com.ivay.ivay_manage.service.SysLogService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.model.SysLogs;
 import io.swagger.annotations.ApiOperation;
+
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -64,4 +67,39 @@ public class LogAdvice {
         }
 
     }
+    
+    @AfterThrowing(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)",throwing="e")
+    public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
+    	SysLogs sysLogs = new SysLogs();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        sysLogs.setRemark("manage错误信息："+e.getMessage());
+        sysLogs.setFlag(false);
+        String module = null;
+        LogAnnotation logAnnotation = methodSignature.getMethod().getDeclaredAnnotation(LogAnnotation.class);
+        module = logAnnotation.module();
+        if (StringUtils.isEmpty(module)) {
+            ApiOperation apiOperation = methodSignature.getMethod().getDeclaredAnnotation(ApiOperation.class);
+            if (apiOperation != null) {
+                module = apiOperation.value();
+            }
+        }
+
+        if (StringUtils.isEmpty(module)) {
+            throw new RuntimeException("没有指定日志module");
+        }
+        
+        sysLogs.setModule(module);
+
+        try {
+           
+            logService.save(sysLogs);
+        } catch (Throwable ex) {
+            sysLogs.setFlag(false);
+            sysLogs.setRemark(e.getMessage());
+            throw ex;
+        } 
+
+    }
+    
+    
 }

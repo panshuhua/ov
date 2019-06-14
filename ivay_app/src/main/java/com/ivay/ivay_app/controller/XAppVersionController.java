@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ivay.ivay_app.service.XAppVersionUpdateService;
@@ -26,9 +27,9 @@ public class XAppVersionController {
 	
 	@PostMapping("update")
 	@ApiOperation("更新app版本")
-    public Response<String> updateAppVersion(@RequestBody XVersionUpdate xVersionUpdate){
-		 Response<String> response=new Response<String>();
-		 xAppVersionUpdateService.save(xVersionUpdate);
+    public Response<XVersionUpdate> updateAppVersion(@RequestParam String versionNumber){
+		 Response<XVersionUpdate> response=new Response<XVersionUpdate>();
+		 response.setBo(xAppVersionUpdateService.findUpdate(versionNumber));
 		 return response;
     }
     
