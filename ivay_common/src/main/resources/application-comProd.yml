@@ -18,7 +18,7 @@ spring:
 # baokim接口私钥存放路径
 keyfilepath: /usr/prod/
 # baokim接口参数
-api_partner_code: VINFINTECH
 api_request_id_prefix: VINFINTECHBK
-
+# ebay接口参数
+ebay_api_request_id_prefix:
 
