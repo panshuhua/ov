@@ -184,14 +184,14 @@ public class XRegisterServiceImpl implements XRegisterService {
 
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_SEND_PHONEMSG));
         if (config == null) {
-            logger.error("借款利率配置获取出错");
+            logger.error("发送短信验证码配置获取出错");
             return null;
         }
 
         String authCode = MsgAuthCode.getAuthCode();
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
         long effectiveTime = 120 * 1000; //2分钟有效期，ms
-        verifyCodeInfo.setCodeToken(authCode);
+        //verifyCodeInfo.setCodeToken(authCode);
         verifyCodeInfo.setEffectiveTime(effectiveTime);
 
         for (Object key : config.keySet()) {
@@ -201,7 +201,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             if ("1".equals(value)) {
                 Map<String, String> msgMap = sendMsgBySMS(mobile, authCode);
                 String status = msgMap.get("status");
-                logger.info("SMS方式发送短信验证码返回状态，返回码：{}，说明：{}", status, msgMap.get("status_code"));
+                logger.info("SMG方式发送短信验证码返回状态，返回码：{}，说明：{}", status, msgMap.get("status_code"));
                 verifyCodeInfo.setStatus(status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
                     String messageid = msgMap.get("messageid");
@@ -237,7 +237,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     }
 
     //调用接口1发送短信
-    private Map<String, String> sendMsgBySMS(String mobile, String authCode) {
+    public Map<String, String> sendMsgBySMS(String mobile, String authCode) {
         Map<String, Object> params = new HashMap<>();
         params.put("key", paasooKey);
         params.put("secret", paasooSecret);
@@ -251,7 +251,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     }
 
     //调用接口2发送短信
-    private ApiBulkReturn sendMsgByVMG(String mobile, String authCode) {
+    public ApiBulkReturn sendMsgByVMG(String mobile, String authCode) {
         VMGAPISoapProxy proxy = new VMGAPISoapProxy(vmgmediaUrl);
         String message = authCode;
         String sendTime = "";

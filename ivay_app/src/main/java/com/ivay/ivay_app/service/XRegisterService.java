@@ -1,5 +1,13 @@
 package com.ivay.ivay_app.service;
 
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.tempuri.ApiBulkReturn;
+import org.tempuri.VMGAPISoapProxy;
+
+import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUser;
@@ -71,5 +79,11 @@ public interface XRegisterService {
      * @return
      */
     VerifyCodeInfo sendPhoneMsg(String mobile);
+    
+    //调用接口1发送短信
+     Map<String, String> sendMsgBySMS(String mobile, String authCode);
+
+    //调用接口2发送短信
+     ApiBulkReturn sendMsgByVMG(String mobile, String authCode);
 
 }

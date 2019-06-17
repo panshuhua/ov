@@ -16,7 +16,7 @@ public interface XVirtualAccountDao {
     @Select("select * from x_virtual_account where order_id=#{orderId}")
     XVirtualAccount selectByOrderId(String orderId);
 
-    @Update("update x_virtual_account set collect_amount=#{collectAmount},update_time=#{updateTime} where order_id=#{orderId}")
+    @Update("update x_virtual_account set collect_amount=#{collectAmount},update_time=#{updateTime},request_id=#{requestId},response_code=#{responseCode},response_message=#{responseMessage} where order_id=#{orderId}")
     int update(XVirtualAccount xVirtualAccount);
 
 }

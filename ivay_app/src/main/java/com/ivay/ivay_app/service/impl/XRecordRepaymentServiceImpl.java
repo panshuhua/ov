@@ -6,7 +6,6 @@ import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 import com.ivay.ivay_common.advice.BusinessException;
-import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -41,9 +40,6 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
     @Autowired
     private XRecordLoanDao xRecordLoanDao;
-
-    @Autowired
-    private I18nService i18nService;
 
     @Autowired
     private ThreadPoolService threadPoolService;
@@ -212,6 +208,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
+            xVirtualAccountDao.insert(xVirtualAccount);
            //更新还款状态为还款失败
             String failReason="创建虚拟账号信息失败，返回状态码："+responseCode+"，错误信息："+responseMsg;
             xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);
@@ -244,6 +241,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
+            xVirtualAccountDao.update(xVirtualAccount);
 			//更新还款状态为还款失败
             String failReason="更新虚拟账号信息失败，返回状态码："+responseCode+"，错误信息："+responseMsg;
             xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);
