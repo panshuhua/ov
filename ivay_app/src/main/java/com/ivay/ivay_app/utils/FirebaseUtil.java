@@ -77,17 +77,20 @@ public class FirebaseUtil {
         addInstance("app");
         FirebaseApp firebaseApp = getInstance("app");
         logger.info("firebaseApp Instance get success......");
+        
+        if(firebaseApp!=null) {
+        	  Message message = Message.builder()
+                      .putData("msg", msg)
+                      .setToken(registrationToken)
+                      .build();
 
-        Message message = Message.builder()
-                .putData("msg", msg)
-                .setToken(registrationToken)
-                .build();
-
-        logger.info("message=" + message);
-        FirebaseMessaging fbmsg = FirebaseMessaging.getInstance();
-        logger.info("fbmsg=" + fbmsg);
-        String response = fbmsg.send(message);
-        logger.info("Successfully sent message: " + response);
+              logger.info("message=" + message);
+              FirebaseMessaging fbmsg = FirebaseMessaging.getInstance();
+              logger.info("fbmsg=" + fbmsg);
+              String response = fbmsg.send(message);
+              logger.info("Successfully sent message: " + response);
+        }
+      
     }
 
 
