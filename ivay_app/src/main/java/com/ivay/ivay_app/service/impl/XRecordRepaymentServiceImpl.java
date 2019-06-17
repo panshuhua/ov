@@ -2,6 +2,7 @@ package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
+import com.ivay.ivay_app.service.SysLogService;
 import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
@@ -54,6 +55,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
     @Autowired
     private RestTemplate restTemplate;
+    
+    @Autowired
+    private SysLogService sysLogService;
 
     @Value("${update_credit_limit_url}")
     private String update_credit_limit_url;
@@ -97,15 +101,6 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             return xVirtualAccount;
         }
         
-        //目前暂时只支持单次还款：控制用户只能一次还完所有的金额
-//        if(SysVariable.REPAYMENT_STATUS_FAIL == xRecordLoan.getRepaymentStatus() || SysVariable.REPAYMENT_STATUS_NONE == xRecordLoan.getRepaymentStatus()){
-//        	long shouldRepayAmount=xRecordLoan.getDueAmount()+xRecordLoan.getOverdueFee()+xRecordLoan.getOverdueInterest();
-//            if(repaymentAmount!=shouldRepayAmount){
-//            	throw new BusinessException(i18nService.getMessage("response.error.repay.shouldrepayamount.code"),
-//            			  i18nService.getMessage("response.error.repay.shouldrepayamount.msg"));
-//            }
-//        }
-//        
         XRecordRepayment xRecordRepayment = new XRecordRepayment();
         // 用户gid
         xRecordRepayment.setUserGid(userGid);
@@ -202,9 +197,10 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             //成功时在回调处记录
             
             logger.info("创建虚拟账号成功");
-
+            sysLogService.save(xRecordLoan.getUserGid(), null, "还款-创建虚拟账号", true, responseMsg,responseCode);
         } else {
             logger.info("创建虚拟账号失败，返回状态码：{}，错误信息：{}", responseCode, responseMsg);
+            sysLogService.save(xRecordLoan.getUserGid(), null, "还款-创建虚拟账号", false, responseMsg,responseCode);
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
@@ -235,9 +231,10 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xVirtualAccount.setResponseMessage(responseMsg);
             xVirtualAccountDao.update(xVirtualAccount);
             logger.info("更新虚拟账号信息成功");
-            
+            sysLogService.save(xRecordRepayment.getUserGid(), null, "还款-更新虚拟账号", true, responseMsg,responseCode);
         } else {
             logger.info("更新虚拟账号信息失败，返回状态码：{}，错误信息：{}", responseCode,responseMsg);
+            sysLogService.save(xRecordRepayment.getUserGid(), null, "还款-更新虚拟账号", false, responseMsg,responseCode);
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);

@@ -13,7 +13,7 @@ public interface SysLogService {
 
     void save(SysLogs sysLogs);
 
-    void save(String userGid,String phone,String module, Boolean flag, String remark);
+    void save(String userGid,String phone,String module, Boolean flag, String remark,String code);
 
     void deleteLogs();
 }

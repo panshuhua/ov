@@ -66,6 +66,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     private I18nService i18nService;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private SysLogService sysLogService;
 
     @Value("${risk_control_url}")
     private String riskControlUrl;
@@ -198,8 +200,10 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                             xRecordLoan.getNetAmount(),
                             xRecordLoan.getMemo(),
                             accType);
+                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", true, transfersRsp.getResponseMessage(),transfersRsp.getResponseCode());
                 } catch (Exception ex) {
                     logger.info("调用借款接口发生异常了");
+                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", false, transfersRsp.getResponseMessage(),transfersRsp.getResponseCode());
                     xRecordLoanDao.delete(xRecordLoan.getId());
                     return;
                 }
