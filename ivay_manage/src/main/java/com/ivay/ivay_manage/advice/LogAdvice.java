@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.advice;
 
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_manage.service.SysLogService;
 import com.ivay.ivay_manage.utils.UserUtil;
@@ -74,6 +75,13 @@ public class LogAdvice {
     @AfterThrowing(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)",throwing="e")
     public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
     	SysLogs sysLogs = new SysLogs();
+    	String code="";
+        if(e instanceof BusinessException) {
+        	BusinessException be=(BusinessException)e;
+        	code=be.getCode();
+        	sysLogs.setCode(code);
+        }
+        
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         //获取堆栈信息
 	    StringWriter stringWriter = new StringWriter();

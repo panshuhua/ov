@@ -16,7 +16,7 @@ import com.ivay.ivay_repository.model.SysLogs;
 public interface SysLogsDao {
 
 	@Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into sys_logs(user_gid, module, flag, remark, createTime,phone,request_id) values(#{userGid}, #{module}, #{flag}, #{remark}, now(),#{phone},#{requestId})")
+    @Insert("insert into sys_logs(user_gid, module, flag, remark, createTime,phone,request_id,code) values(#{userGid}, #{module}, #{flag}, #{remark}, now(),#{phone},#{requestId},#{code})")
     int save(SysLogs sysLogs);
 
     int count(@Param("params") Map<String, Object> params);

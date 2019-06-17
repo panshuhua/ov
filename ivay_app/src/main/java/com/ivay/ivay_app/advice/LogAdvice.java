@@ -11,6 +11,7 @@ import com.ivay.ivay_app.dto.XLoginUser;
 import com.ivay.ivay_app.filter.TokenFilter;
 import com.ivay.ivay_app.service.SysLogService;
 import com.ivay.ivay_app.service.XTokenService;
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.dto.ResponseInfo;
@@ -110,24 +111,26 @@ public class LogAdvice {
             	ResponseInfo status = response.getStatus();
                 String code = status.getCode();
                 String message = status.getMessage();
+                sysLogs.setCode(code);
                 if("200".equals(code)){
                 	 sysLogs.setFlag(true);
                 	 sysLogs.setRemark("操作成功！");
                 }else{
                 	 sysLogs.setFlag(false);
-                	 sysLogs.setRemark("操作失败，返回状态码为："+code+"，详细信息为："+message);
+                	 sysLogs.setRemark("操作失败，详细信息为："+message);
                 }
             }else{
             	//还款回调接口
             	CollectionTransactionRsp rsp=(CollectionTransactionRsp)object;
             	String code=rsp.getResponseCode();
             	String message=rsp.getResponseMessage();
+            	sysLogs.setCode(code);
             	if("200".equals(code)){
             		sysLogs.setFlag(true);
                	    sysLogs.setRemark("操作成功！");
             	}else{
             		sysLogs.setFlag(false);
-               	    sysLogs.setRemark("操作失败，返回状态码为："+code+"，详细信息为："+message);
+               	    sysLogs.setRemark("操作失败，详细信息为："+message);
             	}
             	
             }
@@ -146,6 +149,12 @@ public class LogAdvice {
     public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
     	SysLogs sysLogs = new SysLogs();
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        String code="";
+        if(e instanceof BusinessException) {
+        	BusinessException be=(BusinessException)e;
+        	code=be.getCode();
+        	sysLogs.setCode(code);
+        }
         Object[] args = joinPoint.getArgs(); // 参数值
         String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
         String phone="";

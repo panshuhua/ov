@@ -10,5 +10,5 @@ import lombok.Data;
 public class XVersionUpdate {
    private String versionNumber;
    private String versionContent;
-   private boolean needUpdate;
+   private String needUpdate;
 }

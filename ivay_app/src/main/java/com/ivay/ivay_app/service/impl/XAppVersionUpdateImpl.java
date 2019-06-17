@@ -22,9 +22,16 @@ public class XAppVersionUpdateImpl implements XAppVersionUpdateService{
 		XVersionUpdate versionUpdate=xVersionUpdateDao.findUpdate();
 		if(versionUpdate!=null) {
 			if(!versionNumber.equals(versionUpdate.getVersionNumber())) {
-				versionUpdate.setNeedUpdate(true);
+				//2-需要强制更新版本
+				if("2".equals(versionUpdate.getNeedUpdate())){
+					versionUpdate.setNeedUpdate("2");
+				}else {
+					versionUpdate.setNeedUpdate("1");
+				}
+				
 				return versionUpdate;
 			}
+			
 		}
 		
 		return null;

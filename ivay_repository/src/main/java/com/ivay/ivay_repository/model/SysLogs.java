@@ -9,6 +9,7 @@ public class SysLogs extends BaseEntity<Long> {
 	private Boolean flag;
 	private String remark;
 	private String requestId;
+	private String code;
 
 	public String getUserGid() {
 		return userGid;
@@ -56,6 +57,14 @@ public class SysLogs extends BaseEntity<Long> {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 	
 
