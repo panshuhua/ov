@@ -50,7 +50,7 @@ ALTER TABLE x_user_info ADD `audit_time` datetime DEFAULT NULL COMMENT '审核�
 
 -- 更新 审核状态 配置
 
---x_baokim_transfers_info表添加字段-ebay使用字段
+-- x_baokim_transfers_info表添加字段-ebay使用字段
 
 ALTER TABLE `x_baokim_transfers_info` ADD `contract_number` varchar(50) DEFAULT NULL COMMENT 'ebay: contract number of customer';
 ALTER TABLE `x_baokim_transfers_info` ADD `extend` varchar(500) DEFAULT NULL COMMENT 'ebay: extend msg';
@@ -59,7 +59,7 @@ ALTER TABLE `x_baokim_transfers_info` ADD `sub_error_message` DEFAULT NULL varch
 ALTER TABLE `x_baokim_transfers_info` ADD `reason` varchar(500) DEFAULT NULL COMMENT 'ebay';
 
 
---新建表：用户风控信息表
+-- 新建表：用户风控信息表
 CREATE TABLE `x_user_risk` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_gid` varchar(32) NOT NULL COMMENT '用户gid',
@@ -75,7 +75,7 @@ CREATE TABLE `x_user_risk` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 
---sys_logs可删除后再导入
+-- sys_logs可删除后再导入
 CREATE TABLE `sys_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_gid` varchar(32) DEFAULT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE `sys_logs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=379 DEFAULT CHARSET=utf8mb4;
 
 
---新增-版本更新表
+-- 新增-版本更新表
 CREATE TABLE `x_version_update` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_gid` varchar(32) DEFAULT NULL COMMENT '用户gid',

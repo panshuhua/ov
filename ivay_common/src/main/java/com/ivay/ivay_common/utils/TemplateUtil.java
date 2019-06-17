@@ -132,6 +132,7 @@ public class TemplateUtil {
         text = text.replace("{daoName}", daoName);
         text = text.replace("{table_name}", tableName);
         text = text.replace("{beanName}", beanName);
+        text = text.replace("{beanPackageName}", beanPackageName);
         String sets = getUpdateSets(input.getColumnNames(), input.getBeanFieldName());
         text = text.replace("{update_sets}", sets);
         String where = getWhere(input.getColumnNames(), input.getBeanFieldName());

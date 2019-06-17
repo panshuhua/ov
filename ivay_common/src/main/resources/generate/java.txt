@@ -1,9 +1,9 @@
 package {beanPackageName};
 
+import lombok.Data;
 {import}
-
+@Data
 public class {beanName} extends BaseEntity<Long> {
-
 {filelds}
-{getset}
+
 }

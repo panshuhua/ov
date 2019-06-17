@@ -1,0 +1,64 @@
+package {controllerPkgName};
+
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import {daoPackageName}.{daoName};
+import {beanPackageName}.{beanName};
+
+@RestController
+@RequestMapping("{beanParamName}s")
+public class {controllerName} {
+
+    @Autowired
+    private {daoName} {daoParamName};
+
+    @PostMapping("save")
+    @ApiOperation(value = "保存")
+    public {beanName} save(@RequestBody {beanName} {beanParamName}) {
+        {daoParamName}.save({beanParamName});
+
+        return {beanParamName};
+    }
+
+    @GetMapping("get")
+    @ApiOperation(value = "根据id获取")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query"),
+    })
+    public {beanName} get(@RequestParam Long id) {
+        return {daoParamName}.getById(id);
+    }
+
+    @PutMapping("update")
+    @ApiOperation(value = "修改")
+    public {beanName} update(@RequestBody {beanName} {beanParamName}) {
+        {daoParamName}.update({beanParamName});
+
+        return {beanParamName};
+    }
+
+    @GetMapping("list")
+    @ApiOperation(value = "列表")
+    public PageTableResponse list(PageTableRequest request) {
+        return new PageTableHandler(
+                a -> blackUserDao.count(a.getParams()),
+                a -> blackUserDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
+
+    @DeleteMapping("delete")
+    @ApiOperation(value = "删除")
+    @ApiImplicitParams({
+          @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query"),
+    })
+    public void delete(@RequestParam Long id) {
+        {daoParamName}.delete(id);
+    }
+}
