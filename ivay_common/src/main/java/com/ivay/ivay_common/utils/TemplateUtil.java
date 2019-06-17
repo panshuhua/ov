@@ -43,7 +43,7 @@ public class TemplateUtil {
         }
 
         text = text.replace("{import}", imports);
-        String filelds = getFields(beanFieldName, beanFieldType, beanFieldValue);
+        String filelds = getFields(beanFieldName, beanFieldType, beanFieldValue, beanFieldComment);
         text = text.replace("{filelds}", filelds);
         text = text.replace("{getset}", getset(beanFieldName, beanFieldType));
 
@@ -51,14 +51,19 @@ public class TemplateUtil {
         log.debug("生成java model：{}模板", beanName);
     }
 
-    private static String getFields(List<String> beanFieldName, List<String> beanFieldType,
-                                    List<String> beanFieldValue) {
+    private static String getFields(List<String> beanFieldName,
+                                    List<String> beanFieldType,
+                                    List<String> beanFieldValue,
+                                    List<String> beanFieldComment) {
         StringBuffer buffer = new StringBuffer();
         int size = beanFieldName.size();
         for (int i = 0; i < size; i++) {
             String name = beanFieldName.get(i);
             if ("id".equals(name) || "createTime".equals(name) || "updateTime".equals(name)) {
                 continue;
+            }
+            if (!StringUtils.isEmpty(beanFieldComment.get(i))) {
+                buffer.append("\t@ApiModelProperty(value = \"").append(beanFieldComment.get(i)).append("\")\n");
             }
             String type = beanFieldType.get(i);
             buffer.append("\tprivate ").append(type).append(" ").append(name);
@@ -78,7 +83,7 @@ public class TemplateUtil {
 //
 //				buffer.append(value);
 //			}
-            buffer.append(";\n");
+            buffer.append(";\n\n");
         }
 
         return buffer.toString();
