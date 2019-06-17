@@ -81,6 +81,8 @@ public class XRegisterServiceImpl implements XRegisterService {
     private String authenticateUser;
     @Value("${api_authenticate_pass}")
     private String authenticatePass;
+    @Value("${verifycode.effectiveTime}")
+    private long effectiveTime;
 
     @Override
     public XUser addUser(LoginInfo loginInfo) {
@@ -195,7 +197,7 @@ public class XRegisterServiceImpl implements XRegisterService {
 
         String authCode = MsgAuthCode.getAuthCode();
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
-        long effectiveTime = 120 * 1000; //2分钟有效期，ms
+        //long effectiveTime = 120 * 1000; //2分钟有效期，ms
         //verifyCodeInfo.setCodeToken(authCode);
         verifyCodeInfo.setEffectiveTime(effectiveTime);
 
@@ -206,7 +208,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             if ("1".equals(value)) {
                 Map<String, String> msgMap = sendMsgBySMS(mobile, authCode);
                 String status = msgMap.get("status");
-                logger.info("SMG方式发送短信验证码返回状态，返回码：{}，说明：{}", status, msgMap.get("status_code"));
+                logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 verifyCodeInfo.setStatus(status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
                     String messageid = msgMap.get("messageid");
@@ -222,7 +224,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                 String errorCode = Long.toString(re.getError_code());
                 verifyCodeInfo.setStatus(errorCode);
 
-                if ("0".equals(errorCode)) {
+                if (SMSResponseStatus.SUCCESS.getCode().equals(errorCode)) {
                     logger.info("VMG发送的短信验证码是：" + authCode);
                     redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
                     return verifyCodeInfo;
