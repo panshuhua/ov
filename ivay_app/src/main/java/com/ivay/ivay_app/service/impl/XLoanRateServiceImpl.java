@@ -84,8 +84,8 @@ public class XLoanRateServiceImpl implements XLoanRateService {
         params.put("orderBy", "period");
         params.put("userGid", userGid);
         request.setParams(params);
-        return new PageTableHandler((a) -> xLoanRateDao.count(a.getParams()),
-                (a) -> xLoanRateDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        return new PageTableHandler(a -> xLoanRateDao.count(a.getParams()),
+                a -> xLoanRateDao.list(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 
@@ -112,7 +112,7 @@ public class XLoanRateServiceImpl implements XLoanRateService {
         // 借款利率配置
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_LOAN_RATE));
         if (config == null) {
-            logger.error("借款利率配置获取出错");
+            logger.error("借款利率配置获取出错:{}", SysVariable.TEMPLATE_LOAN_RATE);
             return 0;
         }
 

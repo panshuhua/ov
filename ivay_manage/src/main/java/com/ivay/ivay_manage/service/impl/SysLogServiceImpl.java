@@ -36,7 +36,6 @@ public class SysLogServiceImpl implements SysLogService {
         if (sysLogs == null) {
             return;
         }
-
 //		sysLogs.setUser(user);
         sysLogsDao.save(sysLogs);
     }

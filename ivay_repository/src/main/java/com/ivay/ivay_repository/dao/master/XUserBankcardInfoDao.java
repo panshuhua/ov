@@ -19,7 +19,8 @@ public interface XUserBankcardInfoDao {
     @Select("select * from x_user_bankcoad_info t where t.card_no = #{cardNo} and enable_flag='Y' ")
     List<XUserBankcardInfo> getByCardNo(String cardNo);
 
-    XBankAndCardInfo getBankAndCardByGid(@Param("bankcardGid") String bankcardGid, @Param("userGid") String userGid);
+    XBankAndCardInfo getBankAndCardByGid(@Param("bankcardGid") String bankcardGid,
+                                         @Param("userGid") String userGid);
 
     @Select("select bankcard_gid, bank_gid, user_gid, card_user_name, card_no, status from x_user_bankcoad_info t where t.bankcard_gid = #{bankcardGid} and user_gid = #{userGid} and enable_flag='Y' ")
     List<XUserBankcardInfo> getByCardGid(@Param("bankcardGid") String bankcardGid, @Param("userGid") String userGid);

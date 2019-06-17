@@ -41,6 +41,10 @@ public class SysVariable {
     public static final String USER_STATUS_AUTH_SUCCESS = "3";
     // 用户状态: 绑卡成功
     public static final String USER_STATUS_BANKCARD_SUCCESS = "4";
+    // 用户状态: 借款成功
+    public static final String USER_STATUS_LOAN_SUCCESS = "5";
+    // 用户状态: 多次借款
+    public static final String USER_STATUS_LOAN_REPEATEDLY = "6";
     // 用户状态: 授信失败
     public static final String USER_STATUS_AUTH_FAIL = "7";
     // 用户状态: 重新审核

@@ -185,8 +185,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         params.put("toTime", xAuditCondition.getToTime());
         params.put("auditStatus", xAuditCondition.getAuditStatus());
         request.setParams(params);
-        return new PageTableHandler((a) -> xUserInfoDao.auditCount(a.getParams()),
-                (a) -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
+        return new PageTableHandler(a -> xUserInfoDao.auditCount(a.getParams()),
+                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 

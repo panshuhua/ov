@@ -19,10 +19,10 @@ public interface XLoanRateDao {
      * @param period
      * @return
      */
-    @Select("select * from x_loan_rate t where t.user_gid = #{userGid} and t.period = #{period}")
+    @Select("select * from x_loan_rate t where t.user_gid = #{userGid} and t.period = #{period} and t.enable_flag='Y'")
     XLoanRate getByUserAndPeriod(@Param("userGid") String userGid, @Param("period") Integer period);
 
-    @Delete("delete from x_loan_rate where id = #{id}")
+    @Delete("delete from x_loan_rate where id = #{id} and enable_flag='Y'")
     int delete(Long id);
 
     int update(XLoanRate xLoanRate);

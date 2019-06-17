@@ -85,8 +85,8 @@ public class XLoanRateServiceImpl implements XLoanRateService {
         params.put("orderBy", "period");
         params.put("userGid", userGid);
         request.setParams(params);
-        return new PageTableHandler((a) -> xLoanRateDao.count(a.getParams()),
-                (a) -> xLoanRateDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        return new PageTableHandler(a -> xLoanRateDao.count(a.getParams()),
+                a -> xLoanRateDao.list(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 

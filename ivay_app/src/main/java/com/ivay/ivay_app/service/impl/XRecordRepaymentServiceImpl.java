@@ -76,8 +76,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         params.put("orderBy", "update_time");
         params.put("userGid", userGid);
         request.setParams(params);
-        return new PageTableHandler((a) -> xRecordRepaymentDao.count(a.getParams()),
-                (a) -> xRecordRepaymentDao.list(request.getParams(), request.getOffset(), request.getLimit())
+        return new PageTableHandler(a -> xRecordRepaymentDao.count(a.getParams()),
+                a -> xRecordRepaymentDao.list(request.getParams(), request.getOffset(), request.getLimit())
         ).handle(request);
     }
 

@@ -1,10 +1,5 @@
 package com.ivay.ivay_app.advice;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
 import com.ivay.ivay_app.dto.XLoginUser;
@@ -17,9 +12,7 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.dto.ResponseInfo;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.SysLogs;
-
 import io.swagger.annotations.ApiOperation;
-
 import org.apache.poi.ss.formula.functions.T;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -32,6 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * <p>统一日志处理</p>
@@ -99,7 +96,7 @@ public class LogAdvice {
         }
 
         if (StringUtils.isEmpty(module)) {
-            throw new RuntimeException("没有指定日志module");
+            module = "default";
         }
         
         sysLogs.setModule(module);

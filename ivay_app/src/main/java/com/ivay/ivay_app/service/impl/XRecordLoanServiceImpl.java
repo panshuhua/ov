@@ -76,6 +76,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public XRecordLoan borrowMoney(XRecordLoan xRecordLoan, String password) {
+        // 加锁： 防重复提交
         if (!redisLock.tryBorrowLock(xRecordLoan.getUserGid())) {
             throw new BusinessException(i18nService.getMessage("response.error.borrow.redisError.code"),
                     i18nService.getMessage("response.error.borrow.redisError.msg"));
@@ -92,6 +93,11 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 throw new BusinessException(i18nService.getMessage("response.error.borrow.tranpwd.code"),
                         i18nService.getMessage("response.error.borrow.tranpwd.msg"));
             }
+            // 授信失败不允许借款
+            if ("78".indexOf(xUserInfo.getUserStatus()) != -1) {
+                throw new BusinessException(i18nService.getMessage("response.error.user.authority.code"),
+                        i18nService.getMessage("response.error.user.authority.msg"));
+            }
             // 校验可借额度
             if (xUserInfo.getCanborrowAmount() < xRecordLoan.getLoanAmount()) {
                 throw new BusinessException(i18nService.getMessage("response.error.loanAmount.more.code"),
@@ -107,6 +113,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                     if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS &&
                             xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS &&
                             now.getTime() > xrl.getDueTime().getTime()) {
+                        logger.info("逾期记录：{},{}", xrl.getUserGid(), xrl.getOrderId());
                         throw new BusinessException(i18nService.getMessage("response.error.borrow.hasOverDue.code"),
                                 i18nService.getMessage("response.error.borrow.hasOverDue.msg"));
                     }
@@ -134,7 +141,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             // 砍頭息：日利率設置成0.1%
             xRecordLoan.setInterest(xRecordLoan.getLoanAmount() / 1000 * xRecordLoan.getLoanPeriod());
             // 借款服务费：實際借款利息-砍頭息
-            xRecordLoan.setFee(CommonUtil.longMultiplyBigDecimal(xRecordLoan.getLoanAmount(), xRecordLoan.getLoanRate()) - xRecordLoan.getInterest());
+            xRecordLoan.setFee(CommonUtil.longMultiplyBigDecimal(xRecordLoan.getLoanAmount(), xRecordLoan.getLoanRate())
+                    - xRecordLoan.getInterest());
             // 实际到账金额：总金额-手续费-砍頭息
             xRecordLoan.setNetAmount(xRecordLoan.getLoanAmount() - xRecordLoan.getFee() - xRecordLoan.getInterest());
             // 应还金额
@@ -180,7 +188,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             //调用风控规则接口判断是否有借款规则
             Map<String, Object> params = new HashMap<>();
             params.put("userGid", xRecordLoan.getUserGid());
-            params.put("flag", 1);
+            params.put("flag", SysVariable.RISK_TYPE_LOAN);
             String ret = restTemplate.getForObject(riskControlUrl, String.class, params);
             if (StringUtils.isEmpty(ret)) {
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());
@@ -212,6 +220,9 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     public void confirmLoan(XRecordLoan xRecordLoan, TransfersRsp transfersRsp) {
         Date now = new Date();
         xRecordLoan.setUpdateTime(now);
+        XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+        xUserInfo.setUpdateTime(now);
+        boolean flag = false;
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
             // 实际到账时间
             xRecordLoan.setLoanTime(now);
@@ -219,17 +230,28 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xRecordLoan.setDueTime(calcDueTime(now, xRecordLoan.getLoanPeriod()));
             // 实际到账金额
             xRecordLoan.setNetAmount(Long.parseLong(transfersRsp.getTransferAmount()));
-            logger.info(transfersRsp.getRequestAmount().equals(transfersRsp.getTransferAmount()) ? "实际到账等于汇款的数目" : "实际到账小于需要汇款的数目");
+            logger.info(transfersRsp.getRequestAmount().equals(transfersRsp.getTransferAmount())
+                    ? "{}:实际到账等于汇款的数目"
+                    : "{}:实际到账小于需要汇款的数目", xRecordLoan.getUserGid());
             // 借款状态
             xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_SUCCESS);
+            if (SysVariable.USER_STATUS_BANKCARD_SUCCESS.equals(xUserInfo.getUserStatus())) {
+                flag = true;
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_SUCCESS);
+            } else if (SysVariable.USER_STATUS_LOAN_SUCCESS.equals(xUserInfo.getUserStatus())) {
+                flag = true;
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_REPEATEDLY);
+            }
         } else {
             logger.info(transfersRsp.getResponseMessage());
             // 借款状态
             xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_FAIL);
             // 借款失败原因
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
-            XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+            flag = true;
             xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getLoanAmount());
+        }
+        if (flag) {
             xUserInfoDao.update(xUserInfo);
         }
         xRecordLoanDao.update(xRecordLoan);
@@ -262,8 +284,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         params.put("orderBy", "update_time");
         params.put("userGid", userGid);
         request.setParams(params);
-        return new PageTableHandler((a) -> xRecordLoanDao.count(a.getParams()),
-                (a) -> xRecordLoanDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        return new PageTableHandler(a -> xRecordLoanDao.count(a.getParams()),
+                a -> xRecordLoanDao.list(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 

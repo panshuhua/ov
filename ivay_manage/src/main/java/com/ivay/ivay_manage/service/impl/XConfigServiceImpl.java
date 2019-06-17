@@ -54,8 +54,8 @@ public class XConfigServiceImpl implements XConfigService {
         Map<String, Object> params = new HashMap<>();
         params.put("orderBy", "id");
         request.setParams(params);
-        return new PageTableHandler((a) -> xConfigDao.count(a.getParams()),
-                (a) -> xConfigDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        return new PageTableHandler(a -> xConfigDao.count(a.getParams()),
+                a -> xConfigDao.list(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 }

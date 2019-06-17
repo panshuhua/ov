@@ -3,13 +3,8 @@ package com.ivay.ivay_manage.advice;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_manage.service.SysLogService;
-import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.model.SysLogs;
 import io.swagger.annotations.ApiOperation;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -19,6 +14,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * 统一日志处理
@@ -40,9 +38,8 @@ public class LogAdvice {
 //        sysLogs.setUser(UserUtil.getLoginUser()); // 设置当前登录用户
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
-        String module = null;
         LogAnnotation logAnnotation = methodSignature.getMethod().getDeclaredAnnotation(LogAnnotation.class);
-        module = logAnnotation.module();
+        String module = logAnnotation.module();
         if (StringUtils.isEmpty(module)) {
             ApiOperation apiOperation = methodSignature.getMethod().getDeclaredAnnotation(ApiOperation.class);
             if (apiOperation != null) {
@@ -51,7 +48,7 @@ public class LogAdvice {
         }
 
         if (StringUtils.isEmpty(module)) {
-            throw new RuntimeException("没有指定日志module");
+            module = "default";
         }
         sysLogs.setModule(module);
 
@@ -71,26 +68,26 @@ public class LogAdvice {
         }
 
     }
-    
-    @AfterThrowing(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)",throwing="e")
-    public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
-    	SysLogs sysLogs = new SysLogs();
-    	String code="";
-        if(e instanceof BusinessException) {
-        	BusinessException be=(BusinessException)e;
-        	code=be.getCode();
-        	sysLogs.setCode(code);
+
+    @AfterThrowing(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)", throwing = "e")
+    public void errorLogSave(JoinPoint joinPoint, Exception e) throws Throwable {
+        SysLogs sysLogs = new SysLogs();
+        String code = "";
+        if (e instanceof BusinessException) {
+            BusinessException be = (BusinessException) e;
+            code = be.getCode();
+            sysLogs.setCode(code);
         }
-        
+
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         //获取堆栈信息
-	    StringWriter stringWriter = new StringWriter();
-	    PrintWriter printWriter = new PrintWriter(stringWriter);
-	    e.printStackTrace(printWriter);
-	    StringBuffer error = stringWriter.getBuffer();
-        sysLogs.setRemark("manage错误信息："+e.getMessage()+"\n"+error.toString());
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        StringBuffer error = stringWriter.getBuffer();
+        sysLogs.setRemark("manage错误信息：" + e.getMessage() + "\n" + error.toString());
         sysLogs.setFlag(false);
-        String module = null;
+        String module;
         LogAnnotation logAnnotation = methodSignature.getMethod().getDeclaredAnnotation(LogAnnotation.class);
         module = logAnnotation.module();
         if (StringUtils.isEmpty(module)) {
@@ -103,19 +100,17 @@ public class LogAdvice {
         if (StringUtils.isEmpty(module)) {
             throw new RuntimeException("没有指定日志module");
         }
-        
+
         sysLogs.setModule(module);
 
         try {
-           
+
             logService.save(sysLogs);
         } catch (Throwable ex) {
             sysLogs.setFlag(false);
             sysLogs.setRemark(e.getMessage());
             throw ex;
-        } 
+        }
 
     }
-    
-    
 }
