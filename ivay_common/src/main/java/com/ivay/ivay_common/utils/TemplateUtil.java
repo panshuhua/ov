@@ -20,13 +20,18 @@ public class TemplateUtil {
 
     public static void saveJava(GenerateInput input) {
         String path = input.getPath();
+        String subPath = input.getBeanModelName();
+        if (!StringUtils.isEmpty(subPath)) {
+            path += "\\" + subPath;
+        }
         String beanPackageName = input.getBeanPackageName();
         String beanName = input.getBeanName();
         List<String> beanFieldName = input.getBeanFieldName();
         List<String> beanFieldType = input.getBeanFieldType();
         List<String> beanFieldValue = input.getBeanFieldValue();
+        List<String> beanFieldComment = input.getBeanFieldComment();
 
-        String text = getTemplete("java.txt");
+        String text = getTemplete("model.txt");
         text = text.replace("{beanPackageName}", beanPackageName).replace("{beanName}", beanName);
 
         String imports = "";
@@ -106,6 +111,15 @@ public class TemplateUtil {
 
     public static void saveJavaDao(GenerateInput input) {
         String path = input.getPath();
+        String xmlPath = input.getPath();
+        String xmlSubPath = input.getXmlModelName();
+        if (!StringUtils.isEmpty(xmlSubPath)) {
+            xmlPath += "\\" + xmlSubPath;
+        }
+        String subPath = input.getDaoModelName();
+        if (!StringUtils.isEmpty(subPath)) {
+            path += "\\" + subPath;
+        }
         String tableName = input.getTableName();
         String beanPackageName = input.getBeanPackageName();
         String beanName = input.getBeanName();
@@ -137,7 +151,7 @@ public class TemplateUtil {
         text = text.replace("{update_sets}", sets);
         String where = getWhere(input.getColumnNames(), input.getBeanFieldName());
         text = text.replace("{where}", where);
-        FileUtil.saveTextFile(text, path + File.separator + beanName + "Mapper.xml");
+        FileUtil.saveTextFile(text, xmlPath + File.separator + beanName + "Mapper.xml");
     }
 
     private static String getInsertValues(List<String> columnNames, List<String> beanFieldName) {
@@ -223,6 +237,10 @@ public class TemplateUtil {
 
     public static void saveController(GenerateInput input) {
         String path = input.getPath();
+        String subPath = input.getControllerModelName();
+        if (!StringUtils.isEmpty(subPath)) {
+            path += "\\" + subPath;
+        }
         String beanPackageName = input.getBeanPackageName();
         String beanName = input.getBeanName();
         String daoPackageName = input.getDaoPackageName();

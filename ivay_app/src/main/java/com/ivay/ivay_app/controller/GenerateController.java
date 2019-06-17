@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Api(tags = "代码生成")
 @RestController
-@RequestMapping("/generate")
+@RequestMapping("generate")
 public class GenerateController {
 
     @Autowired
