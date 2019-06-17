@@ -1,5 +1,6 @@
 package com.ivay.ivay_app.service.impl;
 
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
@@ -10,10 +11,12 @@ import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
+import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.ReturnUser;
 import com.ivay.ivay_repository.model.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUser;
 import org.slf4j.Logger;
@@ -56,6 +59,8 @@ public class XRegisterServiceImpl implements XRegisterService {
     private I18nService i18nService;
     @Autowired
     private XUserInfoService xUserInfoService;
+    @Autowired
+    private XTokenService xTokenService;
 
     //token过期秒数
     @Value("${token.expire.seconds}")
@@ -268,5 +273,272 @@ public class XRegisterServiceImpl implements XRegisterService {
         return null;
 
     }
+
+	@Override
+	public VerifyCodeInfo sendRegisterCode(int optType,String mobile) {
+		 //注册发送验证码
+        if (optType == 1) {
+            String userGid = getUserGid(mobile);
+            //如果用户已注册，则提示已注册
+            if (!StringUtils.isEmpty(userGid)) {
+            	logger.info("该手机号已被注册---------------------------");
+                throw new BusinessException(i18nService.getMessage("response.error.register.isregister.code"), i18nService.getMessage("response.error.register.isregister.msg"));
+            }
+        }
+        //重置/修改交易密码
+        if (optType == 4) {
+            String userGid = getUserGid(mobile);
+            boolean flag = xUserInfoService.hasTransPwd(userGid);
+            if (!flag) {
+            	 logger.info("交易密码不能为空---------------------------");
+            	 throw new BusinessException(i18nService.getMessage("response.error.borrow.tranpwdempty.code"), i18nService.getMessage("response.error.borrow.tranpwdempty.msg"));
+            }
+        }
+       
+        String existCode = (String) redisTemplate.opsForValue().get(mobile);
+        logger.info("该手机号码已存在的验证码：" + existCode + "------------");
+        if (!StringUtils.isEmpty(existCode)) {
+            logger.info("2分钟内不能使用同一个手机号重复发送手机短信验证码..............");
+            throw new BusinessException(i18nService.getMessage("response.error.register.verifycoderepeat.code"), i18nService.getMessage("response.error.register.verifycoderepeat.msg"));
+        }
+        //调用短信验证码接口
+        VerifyCodeInfo verifyCodeInfo = sendPhoneMsg(mobile);
+        String status = verifyCodeInfo.getStatus();
+        if ("0".equals(status)) {
+            return verifyCodeInfo;
+        } else {
+            //请求失败
+        	logger.info("调用第3方接口发送短信失败---------------------------");
+        	throw new BusinessException(i18nService.getMessage("response.error.register.callfailed.code"), i18nService.getMessage("response.error.register.callfailed.msg"));
+        }
+
+		
+	}
+
+	@Override
+	public ReturnUser register(LoginInfo loginInfo) {
+	    String mobile = loginInfo.getMobile();
+
+        //手机验证码校验
+        String verifyCode = loginInfo.getVerifyCode();
+        logger.info("前台传入的手机验证码：" + verifyCode);
+        String password = loginInfo.getPassword();
+        String isVerifyCodeLogin = loginInfo.getIsVerifyCodeLogin();
+
+        if (!StringUtils.isEmpty(verifyCode)) {
+            long existTime = redisTemplate.boundHashOps(mobile).getExpire();
+            logger.info("获取到key的有效时间existTime=" + existTime + "--------");
+
+            if (existTime < 0) {
+            	 logger.info("短信验证码已失效============================");
+                 throw new BusinessException(i18nService.getMessage("response.error.register.verify.code"),
+                        i18nService.getMessage("response.error.register.verify.msg"));
+            }
+
+            boolean isCorrect = checkCode(mobile, verifyCode);
+            logger.info("手机验证码校验结果：" + isCorrect + "--------------");
+
+            if (isCorrect) {
+                logger.info("手机验证码校验正确：" + isCorrect + "--------------");
+                String userGid = getUserGid(loginInfo.getMobile());
+
+                if (!StringUtils.isEmpty(userGid)) {
+                    if (!"1".equals(isVerifyCodeLogin)) {
+                    	logger.info("该用户已注册---------------------------");
+                    	throw new BusinessException(i18nService.getMessage("response.error.register.isregister.code"),
+                                i18nService.getMessage("response.error.register.isregister.msg"));
+                        
+                    } else {
+                        //短信验证码登录：已经注册过，直接登录
+                        XUser xUser = new XUser();
+                        xUser.setPhone(mobile);
+                        xUser.setUserGid(userGid);
+                        xUser.setCreateTime(new Date());
+                        xUser.setFmcToken(loginInfo.getFmcToken());
+                        xUser = login(xUser);
+                        xUser = getToken(xUser);
+                        ReturnUser user = setReturnUser(xUser);
+                        user.setNeedverifyMapCode(0);
+                        return user;
+                    }
+
+                } else {
+                    //密码注册-自动登录：这里才需要校验密码
+                    if (!StringUtils.isEmpty(password)) {
+                        if (!StringUtil.valiPassword(password)) {
+                        	logger.info("用户名和密码输入错误--------------------");
+                            throw new BusinessException(i18nService.getMessage("response.error.register.passworderror.code"),
+                                    i18nService.getMessage("response.error.register.passworderror.msg"));
+                        }
+                        
+                        XUser xUser = registerLogin(loginInfo);
+                        ReturnUser user = setReturnUser(xUser);
+                        user.setNeedverifyMapCode(0);
+                        return user;
+                    } else {
+                        if (!"1".equals(isVerifyCodeLogin)) {
+                        	throw new BusinessException(i18nService.getMessage("response.error.register.blankpassword.code"),
+                                    i18nService.getMessage("response.error.register.blankpassword.msg"));
+                        } else {
+                            //短信验证码登录：还未注册，短信验证码注册后再自动登录
+                            XUser xUser = registerLogin(loginInfo);
+                            ReturnUser user = setReturnUser(xUser);
+                            user.setNeedverifyMapCode(0);
+                            return user;
+                        }
+
+
+                    }
+                }
+
+            } else {
+                logger.info("手机验证码校验错误：" + isCorrect + "--------------");
+                //验证码错误次数
+                throw new BusinessException(i18nService.getMessage("response.error.register.verifynum.code"),
+                        i18nService.getMessage("response.error.register.verifynum.msg"));
+
+            }
+
+        } else {
+        	   throw new BusinessException(i18nService.getMessage("response.error.register.phoneverify.code"),
+                    i18nService.getMessage("response.error.register.phoneverify.msg"));
+
+        }
+
+	}
+	
+	
+	  private ReturnUser setReturnUser(XUser xUser) {
+	        ReturnUser user = new ReturnUser();
+	        user.setUserGid(xUser.getUserGid());
+	        user.setUserStatus(xUser.getUserStatus());
+	        user.setUserToken(xUser.getUserToken());
+	        user.setAccountStatus(xUser.getAccountStatus());
+	        user.setName(xUser.getName());
+	        user.setSex(xUser.getSex());
+	        user.setMobile(xUser.getPhone());
+
+	        if (StringUtils.isEmpty(xUser.getCanborrowAmount())) {
+	            user.setCanborrowAmount(0);
+	        } else {
+	            user.setCanborrowAmount(xUser.getCanborrowAmount());
+	        }
+
+	        if (StringUtils.isEmpty(xUser.getCreditLine())) {
+	            user.setCreditLine(0);
+	        } else {
+	            user.setCreditLine(xUser.getCreditLine());
+	        }
+
+	        return user;
+      }
+
+	@Override
+	public ReturnUser login(LoginInfo loginInfo) {
+		String mobile = loginInfo.getMobile();
+        String password = loginInfo.getPassword();
+        String needCheckVerify = loginInfo.getNeedCheckVerify();
+        logger.info("前台传过来的fmcToken:" + loginInfo.getFmcToken() + "============================");
+        boolean isCorrect = true;
+        //老用户新设备登录，需要校验手机验证码
+        String verifyCode = loginInfo.getVerifyCode();
+        if ("1".equals(needCheckVerify)) {
+            if (!StringUtils.isEmpty(verifyCode)) {
+                long existTime = redisTemplate.boundHashOps(mobile).getExpire();
+                logger.info("获取到key的有效时间existTime=" + existTime + "--------");
+
+                if (existTime < 0) {
+                	logger.info("手机验证码失效============================");
+                    throw new BusinessException(i18nService.getMessage("response.error.register.verify.code"),
+                            i18nService.getMessage("response.error.register.verify.msg"));
+                }
+                isCorrect = checkCode(mobile, verifyCode);
+            } else {
+                   isCorrect = false;
+                   throw new BusinessException(i18nService.getMessage("response.error.register.phoneverify.code"),
+                        i18nService.getMessage("response.error.register.phoneverify.msg"));
+            }
+
+        }
+
+        if (!StringUtils.isEmpty(password)) {
+            XUser xUser = new XUser();
+            xUser.setPhone(mobile);
+            xUser.setPassword(password);
+            xUser.setFmcToken(loginInfo.getFmcToken());
+            if (isCorrect) {
+                xUser.setNeedverifyMapCode(0);
+                xUser = login(xUser);
+                //登录成功生成token
+                if (xUser != null) {
+                    xUser = getToken(xUser);
+                    ReturnUser user = setReturnUser(xUser);
+                    user.setNeedverifyMapCode(0);
+                    return user;
+                } else {
+                    throw new BusinessException(i18nService.getMessage("response.error.register.loginfail.code"),
+                            i18nService.getMessage("response.error.register.loginfail.msg"));
+                }
+
+            } else {
+                   throw new BusinessException(i18nService.getMessage("response.error.register.verifynum.code"),
+                        i18nService.getMessage("response.error.register.verifynum.msg"));
+            }
+
+        } else {
+        	       throw new BusinessException(i18nService.getMessage("response.error.register.password.code"),
+                    i18nService.getMessage("response.error.register.password.msg"));
+        }
+		
+        
+	}
+
+	@Override
+	public void logout(String userGid) {
+		String token = (String) redisTemplate.opsForValue().get(userGid);
+        if (!StringUtils.isEmpty(token)) {
+            redisTemplate.delete(userGid);
+            xTokenService.deleteToken(token);
+        } else {
+            throw new BusinessException(i18nService.getMessage("response.error.register.logoutfail.code"),
+                    i18nService.getMessage("response.error.register.logoutfail.msg"));
+        }
+        
+	}
+
+	@Override
+	public void resetPwd(String mobile, String verifyCode, String password) {
+		 //判断手机号和验证码是否匹配
+        boolean isCorrect = true;
+        if (!StringUtils.isEmpty(verifyCode)) {
+            long existTime = redisTemplate.boundHashOps(mobile).getExpire();
+            logger.info("获取到key的有效时间existTime=" + existTime + "--------");
+            if (existTime < 0) {
+            	logger.info("短信验证码已失效============================");
+                throw new BusinessException(i18nService.getMessage("response.error.register.verify.code"),
+                        i18nService.getMessage("response.error.register.verify.msg"));
+            }
+            isCorrect = checkCode(mobile, verifyCode);
+        }
+
+        //修改密码
+        if (isCorrect) {
+            password = bCryptPasswordEncoder.encode(password);
+            String userGid = getUserGid(mobile);
+            if (!StringUtils.isEmpty(userGid)) {
+                updatePassword(userGid, mobile, password);
+            } else {
+                throw new BusinessException(i18nService.getMessage("response.error.register.phoneerror.code"),
+                        i18nService.getMessage("response.error.register.phoneerror.msg"));
+            }
+
+        } else {
+        	    throw new BusinessException(i18nService.getMessage("response.error.register.verifynum.code"),
+                    i18nService.getMessage("response.error.register.verifynum.msg"));
+        }
+		
+	}
+
+	
 
 }

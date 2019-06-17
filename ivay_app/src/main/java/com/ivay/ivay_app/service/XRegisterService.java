@@ -4,11 +4,14 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import org.tempuri.ApiBulkReturn;
 import org.tempuri.VMGAPISoapProxy;
 
 import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.ReturnUser;
 import com.ivay.ivay_repository.model.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUser;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -81,9 +84,19 @@ public interface XRegisterService {
     VerifyCodeInfo sendPhoneMsg(String mobile);
     
     //调用接口1发送短信
-     Map<String, String> sendMsgBySMS(String mobile, String authCode);
+    Map<String, String> sendMsgBySMS(String mobile, String authCode);
 
     //调用接口2发送短信
-     ApiBulkReturn sendMsgByVMG(String mobile, String authCode);
+    ApiBulkReturn sendMsgByVMG(String mobile, String authCode);
+     
+    VerifyCodeInfo sendRegisterCode(int optType,String mobile);
+     
+    ReturnUser register(LoginInfo loginInfo);
+     
+    ReturnUser login(LoginInfo loginInfo);
+     
+    void logout(String userGid);
+    
+    void resetPwd(String mobile,String verifyCode,String password);
 
 }

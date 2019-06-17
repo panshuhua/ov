@@ -97,10 +97,6 @@ public class LogAdvice {
             }
         }
 
-        if (StringUtils.isEmpty(module)) {
-            throw new RuntimeException("没有指定日志module");
-        }
-
         sysLogs.setModule(module);
 
         try {

@@ -146,12 +146,6 @@ public class LogAdvice {
     public void errorLogSave(JoinPoint joinPoint,Exception e) throws Throwable{
     	SysLogs sysLogs = new SysLogs();
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        String code="";
-        if(e instanceof BusinessException) {
-        	BusinessException be=(BusinessException)e;
-        	code=be.getCode();
-        	sysLogs.setCode(code);
-        }
         Object[] args = joinPoint.getArgs(); // 参数值
         String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
         String phone="";
@@ -187,8 +181,15 @@ public class LogAdvice {
 	    e.printStackTrace(printWriter);
 	    StringBuffer error = stringWriter.getBuffer();
 	    //String errInfo=error.toString().substring(0, 1000);
-	    
-        sysLogs.setRemark("app操作失败，错误信息："+e.getMessage()+"\n"+error.toString());
+	    if(e instanceof BusinessException) {
+	    	BusinessException be=(BusinessException)e;
+        	String code=be.getCode();
+        	sysLogs.setCode(code);
+	    	sysLogs.setRemark("app操作失败，错误信息："+e.getMessage());
+	    }else{
+	    	sysLogs.setRemark("app操作失败，错误信息："+e.getMessage()+"\n"+error.toString());
+	    }
+        
         sysLogs.setFlag(false);
         String module = null;
         LogAnnotation logAnnotation = methodSignature.getMethod().getDeclaredAnnotation(LogAnnotation.class);
@@ -200,10 +201,6 @@ public class LogAdvice {
             }
         }
 
-        if (StringUtils.isEmpty(module)) {
-            throw new RuntimeException("没有指定日志module");
-        }
-        
         sysLogs.setModule(module);
 
         try {
