@@ -84,10 +84,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     }
 
     /**
-     * 提交审核结果
+     * 对待授信用户进行人工审核
      *
      * @param userGid
-     * @param flag
+     * @param flag       1 审核通过 0 审核拒绝
      * @param refuseCode
      * @param refuseDemo
      * @param type       审核类型 0人工 1自动
@@ -103,6 +103,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         // 审核通过
         if (flag == SysVariable.AUDIT_PASS) {
+            // 获取风控信息
             String demo = queryRiskQualificationDemo(userGid, SysVariable.RISK_TYPE_AUDIT);
             if (!StringUtils.isEmpty(demo)) {
                 xUserInfo.setRefuseType(SysVariable.AUDIT_REFUSE_TYPE_AUTO);
@@ -121,13 +122,15 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             if (refuseCode.charAt(0) == '1') {
                 // 1开头的 驳回重新提交
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_RETRY);
-            } else {
+            } else if (refuseCode.charAt(0) == '2' || refuseCode.charAt(0) == '3') {
                 // 2 和3 开头的 直接审核拒绝
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
+            } else {
+                // 黑名单拒绝
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
             }
             // 拒绝理由
             xUserInfo.setRefuseReason(refuseDemo);
-            logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}:{}.", userGid, refuseCode, refuseDemo);
         }
         Date now = new Date();
         xUserInfo.setUpdateTime(now);
@@ -139,7 +142,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             logger.info("{}：审核通过，开始初始化借款利率和借款额度", xUserInfo.getUserGid());
             xLoanRateService.initLoanRateAndCreditLimit(userGid);
         } else {
-            logger.info("审核拒绝");
+            logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}:{}.", userGid, refuseCode, refuseDemo);
         }
         return flag;
     }
@@ -202,31 +205,46 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         return xLoanQualification;
     }
 
+    @Autowired
+    private BlackUserService blackUserService;
+
     /**
      * 获得某人的风控审核结果，空字符串表示通过审核
      *
      * @param userGid
-     * @param flag    0 贷前策略 1 贷中策略
+     * @param flag    0 授信策略 1 借款策略
      * @return 返回未通过审核的理由
      */
     @Override
     public String queryRiskQualificationDemo(String userGid, int flag) {
-        // 風控管理配置
+        // region --黑名单用户 拒绝
+        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
+            logger.info("黑名单用户: {}", userGid);
+            return "黑名单用户: " + userGid;
+        }
+        // endregion
+
+        // region --风控管理配置
         Map riskConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_RISK));
         if (riskConfig == null || "false".equals(riskConfig.get("enable").toString())) {
             return null;
         }
 
+        // 获取风控对象
         XLoanQualification xLoanQualification = getAuditQualificationObj(userGid, flag);
+        // 借款需要查询逾期记录
         if (flag == SysVariable.RISK_TYPE_LOAN) {
             xLoanQualification = getLoanQualificationObj(xLoanQualification, userGid);
         }
+        // endregion
 
         Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
         for (Object key : config.keySet()) {
             String[] values = config.get(key).toString().split("~");
             int min = Integer.parseInt(values[0]);
             int max = (values.length == 1) ? Integer.MAX_VALUE : Integer.parseInt(values[1]);
+            // region --风控风控规则返回拒绝信息
             switch (key.toString()) {
                 case "age":
                     // 年龄<18或者年龄>50岁时，则拒贷
@@ -284,17 +302,18 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                 default:
                     logger.info("未知的类型：{}", key.toString());
             }
+            // endregion
         }
         //当前处于逾期中，拒贷
         if (xLoanQualification.isOverdueFlag()) {
-            logger.info("当前处于逾期中");
-            return "有逾期借款未还";
+            logger.info("当前处于逾期中:{}", userGid);
+            return "有逾期借款未还" + userGid;
         }
         return null;
     }
 
     /**
-     * 对提交提交用户进行自动审核处理
+     * 对待授信用户进行自动审核或分配审计员
      *
      * @param userGid
      * @return
@@ -306,11 +325,21 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             throw new BusinessException("找不到当前用户的电话号码");
         }
 
-        // region -- 白名单用户自动授权
+        // region -- 黑名单用户 拒绝
+        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
+            logger.info("黑名单用户: {}", userGid);
+            xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, null,
+                    "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+            return false;
+        }
+        // endregion
+
+        // region -- 白名单用户自动授信
         List<RiskUser> whiteList = riskUserService.selectUserListByPhone(phone);
         if (whiteList.size() > 0) {
             logger.info("{}: 白名单用户，执行自动审核---start", phone);
-            if (xUserInfoService.auditUpdate(userGid, 1, null, null, SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
+            if (xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_PASS, null, null, SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
                 logger.info("{}: 审核成功...", phone);
             } else {
                 logger.info("{}: 审核失败...", phone);

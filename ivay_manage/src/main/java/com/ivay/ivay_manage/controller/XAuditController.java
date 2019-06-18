@@ -50,14 +50,14 @@ public class XAuditController {
     }
 
     @PostMapping("update")
-    @ApiOperation(value = "提交审核结果")
+    @ApiOperation(value = "对待授信用户进行人工审核")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0拒绝 1通过", dataType = "Long", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "refuseCode", value = "驳回理由code", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "refuseDemo", value = "驳回理由msg", dataType = "String", paramType = "query", required = false)
     })
-    @LogAnnotation(module = "提交审核结果")
+    @LogAnnotation(module = "对待授信用户进行人工审核")
     public Response<Integer> update(@RequestParam String userGid,
                                     @RequestParam int flag,
                                     @RequestParam(required = false) String refuseCode,
@@ -91,17 +91,16 @@ public class XAuditController {
     }
 
     @PostMapping("autoAudit")
-    @ApiOperation(value = "自动审核")
+    @ApiOperation(value = "对待授信用户进行自动审核或分配审计员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    @LogAnnotation(module = "自动审核")
+    @LogAnnotation(module = "对待授信用户进行自动审核或分配审计员")
     public Response<Boolean> autoAudit(@RequestParam String userGid) {
         Response<Boolean> response = new Response<>();
         response.setBo(xUserInfoService.autoAudit(userGid));
         return response;
     }
-
 
     @Autowired
     private XUserInfoDao xUserInfoDao;
@@ -115,5 +114,4 @@ public class XAuditController {
         List<XUserInfo> list = xUserInfoDao.list(request.getParams(), request.getOffset(), request.getLimit());
         return new PageTableResponse(list.size(), request.getOffset(), list);
     }
-
 }

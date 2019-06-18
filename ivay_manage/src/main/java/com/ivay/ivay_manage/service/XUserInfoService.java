@@ -24,7 +24,7 @@ public interface XUserInfoService {
     XAuditDetail auditDetail(String userGid);
 
     /**
-     * 提交审核结果
+     * 对待授信用户进行人工审核
      *
      * @param userGid
      * @param flag
@@ -48,7 +48,7 @@ public interface XUserInfoService {
      * 获得某人的风控审核结果，空字符串表示通过审核
      *
      * @param userGid
-     * @param flag    0 贷前策略 1 贷中策略
+     * @param flag    0 授信策略 1 借款策略
      * @return 返回未通过审核的理由
      */
     String queryRiskQualificationDemo(String userGid, int flag);
@@ -62,7 +62,7 @@ public interface XUserInfoService {
     XLoanQualification getLoanQualificationObj(XLoanQualification xLoanQualification, String userGid);
 
     /**
-     * 对提交提交用户进行自动审核处理
+     * 对待授信用户进行自动审核或分配审计员
      *
      * @param userGid
      * @return
