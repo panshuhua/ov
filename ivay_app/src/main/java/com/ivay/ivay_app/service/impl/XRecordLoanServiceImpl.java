@@ -208,8 +208,9 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                     return;
                 }
                 logger.info("调用baokim接口结束--");
+                //出现超时，查询交易状态
                 if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
-                    transfersRsp = xapiService.transfersInfo(transfersRsp.getReferenceId());
+                   transfersRsp = xapiService.transfersInfo(transfersRsp.getReferenceId());
                 }
             } else {
                 transfersRsp.setResponseCode(i18nService.getMessage("response.error.borrow.riskcheck.code"));
