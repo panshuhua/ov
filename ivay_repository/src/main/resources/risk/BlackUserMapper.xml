@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.risk.BlackUserDao">
+
+    <sql id="list_condition">
+        <where>
+            <if test="params.id != null and params.id != ''">
+                and id = #{params.id}
+            </if>
+            <if test="params.phone != null and params.phone != ''">
+                and phone = #{params.phone}
+            </if>
+            <if test="params.identityCard != null and params.identityCard != ''">
+                and identity_card = #{params.identityCard}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="count" resultType="int">
+        select count(1) from black_user t
+        <include refid="list_condition"/>
+    </select>
+
+    <select id="list" resultType="com.ivay.ivay_repository.model.BlackUser">
+        select * from black_user t
+        <include refid="list_condition"/>
+        <if test="params.orderBy!=null and params.orderBy!=''">
+            ${params.orderBy}
+        </if>
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <update id="update">
+        update black_user t
+        <set>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="identityCard != null">
+                identity_card = #{identityCard},
+            </if>
+        </set>
+        where t.id = #{id}
+    </update>
+
+    <select id="selectBlackUsers" resultType="com.ivay.ivay_repository.model.BlackUser">
+        select * from black_user
+        <where>
+            <if test="phone != null and phone != ''">
+                phone = #{phone}
+            </if>
+            <if test="identityCard != null and identityCard != ''">
+                or identity_card = #{identityCard}
+            </if>
+        </where>
+    </select>
+
+</mapper>

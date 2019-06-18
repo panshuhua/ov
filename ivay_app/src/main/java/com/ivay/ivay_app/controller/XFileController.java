@@ -1,16 +1,16 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_repository.dao.master.XFileInfoDao;
+import com.ivay.ivay_app.service.XFileService;
+import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_repository.model.XFileInfo;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableHandler.CountHandler;
 import com.ivay.ivay_common.table.PageTableHandler.ListHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_app.service.XFileService;
-import com.ivay.ivay_app.service.XUserInfoService;
+import com.ivay.ivay_repository.dao.master.XFileInfoDao;
+import com.ivay.ivay_repository.model.XFileInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,12 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-@Api(tags = "授信-身份校验") 
+@Api(tags = "授信-身份校验")
 @RestController
 @RequestMapping("star/files")
 public class XFileController {
@@ -46,8 +45,8 @@ public class XFileController {
             @ApiImplicitParam(name = "flag", value = "照片类型标志位，0正面 1反面 2手持", dataType = "String", paramType = "query", required = true),
             @ApiImplicitParam(name = "userGid", value = "用户gid，", dataType = "String", paramType = "query", required = true)
     })
-    @LogAnnotation(module="文件上传")
-    public Response<XFileInfo> uploadFile(MultipartFile file, String flag, String userGid,HttpServletRequest request) throws IOException {
+    @LogAnnotation(module = "文件上传")
+    public Response<XFileInfo> uploadFile(MultipartFile file, String flag, String userGid, HttpServletRequest request) throws IOException {
         Response<XFileInfo> response = new Response<>();
         response.setBo(xFileService.save(file, flag, userGid));
         return response;
@@ -78,8 +77,8 @@ public class XFileController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })
-    @LogAnnotation(module="确认提交授信信息")
-    public Response<Integer> submit(@RequestParam String gid,HttpServletRequest request) {
+    @LogAnnotation(module = "确认提交授信信息")
+    public Response<Integer> submit(@RequestParam String gid, HttpServletRequest request) {
         Response<Integer> response = new Response<>();
         response.setBo(xUserInfoService.submit(gid));
         return response;
@@ -91,10 +90,10 @@ public class XFileController {
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true),
             @ApiImplicitParam(name = "flag", value = "审核结果：0拒绝 1通过", dataType = "Long", paramType = "query", required = true)
     })
-    @LogAnnotation(module="审核通过")
-    public Response<Integer> approve(@RequestParam String userGid, @RequestParam int flag,HttpServletRequest request) {
+    @LogAnnotation(module = "审核通过")
+    public Response<Integer> approve(@RequestParam String userGid, @RequestParam int flag, HttpServletRequest request) {
         Response<Integer> response = new Response<>();
-        response.setBo(xUserInfoService.approve(userGid,flag));
+        response.setBo(xUserInfoService.approve(userGid, flag));
         return response;
     }
 }

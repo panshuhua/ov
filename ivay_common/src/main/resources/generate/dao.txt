@@ -1,16 +1,11 @@
 package {daoPackageName};
 
+import {beanPackageName}.{beanName};
+import com.ivay.ivay_repository.model.BlackUser;
+import org.apache.ibatis.annotations.*;
+
 import java.util.List;
 import java.util.Map;
-
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-
-import {beanPackageName}.{beanName};
 
 @Mapper
 public interface {daoName} {
@@ -29,5 +24,7 @@ public interface {daoName} {
     
     int count(@Param("params") Map<String, Object> params);
 
-    List<{beanName}> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<{beanName}> list(@Param("params") Map<String, Object> params,
+                         @Param("offset") Integer offset,
+                         @Param("limit") Integer limit);
 }

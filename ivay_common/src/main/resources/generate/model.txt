@@ -1,7 +1,7 @@
 package {beanPackageName};
 
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 {import}
 @Data
 public class {beanName} extends BaseEntity<Long> {

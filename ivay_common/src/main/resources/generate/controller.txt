@@ -1,64 +1,66 @@
 package {controllerPkgName};
 
-import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import {servicePkgName}.{serviceName};
+import {beanPackageName}.{beanName};
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import {daoPackageName}.{daoName};
-import {beanPackageName}.{beanName};
-
 @RestController
 @RequestMapping("{beanParamName}s")
+@Api(tags = "{controllerName}")
 public class {controllerName} {
 
     @Autowired
-    private {daoName} {daoParamName};
+    private {serviceName} {serviceParamName};
 
     @PostMapping("save")
     @ApiOperation(value = "保存")
-    public {beanName} save(@RequestBody {beanName} {beanParamName}) {
-        {daoParamName}.save({beanParamName});
-
-        return {beanParamName};
+    public Response<{beanName}> save(@RequestBody {beanName} {beanParamName}) {
+        Response<{beanName}> response = new Response<>();
+        response.setBo({serviceParamName}.save({beanParamName}));
+        return response;
     }
 
     @GetMapping("get")
     @ApiOperation(value = "根据id获取")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query")
     })
-    public {beanName} get(@RequestParam Long id) {
-        return {daoParamName}.getById(id);
+    public Response<{beanName}> get(@RequestParam Long id) {
+        Response<{beanName}> response = new Response<>();
+        response.setBo({serviceParamName}.get(id));
+        return response;
     }
 
     @PutMapping("update")
     @ApiOperation(value = "修改")
-    public {beanName} update(@RequestBody {beanName} {beanParamName}) {
-        {daoParamName}.update({beanParamName});
-
-        return {beanParamName};
+    public Response<{beanName}> update(@RequestBody {beanName} {beanParamName}) {
+        Response<{beanName}> response = new Response<>();
+        response.setBo({serviceParamName}.update({beanParamName}));
+        return response;
     }
 
     @GetMapping("list")
     @ApiOperation(value = "列表")
     public PageTableResponse list(PageTableRequest request) {
-        return new PageTableHandler(
-                a -> blackUserDao.count(a.getParams()),
-                a -> blackUserDao.list(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        return {serviceParamName}.list(request);
     }
 
     @DeleteMapping("delete")
     @ApiOperation(value = "删除")
     @ApiImplicitParams({
-          @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query")
     })
-    public void delete(@RequestParam Long id) {
-        {daoParamName}.delete(id);
+    public Response<Integer> delete(@RequestParam Long id) {
+        Response<Integer> response = new Response<>();
+        response.setBo({serviceParamName}.delete(id));
+        return response;
     }
 }

@@ -136,7 +136,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         // 审核类型
         xUserInfo.setRefuseType(type);
         if (xUserInfoDao.update(xUserInfo) == 1 && SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
-            logger.info("审核通过，开始初始化借款利率和借款额度");
+            logger.info("{}：审核通过，开始初始化借款利率和借款额度", xUserInfo.getUserGid());
             xLoanRateService.initLoanRateAndCreditLimit(userGid);
         } else {
             logger.info("审核拒绝");

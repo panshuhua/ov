@@ -1,0 +1,17 @@
+package {servicePkgName};
+
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import {beanPackageName}.{beanName};
+
+public interface {serviceName} {
+    {beanName} save({beanName} {beanParamName});
+
+    {beanName} get(Long id);
+
+    {beanName} update({beanName} {beanParamName});
+
+    PageTableResponse list(PageTableRequest request);
+
+    int delete(Long id);
+}

@@ -248,14 +248,14 @@ public class TemplateUtil {
         }
         String beanPackageName = input.getBeanPackageName();
         String beanName = input.getBeanName();
-        String daoPackageName = input.getDaoPackageName();
-        String daoName = input.getDaoName();
+        String servicePkgName = input.getServicePkgName();
+        String serviceName = input.getServiceName();
 
         String text = getTemplete("controller.txt");
-        text = text.replace("{daoPackageName}", daoPackageName);
+        text = text.replace("{servicePkgName}", servicePkgName);
         text = text.replace("{beanPackageName}", beanPackageName);
-        text = text.replace("{daoName}", daoName);
-        text = text.replace("{daoParamName}", lowerFirstChar(daoName));
+        text = text.replace("{serviceName}", serviceName);
+        text = text.replace("{serviceParamName}", lowerFirstChar(serviceName));
         text = text.replace("{beanName}", beanName);
         text = text.replace("{beanParamName}", lowerFirstChar(beanName));
         text = text.replace("{controllerPkgName}", input.getControllerPkgName());
@@ -264,6 +264,48 @@ public class TemplateUtil {
         FileUtil.saveTextFile(text, path + File.separator + getPackagePath(input.getControllerPkgName())
                 + input.getControllerName() + ".java");
         log.debug("生成controller：{}模板", beanName);
+    }
+
+    public static void saveService(GenerateInput input) {
+        String path = input.getPath() + File.separator;
+        String subPath = input.getServiceModelName();
+        if (!StringUtils.isEmpty(subPath)) {
+            path += subPath + File.separator;
+        }
+        String servicePkgName = input.getServicePkgName();
+        String beanPackageName = input.getBeanPackageName();
+        String beanName = input.getBeanName();
+        String serviceName = input.getServiceName();
+
+        String text = getTemplete("service.txt");
+        text = text.replace("{servicePkgName}", servicePkgName);
+        text = text.replace("{beanPackageName}", beanPackageName);
+        text = text.replace("{beanName}", beanName);
+        text = text.replace("{serviceName}", serviceName);
+        text = text.replace("{beanParamName}", lowerFirstChar(beanName));
+
+        FileUtil.saveTextFile(text, path + getPackagePath(servicePkgName) + serviceName + ".java");
+        log.debug("生成service接口：{}模板", serviceName);
+
+        String serviceImplPkgName = servicePkgName + ".impl";
+        String serviceImplName = serviceName + "Impl";
+        String daoPackageName = input.getDaoPackageName();
+        String daoName = input.getDaoName();
+
+        text = getTemplete("serviceimp.txt");
+        text = text.replace("{serviceImplPkgName}", serviceImplPkgName);
+        text = text.replace("{daoPackageName}", daoPackageName);
+        text = text.replace("{daoName}", daoName);
+        text = text.replace("{servicePkgName}", servicePkgName);
+        text = text.replace("{beanPackageName}", beanPackageName);
+        text = text.replace("{beanName}", beanName);
+        text = text.replace("{serviceName}", serviceName);
+        text = text.replace("{serviceImplName}", serviceImplName);
+        text = text.replace("{beanParamName}", lowerFirstChar(beanName));
+        text = text.replace("{daoParamName}", lowerFirstChar(daoName));
+
+        FileUtil.saveTextFile(text, path + getPackagePath(serviceImplPkgName) + serviceImplName + ".java");
+        log.debug("生成service实现类：{}模板", serviceImplName);
     }
 
     public static void saveHtmlList(GenerateInput input) {

@@ -66,6 +66,17 @@ public class GenerateInput implements Serializable {
     private String beanModelName;
     private String daoModelName;
     private String controllerModelName;
-    private String serviceModelName;
     private String xmlModelName;
+
+
+
+    /**
+     * Service包名
+     */
+    private String servicePkgName;
+    /**
+     * Service类名
+     */
+    private String serviceName;
+    private String serviceModelName;
 }

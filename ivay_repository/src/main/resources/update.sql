@@ -101,5 +101,9 @@ CREATE TABLE `x_version_update` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---日志表新增字段
+-- 日志表新增字段
 ALTER TABLE `sys_logs` ADD `code` varchar(10) DEFAULT NULL COMMENT '返回状态码';
+
+
+
+

@@ -1,0 +1,48 @@
+package {serviceImplPkgName};
+
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import {servicePkgName}.{serviceName};
+import {daoPackageName}.{daoName};
+import {beanPackageName}.{beanName};
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class {serviceImplName} implements {serviceName} {
+    private static final Logger logger = LoggerFactory.getLogger({serviceName}.class);
+
+    @Autowired
+    private {daoName} {daoParamName};
+
+    @Override
+    public {beanName} save({beanName} {beanParamName}) {
+        return {daoParamName}.save({beanParamName}) == 1 ? {beanParamName} : null;
+    }
+
+    @Override
+    public {beanName} get(Long id) {
+        return {daoParamName}.getById(id);
+    }
+
+    @Override
+    public {beanName} update({beanName} {beanParamName}) {
+        return {daoParamName}.update({beanParamName}) == 1 ? {beanParamName} : null;
+    }
+
+    @Override
+    public PageTableResponse list(PageTableRequest request) {
+        return new PageTableHandler(
+                a -> {daoParamName}.count(a.getParams()),
+                a -> {daoParamName}.list(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
+
+    @Override
+    public int delete(Long id) {
+        return {daoParamName}.delete(id);
+    }
+}

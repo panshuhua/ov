@@ -1,10 +1,10 @@
 package com.ivay.ivay_manage.controller;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.dto.Response;
 import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
