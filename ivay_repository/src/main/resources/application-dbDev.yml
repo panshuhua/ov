@@ -30,7 +30,7 @@ spring:
         allow: 127.0.0.1
 mybatis:
   type-aliases-package: com.ivay.ivay_repository.model
-  mapper-locations: classpath:/mybatis-mappers/*, classpath:/risk/*
+  mapper-locations: classpath:/master/*, classpath:/risk/*
   configuration:
     mapUnderscoreToCamelCase: true
 

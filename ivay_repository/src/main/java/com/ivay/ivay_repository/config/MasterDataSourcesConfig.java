@@ -23,7 +23,7 @@ public class MasterDataSourcesConfig {
     //master mapper目录
     static final String PACKAGES = "com.ivay.ivay_repository.dao.master";
 
-    private static final String MAPPER_LOCAL = "classpath:mybatis-mappers/*.xml";
+    private static final String MAPPER_LOCAL = "classpath:master/*.xml";
 
     @ConfigurationProperties("spring.datasource.druid.master")
     @Primary

@@ -1,7 +1,6 @@
 package {daoPackageName};
 
 import {beanPackageName}.{beanName};
-import com.ivay.ivay_repository.model.BlackUser;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
