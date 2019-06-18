@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("xAppEvents")
-@Api(tags = "XAppEventController")
+@RequestMapping("star/xAppEvents")
+@Api(tags = "app事件上报")
 public class XAppEventController {
 
     @Autowired

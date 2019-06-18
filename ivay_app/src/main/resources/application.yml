@@ -33,7 +33,7 @@ token:
   expire:
     seconds: 259200
   jwtSecret: (JUN:)_$^11244^%$_(XING:)_@@++--(KE:)_++++_.sds_(JI:)
-  
+
 #短信验证码失效时间
 verifycode:
     effectiveTime: 120000
