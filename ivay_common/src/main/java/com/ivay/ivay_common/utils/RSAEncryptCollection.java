@@ -1,7 +1,6 @@
 package com.ivay.ivay_common.utils;
 
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.security.KeyPair;

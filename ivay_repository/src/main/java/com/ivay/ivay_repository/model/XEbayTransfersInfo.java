@@ -1,5 +1,11 @@
 package com.ivay.ivay_repository.model;
 
+import com.ivay.ivay_repository.model.XBaokimTransfersInfo;
+
+/**
+ * 借款实体
+ * @author panshuhua
+ */
 public class XEbayTransfersInfo extends XBaokimTransfersInfo{
 	private static final long serialVersionUID = -8466951745963476837L;
 	
