@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `x_audit_user` (
 
 -- DDL：为用户表和角色表增加字段
 ALTER TABLE `sys_role` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
-ALTER TABLE `enable_flag` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
+ALTER TABLE `sys_role_user` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
 ALTER TABLE `sys_user` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
 
 -- DDL：修改索引先删除
@@ -25,8 +25,8 @@ ALTER TABLE sys_user DROP INDEX username;
 CREATE INDEX username ON sys_user (username);
 
 -- DML：增加角色
-INSERT INTO `sys_role` VALUES ('2', 'ovayAdmin', 'OVAY系统超级管理员权限', NOW(), NOW(), 'Y');
-INSERT INTO `sys_role` VALUES ('3', 'ovayAudit', '审核系统使用权限', NOW(), NOW(), 'Y');
+INSERT INTO `sys_role` VALUES ('3', 'ovayAdmin', 'OVAY系统超级管理员权限', NOW(), NOW(), 'Y');
+INSERT INTO `sys_role` VALUES ('4', 'ovayAudit', '审核系统使用权限', NOW(), NOW(), 'Y');
 
 -- 新增：社交类app个数表
 CREATE TABLE `x_user_app_num` (
@@ -51,13 +51,11 @@ ALTER TABLE x_user_info ADD `audit_time` datetime DEFAULT NULL COMMENT '审核�
 -- 更新 审核状态 配置
 
 -- x_baokim_transfers_info表添加字段-ebay使用字段
-
 ALTER TABLE `x_baokim_transfers_info` ADD `contract_number` varchar(50) DEFAULT NULL COMMENT 'ebay: contract number of customer';
 ALTER TABLE `x_baokim_transfers_info` ADD `extend` varchar(500) DEFAULT NULL COMMENT 'ebay: extend msg';
 ALTER TABLE `x_baokim_transfers_info` ADD `sub_error_code` int(6) DEFAULT NULL COMMENT 'ebay';
-ALTER TABLE `x_baokim_transfers_info` ADD `sub_error_message` DEFAULT NULL varchar(500) COMMENT 'ebay';
+ALTER TABLE `x_baokim_transfers_info` ADD `sub_error_message` varchar(500) DEFAULT NULL COMMENT 'ebay';
 ALTER TABLE `x_baokim_transfers_info` ADD `reason` varchar(500) DEFAULT NULL COMMENT 'ebay';
-
 
 -- 新建表：用户风控信息表
 CREATE TABLE `x_user_risk` (
@@ -72,7 +70,7 @@ CREATE TABLE `x_user_risk` (
   `phone_brand` varchar(32) DEFAULT NULL COMMENT '手机品牌',
   `traffic_way` char(1) DEFAULT NULL COMMENT '【手机流量类型：0:wifi;1:2G流量;2:3G流量;3:4G流量】',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 comment='用户风控信息表';
 
 
 -- sys_logs可删除后再导入

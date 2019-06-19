@@ -11,7 +11,7 @@ public interface RoleDao {
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into sys_role(name, description, createTime, updateTime,enable_flag)" +
-            "values(#{name}, #{description}, now(),now()),'Y'")
+            "values(#{name}, #{description}, now(),now(),'Y')")
     int save(Role role);
 
     int count(@Param("params") Map<String, Object> params);
