@@ -14,8 +14,8 @@
             <if test="params.type != null and params.type != ''">
                 and type = #{params.type}
             </if>
-            <if test="params.isUpload != null and params.isUpload != ''">
-                and is_upload = #{params.isUpload}
+            <if test="params.isSuccess != null and params.isSuccess != ''">
+                and is_success = #{params.isSuccess}
             </if>
             <if test="params.enableFlag != null and params.enableFlag != ''">
                 and enable_flag = #{params.enableFlag}
@@ -54,8 +54,8 @@
             <if test="type != null">
                 type = #{type},
             </if>
-            <if test="isUpload != null">
-                is_upload = #{isUpload},
+            <if test="isSuccess != null">
+                is_success = #{isSuccess},
             </if>
             <if test="enableFlag != null">
                 enable_flag = #{enableFlag},
@@ -72,13 +72,13 @@
 
     <select id="listToBeUpload" resultType="com.ivay.ivay_repository.model.XAppEvent">
         SELECT * FROM x_app_event
-        WHERE enable_flag="y" AND is_upload=0 AND (
+        WHERE enable_flag="y" AND (
             gid =#{userGid} OR gid in ( SELECT order_id from x_record_loan x WHERE x.user_gid = #{userGid})
         )
     </select>
     
     <update id="delete">
-        update x_app_event set enable_flag = 'N',update_time=now(),is_upload='1' where gid in
+        update x_app_event set enable_flag = 'N',update_time=now() where gid in
         <foreach collection="gids" separator="," open="(" close=")" item="gid">
             #{gid}
         </foreach>

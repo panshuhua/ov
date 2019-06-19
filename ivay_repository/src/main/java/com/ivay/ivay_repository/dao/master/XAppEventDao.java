@@ -12,8 +12,8 @@ public interface XAppEventDao {
     XAppEvent getByGid(String gid);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_app_event(gid, type, is_upload, enable_flag, create_time, update_time) " +
-            "values(#{gid}, #{type}, #{isUpload}, #{enableFlag}, #{createTime}, #{updateTime})")
+    @Insert("insert into x_app_event(gid, type, is_success, enable_flag, create_time, update_time) " +
+            "values(#{gid}, #{type}, #{isSuccess}, #{enableFlag}, #{createTime}, #{updateTime})")
     int save(XAppEvent xAppEvent);
 
     int update(XAppEvent xAppEvent);

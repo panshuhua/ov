@@ -108,15 +108,15 @@ ALTER TABLE `sys_logs` ADD `code` varchar(10) DEFAULT NULL COMMENT '返回状态
 -- app 事件上报表
 CREATE TABLE `x_app_event` (
    `id` int(10) NOT NULL AUTO_INCREMENT,
-   `gid` varchar(50) DEFAULT NULL COMMENT '用户gid 或 借款gid',
-   `type` char(1) DEFAULT NULL COMMENT '0 授信成功 1 借款成功',
-   `is_upload` char(1) DEFAULT 'N' COMMENT '是否已经上传',
-   `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
+   `gid` varchar(50) DEFAULT NULL COMMENT '用户gid 或 借款订单id',
+   `type` char(1) DEFAULT NULL COMMENT '0 授信 1 借款',
+   `is_success` char(1) DEFAULT NULL COMMENT '0失败 1成功',
    `create_time` datetime DEFAULT NULL,
    `update_time` datetime DEFAULT NULL,
+   `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
    PRIMARY KEY (`id`),
    KEY `gid` (`gid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='app事件上报表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COMMENT='app事件上报表';
 
 
 

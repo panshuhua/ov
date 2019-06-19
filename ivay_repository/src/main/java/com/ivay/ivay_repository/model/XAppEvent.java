@@ -7,14 +7,14 @@ import java.util.Date;
 
 @Data
 public class XAppEvent {
-    @ApiModelProperty(value = "用户gid 或 借款gid")
+    @ApiModelProperty(value = "用户gid 或 借款订单id")
     private String gid;
 
-    @ApiModelProperty(value = "0 授信成功 1 借款成功")
+    @ApiModelProperty(value = "0 授信 1 借款")
     private String type;
 
-    @ApiModelProperty(value = "是否已经上传")
-    private String isUpload;
+    @ApiModelProperty(value = "0失败 1成功")
+    private String isSuccess;
 
     @ApiModelProperty(value = "有效标志位")
     private String enableFlag;

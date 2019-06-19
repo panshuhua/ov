@@ -26,7 +26,6 @@ public class XAppEventServiceImpl implements XAppEventService {
         Date now = new Date();
         xAppEvent.setUpdateTime(now);
         xAppEvent.setEnableFlag(SysVariable.ENABLE_FLAG_YES);
-        xAppEvent.setIsUpload(SysVariable.APP_UPLOAD_NO);
         if (old == null) {
             xAppEvent.setCreateTime(now);
             return xAppEventDao.save(xAppEvent) == 1 ? xAppEvent : null;

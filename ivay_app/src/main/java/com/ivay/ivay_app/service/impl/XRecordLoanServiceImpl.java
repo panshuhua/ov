@@ -230,6 +230,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
         xUserInfo.setUpdateTime(now);
         boolean flag = false;
+
+        XAppEvent xAppEvent = new XAppEvent();
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
             // 实际到账时间
             xRecordLoan.setLoanTime(now);
@@ -249,6 +251,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 flag = true;
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_REPEATEDLY);
             }
+            xAppEvent.setIsSuccess(SysVariable.APP_EVENT_SUCCESS);
         } else {
             logger.info(transfersRsp.getResponseMessage());
             // 借款状态
@@ -257,6 +260,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
             flag = true;
             xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getLoanAmount());
+            xAppEvent.setIsSuccess(SysVariable.APP_EVENT_FAIL);
         }
         if (flag) {
             xUserInfoDao.update(xUserInfo);
@@ -264,7 +268,6 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         xRecordLoanDao.update(xRecordLoan);
 
         // 记录待上报的app事件
-        XAppEvent xAppEvent = new XAppEvent();
         xAppEvent.setType(SysVariable.APP_EVENT_LOAN);
         xAppEvent.setGid(xRecordLoan.getOrderId());
         xAppEventService.save(xAppEvent);
