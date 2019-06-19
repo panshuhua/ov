@@ -263,13 +263,16 @@
                         layer.msg(message);
                     } else if (code == 401) {
                         localStorage.removeItem("token");
+                        // token过期，请先登录
                         layer.msg("token expire, please login first", {shift: -1, time: 1000}, function () {
                             location.href = '/login.html';
                         });
                     } else if (code == 403) {
+                        // 未授权
                         console.log("not authorized:" + message);
                         layer.msg('not authorized');
                     } else if (code == 500) {
+                        // 系统错误
                         layer.msg('system error：' + message);
                     }
                 }
@@ -389,7 +392,8 @@
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("Audit system error")
+                // 审核详情查询报错了
+                alert("Audit detail system error")
             }
         });
     }
@@ -417,6 +421,7 @@
                 return;
             }
         } else if ($("#refuseReason").val() == "") {
+            // 请选择驳回理由
             alert("Please select refuse reason");
             return;
         }
@@ -434,7 +439,8 @@
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("Audit system error.")
+                // 审核报错了
+                alert("Audit system error")
             }
         });
     }
@@ -447,7 +453,7 @@
         assign(userGid, "1")
     }
 
-    var con = document.getElementById('auditDialog');
+    var con = document.getElementById('auditDialog_box');
 
     /**
      * 重新分配审计员

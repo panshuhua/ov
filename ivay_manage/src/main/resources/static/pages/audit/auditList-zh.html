@@ -93,7 +93,7 @@
                             <input type="radio" name="sex" value="1"/>Female
                         </div>
                     </form>
-                    <div id="auditBtn" class="form-group" style="margin:2px">
+                    <div class="form-group" style="margin:2px">
                         <button onclick="auditSubmit(1)" class="layui-btn layui-btn-sm">
                             <i class="layui-icon">&#xe615;</i>审核通过
                         </button>
@@ -140,6 +140,56 @@
 <script type="text/javascript" src="../../js/my/permission.js"></script>
 <script type="text/javascript" src="../../js/dialog.js"></script>
 <script type="text/javascript">
+    // 初始化国际化语言
+    // var i18n = {
+    //     "zh": {
+    //         "userGid": "用户id",
+    //         "name": "名字",
+    //         "phone": "电话",
+    //         "applyTime": "申请时间",
+    //         "auditStatus": "审核状态",
+    //         "search": "搜索",
+    //         "operation": "操作",
+    //         "identityCard": "身份证",
+    //         "birthday": "生日",
+    //         "sex": "性别",
+    //         "confirm": "确认",
+    //         "refuse": "拒绝",
+    //         "refuseDemo": "驳回理由"
+    //     },
+    //     "en": {
+    //         "userGid": "用户iden",
+    //         "name": "姓名en",
+    //         "phone": "电话en",
+    //         "applyTime": "申请时间en",
+    //         "auditStatus": "审核状态en",
+    //         "search": "搜索en",
+    //         "operation": "操作en",
+    //         "identityCard": "身份证en",
+    //         "birthday": "生日en",
+    //         "sex": "性别en",
+    //         "confirm": "确认en",
+    //         "refuse": "拒绝en",
+    //         "refuseDemo": "驳回理由en"
+    //     },
+    //     "vi": {
+    //         "userGid": "用户idvi",
+    //         "name": "姓名vi",
+    //         "phone": "电话vi",
+    //         "applyTime": "申请时间vi",
+    //         "auditStatus": "审核状态vi",
+    //         "search": "搜索vi",
+    //         "operation": "操作vi",
+    //         "identityCard": "身份证vi",
+    //         "birthday": "生日vi",
+    //         "sex": "性别vi",
+    //         "confirm": "确认vi",
+    //         "refuse": "拒绝vi",
+    //         "refuseDemo": "驳回理由vi"
+    //     }
+    // };
+    // window.lang = (navigator.language || navigator.userLanguage).substr(0, 2);
+
     // 后台地址
     var LOCALHOST = window.location.protocol + "//" + window.location.host;
 
@@ -204,14 +254,17 @@
                         layer.msg(message);
                     } else if (code == 401) {
                         localStorage.removeItem("token");
-                        layer.msg("token过期，请先登录", {shift: -1, time: 1000}, function () {
+                        // token过期，请先登录
+                        layer.msg("token expire, please login first", {shift: -1, time: 1000}, function () {
                             location.href = '/login.html';
                         });
                     } else if (code == 403) {
-                        console.log("未授权:" + message);
-                        layer.msg('未授权');
+                        // 未授权
+                        console.log("not authorized:" + message);
+                        layer.msg('not authorized');
                     } else if (code == 500) {
-                        layer.msg('系统错误：' + message);
+                        // 系统错误
+                        layer.msg('system error：' + message);
                     }
                 }
             },
@@ -330,7 +383,8 @@
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("审核详情查询报错了。")
+                // 审核详情查询报错了
+                alert("Audit detail system error")
             }
         });
     }
@@ -358,7 +412,8 @@
                 return;
             }
         } else if ($("#refuseReason").val() == "") {
-            alert("请选择驳回理由");
+            // 请选择驳回理由
+            alert("Please select refuse reason");
             return;
         }
 
@@ -375,7 +430,8 @@
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("审核报错了。")
+                // 审核报错了
+                alert("Audit system error")
             }
         });
     }

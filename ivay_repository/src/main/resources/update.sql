@@ -118,3 +118,6 @@ CREATE TABLE `x_app_event` (
    KEY `gid` (`gid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='app事件上报表';
 
+
+
+
