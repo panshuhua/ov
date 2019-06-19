@@ -39,6 +39,13 @@ ebay_api_partner_code:
 
 # 还款url
 api_collection_url: http://210.245.80.27:9092/Golive/Collection
+#ebay
+ebay_api_collection_url: http://42.113.207.131:10002/ApiResf_VirtualAccount/services/registerVA
+ebay_api_merchant_code: VAP001
+ebay_api_keyMahoa: 31feae316de0a42520ef5ec4
+#虚拟账号有效期：以年为单位
+ebay_api_effective_year: 5
+
 # 发送短信url
 api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
 api_paasoo_key: nzwzxcuv

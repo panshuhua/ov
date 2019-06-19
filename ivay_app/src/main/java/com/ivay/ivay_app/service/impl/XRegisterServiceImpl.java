@@ -198,7 +198,7 @@ public class XRegisterServiceImpl implements XRegisterService {
         String authCode = MsgAuthCode.getAuthCode();
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
         //long effectiveTime = 120 * 1000; //2分钟有效期，ms
-        //verifyCodeInfo.setCodeToken(authCode);
+        verifyCodeInfo.setCodeToken(authCode);  // TODO 
         verifyCodeInfo.setEffectiveTime(effectiveTime);
 
         for (Object key : config.keySet()) {

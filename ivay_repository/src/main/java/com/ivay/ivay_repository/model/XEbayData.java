@@ -10,7 +10,7 @@ import com.ivay.ivay_repository.model.XEbayExtend;
 @Data
 public class XEbayData {
    private String map_id;
-   private Long amount;
+   private Number amount;
    private String start_date;
    private String end_date;
    private String condition;
@@ -18,4 +18,5 @@ public class XEbayData {
    private String request_id;
    private String bank_code;
    private XEbayExtend extend;
+   private String account_no;
 }

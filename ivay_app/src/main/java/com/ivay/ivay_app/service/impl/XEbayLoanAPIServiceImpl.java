@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.EbayTransfersReq;
 import com.ivay.ivay_app.dto.EbayTransfersRsp;
-import com.ivay.ivay_app.service.XEbayAPIService;
+import com.ivay.ivay_app.service.XEbayLoanAPIService;
 import com.ivay.ivay_common.utils.HttpClientUtils;
 import com.ivay.ivay_common.utils.RSAEncryptSha1;
 import com.ivay.ivay_common.utils.SysVariable;
@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 
 @Service
-public class XEbayAPIServiceImpl implements XEbayAPIService{
-	private static final Logger logger = LoggerFactory.getLogger(XEbayAPIService.class);
+public class XEbayLoanAPIServiceImpl implements XEbayLoanAPIService{
+	private static final Logger logger = LoggerFactory.getLogger(XEbayLoanAPIService.class);
 	
 	@Resource
 	private XBaokimTransfersInfoDao xBaokimTransfersInfoDao;

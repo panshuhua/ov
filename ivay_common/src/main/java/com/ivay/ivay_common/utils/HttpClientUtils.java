@@ -22,6 +22,15 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -73,7 +82,7 @@ public class HttpClientUtils {
         return client;
     }
 
-    //
+    //以表单形式提交
     public static <T> String postForObject(String url, T req) {
         RestTemplate client = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -91,4 +100,48 @@ public class HttpClientUtils {
         //System.out.println("返回valCustomerInfoRspMap：" + JsonUtils.jsonToMap(responseBody));
         return responseBody;
     }
+    
+    //post请求发送json数据
+    public static <T> String postByJson(String url, T req) throws IOException {
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		
+		// Add request header
+		con.setRequestMethod("POST");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setUseCaches(false);
+		con.setDoInput(true);
+		con.setDoOutput(true);
+		String input = JsonUtils.objectToJson(req);
+		log.info("请求参数："+input);
+		
+		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
+
+		writer.write(input);
+		writer.close();
+		wr.close();
+		
+		// Get response
+		int responseCode = con.getResponseCode();
+        String responseMsg = con.getResponseMessage();
+        log.info("responseCode: "+ responseCode);
+        log.info("responseMsg: "+ responseMsg);
+
+        BufferedReader br = null;
+        String output;
+        StringBuilder sb = new StringBuilder();
+        if (responseCode == 200) {
+        	br = new BufferedReader(new InputStreamReader(con.getInputStream()));             
+        } else {
+        	br = new BufferedReader(new InputStreamReader(con.getErrorStream()));                 	 
+        }
+        while ((output = br.readLine()) != null) {
+      	  sb.append(output);
+      	}
+        
+        log.info("Response body"+ sb.toString()); 
+        return sb.toString();
+    }
+    
 }

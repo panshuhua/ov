@@ -239,7 +239,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
             xVirtualAccount.setResponseCode(responseCode);
             xVirtualAccount.setResponseMessage(responseMsg);
-            xVirtualAccountDao.update(xVirtualAccount);
+            //失败时只能新增一条数据记录错误信息，不能修改数据，否则会跟baokim的数据不一致
+            xVirtualAccountDao.insert(xVirtualAccount);
 			//更新还款状态为还款失败
             String failReason="更新虚拟账号信息失败，返回状态码："+responseCode+"，错误信息："+responseMsg;
             xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_FAIL);

@@ -2,7 +2,7 @@ package com.ivay.ivay_app.service;
 
 import com.ivay.ivay_app.dto.EbayTransfersRsp;
 
-public interface XEbayAPIService {
+public interface XEbayLoanAPIService {
 	 /**
      * 接口：校验用户信息
      *

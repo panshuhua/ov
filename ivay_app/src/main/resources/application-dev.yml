@@ -38,7 +38,15 @@ ebay_api_transfer_url: https://chihoepay.megacard.vn:3669/Sandbox/PartnerMoneyTr
 ebay_api_partner_code: PARTNERTEST01
 
 # 还款url
+#baokim
 api_collection_url: http://13.250.110.81:8085/Sandbox/Collection
+#ebay
+ebay_api_collection_url: http://42.113.207.131:10002/ApiResf_VirtualAccount/services/registerVA
+ebay_api_merchant_code: VAP001
+ebay_api_keyMahoa: 31feae316de0a42520ef5ec4
+#虚拟账号有效期：以年为单位
+ebay_api_effective_year: 5
+
 # 发送短信url
 api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
 api_paasoo_key: nzwzxcuv

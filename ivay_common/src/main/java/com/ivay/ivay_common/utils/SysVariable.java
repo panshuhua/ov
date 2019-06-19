@@ -103,6 +103,15 @@ public class SysVariable {
     public static final String API_OPERATION_COLLTRAN_STATUSSEARCH = "9004";
     public static final String API_ACC_TYPE_FIRST = "1";
     public static final String API_ACC_TYPE_SECOND = "2";
+    public static final String API_PCODE_REGISTER_VIRTUALACCOUNT = "9000";
+    public static final String API_PCODE_UPDATE_VIRTUALACCOUNT = "9001";
+    public static final String API_PCODE_MAPPING_CANCELATION = "9002";
+    public static final String API_PCODE_VIEW_MAPPIGSTATUS = "9099";
+    public static final String API_CONDITION_VIRTUALACCOUNT_ONE = "01";
+    public static final String API_CONDITION_VIRTUALACCOUNT_TWO = "02";
+    public static final String API_CONDITION_VIRTUALACCOUNT_THREE = "03";
+    public static final String API_CONDITION_VIRTUALACCOUNT_FOUR = "04";
+    public static final String API_BANK_CODE_EBAY = "WOORIBANK";
 
     // redis 借款锁前缀
     public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";

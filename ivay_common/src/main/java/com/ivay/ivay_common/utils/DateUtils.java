@@ -93,6 +93,10 @@ public class DateUtils {
         return dateToString(date, YYYY_MM_DD);
 
     }
+    
+    public static String dateToString_YYYYMMDD(Date date) {
+        return dateToString(date, YYYYMMDD);
+    }
     // endregion
 
     // region -- 时间戳转换
@@ -135,7 +139,7 @@ public class DateUtils {
     public static String getNowDateYYYY_MM_DD() {
         return dateToString_YYYY_MM_DD(new Date());
     }
-
+    
     public static String getNowDateYYYY_MM_DD_HH_MM() {
         return dateToString(new Date(), YYYY_MM_DD_HH_MM);
     }
@@ -520,10 +524,26 @@ public class DateUtils {
         calendar.set(Calendar.SECOND, 59);
         return calendar.getTime();
     }
+    
+    /**
+     * 在当前日期的基础上加上几年
+     * @return
+     */
+    public static String addYears(int year) {
+    	Calendar calendar = new GregorianCalendar();
+    	Date date = new Date();
+    	calendar.setTime(date);
+    	calendar.add(calendar.YEAR, year);
+    	date=calendar.getTime();
+    	String dateStr=dateToString_YYYYMMDD(date);
+		return dateStr;
+    }
 
     public static void main(String[] args) throws Exception {
         String time = "2019-05-11 10:50:00";
         System.out.println(getDateEnd(time));
         System.out.println(getDateEnd(new Date()));
+        System.out.println(addYears(5));
     }
+    
 }

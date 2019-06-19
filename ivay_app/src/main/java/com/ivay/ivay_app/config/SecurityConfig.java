@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
                         "/statics/**", "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**",
                         "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**",
-                        "/star/error/**", "/star/appVersion/**","/star/xAppEvents/**",
+                        "/star/error/**", "/star/appVersion/**","/star/xAppEvents/**","/star/ebayLoanApi/**","/star/ebayRepayApi/**",
 //                        "/star/**","/info")  //开发时调试用
                         "/info")  //部署时用
                 .permitAll().anyRequest().authenticated();
