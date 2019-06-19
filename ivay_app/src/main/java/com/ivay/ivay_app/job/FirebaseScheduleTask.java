@@ -29,22 +29,27 @@ public class FirebaseScheduleTask {
             }
             logger.info(start);
             
-            boolean auditFlag=xFirebaseNoticeService.sendAuditNotice();
-            boolean loanFlag=xFirebaseNoticeService.sendLoanNotice();
+//            boolean auditFlag=xFirebaseNoticeService.sendAuditNotice();
+//            boolean loanFlag=xFirebaseNoticeService.sendLoanNotice();
             boolean repaymentFlag=xFirebaseNoticeService.sendRepaymentNotice();
             
-            if(auditFlag && loanFlag && repaymentFlag) {
-            	 logger.info("消息发送结束---{}", flag ? "成功" : "失败");
+//            if(auditFlag && loanFlag && repaymentFlag) {
+//            	 logger.info("消息发送结束---{}", flag ? "成功" : "失败");
+//            }
+            
+            if(repaymentFlag) {
+           	    logger.info("消息发送结束---{}", flag ? "成功" : "失败");
             }
            
             if (!flag) {
-                if (!auditFlag) {
-                    flag = true;
-                    logger.error("审核通知发送失败");
-                } else if(!loanFlag) {
-                	flag = true;
-                    logger.error("放款通知发送失败");
-                } else if(!repaymentFlag) {
+//                if (!auditFlag) {
+//                    flag = true;
+//                    logger.error("审核通知发送失败");
+//                } else if(!loanFlag) {
+//                	flag = true;
+//                    logger.error("放款通知发送失败");
+//                } else if(!repaymentFlag) {
+            	if(!repaymentFlag) {
                 	flag = true;
                     logger.error("还款到期通知发送失败");
                 } else {
@@ -55,6 +60,8 @@ public class FirebaseScheduleTask {
                     }
                 }
             }
+            
+            
         }
         
     }
