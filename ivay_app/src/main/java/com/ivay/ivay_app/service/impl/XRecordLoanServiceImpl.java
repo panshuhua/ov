@@ -13,10 +13,7 @@ import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.model.XBankAndCardInfo;
-import com.ivay.ivay_repository.model.XLoanRate;
-import com.ivay.ivay_repository.model.XRecordLoan;
-import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +61,15 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
 
     @Autowired
     private I18nService i18nService;
+
     @Autowired
     private RestTemplate restTemplate;
+
     @Autowired
     private SysLogService sysLogService;
+
+    @Autowired
+    private XAppEventService xAppEventService;
 
     @Value("${risk_control_url}")
     private String riskControlUrl;
@@ -200,17 +202,17 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                             xRecordLoan.getNetAmount(),
                             xRecordLoan.getMemo(),
                             accType);
-                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", true, transfersRsp.getResponseMessage(),transfersRsp.getResponseCode());
+                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", true, transfersRsp.getResponseMessage(), transfersRsp.getResponseCode());
                 } catch (Exception ex) {
                     logger.info("调用借款接口发生异常了");
-                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", false, transfersRsp.getResponseMessage(),transfersRsp.getResponseCode());
+                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", false, transfersRsp.getResponseMessage(), transfersRsp.getResponseCode());
                     xRecordLoanDao.delete(xRecordLoan.getId());
                     return;
                 }
                 logger.info("调用baokim接口结束--");
                 //出现超时，查询交易状态
                 if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
-                   transfersRsp = xapiService.transfersInfo(transfersRsp.getReferenceId());
+                    transfersRsp = xapiService.transfersInfo(transfersRsp.getReferenceId());
                 }
             } else {
                 transfersRsp.setResponseCode(i18nService.getMessage("response.error.borrow.riskcheck.code"));
@@ -260,6 +262,12 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xUserInfoDao.update(xUserInfo);
         }
         xRecordLoanDao.update(xRecordLoan);
+
+        // 记录待上报的app事件
+        XAppEvent xAppEvent = new XAppEvent();
+        xAppEvent.setType(SysVariable.APP_EVENT_LOAN);
+        xAppEvent.setGid(xRecordLoan.getOrderId());
+        xAppEventService.save(xAppEvent);
     }
 
     /**

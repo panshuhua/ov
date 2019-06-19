@@ -34,3 +34,7 @@ token:
   expire:
     seconds: 7200
   jwtSecret: (XX:)_$^11244^%$_(XX:)_@@++--(XX:)_++++_.sds_(XX:)
+
+
+
+xAppEvents_event_url: http://localhost:8080/star/xAppEvents/save

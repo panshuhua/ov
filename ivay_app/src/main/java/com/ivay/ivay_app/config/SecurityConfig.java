@@ -49,8 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/statics/**", "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**",
                         "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**",
                         "/star/error/**", "/star/appVersion/**",
-//                        "/star/**","/info")  //开发时调试用
-                        "/info")  //部署时用
+                        "/star/**","/info")  //开发时调试用
+//                        "/info")  //部署时用
                 .permitAll().anyRequest().authenticated();
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         // 解决不允许显示在iframe的问题

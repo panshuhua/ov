@@ -27,11 +27,11 @@ public interface XUserInfoService {
      * 对待授信用户进行人工审核
      *
      * @param userGid
-     * @param flag
-     * @param refuseCode
+     * @param flag       0 审核拒绝 1 审核通过
+     * @param refuseCode 审核拒绝时，必须传入refuseCode
      * @param refuseDemo
      * @param type       审核类型 0人工 1自动
-     * @return
+     * @return 1审核通过 0 审核拒绝 -1数据库异常
      */
     int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo, String type);
 

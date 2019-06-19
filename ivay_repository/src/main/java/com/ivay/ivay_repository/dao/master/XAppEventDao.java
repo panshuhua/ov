@@ -15,8 +15,8 @@ public interface XAppEventDao {
     @Select("select * from x_app_event t where t.gid = #{gid} and t.enable_flag = 'Y'")
     XAppEvent getByGid(String gid);
 
-    @Delete("delete from x_app_event where id = #{id} and t.enable_flag = 'Y'")
-    int delete(Long id);
+    @Update("Update x_app_event set enable_flag = 'N',update_time=now() where gid = #{gid}")
+    int delete(String gid);
 
     int update(XAppEvent xAppEvent);
 

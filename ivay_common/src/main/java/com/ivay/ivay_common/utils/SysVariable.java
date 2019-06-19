@@ -119,6 +119,8 @@ public class SysVariable {
     public static final String AUDIT_REFUSE_TYPE_MANUAL = "0";
     // 1 自动审核
     public static final String AUDIT_REFUSE_TYPE_AUTO = "1";
+    // 9 黑名单用户的审核代码
+    public static final String AUDIT_BLACK_USER_CODE = "9";
     //  0 拒绝
     public static final int AUDIT_REFUSE = 0;
     // 1 通过
@@ -130,4 +132,9 @@ public class SysVariable {
     // 借款
     public static final int RISK_TYPE_LOAN = 1;
 
+    // app事件是否上传
+    public static final String APP_EVENT_AUDIT = "0";
+    public static final String APP_EVENT_LOAN = "1";
+    public static final String APP_UPLOAD_NO = "0";
+    public static final String APP_UPLOAD_DONE = "1";
 }

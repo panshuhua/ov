@@ -2,6 +2,7 @@ package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -12,15 +13,14 @@ import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserRiskDao;
-import com.ivay.ivay_repository.model.RiskUser;
-import com.ivay.ivay_repository.model.XAuditDetail;
-import com.ivay.ivay_repository.model.XLoanQualification;
-import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -53,6 +53,15 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private ThreadPoolService threadPoolService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${xAppEvents_event_url}")
+    private String xAppEvents_event_url;
 
     @Override
     public PageTableResponse auditList(PageTableRequest request) {
@@ -87,11 +96,11 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * 对待授信用户进行人工审核
      *
      * @param userGid
-     * @param flag       1 审核通过 0 审核拒绝
-     * @param refuseCode
+     * @param flag       0 审核拒绝 1 审核通过
+     * @param refuseCode 审核拒绝时，必须传入refuseCode
      * @param refuseDemo
      * @param type       审核类型 0人工 1自动
-     * @return
+     * @return 1审核通过 0 审核拒绝 -1数据库异常
      */
     @Override
     public int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo, String type) {
@@ -101,21 +110,35 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     i18nService.getMessage("response.error.user.checkgid.msg"));
         }
 
-        // 审核通过
+        // region -- 审核待授信用户
+        Date now = new Date();
+        xUserInfo.setUpdateTime(now);
+        // 审核时间
+        xUserInfo.setAuditTime(now);
+        // 审核类型
+        xUserInfo.setRefuseType(type);
+
+        // region -- 审核通过
         if (flag == SysVariable.AUDIT_PASS) {
+            // 更新用户状态
+            xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
+
             // 获取风控信息
             String demo = queryRiskQualificationDemo(userGid, SysVariable.RISK_TYPE_AUDIT);
             if (!StringUtils.isEmpty(demo)) {
+                // 风控自动拒绝
                 xUserInfo.setRefuseType(SysVariable.AUDIT_REFUSE_TYPE_AUTO);
-                xUserInfo.setAuditTime(new Date());
+                // 拒绝理由
                 xUserInfo.setRefuseReason(demo);
+                // 用户状态
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
-                xUserInfoDao.update(xUserInfo);
-                throw new BusinessException("很抱歉，该用户的授信信息未通过审核");
+                flag = SysVariable.AUDIT_REFUSE;
             }
-            xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
-        } else {
-            // 审核拒绝
+        }
+        // endregion
+
+        // region -- 审核拒绝
+        else {
             if (StringUtils.isEmpty(refuseCode)) {
                 throw new BusinessException("请选择拒绝理由");
             }
@@ -132,18 +155,39 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             // 拒绝理由
             xUserInfo.setRefuseReason(refuseDemo);
         }
-        Date now = new Date();
-        xUserInfo.setUpdateTime(now);
-        // 审核时间
-        xUserInfo.setAuditTime(now);
-        // 审核类型
-        xUserInfo.setRefuseType(type);
-        if (xUserInfoDao.update(xUserInfo) == 1 && SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
-            logger.info("{}：审核通过，开始初始化借款利率和借款额度", xUserInfo.getUserGid());
-            xLoanRateService.initLoanRateAndCreditLimit(userGid);
+        // endregion
+
+        // endregion
+
+        // region -- 更新审核结果
+        if (xUserInfoDao.update(xUserInfo) == 1) {
+            // 更新授信结果上报事件
+            if (!SysVariable.USER_STATUS_AUTH_RETRY.equals(xUserInfo.getUserStatus())) {
+                // 记录待上报的app事件
+                threadPoolService.execute(() -> {
+                    XAppEvent xAppEvent = new XAppEvent();
+                    xAppEvent.setType(SysVariable.APP_EVENT_AUDIT);
+                    xAppEvent.setGid(userGid);
+                    restTemplate.postForObject(xAppEvents_event_url, xAppEvent, Response.class);
+                });
+            }
+
+            if (SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
+                logger.info("{}：审核通过，开始初始化借款利率和借款额度", xUserInfo.getUserGid());
+                xLoanRateService.initLoanRateAndCreditLimit(userGid);
+            } else {
+                logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}:{}.", userGid, refuseCode, refuseDemo);
+                if (SysVariable.AUDIT_REFUSE_TYPE_MANUAL.equals(type)) {
+                    // 人工审核需要抛出异常给前端
+                    throw new BusinessException("很抱歉，该用户的授信信息未通过审核");
+                }
+            }
         } else {
-            logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}:{}.", userGid, refuseCode, refuseDemo);
+            logger.info("用户状态更新失败: {}", xUserInfo.getUserGid());
+            flag = -1;
         }
+        // endregion
+
         return flag;
     }
 
@@ -329,7 +373,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
         if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
             logger.info("黑名单用户: {}", userGid);
-            xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, null,
+            xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, SysVariable.AUDIT_BLACK_USER_CODE,
                     "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
             return false;
         }
@@ -340,20 +384,20 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         if (whiteList.size() > 0) {
             logger.info("{}: 白名单用户，执行自动审核---start", phone);
             if (xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_PASS, null, null, SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
-                logger.info("{}: 审核成功...", phone);
+                logger.info("{}: 审核通过...", phone);
             } else {
-                logger.info("{}: 审核失败...", phone);
+                logger.info("{}: 审核不通过...", phone);
             }
         }
         // endregion
 
         // region -- 非白名单用户分配审计员
         else {
-            logger.info("{}: 非白名单用户，分配审计员...", phone);
+            logger.info("{}: 非白名单用户，分配审计员...start", phone);
             if (xAuditUserService.assignAuditForUser(null, userGid) != null) {
-                logger.info("{}: 分配审计员成功...", phone);
+                logger.info("{}: 分配审计员成功...end", phone);
             } else {
-                logger.info("{}: 分配审计员失败...", phone);
+                logger.info("{}: 分配审计员失败...end", phone);
             }
         }
         // endregion
