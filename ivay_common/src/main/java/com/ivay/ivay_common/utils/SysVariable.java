@@ -89,6 +89,8 @@ public class SysVariable {
     public static final String TEMPLATE_AUDIT_STATUS = "auditStatus";
     // 配置模板: 提額配置
     public static final String TEMPLATE_CREDIT_RISK = "riskManage";
+    // 配置模板: 自动审核配置
+    public static final String TEMPLATE_AUTO_AUDIT = "autoAudit";
 
     // 接口对接
     public static final String API_ACC_TYPE_0 = "0";
@@ -152,4 +154,6 @@ public class SysVariable {
     public static final String APPNUM = "appNum";   //社交类app的个数
     public static final String GPS = "gps";         //gps信息
     public static final String OTHER = "other";     //mac地址/手机品牌/使用什么手机流量
+
+
 }

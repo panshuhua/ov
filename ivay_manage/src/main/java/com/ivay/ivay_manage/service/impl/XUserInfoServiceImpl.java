@@ -375,9 +375,17 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         // endregion
 
+        // 滞纳金配置
+        boolean autoAuditFlag = false;
+        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_AUTO_AUDIT));
+        if (config != null) {
+            autoAuditFlag = (Boolean) config.get("whiteUser");
+            logger.info("白名单启用自动审核：{}", autoAuditFlag);
+        }
+
         // region -- 白名单用户自动授信
         List<RiskUser> whiteList = riskUserService.selectUserListByPhone(phone);
-        if (whiteList.size() > 0) {
+        if (autoAuditFlag && whiteList.size() > 0) {
             logger.info("{}: 白名单用户，执行自动审核---start", phone);
             if (xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_PASS, null, null, SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
                 logger.info("{}: 审核通过...", phone);

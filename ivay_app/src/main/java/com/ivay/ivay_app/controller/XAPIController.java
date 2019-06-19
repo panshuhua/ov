@@ -1,9 +1,9 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_common.utils.SysVariable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -102,23 +102,22 @@ public class XAPIController {
         }
     }
 
-    @Autowired
-    private ThreadPoolService threadPoolService;
-
-    @Value("${update_credit_limit_url}")
-    private String update_credit_limit_url;
+    @Value("${risk_control_url}")
+    private String riskControlUrl;
 
     @Autowired
     private RestTemplate restTemplate;
 
     @PostMapping("test")
     public boolean test() {
-        // 还款提升授信額度
-        threadPoolService.execute(() -> {
-            Map<String, Object> params = new HashMap<>();
-            params.put("userGid", "11");
-            restTemplate.postForObject(update_credit_limit_url, null, Long.class, params);
-        });
+        Map<String, Object> params = new HashMap<>();
+        params.put("userGid", "11");
+        params.put("flag", SysVariable.RISK_TYPE_LOAN);
+        try {
+            String ret = restTemplate.getForObject(riskControlUrl, String.class, params);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return true;
     }
 }
