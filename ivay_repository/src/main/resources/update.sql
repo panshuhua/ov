@@ -119,5 +119,27 @@ CREATE TABLE `x_app_event` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COMMENT='app事件上报表';
 
 
-
+-- 新增 ebay还款虚拟账号表
+CREATE TABLE `x_ebay_virtual_account` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pcode` varchar(4) DEFAULT NULL,
+  `merchant_code` varchar(50) DEFAULT NULL,
+  `map_id` varchar(32) DEFAULT NULL COMMENT '对应于还款表的order_id：订单id',
+  `amount` decimal(15,0) DEFAULT NULL,
+  `start_date` varchar(14) DEFAULT NULL,
+  `end_date` varchar(14) DEFAULT NULL,
+  `condition` varchar(2) DEFAULT NULL,
+  `customer_name` varchar(50) DEFAULT NULL,
+  `request_id` varchar(50) DEFAULT NULL,
+  `response_code` varchar(2) DEFAULT NULL,
+  `message` varchar(1024) DEFAULT NULL,
+  `account_no` varchar(50) DEFAULT NULL,
+  `account_name` varchar(100) DEFAULT NULL,
+  `bank_code` varchar(50) DEFAULT NULL,
+  `bank_name` varchar(1024) DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT NULL,
+  `update_time` timestamp NULL DEFAULT NULL,
+  `enable_flag` char(1) DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
