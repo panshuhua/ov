@@ -146,4 +146,10 @@ public class SysVariable {
     public static final String APP_EVENT_LOAN = "1";
     public static final String APP_UPLOAD_NO = "0";
     public static final String APP_UPLOAD_DONE = "1";
+    
+    //上传风控数据的类型
+    public static final String CONTACT = "contact"; //通讯录联系人
+    public static final String APPNUM = "appNum";   //社交类app的个数
+    public static final String GPS = "gps";         //gps信息
+    public static final String OTHER = "other";     //mac地址/手机品牌/使用什么手机流量
 }
