@@ -44,7 +44,8 @@ public class XUserContactsController {
     @ApiOperation(value = "批量保存")
     @LogAnnotation(module="上传联系人/GPS/社交类app的个数等风控信息")
     public Response<String> saveAll(@RequestBody XRiskInfo riskInfo,HttpServletRequest request) {
-        logger.info("前台参数：" + riskInfo.toString());
+        //logger.info("前台参数：" + riskInfo.toString());
+    	logger.info("上传风控数据方法入口-----------------");
         if (riskInfo.getContacts() != null) {
             logger.info("联系人：" + riskInfo.getContacts());
         }
