@@ -1,6 +1,5 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.model.RiskInfo;
 import com.ivay.ivay_app.service.XUserContactsService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
@@ -9,6 +8,7 @@ import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_repository.dao.master.XUserAppNumDao;
 import com.ivay.ivay_repository.dao.master.XUserContactsDao;
 import com.ivay.ivay_repository.dao.master.XUserRiskDao;
+import com.ivay.ivay_repository.model.XRiskInfo;
 import com.ivay.ivay_repository.model.XUserAppNum;
 import com.ivay.ivay_repository.model.XUserContacts;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -31,7 +31,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     //前台还未传type
     @Override
-    public boolean saveAll(RiskInfo riskInfo) {
+    public boolean saveAll(XRiskInfo riskInfo) {
     	String type = riskInfo.getType();
         String gid = riskInfo.getUserGid();
         XUserInfo xUserInfo = new XUserInfo();

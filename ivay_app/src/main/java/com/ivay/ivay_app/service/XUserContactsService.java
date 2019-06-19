@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.model.RiskInfo;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.model.XRiskInfo;
 
 public interface XUserContactsService {
 
@@ -11,7 +11,7 @@ public interface XUserContactsService {
      * @param riskInfo
      * @return
      */
-    boolean saveAll(RiskInfo riskInfo);
+    boolean saveAll(XRiskInfo riskInfo);
 
     PageTableResponse getByGid(Integer limit, Integer num, String gid);
 }
