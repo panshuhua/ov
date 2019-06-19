@@ -11,7 +11,7 @@ public interface XEbayRepayAPIService {
 	
 	EbayVirtualAccountRsp cancelMapping(String mapId,String accountNo) throws Exception;
 	
-	EbayVirtualAccountRsp viewMappingStatus(EbayVirtualAccountReq ebayDataObjectReq) throws Exception;
+	EbayVirtualAccountRsp viewMappingStatus(String requestId) throws Exception;
 	
 	EbayVirtualAccountRsp BalanceFlucfluctuationNotice(EbayVirtualAccountReq ebayDataObjectReq) throws Exception;
 }

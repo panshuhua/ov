@@ -35,4 +35,10 @@ public class XEbayRepayAPITestController {
 		return rsp;
     }
     
+    @GetMapping("viewMappingStatus")
+    public EbayVirtualAccountRsp viewMappingStatus(String requestId) throws Exception {
+    	EbayVirtualAccountRsp rsp=xEbayRepayAPIService.viewMappingStatus(requestId);
+		return rsp;
+    }
+    
 }

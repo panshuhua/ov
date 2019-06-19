@@ -170,9 +170,23 @@ public class XEbayRepayAPIServiceImpl implements XEbayRepayAPIService{
 	}
 
 	@Override
-	public EbayVirtualAccountRsp viewMappingStatus(EbayVirtualAccountReq ebayDataObjectReq) {
+	public EbayVirtualAccountRsp viewMappingStatus(String requestId) throws Exception {
+		String pcode=SysVariable.API_PCODE_VIEW_MAPPIGSTATUS;
+		String merchant_code = merchantCode;
+		XEbayData dataObj=new XEbayData();
+		dataObj.setRequest_id(requestId);
 		
-		return null;
+		String data = JsonUtils.objectToJson(dataObj);
+		logger.info("加密前的请求参数："+data);
+		String encryptValue = TripleDESEncryption.encrypt(keyMahoa, data);
+		EbayVirtualAccountReq req = new EbayVirtualAccountReq();
+		
+		req.setPcode(pcode);
+		req.setMerchant_code(merchant_code);
+		req.setData(encryptValue);
+		
+		EbayVirtualAccountRsp rsp=callCollectionApi(req, dataObj);
+		return rsp;
 	}
 
 	@Override
@@ -234,10 +248,11 @@ public class XEbayRepayAPIServiceImpl implements XEbayRepayAPIService{
         		 //记录修改错误的信息
         		 xEbayVirtualAccountDao.sava(xEbayVirtualAccount);
         	 }
-        	
         	 
         }else if(SysVariable.API_PCODE_MAPPING_CANCELATION.equals(pcode)) {
-        	 xEbayVirtualAccountDao.delete(xEbayVirtualAccount);
+        	  xEbayVirtualAccountDao.delete(xEbayVirtualAccount);
+        }else if(SysVariable.API_PCODE_VIEW_MAPPIGSTATUS.equals(pcode)) {
+        	  xEbayVirtualAccountDao.sava(xEbayVirtualAccount);
         }
           
      }
