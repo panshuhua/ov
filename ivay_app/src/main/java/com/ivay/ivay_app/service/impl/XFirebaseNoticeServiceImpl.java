@@ -126,6 +126,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 				//发送手机短信
 				String mobile=userInfo.getPhone();
 				sendPhoneNotice(mobile, i18nService.getMessage("firebase.notice.repayment.msg"));
+				Thread.sleep(3000);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e.getMessage());
