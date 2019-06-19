@@ -1,10 +1,9 @@
 package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.TransfersRsp;
+import com.ivay.ivay_app.service.ThreadPoolService;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_common.config.I18nService;
-import com.ivay.ivay_common.utils.RedisUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -13,9 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("star/api")
@@ -100,37 +102,23 @@ public class XAPIController {
         }
     }
 
-    @Resource
-    private RedisUtils redisUtils;
+    @Autowired
+    private ThreadPoolService threadPoolService;
+
+    @Value("${update_credit_limit_url}")
+    private String update_credit_limit_url;
 
     @Autowired
-    private I18nService i18nService;
+    private RestTemplate restTemplate;
 
     @PostMapping("test")
     public boolean test() {
-        boolean flag = false;
-        int count = 0;
-        String start = "开始计算逾期费用---start";
-        while (!flag) {
-            if (count > 0) {
-                start = "正在进行第" + count + "次重试--start";
-            }
-            logger.info(start);
-            flag = xRecordLoanService.calcOverDueFee2();
-            logger.info("逾期费用计算结束---{}", flag ? "成功" : "失败");
-            if (!flag) {
-                if ((count++ > 5)) {
-                    flag = true;
-                    logger.error("逾期费用计算出错，请及时查看");
-                } else {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception ex) {
-                        logger.error("逾期费用计算暂停异常: {}", ex);
-                    }
-                }
-            }
-        }
-        return false;
+        // 还款提升授信額度
+        threadPoolService.execute(() -> {
+            Map<String, Object> params = new HashMap<>();
+            params.put("userGid", "11");
+            restTemplate.postForObject(update_credit_limit_url, null, Long.class, params);
+        });
+        return true;
     }
 }

@@ -44,6 +44,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
     @Autowired
     private ThreadPoolService threadPoolService;
+
     @Autowired
     private XUserInfoDao xUserInfoDao;
 
