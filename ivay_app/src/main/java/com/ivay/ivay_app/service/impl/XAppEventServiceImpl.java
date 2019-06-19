@@ -4,12 +4,14 @@ import com.ivay.ivay_app.service.XAppEventService;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XAppEventDao;
 import com.ivay.ivay_repository.model.XAppEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class XAppEventServiceImpl implements XAppEventService {
@@ -36,12 +38,15 @@ public class XAppEventServiceImpl implements XAppEventService {
     }
 
     @Override
-    public XAppEvent get(String gid) {
-        return xAppEventDao.getByGid(gid);
+    public List<XAppEvent> listToBeUpload(String userGid) {
+        return xAppEventDao.listToBeUpload(userGid);
     }
 
     @Override
-    public int delete(String gid) {
-        return xAppEventDao.delete(gid);
+    public int delete(String gids) {
+        if (StringUtils.isEmpty(gids)) {
+            return 0;
+        }
+        return xAppEventDao.delete(gids.split(","));
     }
 }

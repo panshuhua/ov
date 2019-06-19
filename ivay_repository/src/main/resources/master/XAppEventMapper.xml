@@ -70,4 +70,18 @@
         where t.id = #{id}
     </update>
 
+    <select id="listToBeUpload" resultType="com.ivay.ivay_repository.model.XAppEvent">
+        SELECT * FROM x_app_event
+        WHERE enable_flag="y" AND is_upload=0 AND (
+            gid =#{userGid} OR gid in ( SELECT order_id from x_record_loan x WHERE x.user_gid = #{userGid})
+        )
+    </select>
+    
+    <update id="delete">
+        update x_app_event set enable_flag = 'N',update_time=now(),is_upload='1' where gid in
+        <foreach collection="gids" separator="," open="(" close=")" item="gid">
+            #{gid}
+        </foreach>
+    </update>
+
 </mapper>
