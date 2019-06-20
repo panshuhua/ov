@@ -146,8 +146,6 @@ public interface XUserInfoDao {
      */
     Integer getUserCountsBygps(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude);
 
-    Integer updateGps(XUserInfo xUserInfo);
-
     /**
      * 查出待审核用户
      *
@@ -170,5 +168,5 @@ public interface XUserInfoDao {
     //查询到期还款的用户的fmc_token
     @Select("SELECT u.* FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE (r.due_time <= date_format(DATE_ADD(sysdate(), INTERVAL 2 DAY), '%Y%m%d') and r.due_time >= date_format(DATE_ADD(sysdate(), INTERVAL -1 DAY), '%Y%m%d')) AND u.id IS NOT NULL and r.repayment_status !=2 and r.loan_status=1")
     List<XUserInfo> findShouldRepaymentUsers();
-
+    
 }

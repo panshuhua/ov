@@ -285,14 +285,12 @@
         TIMESTAMPDIFF(YEAR,xui.birthday,now()) age,
         xui.identity_card,
         xui.mac_code,
-        xui.longitude,
-        xui.latitude,
         xuei.major_phone
         FROM x_user_info xui
         LEFT JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
         WHERE xui.user_gid=#{userGid}
     </select>
-
+    
     <select id="getMaxOverdueDay" parameterType="java.lang.String"
             resultType="java.lang.Integer">
         SELECT
@@ -359,25 +357,11 @@
 				) * 1000
 			) AS distance
 		FROM
-			x_user_info
+			x_user_risk
 		WHERE DATE_FORMAT(create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m') 
 		HAVING
 			distance <![CDATA[ <= ]]> 10
 		) as lessten
     </select>
-
-    <select id="updateGps">
-        update x_user_info set
-        <if test="longitude!=null and longitude!='' or longitude==0">
-            longitude=#{longitude},
-        </if>
-        <if test="latitude!=null and latitude!='' or latitude==0">
-            latitude=#{latitude},
-        </if>
-        <!--  <if test="appNum!=null and appNum!='' or appNum==0">
-         app_num=#{appNum},
-         </if> -->
-        update_time=#{updateTime}
-        where user_gid=#{userGid}
-    </select>
+    
 </mapper>

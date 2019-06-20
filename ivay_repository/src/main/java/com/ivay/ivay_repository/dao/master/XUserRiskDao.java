@@ -28,5 +28,9 @@ public interface XUserRiskDao {
     Integer updateGpsInfo(XUserRisk xUserRisk);
     
     Integer updateOthers(XUserRisk xUserRisk);
+    
+    //查询gps信息
+    @Select("select * from  x_user_risk where user_gid=#{userGid}")
+    XUserRisk getGps(String userGid);
 }
 

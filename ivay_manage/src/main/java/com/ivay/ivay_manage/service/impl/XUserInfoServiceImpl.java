@@ -194,6 +194,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     @Override
     public XLoanQualification getAuditQualificationObj(String userGid, int flag) {
         XLoanQualification xLoanQualification = xUserInfoDao.getAuditQualificationObj(userGid);
+        //获取经纬度
+        XUserRisk xUserRisk=xUserRiskDao.getGps(userGid);
         if (xLoanQualification == null) {
             throw new BusinessException("很抱歉，您的借款申请未通过审核");
         }
@@ -201,8 +203,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         xLoanQualification.setOneMajorPhoneNum(xUserInfoDao.countMajorPhone(xLoanQualification.getMajorPhone()));
         xLoanQualification.setOnePhoneNum(xUserInfoDao.countOnePhone(xLoanQualification.getMacCode()));
         // 根据经纬度计算10m之内的gps数量
-        if (xLoanQualification.getLongitude() != null && xLoanQualification.getLatitude() != null) {
-            Integer gpsNum = xUserInfoDao.getUserCountsBygps(xLoanQualification.getLongitude(), xLoanQualification.getLatitude());
+        if (xUserRisk.getLongitude() != null && xUserRisk.getLatitude() != null) {
+            Integer gpsNum = xUserInfoDao.getUserCountsBygps(xUserRisk.getLongitude(), xUserRisk.getLatitude());
             if (gpsNum == null) {
                 gpsNum = 0;
             }
@@ -284,7 +286,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
         StringBuilder sb = new StringBuilder();
-        for (Object key : config.keySet()) {
+         for (Object key : config.keySet()) {
             String[] values = config.get(key).toString().split("~");
             int min = Integer.parseInt(values[0]);
             int max = (values.length == 1) ? Integer.MAX_VALUE : Integer.parseInt(values[1]);
@@ -322,9 +324,20 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     break;
                 case "appNum":
                     //社交类app的个数不符
-                    if (xLoanQualification.getAppCount() <= min || xLoanQualification.getAppMaxCount() <= min) {
-                        sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
-                    }
+                	//贷前策略
+                	if(flag == 0) {
+                		if (xLoanQualification.getAppCount() <= min) {
+                            sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
+                        }
+                	}
+                	
+                	//贷中策略
+                	if(flag == 1) {
+                		if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
+                            sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
+                        }
+                	}
+                    
                     break;
                 case "overdueDay":
                     //历史最大逾期天数>=30天，拒贷

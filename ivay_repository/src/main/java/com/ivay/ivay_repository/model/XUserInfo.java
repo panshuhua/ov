@@ -76,15 +76,6 @@ public class XUserInfo {
     @ApiModelProperty("设备id")
     private String macCode;
 
-    @ApiModelProperty("经度")
-    private BigDecimal longitude;
-
-    @ApiModelProperty("纬度")
-    private BigDecimal latitude;
-
-    @ApiModelProperty("社交类app的个数")
-    private Integer appNum;
-
     @ApiModelProperty("app消息推送token")
     private String fmcToken;
 

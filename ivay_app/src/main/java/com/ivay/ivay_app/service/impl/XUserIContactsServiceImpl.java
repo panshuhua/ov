@@ -79,7 +79,6 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
        
         //社交类app的个数-每天都要记录
 //        if(SysVariable.APPNUM.equals(type)) {
-        	xUserInfo.setAppNum(riskInfo.getAppNum());
         	XUserAppNum xUserAppNum=new XUserAppNum();
         	xUserAppNum.setAppNum(riskInfo.getAppNum());
         	xUserAppNum.setUpdateDate(updateDate);
@@ -108,10 +107,6 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         
         //gps位置信息
 //        if(SysVariable.GPS.equals(type)) {
-        	//xUserInfo.setLongitude(riskInfo.getLongitude());
-            //xUserInfo.setLatitude(riskInfo.getLatitude());
-            //xUserInfoDao.updateGps(xUserInfo);
-        	
             logger.info("风控表中已有的数据个数："+userNum+"-------------------");
         	//经纬度信息移动到风控表
             if(!StringUtils.isEmpty(longitude) && !StringUtils.isEmpty(latitude)) {
@@ -129,7 +124,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 //        }
         
         //mac地址等其他信息
-            userNum = xUserRiskDao.findUser(gid);
+          userNum = xUserRiskDao.findUser(gid);
 //        if(SysVariable.OTHER.equals(type)) {
             if(!StringUtils.isEmpty(macAddress) || !StringUtils.isEmpty(phoneBrand) || !StringUtils.isEmpty(trafficWay)) {
             	if(userNum == 0 || userNum==null) {

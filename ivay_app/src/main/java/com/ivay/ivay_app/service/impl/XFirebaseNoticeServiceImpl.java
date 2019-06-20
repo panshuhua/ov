@@ -61,12 +61,14 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 		}
 		
 		//批量发送firebase推送消息
-		try {
-			FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens, i18nService.getMessage("firebase.notice.audit.titlemsg"), i18nService.getMessage("firebase.notice.audit.msg"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return false;
+		if(registrationTokens.size()>0) {
+			try {
+				FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens, i18nService.getMessage("firebase.notice.audit.titlemsg"), i18nService.getMessage("firebase.notice.audit.msg"));
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e.getMessage());
+				return false;
+			}
 		}
 		
 		logger.info("审核通知成功发送！");
@@ -97,16 +99,16 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 			
 		}
 		
-		
-		try {
-			FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens, i18nService.getMessage("firebase.notice.loan.titlemsg"), i18nService.getMessage("firebase.notice.loan.msg"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return false;
+		if(registrationTokens.size()>0) {
+			try {
+				FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens, i18nService.getMessage("firebase.notice.loan.titlemsg"), i18nService.getMessage("firebase.notice.loan.msg"));
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e.getMessage());
+				return false;
+			}
 		}
-		
-		
+
 		logger.info("借款成功的通知成功发送！");
 		return true;
 		
@@ -116,6 +118,8 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 	public boolean sendRepaymentNotice(){
 		List<XUserInfo> xUserInfos=xUserInfoDao.findShouldRepaymentUsers();
 		List<String> registrationTokens=new ArrayList<String>();
+		logger.info("逾期还款提醒总共需要发送的总条数："+xUserInfos.size()+"-----------------------");
+		int i=0;
 		for(XUserInfo userInfo:xUserInfos) {
 			try {
 				String fmcToken=userInfo.getFmcToken();
@@ -123,10 +127,12 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 					//FirebaseUtil.sendMsgToFmcToken(fmcToken, i18nService.getMessage("firebase.notice.repayment.msg"));
 					registrationTokens.add(fmcToken);
 				}
+				i++;
+				logger.info("正在发送第"+i+"条短信----------------");
 				//发送手机短信
 				String mobile=userInfo.getPhone();
 				sendPhoneNotice(mobile, i18nService.getMessage("firebase.notice.repayment.msg"));
-				Thread.sleep(3000);
+				Thread.sleep(10000);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e.getMessage());
@@ -134,13 +140,20 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
 			}
 		}
 		
-		try {
-			FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens, i18nService.getMessage("firebase.notice.repayment.titlemsg"), i18nService.getMessage("firebase.notice.repayment.msg"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return false;
+		logger.info("短信已发送完毕，总共成功发送"+i+"条");
+		
+		logger.info("批量发送firebase还款通知开始-------------");
+		if(registrationTokens.size()>0) {
+			try {
+				FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens, i18nService.getMessage("firebase.notice.repayment.titlemsg"), i18nService.getMessage("firebase.notice.repayment.msg"));
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e.getMessage());
+				return false;
+			}
 		}
+		logger.info("批量发送firebase还款通知结束-------------");
+		
 		logger.info("还款到期的通知成功发送！");
 		return true;
 	}
@@ -165,7 +178,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
                     logger.info("发送的短信id：" + messageid);
                     logger.info("SMG成功发送的内容是：" + msg);
                 }
-
+                return;
                 //使用方法二发送短信验证码
             } else if ("2".equals(value)) {
                 ApiBulkReturn re = xRegisterService.sendMsgByVMG(mobile, msg);
@@ -174,11 +187,14 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService{
                 if ("0".equals(errorCode)) {
                     logger.info("VMG发送的短信是：" + msg);
                 }
+                return;
 
                 //不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if ("0".equals(value)) {
                 logger.info("发送的短信是：" + msg);
+                return;
             }
+            
         }
 
 
