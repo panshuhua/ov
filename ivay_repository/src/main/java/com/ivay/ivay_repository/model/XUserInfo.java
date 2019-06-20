@@ -97,7 +97,7 @@ public class XUserInfo {
     @ApiModelProperty("审核时间")
     private Date auditTime;
 
-    private long id;
+    private Long id;
     private Date createTime;
     private Date updateTime;
     private String enableFlag;

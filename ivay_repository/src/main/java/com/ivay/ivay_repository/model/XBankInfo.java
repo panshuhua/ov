@@ -24,7 +24,7 @@ public class XBankInfo {
 	@ApiModelProperty("是否卡")
 	private String isCard;
 
-	private long id;
+	private Long id;
 	private Date createTime;
 	private Date updateTime;
 	private String enableFlag;

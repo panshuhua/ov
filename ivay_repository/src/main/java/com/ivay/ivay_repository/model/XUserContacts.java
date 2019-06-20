@@ -23,7 +23,7 @@ public class XUserContacts {
     @ApiModelProperty("电话号码")
     private String phoneNumber;
 
-    private long id;
+    private Long id;
 
     public XUserContacts(String userGid, String updateDate,String contactName, String phoneNumber) {
         this.userGid = userGid;
