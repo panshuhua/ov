@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -77,7 +78,13 @@ public class XUserInfo {
 
     @ApiModelProperty("app消息推送token")
     private String fmcToken;
-
+    
+    @ApiModelProperty("经度")
+    private String longitude;
+    
+    @ApiModelProperty("纬度")
+    private String latitude;
+    
     @ApiModelProperty("审核拒绝原因")
     private String refuseReason;
 
@@ -87,7 +94,7 @@ public class XUserInfo {
     @ApiModelProperty("审核时间")
     private Date auditTime;
 
-    private Long id;
+    private long id;
     private Date createTime;
     private Date updateTime;
     private String enableFlag;

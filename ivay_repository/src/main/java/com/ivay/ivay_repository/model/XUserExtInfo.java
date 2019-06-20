@@ -39,7 +39,7 @@ public class XUserExtInfo {
     @ApiModelProperty("手持照")
     private String photo3Url;
 
-    private Long id;
+    private long id;
     private Date createTime;
     private Date updateTime;
     private String enableFlag;

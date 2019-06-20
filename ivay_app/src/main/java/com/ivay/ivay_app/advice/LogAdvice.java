@@ -109,8 +109,10 @@ public class LogAdvice {
                 String code = status.getCode();
                 String message = status.getMessage();
                 sysLogs.setCode(code);
-                
-                if(!"200".equals(code)){
+                if("200".equals(code)){
+                	 sysLogs.setFlag(true);
+                	 sysLogs.setRemark("操作成功！");
+                }else{
                 	 sysLogs.setFlag(false);
                 	 sysLogs.setRemark("操作失败，详细信息为："+message);
                 }
@@ -120,11 +122,13 @@ public class LogAdvice {
             	String code=rsp.getResponseCode();
             	String message=rsp.getResponseMessage();
             	sysLogs.setCode(code);
-            	
-            	if(!"200".equals(code)){
-               	   sysLogs.setFlag(false);
-               	   sysLogs.setRemark("操作失败，详细信息为："+message);
-                }
+            	if("200".equals(code)){
+            		sysLogs.setFlag(true);
+               	    sysLogs.setRemark("操作成功！");
+            	}else{
+            		sysLogs.setFlag(false);
+               	    sysLogs.setRemark("操作失败，详细信息为："+message);
+            	}
             	
             }
            

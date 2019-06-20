@@ -79,7 +79,7 @@ public class XRecordLoan {
     @ApiModelProperty("借款备注")
     private String memo;
 
-    private Long id;
+    private long id;
     private Date createTime;
     private Date updateTime;
 }

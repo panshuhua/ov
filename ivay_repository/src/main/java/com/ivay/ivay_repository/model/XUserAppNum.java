@@ -8,6 +8,6 @@ public class XUserAppNum {
    private Integer appNum;
    private String updateDate;
    
-   private Long id;
+   private long id;
    private String enableFlag;
 }

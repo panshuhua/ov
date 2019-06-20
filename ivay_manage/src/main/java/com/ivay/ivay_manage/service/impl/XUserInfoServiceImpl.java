@@ -177,7 +177,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                 xLoanRateService.initLoanRateAndCreditLimit(userGid);
                 return 1;
             } else {
-                logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}.", userGid, xUserInfo.getRefuseReason());
+                logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}.", userGid, refuseDemo);
                 if (SysVariable.AUDIT_PASS == flag && SysVariable.AUDIT_REFUSE_TYPE_MANUAL.equals(type)) {
                     // 人工审核通过，但授信失败需要抛出异常给前端
                     throw new BusinessException("很抱歉，该用户的授信信息未通过审核");

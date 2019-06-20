@@ -19,7 +19,7 @@ public class XLoanRate {
     @ApiModelProperty(value = "借款周期", name = "period")
     private Integer period;
 
-    private Long id;
+    private long id;
     private Date createTime;
     private Date updateTime;
     private String enableFlag;

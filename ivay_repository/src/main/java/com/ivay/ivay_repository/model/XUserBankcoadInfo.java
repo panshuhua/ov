@@ -31,7 +31,7 @@ public class XUserBankcoadInfo {
 	
 	private String status;
 
-	private Long id;
+	private long id;
 	private Date createTime;
 	private Date updateTime;
 	private String enableFlag;
