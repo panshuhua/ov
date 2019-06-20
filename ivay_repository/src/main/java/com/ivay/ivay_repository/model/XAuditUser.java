@@ -14,7 +14,7 @@ public class XAuditUser {
     @ApiModelProperty("待审计用户gid")
     private String userGid;
 
-    private long id;
+    private Long id;
     private Date createTime;
     private Date updateTime;
     private String enableFlag;

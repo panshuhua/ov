@@ -44,7 +44,7 @@
                                             <option value="2">Đang chờ xét duyệt</option>
                                             <option value="3">Xét duyệt thông qua</option>
                                             <option value="7">Xét duyệt không thông qua</option>
-                                            <option value="8">驳回重新提交</option>
+                                            <option value="8">Từ chối và điền lạ</option>
                                         </select>
                                         <button id="searchBtn" class="layui-btn layui-btn-sm">
                                             <i class="layui-icon">&#xe615;</i>Tìm kiếm
@@ -291,7 +291,7 @@
                     "render": function (data, type, row) {
                         var gid = row['userGid'];
                         var status = row['auditStatus'];
-                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\",' + '\"' + status + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
+                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\",' + '\"' + status + '\"' + ")' >Chi tiết<i class='fa fa-edit'></i></button>&nbsp;";
                         if (hasAuditAdminRight(LOGIN_ROLE)) {
                             operation += "<button class='btn btn-success' type='button' onclick='assignUser(" + '\"' + gid + '\"' + ")' >指派给<i class='fa fa-edit'></i></button>&nbsp;";
                         }

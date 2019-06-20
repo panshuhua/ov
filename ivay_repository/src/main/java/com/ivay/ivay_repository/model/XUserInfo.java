@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -88,7 +87,7 @@ public class XUserInfo {
     @ApiModelProperty("审核时间")
     private Date auditTime;
 
-    private long id;
+    private Long id;
     private Date createTime;
     private Date updateTime;
     private String enableFlag;

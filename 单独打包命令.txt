@@ -1,2 +1,4 @@
+mvn clean package
+
 mvn clean package -pl ivay_app -am
 mvn clean package -pl ivay_manage -am
