@@ -195,7 +195,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     public XLoanQualification getAuditQualificationObj(String userGid, int flag) {
         XLoanQualification xLoanQualification = xUserInfoDao.getAuditQualificationObj(userGid);
         //获取经纬度
-        XUserRisk xUserRisk=xUserRiskDao.getGps(userGid);
+        XUserRisk xUserRisk = xUserRiskDao.getGps(userGid);
         if (xLoanQualification == null) {
             throw new BusinessException("很抱歉，您的借款申请未通过审核");
         }
@@ -286,7 +286,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
         StringBuilder sb = new StringBuilder();
-         for (Object key : config.keySet()) {
+        for (Object key : config.keySet()) {
             String[] values = config.get(key).toString().split("~");
             int min = Integer.parseInt(values[0]);
             int max = (values.length == 1) ? Integer.MAX_VALUE : Integer.parseInt(values[1]);
@@ -324,20 +324,20 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     break;
                 case "appNum":
                     //社交类app的个数不符
-                	//贷前策略
-                	if(flag == 0) {
-                		if (xLoanQualification.getAppCount() <= min) {
+                    //贷前策略
+                    if (flag == 0) {
+                        if (xLoanQualification.getAppCount() <= min) {
                             sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
                         }
-                	}
-                	
-                	//贷中策略
-                	if(flag == 1) {
-                		if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
+                    }
+
+                    //贷中策略
+                    if (flag == 1) {
+                        if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
                             sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
                         }
-                	}
-                    
+                    }
+
                     break;
                 case "overdueDay":
                     //历史最大逾期天数>=30天，拒贷
@@ -388,11 +388,11 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         // endregion
 
-        // 滞纳金配置
+        // 用户管理配置
         boolean autoAuditFlag = false;
-        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_AUTO_AUDIT));
-        if (config != null) {
-            autoAuditFlag = (Boolean) config.get("whiteUser");
+        Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
+        if (userManageConfig != null) {
+            autoAuditFlag = (Boolean) userManageConfig.get("whiteUser");
             logger.info("白名单启用自动审核：{}", autoAuditFlag);
         }
 
