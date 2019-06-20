@@ -137,9 +137,4 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     public PageTableResponse listUser(PageTableRequest request) {
         return xUserInfoService.auditList(request);
     }
-
-    public static void main(String[] args){
-        Long id = new Long(4+8);
-        System.out.println(id==12);
-    }
 }

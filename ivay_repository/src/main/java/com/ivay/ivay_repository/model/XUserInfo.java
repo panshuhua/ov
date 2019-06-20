@@ -85,6 +85,9 @@ public class XUserInfo {
     @ApiModelProperty("纬度")
     private String latitude;
     
+    @ApiModelProperty("社交类app的个数")
+    private String appNum;
+    
     @ApiModelProperty("审核拒绝原因")
     private String refuseReason;
 

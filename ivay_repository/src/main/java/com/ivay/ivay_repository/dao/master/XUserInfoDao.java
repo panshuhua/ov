@@ -21,9 +21,9 @@ public interface XUserInfoDao {
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code," +
-            "longitude,latitude,update_time,fmc_token,refuse_reason,refuse_type,audit_time)" +
+            " update_time,fmc_token,refuse_reason,refuse_type,audit_time)" +
             " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode}," +
-            "#{longitude},#{latitude},#{updateTime},#{fmcToken},#{refuseReason},#{refuseType},#{auditTime})")
+            " #{updateTime},#{fmcToken},#{refuseReason},#{refuseType},#{auditTime})")
     int addUser(XUserInfo xUserInfo);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
