@@ -141,3 +141,24 @@ CREATE TABLE `x_ebay_virtual_account` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
+--新增 ebay还款回调接口信息表
+CREATE TABLE `x_ebay_collection_notice` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `request_id` varchar(50) DEFAULT NULL,
+  `request_time` varchar(20) DEFAULT NULL,
+  `bank_tran_time` varchar(20) DEFAULT NULL,
+  `reference_id` varchar(50) DEFAULT NULL,
+  `map_id` varchar(50) DEFAULT NULL,
+  `amount` decimal(15,0) DEFAULT NULL,
+  `merchant_code` varchar(50) DEFAULT NULL,
+  `fee` decimal(15,0) DEFAULT NULL,
+  `va_name` varchar(100) DEFAULT NULL,
+  `va_acc` varchar(50) DEFAULT NULL,
+  `bank_code` varchar(50) DEFAULT NULL,
+  `bank_name` varchar(1024) DEFAULT NULL,
+  `enable_flag` char(1) DEFAULT 'Y',
+  `create_time` timestamp NULL DEFAULT NULL,
+  `update_time` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+
