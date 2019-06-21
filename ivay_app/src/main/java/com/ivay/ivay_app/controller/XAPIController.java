@@ -2,9 +2,7 @@ package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
-import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -16,8 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -107,20 +106,17 @@ public class XAPIController {
     private String riskControlUrl;
 
     @Autowired
-    private XConfigService xConfigService;
+    private RestTemplate restTemplate;
 
     @PostMapping("test")
     public boolean test() {
-        // 用户管理配置
-        boolean autoAuditFlag = false;
-        Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
-        if (userManageConfig != null) {
-            autoAuditFlag = (Boolean) userManageConfig.get("whiteUser");
-            System.out.println("白名单启用自动审核：" + autoAuditFlag);
-
-            Map config = (LinkedHashMap) userManageConfig.get("normalUser");
-            System.out.println((Boolean)config.get("audit"));
-            System.out.println((Boolean)config.get("loan"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("userGid", "11");
+        params.put("flag", SysVariable.RISK_TYPE_LOAN);
+        try {
+            String ret = restTemplate.getForObject(riskControlUrl, String.class, params);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return true;
     }

@@ -20,5 +20,5 @@ public class XConfig {
     @ApiModelProperty("描述")
     private String description;
 
-    private Long id;
+    private long id;
 }

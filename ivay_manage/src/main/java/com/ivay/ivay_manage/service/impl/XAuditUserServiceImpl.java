@@ -49,13 +49,6 @@ public class XAuditUserServiceImpl implements XAuditUserService {
         return xAuditUserDao.deleteUser(ids.split(","));
     }
 
-    /**
-     * 为某个用户分配一个审计员,不设置审计员则随机分配
-     *
-     * @param auditId
-     * @param userGid
-     * @return
-     */
     @Override
     public XAuditUser assignAuditForUser(String auditId, String userGid) {
         // 查出所有的审计员
@@ -81,7 +74,7 @@ public class XAuditUserServiceImpl implements XAuditUserService {
         }
         xAuditUser.setSysUserId(auditId);
         xAuditUser.setUpdateTime(now);
-        if (xAuditUser.getId() == null) {
+        if (xAuditUser.getId() == 0) {
             xAuditUserDao.save(xAuditUser);
         } else {
             xAuditUserDao.update(xAuditUser);

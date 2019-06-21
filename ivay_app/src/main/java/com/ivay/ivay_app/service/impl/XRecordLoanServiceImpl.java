@@ -198,6 +198,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 ret = restTemplate.getForObject(riskControlUrl, String.class, params);
             } catch (Exception ex) {
                 ret = "借款资格接口调用异常";
+
             }
             if (StringUtils.isEmpty(ret)) {
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());

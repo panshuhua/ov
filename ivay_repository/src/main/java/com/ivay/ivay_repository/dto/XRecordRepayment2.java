@@ -38,7 +38,7 @@ public class XRecordRepayment2 {
 
     private long repaymentOverdueFee;
 
-    private Long id;
+    private long id;
     private Date createTime;
     private Date updateTime;
 }
