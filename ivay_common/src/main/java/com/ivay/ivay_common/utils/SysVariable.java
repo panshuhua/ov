@@ -89,8 +89,8 @@ public class SysVariable {
     public static final String TEMPLATE_AUDIT_STATUS = "auditStatus";
     // 配置模板: 提額配置
     public static final String TEMPLATE_CREDIT_RISK = "riskManage";
-    // 配置模板: 用户管理配置
-    public static final String TEMPLATE_USER_MANAGE = "userManage";
+    // 配置模板: 自动审核配置
+    public static final String TEMPLATE_AUTO_AUDIT = "autoAudit";
 
     // 接口对接
     public static final String API_ACC_TYPE_0 = "0";
@@ -146,9 +146,9 @@ public class SysVariable {
     // app事件是否上传
     public static final String APP_EVENT_AUDIT = "0";
     public static final String APP_EVENT_LOAN = "1";
-    public static final String APP_EVENT_SUCCESS = "1";
+    public static final String APP_EVENT_SUCCESS = "0";
     public static final String APP_EVENT_FAIL = "0";
-
+    
     //上传风控数据的类型
     public static final String CONTACT = "contact"; //通讯录联系人
     public static final String APPNUM = "appNum";   //社交类app的个数

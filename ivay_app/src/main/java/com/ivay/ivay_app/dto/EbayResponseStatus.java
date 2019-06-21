@@ -35,6 +35,14 @@ public enum EbayResponseStatus {
 	 REQUESTTIME_INVALID("403", "The RequestTime is invalid"),
 	 PARTNERCODE_REQUIRED("404", "The PartnerCode is required"),
 	 DATAREQUEST_NULL("405", "All data request null"),
+	 NOTICE_SUCCESS("200","Push notify successful to Merchant"),
+	 NOTICE_TIMEOUT("99","Timeout"),
+	 NOTICE_FAIL("11","Fail"),
+	 NOTICE_DUPLICATE_REFERENCEID("102","Merchant accepted Notification befor"),
+	 NOTICE_SIGNATURE_WRONG("103","Signature wrong"),
+	 NOTICE_PARTNERCODE_WRONG("110","PartnerCode wrong"),
+	 NOTICE_MISSING_FIELD("124","The required field is not entered, any missing field will be specified in Message"),
+	 NOTICE_AMOUNT_WRONG("125","Amount wrong"),
 	 ;
 	 
 	 EbayResponseStatus(String code, String message) {
