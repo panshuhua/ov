@@ -38,7 +38,6 @@
             <if test="params.enableFlag != null and params.enableFlag != ''">
                 and enable_flag = #{params.enableFlag}
             </if>
-
         </where>
     </sql>
 
@@ -91,13 +90,18 @@
             <if test="enableFlag != null">
                 enable_flag = #{enableFlag},
             </if>
-
         </set>
-
         where t.bankcard_gid = #{bankcardGid}
     </update>
 
-    <select id="getBankAndCardByGid" resultType="com.ivay.ivay_repository.model.XBankAndCardInfo">
+    <select id="getByUserGid" resultType="com.ivay.ivay_repository.dto.XUserCardAndBankInfo">
+		SELECT xbi.bank_no,xbi.bank_name,xubi.*
+		from x_user_bankcoad_info xubi
+		LEFT JOIN x_bank_info xbi ON xubi.bank_gid=xbi.bank_gid
+		WHERE xubi.user_gid=#{userGid} and xubi.enable_flag = 'Y'
+	</select>
+
+    <select id="getCardAndBankByGid" resultType="com.ivay.ivay_repository.dto.XUserCardAndBankInfo">
 		SELECT xbi.bank_no,xbi.bank_name,xubi.*
 		from x_user_bankcoad_info xubi
 		LEFT JOIN x_bank_info xbi ON xubi.bank_gid=xbi.bank_gid

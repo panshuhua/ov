@@ -13,7 +13,11 @@ import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.model.*;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
+import com.ivay.ivay_repository.model.XAppEvent;
+import com.ivay.ivay_repository.model.XLoanRate;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XUserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +128,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 }
             }
 
-            XBankAndCardInfo card = xUserBankcardInfoDao.getBankAndCardByGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid());
+            XUserCardAndBankInfo card = xUserBankcardInfoDao.getCardAndBankByGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid());
             // 校验银行卡
             if (card == null) {
                 throw new BusinessException(i18nService.getMessage("response.error.card.lack.code"),

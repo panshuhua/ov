@@ -156,8 +156,6 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         // endregion
 
-        // endregion
-
         // region -- 更新审核结果
         if (xUserInfoDao.update(xUserInfo) == 1) {
             // 更新授信结果上报事件

@@ -73,8 +73,9 @@
 		where t1.user_gid = #{params.userGid}
 	</select>
 
-	<select id="listBank" resultType="com.ivay.ivay_repository.model.XUserBankcoadInfo">
-		select t2.bank_no,t2.bank_name,t1.card_no,t1.create_time from x_user_bankcoad_info t1 LEFT JOIN x_bank_info t2 on t1.bank_gid=t2.bank_gid
+	<select id="listBank" resultType="com.ivay.ivay_repository.dto.XUserCardAndBankInfo">
+		select t2.bank_no,t2.bank_name,t1.card_no,t1.create_time from x_user_bankcoad_info t1
+		LEFT JOIN x_bank_info t2 on t1.bank_gid=t2.bank_gid
 		where t1.user_gid = #{params.userGid} 
 		limit #{offset}, #{limit}
 	</select>

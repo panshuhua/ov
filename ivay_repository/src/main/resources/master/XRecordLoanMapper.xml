@@ -4,99 +4,115 @@
 <mapper namespace="com.ivay.ivay_repository.dao.master.XRecordLoanDao">
 
     <sql id="list_condition">
-        <where>
-            <if test="params.id != null and params.id != ''">
-                and id = #{params.id}
-            </if>
-            <if test="params.gid != null and params.gid != ''">
-                and gid = #{params.gid}
-            </if>
-            <if test="params.bankcardGid != null and params.bankcardGid != ''">
-                and bankcard_gid = #{params.bankcardGid}
-            </if>
-            <if test="params.orderId != null and params.orderId != ''">
-                and order_id = #{params.orderId}
-            </if>
-            <if test="params.userGid != null and params.userGid != ''">
-                and user_gid = #{params.userGid}
-            </if>
-            <if test="params.createTime != null and params.createTime != ''">
-                and create_time = #{params.createTime}
-            </if>
-            <if test="params.updateTime != null and params.updateTime != ''">
-                and update_time = #{params.updateTime}
-            </if>
-            <if test="params.productId != null and params.productId != ''">
-                and product_id = #{params.productId}
-            </if>
-            <if test="params.loanPeriod != null and params.loanPeriod != ''">
-                and loan_period = #{params.loanPeriod}
-            </if>
-            <if test="params.loanTime != null and params.loanTime != ''">
-                and loan_time = #{params.loanTime}
-            </if>
-            <if test="params.loanAmount != null and params.loanAmount != ''">
-                and loan_amount = #{params.loanAmount}
-            </if>
-            <if test="params.loanRate != null and params.loanRate != ''">
-                and loan_rate = #{params.loanRate}
-            </if>
-            <if test="params.fee != null and params.fee != ''">
-                and fee = #{params.fee}
-            </if>
-            <if test="params.interest != null and params.interest != ''">
-                and interest = #{params.interest}
-            </if>
-            <if test="params.netAmount != null and params.netAmount != ''">
-                and net_amount = #{params.netAmount}
-            </if>
-            <if test="params.overdueFee != null and params.overdueFee != ''">
-                and overdue_fee = #{params.overdueFee}
-            </if>
-            <if test="params.overdueInterest != null and params.overdueInterest != ''">
-                and overdue_interest = #{params.overdueInterest}
-            </if>
-            <if test="params.overdueFeeTotal != null and params.overdueFeeTotal != ''">
-                and overdue_fee_total = #{params.overdueFeeTotal}
-            </if>
-            <if test="params.overdueInterestTotal != null and params.overdueInterestTotal != ''">
-                and overdue_interest_total = #{params.overdueInterestTotal}
-            </if>
-            <if test="params.loanStatus != null and params.loanStatus != ''">
-                and loan_status = #{params.loanStatus}
-            </if>
-            <if test="params.failReason != null and params.failReason != ''">
-                and fail_reason = #{params.failReason}
-            </if>
-            <if test="params.dueTime != null and params.dueTime != ''">
-                and due_time = #{params.dueTime}
-            </if>
-            <if test="params.dueAmount != null and params.dueAmount != ''">
-                and due_amount = #{params.dueAmount}
-            </if>
-            <if test="params.lastRepaymentTime != null and params.lastRepaymentTime != ''">
-                and last_repayment_time = #{params.lastRepaymentTime}
-            </if>
-            <if test="params.repaymentStatus != null and params.repaymentStatus != ''">
-                and repayment_status = #{params.repaymentStatus}
-            </if>
-            <if test="params.memo != null and params.memo != ''">
-                and memo = #{params.memo}
-            </if>
-        </where>
+        <if test="params.id != null and params.id != ''">
+            and id = #{params.id}
+        </if>
+        <if test="params.gid != null and params.gid != ''">
+            and gid = #{params.gid}
+        </if>
+        <if test="params.bankcardGid != null and params.bankcardGid != ''">
+            and bankcard_gid = #{params.bankcardGid}
+        </if>
+        <if test="params.orderId != null and params.orderId != ''">
+            and order_id = #{params.orderId}
+        </if>
+        <if test="params.userGid != null and params.userGid != ''">
+            and user_gid = #{params.userGid}
+        </if>
+        <if test="params.createTime != null and params.createTime != ''">
+            and create_time = #{params.createTime}
+        </if>
+        <if test="params.updateTime != null and params.updateTime != ''">
+            and update_time = #{params.updateTime}
+        </if>
+        <if test="params.productId != null and params.productId != ''">
+            and product_id = #{params.productId}
+        </if>
+        <if test="params.loanPeriod != null and params.loanPeriod != ''">
+            and loan_period = #{params.loanPeriod}
+        </if>
+        <if test="params.loanTime != null and params.loanTime != ''">
+            and loan_time = #{params.loanTime}
+        </if>
+        <if test="params.loanAmount != null and params.loanAmount != ''">
+            and loan_amount = #{params.loanAmount}
+        </if>
+        <if test="params.loanRate != null and params.loanRate != ''">
+            and loan_rate = #{params.loanRate}
+        </if>
+        <if test="params.fee != null and params.fee != ''">
+            and fee = #{params.fee}
+        </if>
+        <if test="params.interest != null and params.interest != ''">
+            and interest = #{params.interest}
+        </if>
+        <if test="params.netAmount != null and params.netAmount != ''">
+            and net_amount = #{params.netAmount}
+        </if>
+        <if test="params.overdueFee != null and params.overdueFee != ''">
+            and overdue_fee = #{params.overdueFee}
+        </if>
+        <if test="params.overdueInterest != null and params.overdueInterest != ''">
+            and overdue_interest = #{params.overdueInterest}
+        </if>
+        <if test="params.overdueFeeTotal != null and params.overdueFeeTotal != ''">
+            and overdue_fee_total = #{params.overdueFeeTotal}
+        </if>
+        <if test="params.overdueInterestTotal != null and params.overdueInterestTotal != ''">
+            and overdue_interest_total = #{params.overdueInterestTotal}
+        </if>
+        <if test="params.loanStatus != null and params.loanStatus != ''">
+            and loan_status = #{params.loanStatus}
+        </if>
+        <if test="params.failReason != null and params.failReason != ''">
+            and fail_reason = #{params.failReason}
+        </if>
+        <if test="params.dueTime != null and params.dueTime != ''">
+            and due_time = #{params.dueTime}
+        </if>
+        <if test="params.dueAmount != null and params.dueAmount != ''">
+            and due_amount = #{params.dueAmount}
+        </if>
+        <if test="params.lastRepaymentTime != null and params.lastRepaymentTime != ''">
+            and last_repayment_time = #{params.lastRepaymentTime}
+        </if>
+        <if test="params.repaymentStatus != null and params.repaymentStatus != ''">
+            and repayment_status = #{params.repaymentStatus}
+        </if>
+        <if test="params.memo != null and params.memo != ''">
+            and memo = #{params.memo}
+        </if>
     </sql>
 
     <select id="count" resultType="int">
         select count(1) from x_record_loan t
-        <include refid="list_condition"/>
+        <where>
+            <include refid="list_condition"/>
+        </where>
     </select>
 
     <select id="list" resultType="com.ivay.ivay_repository.model.XRecordLoan">
-        select * from x_record_loan t
-        <include refid="list_condition"/>
-        <if test="params.orderBy != null and params.orderBy != ''">
-            order by ${params.orderBy} desc
-        </if>
+        SELECT * FROM (
+            (
+                select * from x_record_loan t
+                WHERE user_gid = "0149d9cc341e408cba6b3478a254504f"
+                AND loan_status=1 AND repayment_status!=2
+                <include refid="list_condition"/>
+                <if test="params.orderBy != null and params.orderBy != ''">
+                    order by ${params.orderBy} desc
+                </if>
+            )
+            UNION ALL
+            (
+                select * from x_record_loan t
+                WHERE user_gid = "0149d9cc341e408cba6b3478a254504f"
+                AND( ( loan_status=1 AND repayment_status=2) OR LOAn_status!=1 )
+                <include refid="list_condition"/>
+                <if test="params.orderBy != null and params.orderBy != ''">
+                    order by ${params.orderBy} desc
+                </if>
+            )
+        ) t
         <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
         </if>

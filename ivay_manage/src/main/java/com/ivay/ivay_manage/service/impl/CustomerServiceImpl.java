@@ -6,7 +6,11 @@ import com.ivay.ivay_manage.service.CustomerService;
 import com.ivay.ivay_repository.dao.master.CustomerDao;
 import com.ivay.ivay_repository.dto.XRecordLoan2;
 import com.ivay.ivay_repository.dto.XRecordRepayment2;
-import com.ivay.ivay_repository.model.*;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
+import com.ivay.ivay_repository.model.XConfig;
+import com.ivay.ivay_repository.model.XFileInfo;
+import com.ivay.ivay_repository.model.XUserExtInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -170,11 +174,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public List<XUserBankcoadInfo> listBank(Map<String, Object> params,
-                                            Integer offset,
-                                            Integer limit) {
+    public List<XUserCardAndBankInfo> listBank(Map<String, Object> params,
+                                               Integer offset,
+                                               Integer limit) {
         return customerDao.listBank(params, offset, limit);
     }
-
-
 }

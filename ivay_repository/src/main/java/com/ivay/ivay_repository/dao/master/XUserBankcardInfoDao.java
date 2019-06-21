@@ -1,6 +1,6 @@
 package com.ivay.ivay_repository.dao.master;
 
-import com.ivay.ivay_repository.model.XBankAndCardInfo;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.XUserBankcardInfo;
 import org.apache.ibatis.annotations.*;
 
@@ -12,18 +12,6 @@ public interface XUserBankcardInfoDao {
 
     @Select("select * from x_user_bankcoad_info t where t.id = #{id} and enable_flag='Y' ")
     XUserBankcardInfo getById(Long id);
-
-    @Select("select * from x_user_bankcoad_info t where t.user_gid = #{userGid} and enable_flag='Y' ")
-    List<XUserBankcardInfo> getByUserGid(String userGid);
-
-    @Select("select * from x_user_bankcoad_info t where t.card_no = #{cardNo} and enable_flag='Y' ")
-    List<XUserBankcardInfo> getByCardNo(String cardNo);
-
-    XBankAndCardInfo getBankAndCardByGid(@Param("bankcardGid") String bankcardGid,
-                                         @Param("userGid") String userGid);
-
-    @Select("select bankcard_gid, bank_gid, user_gid, card_user_name, card_no, status from x_user_bankcoad_info t where t.bankcard_gid = #{bankcardGid} and user_gid = #{userGid} and enable_flag='Y' ")
-    List<XUserBankcardInfo> getByCardGid(@Param("bankcardGid") String bankcardGid, @Param("userGid") String userGid);
 
     @Delete("delete from x_user_bankcoad_info where bankcard_gid = #{bankcardGid} and user_gid = #{userGid} and enable_flag='Y' ")
     int delete(@Param("bankcardGid") String bankcardGid, @Param("userGid") String userGid);
@@ -40,5 +28,33 @@ public interface XUserBankcardInfoDao {
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<XUserBankcardInfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XUserBankcardInfo> list(@Param("params") Map<String, Object> params,
+                                 @Param("offset") Integer offset,
+                                 @Param("limit") Integer limit);
+
+    /**
+     * 查询某用户的所有银行卡及银行信息
+     *
+     * @param userGid
+     * @return
+     */
+    List<XUserCardAndBankInfo> getByUserGid(String userGid);
+
+    @Select("select * from x_user_bankcoad_info t where t.card_no = #{cardNo} and enable_flag='Y' ")
+    List<XUserBankcardInfo> getByCardNo(String cardNo);
+
+    /**
+     * 获取某用户的某张银行卡信息
+     *
+     * @param bankcardGid
+     * @param userGid
+     * @return
+     */
+    XUserCardAndBankInfo getCardAndBankByGid(@Param("bankcardGid") String bankcardGid,
+                                             @Param("userGid") String userGid);
+
+    @Select("select bankcard_gid, bank_gid, user_gid, card_user_name, card_no, status from x_user_bankcoad_info t " +
+            "where t.bankcard_gid = #{bankcardGid} and user_gid = #{userGid} and enable_flag='Y' ")
+    List<XUserBankcardInfo> getByCardGid(@Param("bankcardGid") String bankcardGid, @Param("userGid") String userGid);
+
 }

@@ -2,6 +2,7 @@ package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.dto.XRecordLoan2;
 import com.ivay.ivay_repository.dto.XRecordRepayment2;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -38,8 +39,8 @@ public interface CustomerDao {
 
     int countBank(@Param("params") Map<String, Object> params);
 
-    List<XUserBankcoadInfo> listBank(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
-                                     @Param("limit") Integer limit);
+    List<XUserCardAndBankInfo> listBank(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+                                        @Param("limit") Integer limit);
 
     @Select("select * from x_config where type=#{type} and lang=#{lang}")
     XConfig findConfigByType(@Param("type") String type, @Param("lang") String lang);

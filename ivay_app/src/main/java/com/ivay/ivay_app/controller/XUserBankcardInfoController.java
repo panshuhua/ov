@@ -12,6 +12,7 @@ import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.XUserBankcardInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.*;
@@ -26,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@Api(tags = "现金贷绑卡")
+@Api(tags = "绑卡")
 @RequestMapping("star/userBankcardInfo")
 public class XUserBankcardInfoController {
     private static final Logger logger = LoggerFactory.getLogger(XUserContactsController.class);
@@ -129,8 +130,8 @@ public class XUserBankcardInfoController {
     @GetMapping("list/{userGid}")
     @ApiOperation(value = "根据userGid获取个人银行卡列表")
     @LogAnnotation(module = "根据userGid获取个人银行卡列表")
-    public Response<List<XUserBankcardInfo>> getCardList(@PathVariable String userGid, HttpServletRequest request) {
-        Response<List<XUserBankcardInfo>> response = new Response<>();
+    public Response<List<XUserCardAndBankInfo>> getCardList(@PathVariable String userGid, HttpServletRequest request) {
+        Response<List<XUserCardAndBankInfo>> response = new Response<>();
         response.setBo(xUserBankcardInfoDao.getByUserGid(userGid));
         return response;
     }
