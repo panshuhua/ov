@@ -35,7 +35,7 @@ public class XCollectionTransactionController {
         return rsp;
     }
     
-    @PostMapping("BalanceFuctuationNotification")
+    @PostMapping("BalanceFuctNotice")
     @ApiOperation(value = "ebay回调接口")
     public EbayBlanceFlucNoticeRsp BalanceFuctuationNotification(@RequestBody XBalanceFuctNoticeReq notice) throws ParseException {
         EbayBlanceFlucNoticeRsp rsp = xCollectionTransactionService.BalanceFuctNotice(notice);
