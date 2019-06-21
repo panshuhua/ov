@@ -54,7 +54,7 @@ public class XAPIController {
     @GetMapping("transfersInfo")
     public TransfersRsp transfersInfo(String referenceId) {
         if (StringUtils.isEmpty(referenceId)) {
-            referenceId = "f563cd5f095741b780d1a2a2d9f6ea3b"; // todo 值为transfer接口产生的uuid
+            referenceId = "f563cd5f095741b780d1a2a2d9f6ea3b"; // 值为transfer接口产生的uuid
         }
         TransfersRsp transfersRsp = xapiService.transfersInfo(referenceId);
         return transfersRsp;

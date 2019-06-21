@@ -533,7 +533,7 @@ public class DateUtils {
     	Calendar calendar = new GregorianCalendar();
     	Date date = new Date();
     	calendar.setTime(date);
-    	calendar.add(calendar.YEAR, year);
+    	calendar.add(Calendar.YEAR, year);
     	date=calendar.getTime();
     	String dateStr=dateToString_YYYYMMDD(date);
 		return dateStr;

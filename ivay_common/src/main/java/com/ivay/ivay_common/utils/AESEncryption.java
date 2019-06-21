@@ -129,7 +129,6 @@ public class AESEncryption {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

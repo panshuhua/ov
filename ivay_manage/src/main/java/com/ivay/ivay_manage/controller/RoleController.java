@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -81,23 +80,5 @@ public class RoleController {
     @PreAuthorize("hasAuthority('sys:role:del')")
     public void delete(@PathVariable Long id) {
         roleService.deleteRole(id);
-    }
-
-    public static void main(String[] args) {
-        List<String> list = new ArrayList();
-        list.add("phthon");
-        list.add("java");
-        list.add("rest");
-
-
-        for (String str : list) {
-            if (str.equals("phthon")) {
-                System.out.println("1");
-                break;
-            }
-            if (str.equals("java")) {
-                System.out.println("2");
-            }
-        }
     }
 }

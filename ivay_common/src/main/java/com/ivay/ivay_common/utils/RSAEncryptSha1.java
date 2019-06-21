@@ -470,7 +470,6 @@ public class RSAEncryptSha1 {
             System.out.println("加密后：" + str);
             return str;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return encryptStr;
@@ -484,7 +483,6 @@ public class RSAEncryptSha1 {
             System.out.println("加密后：" + str);
             return str;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return encryptStr;
@@ -499,7 +497,6 @@ public class RSAEncryptSha1 {
             System.out.println("加密后：" + str);
             return str;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return encryptStr;
@@ -513,7 +510,6 @@ public class RSAEncryptSha1 {
             System.out.println("解密后：" + str);
             return str;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return encryptStr;

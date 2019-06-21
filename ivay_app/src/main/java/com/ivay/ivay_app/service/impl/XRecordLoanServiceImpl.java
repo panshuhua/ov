@@ -466,7 +466,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             return false;
         }
         if (!updateList.isEmpty()) {
-            //todo 需要分批批量插入，200个一组
+            // 批量更新，不需要割列表
+            // 批量插入的话，一个sql长度限制为4M
             xRecordLoanDao.updateByBatch(updateList);
         }
         return true;
@@ -528,7 +529,6 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             return false;
         }
         if (!updateList.isEmpty()) {
-            //todo new 需要分批批量插入，200个一组
             xRecordLoanDao.updateByBatch(updateList);
         }
         return true;

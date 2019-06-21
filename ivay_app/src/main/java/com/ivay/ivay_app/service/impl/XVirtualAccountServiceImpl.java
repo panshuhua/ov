@@ -60,8 +60,8 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());  //accountType=1时需要
 
         String accName = xUserInfo.getName();
-        if(accName!=null){
-        	accName=accName.trim();
+        if (accName != null) {
+            accName = accName.trim();
         }
 //    	Date birthday=xUserInfo.getBirthday();
 //    	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
@@ -109,7 +109,6 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
      * 调用创建虚拟账号接口返回信息
      */
     private void loggerCollectionInfo(ValVirtualAccountReq valVirtualAccountReq, ValVirtualAccountRsp valVirtualAccountRsp) {
-
         // todo 需要确认调用接口超时是否是valVirtualAccountRsp==null
         if (valVirtualAccountRsp == null) {
             valVirtualAccountRsp = new ValVirtualAccountRsp();
@@ -138,10 +137,10 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
 //	    	String orderId //订单id
 
         String accName = xVirtualAccount.getAccName();
-	        if(accName!=null){
-	        	accName=accName.trim();
-	        }
-	        String issuedDate = "";
+        if (accName != null) {
+            accName = accName.trim();
+        }
+        String issuedDate = "";
         String issuedPlace = "";
         String expireDate = "";  //Optional
         String orderId = xVirtualAccount.getOrderId();
