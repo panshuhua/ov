@@ -196,6 +196,7 @@ public class StringUtil {
         return flag;
     }
 
+    private static final Pattern PATTERN_ACCENTED_CHARACTERS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
     /**
      * 越南语转英文字母
@@ -213,10 +214,11 @@ public class StringUtil {
         }
         // 去掉重音符号
         String nfdNormalizedString = Normalizer.normalize(vi, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        return pattern.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D").replaceAll("đ", "d");
+        return PATTERN_ACCENTED_CHARACTERS.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D").replaceAll("đ", "d");
     }
 
+    private static final Pattern PATTERN_BLANK_CHARACTERS = Pattern.compile("\\s*|\t|\r|\n");
+    
     /**
      * 去除所有的空白字符
      *
@@ -228,8 +230,7 @@ public class StringUtil {
         if (str == null) {
             return dest;
         } else {
-            Pattern p = Pattern.compile("\\s*|\t|\r|\n");
-            Matcher m = p.matcher(str);
+            Matcher m = PATTERN_BLANK_CHARACTERS.matcher(str);
             dest = m.replaceAll("");
             return dest;
         }
