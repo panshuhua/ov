@@ -3,7 +3,7 @@ package com.ivay.ivay_app.dto;
 import lombok.Data;
 
 /**
- * ebay还款回调接口实体：请求参数+响应结果
+ * ebay还款回调接口实体
  * @author panshuhua
  *
  */
