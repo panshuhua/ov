@@ -89,8 +89,8 @@ public class SysVariable {
     public static final String TEMPLATE_AUDIT_STATUS = "auditStatus";
     // 配置模板: 提額配置
     public static final String TEMPLATE_CREDIT_RISK = "riskManage";
-    // 配置模板: 用户风控管理配置
-    public static final String TEMPLATE_USER_MANAGE = "userManage";
+    // 配置模板: 自动审核配置
+    public static final String TEMPLATE_AUTO_AUDIT = "autoAudit";
 
     // 接口对接
     public static final String API_ACC_TYPE_0 = "0";

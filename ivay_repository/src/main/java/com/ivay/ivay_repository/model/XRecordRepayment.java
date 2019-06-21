@@ -41,7 +41,7 @@ public class XRecordRepayment {
     @ApiModelProperty("借款订单号")
     private String orderId;
 
-    private Long id;
+    private long id;
     private Date createTime;
     private Date updateTime;
 }

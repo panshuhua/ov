@@ -2,6 +2,8 @@ package com.ivay.ivay_app.service;
 
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
+import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
+import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
 import com.ivay.ivay_repository.model.XCollectionTransaction;
 
 import java.text.ParseException;
@@ -17,5 +19,7 @@ public interface XCollectionTransactionService {
     long getCollectAmount(String accNo);
 
     CollectionTransactionRsp noticeCollection(CollectionTransactionNotice notice) throws ParseException;
+    
+    EbayBlanceFlucNoticeRsp BalanceFuctNotice(XBalanceFuctNoticeReq notice);
 
 }

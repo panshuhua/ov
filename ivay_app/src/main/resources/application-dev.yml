@@ -26,7 +26,7 @@ swagger:
 timer:
   # 逾期费用
   overdueFee: 0 0 1 1/1 * ?
-  firebaseNotice: 0 26 19 1/1 * ?
+  firebaseNotice: 0 23 11 * * ?
 
 # 借款url
 #baokim
@@ -46,6 +46,8 @@ ebay_api_merchant_code: VAP001
 ebay_api_keyMahoa: 31feae316de0a42520ef5ec4
 #虚拟账号有效期：以年为单位
 ebay_api_effective_year: 5
+#ebay还款回调接口公钥路径
+ebay_api_notice_publickey: C:/usr/ebay_notice_key/ebay_notice_public_key.pem
 
 # 发送短信url
 api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}

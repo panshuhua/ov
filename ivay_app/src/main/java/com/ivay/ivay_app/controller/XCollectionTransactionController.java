@@ -2,6 +2,8 @@ package com.ivay.ivay_app.controller;
 
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
+import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
+import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
 import com.ivay.ivay_app.service.XCollectionTransactionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,9 +29,16 @@ public class XCollectionTransactionController {
      * @throws ParseException
      */
     @PostMapping("noticeCollTran")
-    @ApiOperation(value = "回调接口")
+    @ApiOperation(value = "baokim回调接口")
     public CollectionTransactionRsp noticeCollTran(@RequestBody CollectionTransactionNotice notice) throws ParseException {
         CollectionTransactionRsp rsp = xCollectionTransactionService.noticeCollection(notice);
+        return rsp;
+    }
+    
+    @PostMapping("BalanceFuctuationNotification")
+    @ApiOperation(value = "ebay回调接口")
+    public EbayBlanceFlucNoticeRsp BalanceFuctuationNotification(@RequestBody XBalanceFuctNoticeReq notice) throws ParseException {
+        EbayBlanceFlucNoticeRsp rsp = xCollectionTransactionService.BalanceFuctNotice(notice);
         return rsp;
     }
 

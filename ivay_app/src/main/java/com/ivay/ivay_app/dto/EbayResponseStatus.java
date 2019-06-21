@@ -38,7 +38,7 @@ public enum EbayResponseStatus {
 	 NOTICE_SUCCESS("200","Push notify successful to Merchant"),
 	 NOTICE_TIMEOUT("99","Timeout"),
 	 NOTICE_FAIL("11","Fail"),
-	 NOTICE_DUPLICATE_REFERENCEID("102","Merchant accepted Notification befor"),
+	 NOTICE_DUPLICATE_REFERENCEID("102","Duplication in ReferenceId (Merchant accepted Notification before)"),
 	 NOTICE_SIGNATURE_WRONG("103","Signature wrong"),
 	 NOTICE_PARTNERCODE_WRONG("110","PartnerCode wrong"),
 	 NOTICE_MISSING_FIELD("124","The required field is not entered, any missing field will be specified in Message"),

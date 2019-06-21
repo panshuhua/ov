@@ -3,6 +3,9 @@ package com.ivay.ivay_app.service.impl;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
+import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
+import com.ivay.ivay_app.dto.EbayResponseStatus;
+import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
 import com.ivay.ivay_app.service.XCollectionTransactionService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_common.utils.*;
@@ -10,12 +13,15 @@ import com.ivay.ivay_repository.dao.master.TokenDao;
 import com.ivay.ivay_repository.dao.master.XCollectionTransactionDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.model.XCollectionTransaction;
+import com.ivay.ivay_repository.model.XEbayCollectionNotice;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,7 +36,12 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
     private XRecordRepaymentService xRecordRepaymentService;
     @Autowired
     private XRecordLoanDao xRecordLoanDao;
-
+    @Value("${ebay_api_notice_publickey}")
+    private String ebayNoticePublicKeyPath;
+    @Value("${ebay_api_merchant_code}")
+    private String ebayMerchantCode;
+    
+    
     @Override
     public String getRequestId(String PartnerCode, String date) {
         String uniqueId = tokenDao.getUniqueId();
@@ -123,17 +134,6 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
             setRsp(rsp, ResponseCode, ResponseMessage);
             return rsp;
         }
-
-        //根据accNo查询虚拟账号中的collect_amount，判断TransAmount是否与之一致（假设是一次还清）
-        //现可支持多次还款
-//        long collectAmount=getCollectAmount(AccNo);
-//        long transAmount=Long.parseLong(TransAmount);
-//        if(transAmount!=collectAmount){
-//        	ResponseCode=BaokimResponseStatus.IncorrectTransAmount.getCode();
-//        	ResponseMessage=BaokimResponseStatus.IncorrectTransAmount.getMessage();
-//        	setRsp(rsp,ResponseCode,ResponseMessage);
-//        	return rsp;
-//        }
 
         isCorrect = StringUtil.isNumeric(TransAmount);
         if (!isCorrect) {
@@ -267,4 +267,117 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         rsp.setResponseCode(ResponseCode);
         rsp.setResponseMessage(ResponseMessage);
     }
+
+	@Override
+	public EbayBlanceFlucNoticeRsp BalanceFuctNotice(XBalanceFuctNoticeReq notice) {
+		EbayBlanceFlucNoticeRsp rsp = new EbayBlanceFlucNoticeRsp();
+		String responseCode=EbayResponseStatus.NOTICE_SUCCESS.getCode();
+		String responseMessage=EbayResponseStatus.NOTICE_SUCCESS.getMessage();
+		String requestId=notice.getRequestId();
+		String merchantCode=notice.getMerchantCode();
+		String amount=notice.getAmount();
+		String fee=notice.getFee();
+		String mapId=notice.getMapId();
+		String vaAcc=notice.getVaAcc();
+		String vaName=notice.getVaName();
+		String requestTime=notice.getRequestTime();
+		String referenceId=notice.getReferenceId();
+		String bankTranTime=notice.getBankTranTime();
+		String bankCode=notice.getBankCode();
+		String bankName=notice.getBankName();
+		String signature=notice.getSignature();
+		
+		try {
+			//检查各个字段
+			//referenceId是否重复判断
+			boolean existsReferenceId = checkReferenceId(referenceId);
+			if (existsReferenceId) {
+			    responseCode = EbayResponseStatus.NOTICE_DUPLICATE_REFERENCEID.getCode();
+			    responseMessage = EbayResponseStatus.NOTICE_DUPLICATE_REFERENCEID.getMessage();
+			    setRsp(rsp, responseCode, responseMessage);
+			    return rsp;
+			}
+			
+			//PartnerCode wrong
+			if(!ebayMerchantCode.equals(merchantCode)) {
+				 responseCode = EbayResponseStatus.NOTICE_PARTNERCODE_WRONG.getCode();
+			     responseMessage = EbayResponseStatus.NOTICE_PARTNERCODE_WRONG.getMessage();
+			     setRsp(rsp, responseCode, responseMessage);
+			     return rsp;
+			}
+			
+			//Amount wrong
+			boolean isCorrect = StringUtil.isNumeric(amount);
+			if (!isCorrect) {
+			    responseCode = EbayResponseStatus.NOTICE_AMOUNT_WRONG.getCode();
+			    responseMessage = EbayResponseStatus.NOTICE_AMOUNT_WRONG.getMessage();
+			    setRsp(rsp, responseCode, responseMessage);
+			    return rsp;
+			}
+			
+			//有没有传递必要的字段
+			if(StringUtils.isEmpty(requestId) || StringUtils.isEmpty(requestTime) || StringUtils.isEmpty(referenceId) 
+				|| StringUtils.isEmpty(mapId) || StringUtils.isEmpty(amount) ||StringUtils.isEmpty(signature) 
+				||StringUtils.isEmpty(merchantCode) || StringUtils.isEmpty(fee) || StringUtils.isEmpty(fee) 
+				|| StringUtils.isEmpty(vaName) || StringUtils.isEmpty(vaAcc)) {
+				 responseCode = EbayResponseStatus.NOTICE_MISSING_FIELD.getCode();
+			     responseMessage = EbayResponseStatus.NOTICE_MISSING_FIELD.getMessage();
+			     setRsp(rsp, responseCode, responseMessage);
+				 return rsp;
+			}
+			
+           //检测签名
+           //RequestId|ReferenceId|RequestTime|Amount|Fee
+			String message=requestId+"|"+referenceId+"|"+requestTime+"|"+amount+"|"+fee;
+			boolean flag=RSASign.verifySHA256(message, signature, ebayNoticePublicKeyPath);
+			if(!flag) {
+				responseCode=EbayResponseStatus.NOTICE_SIGNATURE_WRONG.getCode();
+			  	responseMessage=EbayResponseStatus.NOTICE_SIGNATURE_WRONG.getMessage();
+			  	setRsp(rsp, responseCode, responseMessage);
+			  	return rsp;
+			}
+
+			//请求字段存入数据库
+			XEbayCollectionNotice xEbayCollectionNotice=new XEbayCollectionNotice();
+			xEbayCollectionNotice.setRequestId(requestId);
+			xEbayCollectionNotice.setRequestTime(requestTime);
+			xEbayCollectionNotice.setBankTranTime(bankTranTime);
+			xEbayCollectionNotice.setReferenceId(referenceId);
+			xEbayCollectionNotice.setMapId(mapId);
+			BigDecimal bigAmount=new BigDecimal(amount);
+			xEbayCollectionNotice.setAmount(bigAmount);
+			xEbayCollectionNotice.setMerchantCode(merchantCode);
+			BigDecimal bigFee=new BigDecimal(fee);
+			xEbayCollectionNotice.setFee(bigFee);
+			xEbayCollectionNotice.setVaName(vaName);
+			xEbayCollectionNotice.setVaAcc(vaAcc);
+			xEbayCollectionNotice.setBankCode(bankCode);
+			xEbayCollectionNotice.setBankName(bankName);
+			xCollectionTransactionDao.insertEbayNotice(xEbayCollectionNotice);
+			setRsp(rsp, responseCode, responseMessage);
+			return rsp;
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseCode=EbayResponseStatus.NOTICE_FAIL.getCode();
+		    responseMessage=EbayResponseStatus.NOTICE_FAIL.getMessage();
+			setRsp(rsp, responseCode, responseMessage);
+			return rsp;
+		}
+		
+		
+	}
+	
+	 public boolean checkReferenceId(String referenceId) {
+	        String refId = xCollectionTransactionDao.findRefenceId(referenceId);
+	        if (!StringUtils.isEmpty(refId)) {
+	            return true;
+	        }
+	        return false;
+	 }
+	 
+	 private void setRsp(EbayBlanceFlucNoticeRsp rsp, String ResponseCode, String ResponseMessage) {
+	        rsp.setResponseCode(ResponseCode);
+	        rsp.setResponseMessage(ResponseMessage);
+	 }
+
 }
