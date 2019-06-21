@@ -32,7 +32,6 @@ timer:
 #baokim
 api_transfer_url: http://210.245.83.82:9095/Golive/FirmBanking
 api_partner_code: VINFINTECH
-api_request_id_prefix: VINFINTECHBK
 #ebay
 ebay_api_transfer_url:
 ebay_api_partner_code:

@@ -32,7 +32,6 @@ timer:
 #baokim
 api_transfer_url: http://13.250.110.81:9095/Sandbox/FirmBanking
 api_partner_code: FINTECH
-api_request_id_prefix: FINTECHBK
 #ebay
 ebay_api_transfer_url: https://chihoepay.megacard.vn:3669/Sandbox/PartnerMoneyTransfer
 ebay_api_partner_code: PARTNERTEST01
