@@ -1,20 +1,18 @@
 package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.service.ThreadPoolService;
-import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_common.table.PageTableHandler;
-import com.ivay.ivay_common.table.PageTableRequest;
-import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.model.*;
+import com.ivay.ivay_repository.model.CreditLine;
+import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -172,58 +169,6 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     }
 
     @Override
-    public PageTableResponse auditList(int limit, int num, XAuditCondition xAuditCondition) {
-        PageTableRequest request = new PageTableRequest();
-        request.setOffset(limit * (num - 1));
-        request.setLimit(limit);
-        Map<String, Object> params = new HashMap<>();
-        params.put("orderBy", "create_time");
-        params.put("userGid", xAuditCondition.getUserGid());
-        params.put("name", xAuditCondition.getName());
-        params.put("phone", xAuditCondition.getPhone());
-        params.put("fromTime", xAuditCondition.getFromTime());
-        params.put("toTime", xAuditCondition.getToTime());
-        params.put("auditStatus", xAuditCondition.getAuditStatus());
-        request.setParams(params);
-        return new PageTableHandler(a -> xUserInfoDao.auditCount(a.getParams()),
-                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
-    }
-
-    @Override
-    public XAuditDetail auditDetail(String userGid) {
-        return xUserInfoDao.auditDetail(userGid);
-    }
-
-    @Resource
-    private XLoanRateService xLoanRateService;
-
-    @Override
-    public int auditUpdate(String userGid, int flag) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
-        if (xUserInfo == null) {
-            throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
-                    i18nService.getMessage("response.error.user.checkgid.msg"));
-        }
-        switch (flag) {
-            case 0:
-                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_FAIL);
-                break;
-            case 1:
-                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
-                break;
-            case 2:
-                xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_RETRY);
-                break;
-        }
-        xUserInfo.setUpdateTime(new Date());
-        if (SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
-            xLoanRateService.initLoanRateAndCreditLimit(userGid);
-        }
-        return xUserInfoDao.update(xUserInfo);
-    }
-
-    @Override
     public VerifyCodeInfo checkIdentify(String gid, String idCard) {
         String identityCard = xUserInfoDao.getIdentityCardByGid(gid);
         if (idCard.equals(identityCard)) {
@@ -236,10 +181,6 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             redisTemplate.opsForValue().set(gid, authCode, effectiveTime, TimeUnit.MILLISECONDS);
             return code;
         }
-
         return null;
-
     }
-
-
 }

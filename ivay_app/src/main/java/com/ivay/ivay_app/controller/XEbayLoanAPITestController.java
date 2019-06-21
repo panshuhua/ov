@@ -45,7 +45,7 @@ public class XEbayLoanAPITestController {
     @GetMapping("transfersInfo")
     public EbayTransfersRsp transfersInfo(String referenceId) {
         if (StringUtils.isEmpty(referenceId)) {
-            referenceId = "e5811c124b69431887a0dad94062f983"; // todo 值为transfer接口产生的uuid
+            referenceId = "e5811c124b69431887a0dad94062f983";  // 值为transfer接口产生的uuid
         }
         EbayTransfersRsp transfersRsp = xEbayLoanApiService.transfersInfo(referenceId);
         return transfersRsp;

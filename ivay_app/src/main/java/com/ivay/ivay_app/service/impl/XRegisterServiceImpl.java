@@ -198,7 +198,7 @@ public class XRegisterServiceImpl implements XRegisterService {
         String authCode = MsgAuthCode.getAuthCode();
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
         //long effectiveTime = 120 * 1000; //2分钟有效期，ms
-        verifyCodeInfo.setCodeToken(authCode);  // TODO 
+        verifyCodeInfo.setCodeToken(authCode);
         verifyCodeInfo.setEffectiveTime(effectiveTime);
 
         for (Object key : config.keySet()) {
@@ -244,6 +244,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     }
 
     //调用接口1发送短信
+    @Override
     public Map<String, String> sendMsgBySMS(String mobile, String authCode) {
         Map<String, Object> params = new HashMap<>();
         params.put("key", paasooKey);
@@ -258,6 +259,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     }
 
     //调用接口2发送短信
+    @Override
     public ApiBulkReturn sendMsgByVMG(String mobile, String authCode) {
         VMGAPISoapProxy proxy = new VMGAPISoapProxy(vmgmediaUrl);
         String message = authCode;

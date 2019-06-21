@@ -1,25 +1,9 @@
 package com.ivay.ivay_common.utils;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,14 +12,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.io.*;
+import java.security.*;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 //import com.vnptepay.config.ApplicationCfg;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 public class RSASign {
 
@@ -202,7 +185,7 @@ public class RSASign {
 			Signature rsa = Signature.getInstance(SIGNMODE);
 			rsa.initVerify(publicKey);
 			rsa.update(data.getBytes());
-			byte[] signByte = decodeHex.fromHexString(sign);
+			byte[] signByte = HexaTool.fromHexString(sign);
 			return (rsa.verify(signByte));
 		} catch (Exception e) {
 			e.printStackTrace();

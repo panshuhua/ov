@@ -274,10 +274,8 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
         } catch (NoSuchAlgorithmException e) {
              e.printStackTrace();
         } catch (SignatureException e) {
-             // TODO Auto-generated catch block
              e.printStackTrace();
         } catch (InvalidKeyException e) {
-             // TODO Auto-generated catch block
              e.printStackTrace();
         }
         //将加签后的base64编码

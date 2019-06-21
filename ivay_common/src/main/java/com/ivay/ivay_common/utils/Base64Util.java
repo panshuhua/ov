@@ -39,7 +39,6 @@ public class Base64Util {
         try {
             return new String(DECODER.decode(str), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return str;
         }

@@ -191,7 +191,6 @@ public class XEbayRepayAPIServiceImpl implements XEbayRepayAPIService{
 
 	@Override
 	public EbayVirtualAccountRsp BalanceFlucfluctuationNotice(EbayVirtualAccountReq ebayDataObjectReq) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
