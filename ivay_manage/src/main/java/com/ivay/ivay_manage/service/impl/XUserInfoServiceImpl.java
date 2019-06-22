@@ -13,6 +13,8 @@ import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserRiskDao;
+import com.ivay.ivay_repository.dto.XAuditDetail;
+import com.ivay.ivay_repository.dto.XLoanQualification;
 import com.ivay.ivay_repository.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

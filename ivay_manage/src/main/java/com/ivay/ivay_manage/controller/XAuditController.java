@@ -8,7 +8,7 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.model.XAuditDetail;
+import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

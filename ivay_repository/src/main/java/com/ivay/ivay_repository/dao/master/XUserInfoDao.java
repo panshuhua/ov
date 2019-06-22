@@ -1,5 +1,9 @@
 package com.ivay.ivay_repository.dao.master;
 
+import com.ivay.ivay_repository.dto.CreditLine;
+import com.ivay.ivay_repository.dto.XAuditDetail;
+import com.ivay.ivay_repository.dto.XLoanQualification;
+import com.ivay.ivay_repository.dto.XUser;
 import com.ivay.ivay_repository.model.*;
 import org.apache.ibatis.annotations.*;
 

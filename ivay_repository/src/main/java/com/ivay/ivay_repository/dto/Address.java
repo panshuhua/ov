@@ -1,4 +1,4 @@
-package com.ivay.ivay_repository.model;
+package com.ivay.ivay_repository.dto;
 
 import lombok.Data;
 

@@ -1,7 +1,7 @@
 package com.ivay.ivay_app.dto;
 
 import com.ivay.ivay_repository.model.Permission;
-import com.ivay.ivay_repository.model.XUser;
+import com.ivay.ivay_repository.dto.XUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

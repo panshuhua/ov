@@ -1,8 +1,8 @@
 package com.ivay.ivay_app.service;
 
 
-import com.ivay.ivay_repository.model.CreditLine;
-import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.dto.CreditLine;
+import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
 
 public interface XUserInfoService {

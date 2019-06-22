@@ -1,20 +1,13 @@
 package com.ivay.ivay_app.service;
 
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.web.bind.annotation.RequestParam;
-import org.tempuri.ApiBulkReturn;
-import org.tempuri.VMGAPISoapProxy;
-
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.valid.Password;
+import com.ivay.ivay_repository.dto.XUser;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
-import com.ivay.ivay_repository.model.VerifyCodeInfo;
-import com.ivay.ivay_repository.model.XUser;
+import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.tempuri.ApiBulkReturn;
+
+import java.util.Map;
 
 public interface XRegisterService {
     /**

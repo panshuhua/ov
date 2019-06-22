@@ -19,13 +19,13 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class RSAEncryptShaCollection extends RSAEncryptSha1{
-	private static final RSAEncryptShaCollection rsaEncrypt;
-	private static final Base64 base64 = new Base64();
+	private static final RSAEncryptShaCollection RSA_ENCRYPT;
+	private static final Base64 BASE_64 = new Base64();
 	static {
-		rsaEncrypt= new RSAEncryptShaCollection();
+		RSA_ENCRYPT = new RSAEncryptShaCollection();
 		//加载公钥
 		try {
-			rsaEncrypt.loadPublicKey(RSAEncryptCollection.loadPublicKeyByFile(SpringUtil.getResourceFile()));
+			RSA_ENCRYPT.loadPublicKey(RSAEncryptCollection.loadPublicKeyByFile(SpringUtil.getResourceFile()));
 			System.out.println("加载公钥成功");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -35,7 +35,7 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
  
 		//加载私钥
 		try {
-			rsaEncrypt.loadPrivateKey(RSAEncryptCollection.loadPrivateKeyByFile(SpringUtil.getResourceFile()));
+			RSA_ENCRYPT.loadPrivateKey(RSAEncryptCollection.loadPrivateKeyByFile(SpringUtil.getResourceFile()));
 			System.out.println("加载私钥成功");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -396,7 +396,7 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 			//decrypt(string);
 			String para = encrypt2Sha1(encryptStr);
 			
-			boolean b = verifyWithSHA1(encryptStr,  para, rsaEncrypt.getPublicKey());
+			boolean b = verifyWithSHA1(encryptStr,  para, RSA_ENCRYPT.getPublicKey());
 			System.out.println("解密验证：" + b);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -408,8 +408,8 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 		//加密
 		byte[] cipher;
 		try {
-			cipher = rsaEncrypt.encrypt(rsaEncrypt.getPrivateKey(), encryptStr.getBytes());
-			String str = new String(base64.encode(cipher));
+			cipher = RSA_ENCRYPT.encrypt(RSA_ENCRYPT.getPrivateKey(), encryptStr.getBytes());
+			String str = new String(BASE_64.encode(cipher));
 			System.out.println("加密后：" + str);
 			return str;
 		} catch (Exception e) {
@@ -422,7 +422,7 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 	public static String encrypt2Sha1(String encryptStr) {
 		//加密
 		try {
-			String str = signWithSHA1(rsaEncrypt.getPrivateKey(), encryptStr);
+			String str = signWithSHA1(RSA_ENCRYPT.getPrivateKey(), encryptStr);
 			System.out.println("加密后：" + str);
 			return str;
 		} catch (Exception e) {
@@ -435,8 +435,8 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 		//加密
 		byte[] cipher;
 		try {
-			cipher = rsaEncrypt.encrypt(rsaEncrypt.getPublicKey(), encryptStr.getBytes());
-			String str = new String(base64.encode(cipher));
+			cipher = RSA_ENCRYPT.encrypt(RSA_ENCRYPT.getPublicKey(), encryptStr.getBytes());
+			String str = new String(BASE_64.encode(cipher));
 			System.out.println("加密后：" + str);
 			return str;
 		} catch (Exception e) {
@@ -448,7 +448,7 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 	public static String decrypt(String encryptStr) {
 		byte[] plainText;
 		try {
-			plainText = rsaEncrypt.decrypt(rsaEncrypt.getPrivateKey(), base64.decode(encryptStr.getBytes()));
+			plainText = RSA_ENCRYPT.decrypt(RSA_ENCRYPT.getPrivateKey(), BASE_64.decode(encryptStr.getBytes()));
 			String str = new String(plainText);
 			System.out.println("解密后：" + str);
 			return str;
@@ -459,7 +459,7 @@ public class RSAEncryptShaCollection extends RSAEncryptSha1{
 	}
 	
 	public static boolean decrypt2Sha1(String encryptStr, String signature) {
-		boolean ret = verifyWithSHA1(encryptStr, signature, rsaEncrypt.getPublicKey());
+		boolean ret = verifyWithSHA1(encryptStr, signature, RSA_ENCRYPT.getPublicKey());
 		System.out.println("解密后：" + ret);
 		return ret;
 		

@@ -9,7 +9,7 @@ import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
-import com.ivay.ivay_repository.model.VerifyCodeInfo;
+import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

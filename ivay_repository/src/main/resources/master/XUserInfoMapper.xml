@@ -243,7 +243,7 @@
         <include refid="audit_list_condition"/>
     </select>
 
-    <select id="auditList" resultType="com.ivay.ivay_repository.model.XAuditCondition">
+    <select id="auditList" resultType="com.ivay.ivay_repository.dto.XAuditCondition">
         set @num=0;
         select
         @num:=@num+1 as num,
@@ -268,7 +268,7 @@
         </if>
     </select>
 
-    <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.model.XAuditDetail">
+    <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XAuditDetail">
         select xui.user_gid,xui.phone,xui.identity_card,xui.name,xui.birthday, xui.sex,
         fi1.url photo1_url,fi2.url photo2_url, fi3.url photo3_url,xui.phone
         from x_user_info xui
@@ -280,7 +280,7 @@
     </select>
 
     <select id="getAuditQualificationObj" parameterType="java.lang.String"
-            resultType="com.ivay.ivay_repository.model.XLoanQualification">
+            resultType="com.ivay.ivay_repository.dto.XLoanQualification">
         SELECT
         TIMESTAMPDIFF(YEAR,xui.birthday,now()) age,
         xui.identity_card,

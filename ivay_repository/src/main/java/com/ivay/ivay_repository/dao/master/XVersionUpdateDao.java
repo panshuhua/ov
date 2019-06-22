@@ -11,7 +11,8 @@ import com.ivay.ivay_repository.model.XVersionUpdate;
 public interface XVersionUpdateDao {
 	
 	@Options(useGeneratedKeys = true, keyProperty = "id")
-	@Insert("insert into x_version_update(version_number,version_content,need_update,create_time,update_time,enable_flag) VALUES ( #{versionNumber}, #{versionContent}, #{needUpdate},now(),now(),'Y')")
+	@Insert("insert into x_version_update(version_number,version_content,need_update,create_time,update_time,enable_flag) " +
+			"VALUES ( #{versionNumber}, #{versionContent}, #{needUpdate},now(),now(),'Y')")
     int save(XVersionUpdate xVersionUpdate);
 	
 	@Select("SELECT *, ABS(NOW() - create_time) AS diffTime FROM x_version_update ORDER BY diffTime ASC LIMIT 0,1")
