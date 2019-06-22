@@ -68,5 +68,14 @@ public interface XUserInfoService {
      * @return
      */
     boolean autoAudit(String userGid);
+
+
+    /**
+     * 获取与某用户同名得所有用户
+     *
+     * @param request
+     * @return
+     */
+    PageTableResponse listSameName(PageTableRequest request);
 }
 

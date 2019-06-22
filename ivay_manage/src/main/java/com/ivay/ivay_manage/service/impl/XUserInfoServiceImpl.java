@@ -15,7 +15,10 @@ import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserRiskDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.dto.XLoanQualification;
-import com.ivay.ivay_repository.model.*;
+import com.ivay.ivay_repository.model.RiskUser;
+import com.ivay.ivay_repository.model.XAppEvent;
+import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.model.XUserRisk;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +48,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Autowired
     private RiskUserService riskUserService;
+
     @Autowired
     private XAuditUserService xAuditUserService;
+
     @Resource
     private XUserRiskDao xUserRiskDao;
 
@@ -195,17 +200,17 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     public XLoanQualification getAuditQualificationObj(String userGid, int flag) {
         XLoanQualification xLoanQualification = xUserInfoDao.getAuditQualificationObj(userGid);
         //获取经纬度
-        XUserRisk xUserRisk=xUserRiskDao.getGps(userGid);
+        XUserRisk xUserRisk = xUserRiskDao.getGps(userGid);
         if (xLoanQualification == null) {
             throw new BusinessException("很抱歉，您的借款申请未通过审核");
         }
         xLoanQualification.setContactsNum(xUserInfoDao.countContacts(userGid));
         xLoanQualification.setOneMajorPhoneNum(xUserInfoDao.countMajorPhone(xLoanQualification.getMajorPhone()));
         xLoanQualification.setOnePhoneNum(xUserInfoDao.countOnePhone(xLoanQualification.getMacCode()));
-        
+
         // 根据经纬度计算10m之内的gps数量
-        if(xUserRisk!=null) {
-        	if (xUserRisk.getLongitude() != null && xUserRisk.getLatitude() != null) {
+        if (xUserRisk != null) {
+            if (xUserRisk.getLongitude() != null && xUserRisk.getLatitude() != null) {
                 Integer gpsNum = xUserInfoDao.getUserCountsBygps(xUserRisk.getLongitude(), xUserRisk.getLatitude());
                 if (gpsNum == null) {
                     gpsNum = 0;
@@ -214,10 +219,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             } else {
                 xLoanQualification.setOneGpsNum(-1);
             }
-        }else {
-        	    xLoanQualification.setOneGpsNum(-1);
+        } else {
+            xLoanQualification.setOneGpsNum(-1);
         }
-        
+
 
         //实时计算社交类app个数
         String updateDate = DateUtils.dateToString_YYYY_MM_DD(new Date());
@@ -292,7 +297,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
         StringBuilder sb = new StringBuilder();
-         for (Object key : config.keySet()) {
+        for (Object key : config.keySet()) {
             String[] values = config.get(key).toString().split("~");
             int min = Integer.parseInt(values[0]);
             int max = (values.length == 1) ? Integer.MAX_VALUE : Integer.parseInt(values[1]);
@@ -330,20 +335,20 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     break;
                 case "appNum":
                     //社交类app的个数不符
-                	//贷前策略
-                	if(flag == 0) {
-                		if (xLoanQualification.getAppCount() <= min) {
+                    //贷前策略
+                    if (flag == 0) {
+                        if (xLoanQualification.getAppCount() <= min) {
                             sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
                         }
-                	}
-                	
-                	//贷中策略
-                	if(flag == 1) {
-                		if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
+                    }
+
+                    //贷中策略
+                    if (flag == 1) {
+                        if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
                             sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
                         }
-                	}
-                    
+                    }
+
                     break;
                 case "overdueDay":
                     //历史最大逾期天数>=30天，拒贷
@@ -425,5 +430,19 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         // endregion
         return true;
+    }
+
+    /**
+     * 获取与某用户同名得所有用户
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public PageTableResponse listSameName(PageTableRequest request) {
+        return new PageTableHandler(
+                a -> xUserInfoDao.countSameName(a.getParams()),
+                a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 }

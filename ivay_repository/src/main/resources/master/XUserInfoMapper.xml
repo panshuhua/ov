@@ -273,18 +273,26 @@
     </select>
 
     <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XAuditDetail">
-        select xui.user_gid,xui.phone,xui.identity_card,xui.name,xui.birthday, xui.sex,
-        fi1.url photo1_url,fi2.url photo2_url, fi3.url photo3_url,xui.phone
+        select
+            xui.user_gid,
+            xui.phone,
+            xui.identity_card,
+            xui.name,
+            xui.birthday,
+            xui.sex,
+            (SELECT url from file_info t WHERE t.id=xuei.photo1_url) photo1_url,
+            (SELECT url from file_info t WHERE t.id=xuei.photo2_url) photo2_url,
+            (SELECT url from file_info t WHERE t.id=xuei.photo3_url) photo3_url,
+            xui.phone,
+            (SELECT count(*)-1 FROM x_user_info t WHERE t.`name`=xui.name and t.enable_flag='Y') countSameName
+            -- ( SELECT "黑名单" WHERE NOT EXISTS (SELECT 1 FROM black_user t WHERE t.phone = xui.phone OR t.identity_card=xui.identity_card)) userType
+            -- (SELECT "白名单" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
         from x_user_info xui
         left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
-        left JOIN file_info fi1 ON fi1.id=xuei.photo1_url
-        left JOIN file_info fi2 ON fi2.id=xuei.photo2_url
-        left JOIN file_info fi3 ON fi3.id=xuei.photo3_url
-        where xui.user_gid=#{userGid}
+        where xui.user_gid=#{userGid} and xui.enable_flag='Y' and xui.
     </select>
 
-    <select id="getAuditQualificationObj" parameterType="java.lang.String"
-            resultType="com.ivay.ivay_repository.dto.XLoanQualification">
+    <select id="getAuditQualificationObj" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XLoanQualification">
         SELECT
         TIMESTAMPDIFF(YEAR,xui.birthday,now()) age,
         xui.identity_card,
@@ -367,5 +375,29 @@
 			distance <![CDATA[ <= ]]> 10
 		) as lessten
     </select>
-    
+
+    <select id="countSameName" resultType="int">
+        SELECT count(*) FROM x_user_info
+        WHERE user_gid != #{params.userGid}
+        AND `name`=(
+            SELECT name
+            FROM x_user_info
+            WHERE user_gid = #{params.userGid}
+        )
+    </select>
+
+    <select id="listSameName" resultType="com.ivay.ivay_repository.model.XUserInfo">
+        SELECT * FROM x_user_info
+        WHERE user_gid != #{params.userGid}
+        AND `name`=(
+            SELECT name
+            FROM x_user_info
+            WHERE user_gid = #{params.userGid}
+        )
+        ORDER BY update_time DESC
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
 </mapper>
