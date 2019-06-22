@@ -1,7 +1,7 @@
 package plausibcheck.address
 
-import com.ivay.ivay_repository.model.Address;
-import com.ivay.ivay_repository.model.fact.AddressCheckResult;
+import com.ivay.ivay_repository.dto.Address;
+import com.ivay.ivay_repository.dto.AddressCheckResult;
 
 rule "年龄校验"
 when

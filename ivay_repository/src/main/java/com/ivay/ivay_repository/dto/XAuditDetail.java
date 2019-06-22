@@ -10,14 +10,20 @@ public class XAuditDetail {
     @ApiModelProperty("用户gid")
     private String userGid;
 
+    @ApiModelProperty("用户类型：黑名单 白名单 自然人")
+    private int userType;
+
+    @ApiModelProperty("用户名")
+    private String name;
+
+    @ApiModelProperty("同名人数")
+    private int countSameName;
+
     @ApiModelProperty("电话号码")
     private String phone;
 
     @ApiModelProperty("身份证")
     private String identityCard;
-
-    @ApiModelProperty("用户名")
-    private String name;
 
     @ApiModelProperty("生日")
     private Date birthday;

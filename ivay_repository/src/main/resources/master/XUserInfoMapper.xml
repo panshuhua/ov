@@ -245,27 +245,31 @@
 
     <select id="auditList" resultType="com.ivay.ivay_repository.dto.XAuditCondition">
         set @num=0;
-        select
-        @num:=@num+1 as num,
-        xui.user_gid,
-        xui.name,
-        xui.phone,
-        case xui.user_status
-        WHEN '2' THEN '2'
-        WHEN '3' THEN '3'
-        WHEN '4' THEN '3'
-        WHEN '5' THEN '3'
-        WHEN '6' THEN '3'
-        WHEN '7' THEN '7'
-        WHEN '8' THEN '8'
-        END audit_status,
-        xuei.update_time create_time
-        from x_user_info xui
-        <include refid="audit_list_condition"/>
-        order by xuei.update_time desc
-        <if test="limit != null and limit != 0">
-            limit #{offset}, #{limit}
-        </if>
+        SELECT
+            @num:=@num+1 as num,
+            t.*
+        FROM (
+            select
+                xui.user_gid,
+                xui.name,
+                xui.phone,
+                case xui.user_status
+                    WHEN '2' THEN '2'
+                    WHEN '3' THEN '3'
+                    WHEN '4' THEN '3'
+                    WHEN '5' THEN '3'
+                    WHEN '6' THEN '3'
+                    WHEN '7' THEN '7'
+                    WHEN '8' THEN '8'
+                END audit_status,
+                xuei.update_time create_time
+            from x_user_info xui
+            <include refid="audit_list_condition"/>
+            order by xuei.update_time desc
+            <if test="limit != null and limit != 0">
+                limit #{offset}, #{limit}
+            </if>
+        ) t
     </select>
 
     <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XAuditDetail">

@@ -27,8 +27,6 @@ public class XAuditController {
     @Autowired
     private XUserInfoService xUserInfoService;
 
-    @Autowired
-    private XLoanRateService xLoanRateService;
 
     @PostMapping("list")
     @ApiOperation(value = "审核记录")
@@ -80,6 +78,9 @@ public class XAuditController {
         return xUserInfoService.queryRiskQualificationDemo(userGid, flag);
     }
 
+    @Autowired
+    private XLoanRateService xLoanRateService;
+
     @PostMapping("updateCreditLimit")
     @ApiOperation(value = "提額")
     @ApiImplicitParams({
@@ -114,4 +115,6 @@ public class XAuditController {
         List<XUserInfo> list = xUserInfoDao.list(request.getParams(), request.getOffset(), request.getLimit());
         return new PageTableResponse(list.size(), request.getOffset(), list);
     }
+
+
 }
