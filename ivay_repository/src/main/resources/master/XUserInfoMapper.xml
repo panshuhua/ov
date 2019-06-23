@@ -2,83 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ivay.ivay_repository.dao.master.XUserInfoDao">
-    <sql id="list_condition">
-        <where>
-            <if test="params.id != null and params.id != ''">
-                and id = #{params.id}
-            </if>
-            <if test="params.phone != null and params.phone != ''">
-                and phone = #{params.phone}
-            </if>
-            <if test="params.userGid != null and params.userGid != ''">
-                and user_gid = #{params.userGid}
-            </if>
-            <if test="params.name != null and params.name != ''">
-                and name = #{params.name}
-            </if>
-            <if test="params.identityCard != null and params.identityCard != ''">
-                and identity_card = #{params.identityCard}
-            </if>
-            <if test="params.birthday != null and params.birthday != ''">
-                and birthday = #{params.birthday}
-            </if>
-            <if test="params.sex != null and params.sex != ''">
-                and sex = #{params.sex}
-            </if>
-            <if test="params.education != null and params.education != ''">
-                and education = #{params.education}
-            </if>
-            <if test="params.marital != null and params.marital != ''">
-                and marital = #{params.marital}
-            </if>
-            <if test="params.place != null and params.place != ''">
-                and place = #{params.place}
-            </if>
-            <if test="params.income != null and params.income != ''">
-                and income = #{params.income}
-            </if>
-            <if test="params.userStatus != null and params.userStatus != ''">
-                and user_status = #{params.userStatus}
-            </if>
-            <if test="params.accountStatus != null and params.accountStatus != ''">
-                and account_status = #{params.accountStatus}
-            </if>
-            <if test="params.createTime != null and params.createTime != ''">
-                and create_time = #{params.createTime}
-            </if>
-            <if test="params.updateTime != null and params.updateTime != ''">
-                and update_time = #{params.updateTime}
-            </if>
-            <if test="params.enableFlag != null and params.enableFlag != ''">
-                and enable_flag = #{params.enableFlag}
-            </if>
-            <if test="params.password != null and params.password != ''">
-                and password = #{params.password}
-            </if>
-            <if test="params.creditLine != null and params.creditLine != ''">
-                and credit_line = #{params.creditLine}
-            </if>
-            <if test="params.creditLineCount != null and params.creditLineCount != ''">
-                and credit_line_count = #{params.creditLineCount}
-            </if>
-            <if test="params.canborrowAmount != null and params.canborrowAmount != ''">
-                and canborrow_amount = #{params.canborrowAmount}
-            </if>
-            <if test="params.transPwd != null and params.transPwd != ''">
-                and trans_pwd = #{params.transPwd}
-            </if>
-            <if test="params.refuseReason != null and params.refuseReason != ''">
-                and refuse_reason = #{params.refuseReason}
-            </if>
-            <if test="params.refuseType != null and params.refuseType != ''">
-                and refuse_type = #{params.refuseType}
-            </if>
-            <if test="params.auditTime != null and params.auditTime != ''">
-                and audit_time = #{params.auditTime}
-            </if>
-        </where>
-    </sql>
-
     <update id="update">
         update x_user_info t
         <set>
@@ -156,6 +79,83 @@
     <delete id="delete">
         update x_user_info t set enable_flag = "N" where t.user_gid = #{userGid}
     </delete>
+
+    <sql id="list_condition">
+        <where>
+            <if test="params.id != null and params.id != ''">
+                and id = #{params.id}
+            </if>
+            <if test="params.phone != null and params.phone != ''">
+                and phone = #{params.phone}
+            </if>
+            <if test="params.userGid != null and params.userGid != ''">
+                and user_gid = #{params.userGid}
+            </if>
+            <if test="params.name != null and params.name != ''">
+                and name = #{params.name}
+            </if>
+            <if test="params.identityCard != null and params.identityCard != ''">
+                and identity_card = #{params.identityCard}
+            </if>
+            <if test="params.birthday != null and params.birthday != ''">
+                and birthday = #{params.birthday}
+            </if>
+            <if test="params.sex != null and params.sex != ''">
+                and sex = #{params.sex}
+            </if>
+            <if test="params.education != null and params.education != ''">
+                and education = #{params.education}
+            </if>
+            <if test="params.marital != null and params.marital != ''">
+                and marital = #{params.marital}
+            </if>
+            <if test="params.place != null and params.place != ''">
+                and place = #{params.place}
+            </if>
+            <if test="params.income != null and params.income != ''">
+                and income = #{params.income}
+            </if>
+            <if test="params.userStatus != null and params.userStatus != ''">
+                and user_status = #{params.userStatus}
+            </if>
+            <if test="params.accountStatus != null and params.accountStatus != ''">
+                and account_status = #{params.accountStatus}
+            </if>
+            <if test="params.createTime != null and params.createTime != ''">
+                and create_time = #{params.createTime}
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and update_time = #{params.updateTime}
+            </if>
+            <if test="params.enableFlag != null and params.enableFlag != ''">
+                and enable_flag = #{params.enableFlag}
+            </if>
+            <if test="params.password != null and params.password != ''">
+                and password = #{params.password}
+            </if>
+            <if test="params.creditLine != null and params.creditLine != ''">
+                and credit_line = #{params.creditLine}
+            </if>
+            <if test="params.creditLineCount != null and params.creditLineCount != ''">
+                and credit_line_count = #{params.creditLineCount}
+            </if>
+            <if test="params.canborrowAmount != null and params.canborrowAmount != ''">
+                and canborrow_amount = #{params.canborrowAmount}
+            </if>
+            <if test="params.transPwd != null and params.transPwd != ''">
+                and trans_pwd = #{params.transPwd}
+            </if>
+            <if test="params.refuseReason != null and params.refuseReason != ''">
+                and refuse_reason = #{params.refuseReason}
+            </if>
+            <if test="params.refuseType != null and params.refuseType != ''">
+                and refuse_type = #{params.refuseType}
+            </if>
+            <if test="params.auditTime != null and params.auditTime != ''">
+                and audit_time = #{params.auditTime}
+            </if>
+        </where>
+    </sql>
 
     <select id="count" resultType="int">
         select count(1) from x_user_info t
@@ -275,36 +275,33 @@
     <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XAuditDetail">
         select
             xui.user_gid,
+            xui.name,
+            (SELECT count(*)-1 FROM x_user_info t WHERE t.`name`=xui.name and t.enable_flag='Y') countSameName,
             xui.phone,
             xui.identity_card,
-            xui.name,
             xui.birthday,
             xui.sex,
             (SELECT url from file_info t WHERE t.id=xuei.photo1_url) photo1_url,
             (SELECT url from file_info t WHERE t.id=xuei.photo2_url) photo2_url,
             (SELECT url from file_info t WHERE t.id=xuei.photo3_url) photo3_url,
-            xui.phone,
-            (SELECT count(*)-1 FROM x_user_info t WHERE t.`name`=xui.name and t.enable_flag='Y') countSameName
-            -- ( SELECT "黑名单" WHERE NOT EXISTS (SELECT 1 FROM black_user t WHERE t.phone = xui.phone OR t.identity_card=xui.identity_card)) userType
-            -- (SELECT "白名单" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
+            (SELECT 1 WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
         from x_user_info xui
         left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
-        where xui.user_gid=#{userGid} and xui.enable_flag='Y' and xui.
+        where xui.user_gid=#{userGid} and xui.enable_flag='Y'
     </select>
 
     <select id="getAuditQualificationObj" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XLoanQualification">
         SELECT
-        TIMESTAMPDIFF(YEAR,xui.birthday,now()) age,
-        xui.identity_card,
-        xui.mac_code,
-        xuei.major_phone
+            TIMESTAMPDIFF(YEAR,xui.birthday,now()) age,
+            xui.identity_card,
+            xui.mac_code,
+            xuei.major_phone
         FROM x_user_info xui
         LEFT JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
         WHERE xui.user_gid=#{userGid}
     </select>
     
-    <select id="getMaxOverdueDay" parameterType="java.lang.String"
-            resultType="java.lang.Integer">
+    <select id="getMaxOverdueDay" parameterType="java.lang.String" resultType="java.lang.Integer">
         SELECT
 		max(
 			CASE repayment_status

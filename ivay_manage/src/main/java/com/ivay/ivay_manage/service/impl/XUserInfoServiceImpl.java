@@ -163,6 +163,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         // endregion
 
+        // endregion
+
         // region -- 更新审核结果
         if (xUserInfoDao.update(xUserInfo) == 1) {
             // 更新授信结果上报事件
@@ -273,11 +275,34 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      */
     @Override
     public String queryRiskQualificationDemo(String userGid, int flag) {
-        // region --黑名单用户 拒绝
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
-        if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
-            logger.info("黑名单用户: {}", userGid);
-            return "黑名单用户: " + userGid;
+        // region --用户风控管理
+        Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
+        if (userManageConfig != null) {
+            Map config = (LinkedHashMap) userManageConfig.get("blackUser");
+            boolean allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
+            logger.info("{}允许黑名单通过风控", allowBlackFlag ? "" : "不");
+
+            XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+            if (!allowBlackFlag) {
+                // 黑名单用户 拒绝
+                if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
+                    logger.info("黑名单用户: {}", userGid);
+                    return "黑名单用户: " + userGid;
+                }
+            }
+
+            config = (LinkedHashMap) userManageConfig.get("normalUser");
+            allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
+            logger.info("{}允许自然人通过风控", allowBlackFlag ? "" : "不");
+
+            if (!allowBlackFlag) {
+                // 自然人（非白名单用户和黑名单用户）
+                List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
+                if (whiteList.size() == 0) {
+                    logger.info("非白名单用户，不允许通过风控: {}", userGid);
+                    return "非白名单用户，不允许通过风控: " + userGid;
+                }
+            }
         }
         // endregion
 
@@ -384,28 +409,40 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      */
     @Override
     public boolean autoAudit(String userGid) {
-        String phone = xUserInfoDao.getPhone(userGid);
-        if (StringUtils.isEmpty(phone)) {
-            throw new BusinessException("找不到当前用户的电话号码");
-        }
-
-        // region -- 黑名单用户 拒绝
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
-        if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
-            logger.info("黑名单用户: {}", userGid);
-            xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, SysVariable.AUDIT_BLACK_USER_CODE,
-                    "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+        String phone;
+        if (xUserInfo == null) {
+            logger.warn("当前用户不存在:{}", userGid);
             return false;
+        } else {
+            phone = xUserInfo.getPhone();
+            if (StringUtils.isEmpty(phone)) {
+                logger.warn("找不到当前用户的电话号码:{}", userGid);
+                return false;
+            }
         }
-        // endregion
 
-        // 滞纳金配置
-        boolean autoAuditFlag = false;
-        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_AUTO_AUDIT));
-        if (config != null) {
-            autoAuditFlag = (Boolean) config.get("whiteUser");
-            logger.info("白名单启用自动审核：{}", autoAuditFlag);
+        // region -- 用户风控配置
+        Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
+        Map config = (LinkedHashMap) userManageConfig.get("blackUser");
+
+        // 判断黑名单用户是否允许黑名单通过授信
+        boolean allowBlackFlag = (Boolean) config.get("audit");
+        if (!allowBlackFlag) {
+            // 黑名单用户 拒绝
+            if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
+                logger.info("黑名单用户: {}", userGid);
+                xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, SysVariable.AUDIT_BLACK_USER_CODE,
+                        "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+                return false;
+            }
         }
+
+        // 白名单自动审核
+        config = (LinkedHashMap) userManageConfig.get("whiteUser");
+        boolean autoAuditFlag = (Boolean) config.get("autoAudit");
+        logger.info("白名单启用自动审核：{}", autoAuditFlag);
+        // endregion
 
         // region -- 白名单用户自动授信
         List<RiskUser> whiteList = riskUserService.selectUserListByPhone(phone);
