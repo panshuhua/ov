@@ -3,6 +3,7 @@ package com.ivay.ivay_manage.controller;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.RedisUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.XLoanRateService;
 import com.ivay.ivay_manage.service.XUserInfoService;
@@ -113,5 +114,12 @@ public class XAuditController {
         return xUserInfoService.listSameName(request);
     }
 
+    @Autowired
+    private RedisUtils redisUtils;
 
+    @GetMapping("test")
+    public boolean test(String key) {
+        redisUtils.set(key, "test redis");
+        return true;
+    }
 }

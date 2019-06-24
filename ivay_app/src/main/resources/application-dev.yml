@@ -9,6 +9,7 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
+    database: 0
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     joda-date-time-format: yyyy-MM-dd HH:mm:ss

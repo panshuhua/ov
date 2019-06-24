@@ -310,7 +310,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         params.put("orderBy", "update_time");
         params.put("userGid", userGid);
         request.setParams(params);
-        return new PageTableHandler(a -> xRecordLoanDao.count(a.getParams()),
+        return new PageTableHandler(
+                a -> xRecordLoanDao.count(a.getParams()),
                 a -> xRecordLoanDao.list(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }

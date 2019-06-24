@@ -95,7 +95,7 @@
         SELECT * FROM (
             (
                 select * from x_record_loan t
-                WHERE user_gid = "0149d9cc341e408cba6b3478a254504f"
+                WHERE user_gid = #{params.userGid}
                 AND loan_status=1 AND repayment_status!=2
                 <include refid="list_condition"/>
                 <if test="params.orderBy != null and params.orderBy != ''">
@@ -105,7 +105,7 @@
             UNION ALL
             (
                 select * from x_record_loan t
-                WHERE user_gid = "0149d9cc341e408cba6b3478a254504f"
+                WHERE user_gid = #{params.userGid}
                 AND( ( loan_status=1 AND repayment_status=2) OR LOAn_status!=1 )
                 <include refid="list_condition"/>
                 <if test="params.orderBy != null and params.orderBy != ''">

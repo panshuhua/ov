@@ -20,6 +20,7 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
+    database: 1
   mail:
     default-encoding: UTF-8
     host: smtp.163.com
