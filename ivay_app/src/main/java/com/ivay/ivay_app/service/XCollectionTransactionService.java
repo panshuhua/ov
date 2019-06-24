@@ -10,7 +10,7 @@ import java.text.ParseException;
 
 public interface XCollectionTransactionService {
 
-    String getRequestId(String PartnerCode, String date);
+    String getRequestId(String partnerCode, String date);
 
     boolean checkRequestId(String requestId);
 
@@ -20,6 +20,6 @@ public interface XCollectionTransactionService {
 
     CollectionTransactionRsp noticeCollection(CollectionTransactionNotice notice) throws ParseException;
     
-    EbayBlanceFlucNoticeRsp BalanceFuctNotice(XBalanceFuctNoticeReq notice);
+    EbayBlanceFlucNoticeRsp balanceFuctNotice(XBalanceFuctNoticeReq notice);
 
 }

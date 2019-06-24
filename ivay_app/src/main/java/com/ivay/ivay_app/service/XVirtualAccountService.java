@@ -7,7 +7,7 @@ import com.ivay.ivay_repository.model.XVirtualAccount;
 
 public interface XVirtualAccountService {
 
-    String getRequestId(String PartnerCode, String date);
+    String getRequestId(String partnerCode, String date);
 
     XVirtualAccount queryVirtualAccount(String id);
 
