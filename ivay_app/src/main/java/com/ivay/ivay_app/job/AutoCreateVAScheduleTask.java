@@ -11,8 +11,7 @@ import org.springframework.stereotype.Component;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 
 /**
- * 自动创建虚拟账号
- * 一个小时创建一次
+ * 自动创建还款虚拟账号 一个小时创建一次
  * 
  * @author panshuhua
  * @date 2019/06/24
