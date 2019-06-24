@@ -7,8 +7,10 @@ import com.ivay.ivay_repository.model.XAuditUser;
 
 import java.util.List;
 
-public interface XAuditUserService {
+public interface XAuditService {
     XAuditUser getById(Long id);
+
+    XAuditUser save(XAuditUser xAuditUser);
 
     /**
      * 获取某审计员可审计名单
@@ -16,7 +18,7 @@ public interface XAuditUserService {
      * @param sysUserId
      * @return
      */
-    List<XAuditUser> getBySysUserId(String sysUserId);
+    List<XAuditUser> getAuditBySysUserId(String sysUserId);
 
     /**
      * 删除某个审计员
@@ -51,8 +53,6 @@ public interface XAuditUserService {
      * @return
      */
     boolean reAssignAudit(String acceptId, String handleId);
-
-    XAuditUser save(XAuditUser xAuditUser);
 
     /**
      * 获得所有的审计员

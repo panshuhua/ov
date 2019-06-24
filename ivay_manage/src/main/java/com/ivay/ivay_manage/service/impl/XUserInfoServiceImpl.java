@@ -38,7 +38,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     @Resource
     private XUserInfoDao xUserInfoDao;
     @Resource
-    private XLoanRateService xLoanRateService;
+    private XLoanService xLoanService;
 
     @Autowired
     private XConfigService xConfigService;
@@ -50,7 +50,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     private RiskUserService riskUserService;
 
     @Autowired
-    private XAuditUserService xAuditUserService;
+    private XAuditService xAuditService;
 
     @Resource
     private XUserRiskDao xUserRiskDao;
@@ -181,7 +181,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
             if (SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
                 logger.info("{}：审核通过，开始初始化借款利率和借款额度", xUserInfo.getUserGid());
-                xLoanRateService.initLoanRateAndCreditLimit(userGid);
+                xLoanService.initLoanRateAndCreditLimit(userGid);
                 return 1;
             } else {
                 logger.info("审核拒绝——被审核人: {}, 拒绝理由: {}.", userGid, refuseDemo);
@@ -459,7 +459,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         // region -- 非白名单用户分配审计员
         else {
             logger.info("{}: 非白名单用户，分配审计员...start", phone);
-            if (xAuditUserService.assignAuditForUser(null, userGid) != null) {
+            if (xAuditService.assignAuditForUser(null, userGid) != null) {
                 logger.info("{}: 分配审计员成功...end", phone);
             } else {
                 logger.info("{}: 分配审计员失败...end", phone);

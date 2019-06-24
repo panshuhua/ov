@@ -5,7 +5,7 @@ import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.service.XAuditUserService;
+import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XAuditUserDao;
 import com.ivay.ivay_repository.model.XAuditUser;
@@ -20,14 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class XAuditUserServiceImpl implements XAuditUserService {
-    private static final Logger logger = LoggerFactory.getLogger(XAuditUserService.class);
+public class XAuditServiceImpl implements XAuditService {
+    private static final Logger logger = LoggerFactory.getLogger(XAuditService.class);
+
     @Autowired
     private XAuditUserDao xAuditUserDao;
 
     @Autowired
     private XUserInfoService xUserInfoService;
 
+    @Override
+    public XAuditUser save(XAuditUser xAuditUser) {
+        xAuditUserDao.save(xAuditUser);
+        return xAuditUser;
+    }
+    
     @Override
     public XAuditUser getById(Long id) {
         return xAuditUserDao.getById(id);
@@ -111,13 +118,7 @@ public class XAuditUserServiceImpl implements XAuditUserService {
     }
 
     @Override
-    public XAuditUser save(XAuditUser xAuditUser) {
-        xAuditUserDao.save(xAuditUser);
-        return xAuditUser;
-    }
-
-    @Override
-    public List<XAuditUser> getBySysUserId(String sysUserId) {
+    public List<XAuditUser> getAuditBySysUserId(String sysUserId) {
         return xAuditUserDao.getBySysUserId(sysUserId);
     }
 

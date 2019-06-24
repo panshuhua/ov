@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Api(tags = "excel下载")
 @RestController
-@RequestMapping("/excels")
+@RequestMapping("manage/excels")
 public class ExcelController {
 
     private static final Logger log = LoggerFactory.getLogger("adminLogger");

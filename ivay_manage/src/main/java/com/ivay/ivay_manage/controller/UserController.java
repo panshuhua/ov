@@ -8,7 +8,7 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.UserDto;
 import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
-import com.ivay.ivay_manage.service.XAuditUserService;
+import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.dao.master.UserDao;
@@ -47,7 +47,7 @@ public class UserController {
     private RoleDao roleDao;
 
     @Autowired
-    private XAuditUserService xAuditUserService;
+    private XAuditService xAuditService;
 
     @Autowired
     private RoleService roleService;
@@ -74,7 +74,7 @@ public class UserController {
         SysUser sysUser = userService.updateUser(userDto);
         if (isDelOvayAuditRight(roleList, userDto.getRoleIds())) {
             // 为被当前审计员审核的人员重新分配审计员
-            xAuditUserService.reAssignAudit(null, userDto.getId().toString());
+            xAuditService.reAssignAudit(null, userDto.getId().toString());
         }
         return sysUser;
     }

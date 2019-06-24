@@ -3,7 +3,7 @@ package com.ivay.ivay_manage.controller;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_manage.service.XAuditUserService;
+import com.ivay.ivay_manage.service.XAuditService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class XAuditUserController {
 
     @Autowired
-    private XAuditUserService xAuditUserService;
+    private XAuditService xAuditService;
 
     @PostMapping("update")
     @ApiOperation(value = "重新分配审计员")
@@ -32,9 +32,9 @@ public class XAuditUserController {
                           @RequestParam String handleId,
                           @RequestParam(required = false) String acceptId) {
         if ("1".equals(flag)) {
-            xAuditUserService.assignAuditForUser(acceptId, handleId);
+            xAuditService.assignAuditForUser(acceptId, handleId);
         } else {
-            xAuditUserService.reAssignAudit(acceptId, handleId);
+            xAuditService.reAssignAudit(acceptId, handleId);
         }
         return true;
     }
@@ -46,7 +46,7 @@ public class XAuditUserController {
     })
     @LogAnnotation(module="删除某个审计员")
     public void deleteAudit(@RequestParam String ids) {
-        xAuditUserService.deleteAudit(ids);
+        xAuditService.deleteAudit(ids);
     }
 
     @DeleteMapping("deleteUser")
@@ -56,7 +56,7 @@ public class XAuditUserController {
     })
     @LogAnnotation(module="删除被某个审计员审计的用户")
     public void deleteUser(@RequestParam String ids) {
-        xAuditUserService.deleteUser(ids);
+        xAuditService.deleteUser(ids);
     }
 
     @GetMapping("listAudit")
@@ -64,13 +64,13 @@ public class XAuditUserController {
     @LogAnnotation(module="获得所有的审计员")
     public PageTableResponse listAudit(PageTableRequest request) {
         request.setLimit(0);
-        return xAuditUserService.listAudit(request);
+        return xAuditService.listAudit(request);
     }
 
     @GetMapping("listUser")
     @ApiOperation(value = "获取某审计员可审计名单")
     @LogAnnotation(module="获取某审计员可审计名单")
     public PageTableResponse listUser(PageTableRequest request) {
-        return xAuditUserService.listUser(request);
+        return xAuditService.listUser(request);
     }
 }

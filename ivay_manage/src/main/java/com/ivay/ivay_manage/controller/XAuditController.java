@@ -5,7 +5,7 @@ import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.RedisUtils;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.service.XLoanRateService;
+import com.ivay.ivay_manage.service.XLoanService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
@@ -74,7 +74,7 @@ public class XAuditController {
     }
 
     @Autowired
-    private XLoanRateService xLoanRateService;
+    private XLoanService xLoanService;
 
     @PostMapping("updateCreditLimit")
     @ApiOperation(value = "提額")
@@ -82,7 +82,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
     public long updateCreditLimit(@RequestParam String userGid) {
-        return xLoanRateService.acquireCreditLimit(userGid);
+        return xLoanService.acquireCreditLimit(userGid);
     }
 
     @PostMapping("autoAudit")

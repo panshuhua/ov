@@ -8,7 +8,7 @@
 </head>
 <body>
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-		<form class="form-horizontal" id="form" method="post" action="/excels"
+		<form class="form-horizontal" id="form" method="post" action="/manage/excels"
 			onsubmit="return false" enctype="multipart/form-data">
 			<fieldset>
 				<input id="token" name="token" hidden="true">
@@ -82,7 +82,7 @@ FROM
 				$.ajax({
 					type : 'post',
 					async:false,
-					url : '/excels/sql-count?sql='+sql,
+					url : '/manage/excels/sql-count?sql='+sql,
 					contentType: "application/json; charset=utf-8",  
 					success : function(data) {
 						if(data == 0){
@@ -114,7 +114,7 @@ FROM
 			$.ajax({
 				type : 'post',
 				async:false,
-				url : '/excels/show-datas?sql='+$("#sql").val(),
+				url : '/manage/excels/show-datas?sql='+$("#sql").val(),
 				contentType: "application/json; charset=utf-8",  
 				success : function(data) {
 					var size = data.length;

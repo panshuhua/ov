@@ -7,7 +7,7 @@ import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.service.PermissionService;
 import com.ivay.ivay_manage.service.RoleService;
-import com.ivay.ivay_manage.service.XAuditUserService;
+import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.PermissionDao;
 import com.ivay.ivay_repository.model.Permission;
@@ -218,7 +218,7 @@ public class PermissionController {
     private RoleService roleService;
 
     @Autowired
-    private XAuditUserService xAuditUserService;
+    private XAuditService xAuditService;
 
     @GetMapping("getLoginAuditRole")
     @ApiOperation("获取当前用户的审计权限")

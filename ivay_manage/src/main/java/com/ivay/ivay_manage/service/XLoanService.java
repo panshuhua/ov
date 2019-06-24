@@ -5,7 +5,7 @@ import com.ivay.ivay_repository.model.XLoanRate;
 
 import java.util.List;
 
-public interface XLoanRateService {
+public interface XLoanService {
     /**
      * 手动设置借款利率
      *
