@@ -12,6 +12,4 @@ public interface XUserContactsService {
      * @return
      */
     boolean saveAll(XRiskInfo riskInfo);
-
-    PageTableResponse getByGid(Integer limit, Integer num, String gid);
 }

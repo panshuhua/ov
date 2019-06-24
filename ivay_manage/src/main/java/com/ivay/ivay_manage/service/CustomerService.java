@@ -1,9 +1,10 @@
 package com.ivay.ivay_manage.service;
 
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.XRecordLoan2;
 import com.ivay.ivay_repository.dto.XRecordRepayment2;
-import com.ivay.ivay_repository.model.XFileInfo;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
+import com.ivay.ivay_repository.model.XFileInfo;
 import com.ivay.ivay_repository.model.XUserExtInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
 
@@ -33,5 +34,17 @@ public interface CustomerService {
     int countBank(Map<String, Object> params);
 
     List<XUserCardAndBankInfo> listBank(Map<String, Object> params, Integer offset, Integer limit);
+
+    /**
+     * 获取通讯录
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @return
+     */
+    PageTableResponse list(int limit, int num, String userGid);
+
+    PageTableResponse repaymentInfo(int limit, int num, String userGid, String type);
 
 }

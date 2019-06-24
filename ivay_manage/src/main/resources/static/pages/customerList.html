@@ -277,13 +277,8 @@ function init(){
         	"serverSide" : true,
         	"retrieve":true,
         	"language": {
-                //"url": "/js/plugin/datatables/Chinese.lang"
-               /*  "sZeroRecords":"没有匹配结果",
-                "sInfoEmpty":"显示第_START_至_END_项结果，共_TOTAL_项",
-                "sEmptyTable":"表中数据为空" */
             },
         	"ajax": {
-        		//"url" : "/dicts",
         		"url" : "/customer/listBasicInfos",
         		"type":"get",
         		"data":function(d){
@@ -493,7 +488,7 @@ function showLoan(gid){
             //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
-    		"url" : "/customer/listLoans",
+    		"url" : "/manage/customer/listLoans",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
@@ -563,7 +558,7 @@ function showRepay(gid){
             //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
-    		"url" : "/customer/listRepays",
+    		"url" : "/manage/customer/listRepays",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
@@ -630,7 +625,7 @@ function showBank(gid){
             //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
-    		"url" : "/customer/listBanks",
+    		"url" : "/manage/customer/listBanks",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){

@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.dao.master;
 
+import com.ivay.ivay_repository.dto.XRepaymentAccountInfo;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import org.apache.ibatis.annotations.*;
 
@@ -30,12 +31,22 @@ public interface XRecordRepaymentDao {
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<XRecordRepayment> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XRecordRepayment> list(@Param("params") Map<String, Object> params,
+                                @Param("offset") Integer offset,
+                                @Param("limit") Integer limit);
 
     @Select("update x_record_repayment set repayment_status=#{repaymentStatus}, fail_reason=#{failReason} where id=#{id}")
-    Integer updateRepaymentStatus(@Param("id") long id, @Param("repaymentStatus") int repaymentStatus, @Param("failReason") String failReason);
+    Integer updateRepaymentStatus(@Param("id") long id,
+                                  @Param("repaymentStatus") int repaymentStatus,
+                                  @Param("failReason") String failReason);
 
     @Select("select * from x_record_repayment where order_id=#{orderId} and repayment_status=1")
     XRecordRepayment getXRecordRepaymentByOrderId(String orderId);
+
+    int countRepaymentInfo(@Param("params") Map<String, Object> params);
+
+    List<XRepaymentAccountInfo> listRepaymentInfo(@Param("params") Map<String, Object> params,
+                                                  @Param("offset") Integer offset,
+                                                  @Param("limit") Integer limit);
 
 }

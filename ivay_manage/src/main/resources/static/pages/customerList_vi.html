@@ -289,7 +289,7 @@ function init(){
                
             },
         	"ajax": {
-        		"url" : "/customer/listBasicInfos",
+        		"url" : "/manage/customer/listBasicInfos",
         		"type":"get",
         		"data":function(d){
         			d.mobile = $("#mobile").val();
@@ -401,7 +401,7 @@ function showContact(gid){
             }
         },
     	"ajax": {
-    		"url" : "/customer/listContactInfos",
+    		"url" : "/manage/customer/listContactInfos",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
@@ -504,7 +504,7 @@ function showLoan(gid){
             }
         },
     	"ajax": {
-    		"url" : "/customer/listLoans",
+    		"url" : "/manage/customer/listLoans",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
@@ -582,7 +582,7 @@ function showRepay(gid){
             }
         },
     	"ajax": {
-    		"url" : "/customer/listRepays",
+    		"url" : "/manage/customer/listRepays",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){
@@ -657,7 +657,7 @@ function showBank(gid){
             }
         },
     	"ajax": {
-    		"url" : "/customer/listBanks",
+    		"url" : "/manage/customer/listBanks",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){

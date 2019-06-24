@@ -276,4 +276,48 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                 a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
+
+    /**
+     * 查看逾期用户
+     *
+     * @param limit
+     * @param num
+     * @param type
+     * @return
+     */
+    @Override
+    public PageTableResponse overDueUsers(int limit, int num, String type) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
+        request.getParams().put("type", type);
+        return new PageTableHandler(
+                a -> xUserInfoDao.countOverDueUsers(a.getParams()),
+                a -> xUserInfoDao.overDueUsers(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
+
+    /**
+     * 查看逾期借款信息
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @param type
+     * @return
+     */
+    @Override
+    public PageTableResponse overDueLoan(int limit, int num, String userGid, String type) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
+        request.getParams().put("type", type);
+        request.getParams().put("userGid", userGid);
+        return new PageTableHandler(
+                a -> xUserInfoDao.countOverDueLoan(a.getParams()),
+                a -> xUserInfoDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
 }

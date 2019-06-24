@@ -24,7 +24,9 @@ public interface XUserContactsDao {
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<XUserContacts> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset, @Param("limit") Integer limit);
+    List<XUserContacts> list(@Param("params") Map<String, Object> params,
+                             @Param("offset") Integer offset,
+                             @Param("limit") Integer limit);
 
     boolean insertBatchContacts(Set<XUserContacts> xUserContacts);
 

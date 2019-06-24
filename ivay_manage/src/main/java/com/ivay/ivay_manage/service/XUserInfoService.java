@@ -49,5 +49,26 @@ public interface XUserInfoService {
      * @return
      */
     PageTableResponse listSameName(PageTableRequest request);
+
+    /**
+     * 查看逾期用户
+     *
+     * @param limit
+     * @param num
+     * @param type
+     * @return
+     */
+    PageTableResponse overDueUsers(int limit, int num, String type);
+
+    /**
+     * 查看逾期借款信息
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @param type
+     * @return
+     */
+    PageTableResponse overDueLoan(int limit, int num, String userGid, String type);
 }
 

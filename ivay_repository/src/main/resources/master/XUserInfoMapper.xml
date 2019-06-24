@@ -397,4 +397,82 @@
         </if>
     </select>
 
+    <sql id="over_due_user_condition">
+        SELECT 1 FROM x_record_loan xrl
+        WHERE loan_status=1 AND repayment_status!=2 AND xui.user_gid=xrl.user_gid
+        <if test="params.phone != null and params.phone != ''">
+            and xui.phone like concat("%",#{params.phone},"%")
+        </if>
+        <if test="params.name != null and params.name != ''">
+            and xui.name like concat("%",#{params.name},"%")
+        </if>
+        <if test="params.identityCard != null and params.identityCard != ''">
+            and xui.identity_card like concat("%",#{params.identityCard},"%")
+        </if>
+        <choose>
+            <!-- 逾期三天之内 -->
+            <when test="params.type == '0'.toString()">
+                AND xrl.due_time &lt; DATE_ADD(sysdate(),INTERVAL -2 DAY)
+            </when>
+            <!-- 逾期超过三天 -->
+            <when test="params.type == '1'.toString()">
+                AND xrl.due_time &lt; sysdate() AND sysdate() &lt; DATE_ADD(xrl.due_time,INTERVAL 3 DAY)
+            </when>
+            <otherwise>
+                AND xrl.due_time &lt; sysdate()
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="countOverDueUsers" resultType="int">
+        SELECT count(*)
+        FROM x_user_info xui
+        WHERE EXISTS (
+            <include refid="over_due_user_condition" />
+        )
+    </select>
+
+    <select id="overDueUsers" resultType="com.ivay.ivay_repository.model.XUserInfo">
+        SELECT *
+        FROM x_user_info xui
+        WHERE EXISTS (
+            <include refid="over_due_user_condition" />
+        )
+        ORDER BY name asc
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <sql id="over_due_loan_condition">
+        where loan_status=1 AND repayment_status!=2 AND xrl.user_gid=#{params.userGid}
+        <choose>
+            <!-- 逾期三天之内 -->
+            <when test="params.type == '0'.toString()">
+                AND xrl.due_time &lt; DATE_ADD(sysdate(),INTERVAL -2 DAY)
+            </when>
+            <!-- 逾期超过三天 -->
+            <when test="params.type == '1'.toString()">
+                AND xrl.due_time &lt; sysdate() AND sysdate() &lt; DATE_ADD(xrl.due_time,INTERVAL 3 DAY)
+            </when>
+            <otherwise>
+                AND xrl.due_time &lt; sysdate()
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="countOverDueLoan" resultType="int">
+        select count(1) from x_record_loan xrl
+        <include refid="over_due_loan_condition" />
+    </select>
+
+    <select id="overDueLoan" resultType="com.ivay.ivay_repository.model.XRecordLoan">
+        select * from x_record_loan xrl
+        <include refid="over_due_loan_condition" />
+        order by due_time asc
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
 </mapper>

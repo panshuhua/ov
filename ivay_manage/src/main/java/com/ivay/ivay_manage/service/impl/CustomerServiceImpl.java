@@ -1,9 +1,14 @@
 package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_common.dto.DictType;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_manage.service.CustomerService;
 import com.ivay.ivay_repository.dao.master.CustomerDao;
+import com.ivay.ivay_repository.dao.master.XRecordRepaymentDao;
+import com.ivay.ivay_repository.dao.master.XUserContactsDao;
 import com.ivay.ivay_repository.dto.XRecordLoan2;
 import com.ivay.ivay_repository.dto.XRecordRepayment2;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
@@ -178,5 +183,45 @@ public class CustomerServiceImpl implements CustomerService {
                                                Integer offset,
                                                Integer limit) {
         return customerDao.listBank(params, offset, limit);
+    }
+
+    @Autowired
+    private XUserContactsDao xUserContactsDao;
+
+    /**
+     * 获取通讯录
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @return
+     */
+    @Override
+    public PageTableResponse list(int limit, int num, String userGid) {
+        PageTableRequest request = new PageTableRequest();
+        request.setOffset((num - 1) * limit);
+        request.setLimit(limit);
+        request.getParams().put("userGid", userGid);
+        return new PageTableHandler(
+                a -> xUserContactsDao.count(a.getParams()),
+                a -> xUserContactsDao.list(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
+
+    @Autowired
+    private XRecordRepaymentDao xRecordRepaymentDao;
+
+    @Override
+    public PageTableResponse repaymentInfo(int limit, int num, String userGid, String type) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
+        request.getParams().put("type", type);
+        request.getParams().put("userGid", userGid);
+        return new PageTableHandler(
+                a -> xRecordRepaymentDao.countRepaymentInfo(a.getParams()),
+                a -> xRecordRepaymentDao.listRepaymentInfo(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 }

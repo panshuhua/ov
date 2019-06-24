@@ -176,4 +176,17 @@ public interface XUserInfoDao {
     List<XUserInfo> listSameName(@Param("params") Map<String, Object> params,
                               @Param("offset") Integer offset,
                               @Param("limit") Integer limit);
+
+
+    int countOverDueUsers(@Param("params") Map<String, Object> params);
+
+    List<XUserInfo> overDueUsers(@Param("params") Map<String, Object> params,
+                                 @Param("offset") Integer offset,
+                                 @Param("limit") Integer limit);
+
+    int countOverDueLoan(@Param("params") Map<String, Object> params);
+
+    List<XRecordLoan> overDueLoan(@Param("params") Map<String, Object> params,
+                                 @Param("offset") Integer offset,
+                                 @Param("limit") Integer limit);
 }

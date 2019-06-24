@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ivay.ivay_repository.dao.master.XUserContactsDao">
 
-	<sql id="where">
+	<sql id="list_condition">
 		<where>
 			<if test="params.id != null and params.id != ''">
 				and id = #{params.id} 
@@ -24,15 +24,17 @@
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from x_user_contacts t
-		<include refid="where" />
+		select count(distinct(phone_number)) from x_user_contacts t
+		<include refid="list_condition" />
 	</select>
 
 	<select id="list" resultType="com.ivay.ivay_repository.model.XUserContacts">
-		select * from x_user_contacts t
-		<include refid="where" />
-		order by ${params.orderBy}
-		limit #{offset}, #{limit}
+		select distinct(phone_number),contact_name from x_user_contacts t
+		<include refid="list_condition" />
+		order by contact_name asc
+		<if test="limit != null and limit != 0">
+			limit #{offset}, #{limit}
+		</if>
 	</select>
 
 	<update id="update">
@@ -50,11 +52,10 @@
 			<if test="phoneNumber != null">
 				phone_number = #{phoneNumber}, 
 			</if>
-
 		</set>
-
 		where t.id = #{id}
 	</update>
+
 	<!-- myself:批量插入 -->
 	<insert id="insertBatchContacts" parameterType="java.util.Set">
 		insert into x_user_contacts  (user_gid, update_date, contact_name, phone_number) values

@@ -1,9 +1,6 @@
 package com.ivay.ivay_app.service.impl;
 
 import com.ivay.ivay_app.service.XUserContactsService;
-import com.ivay.ivay_common.table.PageTableHandler;
-import com.ivay.ivay_common.table.PageTableRequest;
-import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_repository.dao.master.XUserAppNumDao;
 import com.ivay.ivay_repository.dao.master.XUserContactsDao;
@@ -13,7 +10,6 @@ import com.ivay.ivay_repository.model.XUserAppNum;
 import com.ivay.ivay_repository.model.XUserContacts;
 import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_repository.model.XUserRisk;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class XUserIContactsServiceImpl implements XUserContactsService {
@@ -29,8 +27,10 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 	
     @Autowired
     private XUserContactsDao xUserContactsDao;
+
     @Autowired
     private XUserAppNumDao xUserAppNumDao;
+
     @Autowired
     private XUserRiskDao xUserRiskDao;
 
@@ -138,20 +138,5 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 //        }
         
         return true;
-    }
-
-    @Override
-    public PageTableResponse getByGid(Integer limit, Integer num, String gid) {
-        PageTableRequest request = new PageTableRequest();
-        request.setOffset(limit * (num - 1));
-        request.setLimit(limit);
-        Map<String, Object> params = new HashMap<>();
-        params.put("orderBy", "contact_name");
-        params.put("userGid", gid);
-        request.setParams(params);
-        return new PageTableHandler(
-                a -> xUserContactsDao.count(a.getParams()),
-                a -> xUserContactsDao.list(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
     }
 }

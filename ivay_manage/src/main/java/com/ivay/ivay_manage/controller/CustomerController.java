@@ -4,6 +4,7 @@ import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.CustomerService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
  * @author psh
  */
 @RestController
-@RequestMapping("customer")
+@RequestMapping("manage/customer")
+@Api(tags = "客服系统")
 public class CustomerController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
 
     @GetMapping(params = {"start", "length"}, value = "listBasicInfos")
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "基础信息列表")
     public PageTableResponse listBasicInfos(PageTableRequest request) {
         return new PageTableHandler(
                 a -> customerService.countBasicInfo(a.getParams()),
@@ -32,7 +34,7 @@ public class CustomerController {
     }
 
     @GetMapping(params = {"start", "length"}, value = "listContactInfos")
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "联系人列表")
     public PageTableResponse listContactInfos(PageTableRequest request) {
         return new PageTableHandler(
                 a -> customerService.countContactInfo(a.getParams()),
@@ -41,7 +43,7 @@ public class CustomerController {
     }
 
     @GetMapping(params = {"start", "length"}, value = "listLoans")
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "借款列表")
     public PageTableResponse listLoans(PageTableRequest request) {
         return new PageTableHandler(
                 a -> customerService.countLoan(a.getParams()),
@@ -50,7 +52,7 @@ public class CustomerController {
     }
 
     @GetMapping(params = {"start", "length"}, value = "listRepays")
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "还款列表")
     public PageTableResponse listRepays(PageTableRequest request) {
         return new PageTableHandler(
                 a -> customerService.countRepay(a.getParams()),
@@ -59,7 +61,7 @@ public class CustomerController {
     }
 
     @GetMapping(params = {"start", "length"}, value = "listBanks")
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "银行列表")
     public PageTableResponse listBanks(PageTableRequest request) {
         return new PageTableHandler(
                 a -> customerService.countBank(a.getParams()),
