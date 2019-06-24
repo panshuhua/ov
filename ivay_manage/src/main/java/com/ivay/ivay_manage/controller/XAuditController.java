@@ -61,6 +61,9 @@ public class XAuditController {
         return response;
     }
 
+    @Autowired
+    private XLoanService xLoanService;
+
     @GetMapping("queryAuditQualification")
     @ApiOperation(value = "查询贷款权限")
     @ApiImplicitParams({
@@ -70,11 +73,8 @@ public class XAuditController {
     public String queryAuditQualification(@RequestParam String userGid,
                                           @RequestParam int flag) {
         // 获得某人的风控审核结果，返回未通过审核的理由，空字符串表示通过审核
-        return xUserInfoService.queryRiskQualificationDemo(userGid, flag);
+        return xLoanService.queryRiskQualificationDemo(userGid, flag);
     }
-
-    @Autowired
-    private XLoanService xLoanService;
 
     @PostMapping("updateCreditLimit")
     @ApiOperation(value = "提額")
@@ -82,7 +82,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
     public long updateCreditLimit(@RequestParam String userGid) {
-        return xLoanService.acquireCreditLimit(userGid);
+        return xLoanService.refreshCreditLimit(userGid);
     }
 
     @PostMapping("autoAudit")

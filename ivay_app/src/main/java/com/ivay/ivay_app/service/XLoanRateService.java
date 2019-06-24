@@ -33,23 +33,9 @@ public interface XLoanRateService {
     PageTableResponse list(int limit, int num, String userGid);
 
     /**
-     * 初始化個人借貸信息，包括借款利率、可借貸額度等
-     *
-     * @param userGid
-     */
-    void initLoanRateAndCreditLimit(String userGid);
-
-    /**
      * 根据后台配置某个用户的借款利率
      *
      * @param userGid
      */
     int acquireLoanRate(String userGid);
-
-    /**
-     * 獲得某人的授信額度，如果滿足提額條件則提額
-     *
-     * @param userGid
-     */
-    long acquireCreditLimit(String userGid);
 }

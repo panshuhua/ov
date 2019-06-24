@@ -1,26 +1,23 @@
 package com.ivay.ivay_app.controller;
 
+import com.ivay.ivay_app.service.XRegisterService;
+import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.annotation.Decrypt;
 import com.ivay.ivay_common.annotation.Encryption;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_repository.dto.CreditLine;
-import com.ivay.ivay_repository.dto.VerifyCodeInfo;
-import com.ivay.ivay_repository.model.XUserInfo;
-import com.ivay.ivay_app.service.XRegisterService;
-import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.valid.IdentityCard;
 import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
+import com.ivay.ivay_repository.dto.CreditLine;
+import com.ivay.ivay_repository.dto.VerifyCodeInfo;
+import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +25,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("star/userInfos")
@@ -38,10 +37,13 @@ public class XUserInfoController {
 
     @Autowired
     private XUserInfoService xUserInfoService;
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
     @Autowired
     private XRegisterService registerService;
+
     @Autowired
     private I18nService i18nService;
 

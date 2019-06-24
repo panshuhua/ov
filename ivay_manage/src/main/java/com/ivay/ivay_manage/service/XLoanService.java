@@ -1,36 +1,33 @@
 package com.ivay.ivay_manage.service;
 
-import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_repository.model.XLoanRate;
-
-import java.util.List;
+import com.ivay.ivay_repository.dto.XLoanQualification;
 
 public interface XLoanService {
     /**
-     * 手动设置借款利率
+     * 获取贷前策略实体
      *
-     * @param xLoanRate
+     * @param userGid
+     * @param flag    0 贷前策略 1 贷中策略
      * @return
      */
-    int save(XLoanRate xLoanRate);
+    XLoanQualification getAuditQualificationObj(String userGid, int flag);
 
     /**
-     * 手动批量插入借款利率
+     * 获得某人的风控审核结果，空字符串表示通过审核
      *
-     * @param list
-     * @return
+     * @param userGid
+     * @param flag    0 授信策略 1 借款策略
+     * @return 返回未通过审核的理由
      */
-    int saveByBatch(List<XLoanRate> list);
+    String queryRiskQualificationDemo(String userGid, int flag);
 
     /**
-     * 获取借款利率列表
+     * 获取贷中策略实体
      *
-     * @param limit
-     * @param num
      * @param userGid
      * @return
      */
-    PageTableResponse list(int limit, int num, String userGid);
+    XLoanQualification getLoanQualificationObj(XLoanQualification xLoanQualification, String userGid);
 
     /**
      * 初始化個人借貸信息，包括借款利率、可借貸額度等
@@ -40,16 +37,16 @@ public interface XLoanService {
     void initLoanRateAndCreditLimit(String userGid);
 
     /**
-     * 根据后台配置某个用户的借款利率
+     * 保存用户的借款利率
      *
      * @param userGid
      */
-    int acquireLoanRate(String userGid);
+    int saveLoanRate(String userGid);
 
     /**
      * 獲得某人的授信額度，如果滿足提額條件則提額
      *
      * @param userGid
      */
-    long acquireCreditLimit(String userGid);
+    long refreshCreditLimit(String userGid);
 }

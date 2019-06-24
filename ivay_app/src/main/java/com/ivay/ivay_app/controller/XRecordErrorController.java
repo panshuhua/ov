@@ -29,7 +29,7 @@ public class XRecordErrorController {
      *
      * @return
      */
-    @PostMapping("/save")
+    @PostMapping("save")
     public Response<String> saveErrorInfo(@RequestBody ErrorMsg errorMsg) {
         Response<String> response = new Response<>();
         recordErrorService.saveErrorInfo(errorMsg);

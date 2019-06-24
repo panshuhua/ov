@@ -12,13 +12,10 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.dao.master.XUserRiskDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
-import com.ivay.ivay_repository.dto.XLoanQualification;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XUserInfo;
-import com.ivay.ivay_repository.model.XUserRisk;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +48,6 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Autowired
     private XAuditService xAuditService;
-
-    @Resource
-    private XUserRiskDao xUserRiskDao;
 
     @Autowired
     private I18nService i18nService;
@@ -131,7 +125,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             xUserInfo.setUserStatus(SysVariable.USER_STATUS_AUTH_SUCCESS);
 
             // 获取风控信息
-            String demo = queryRiskQualificationDemo(userGid, SysVariable.RISK_TYPE_AUDIT);
+            String demo = xLoanService.queryRiskQualificationDemo(userGid, SysVariable.RISK_TYPE_AUDIT);
             if (!StringUtils.isEmpty(demo)) {
                 // 风控自动拒绝
                 xUserInfo.setRefuseType(SysVariable.AUDIT_REFUSE_TYPE_AUTO);
@@ -198,208 +192,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         // endregion
     }
 
-    @Override
-    public XLoanQualification getAuditQualificationObj(String userGid, int flag) {
-        XLoanQualification xLoanQualification = xUserInfoDao.getAuditQualificationObj(userGid);
-        //获取经纬度
-        XUserRisk xUserRisk = xUserRiskDao.getGps(userGid);
-        if (xLoanQualification == null) {
-            throw new BusinessException("很抱歉，您的借款申请未通过审核");
-        }
-        xLoanQualification.setContactsNum(xUserInfoDao.countContacts(userGid));
-        xLoanQualification.setOneMajorPhoneNum(xUserInfoDao.countMajorPhone(xLoanQualification.getMajorPhone()));
-        xLoanQualification.setOnePhoneNum(xUserInfoDao.countOnePhone(xLoanQualification.getMacCode()));
-
-        // 根据经纬度计算10m之内的gps数量
-        if (xUserRisk != null) {
-            if (xUserRisk.getLongitude() != null && xUserRisk.getLatitude() != null) {
-                Integer gpsNum = xUserInfoDao.getUserCountsBygps(xUserRisk.getLongitude(), xUserRisk.getLatitude());
-                if (gpsNum == null) {
-                    gpsNum = 0;
-                }
-                xLoanQualification.setOneGpsNum(gpsNum);
-            } else {
-                xLoanQualification.setOneGpsNum(-1);
-            }
-        } else {
-            xLoanQualification.setOneGpsNum(-1);
-        }
-
-
-        //实时计算社交类app个数
-        String updateDate = DateUtils.dateToString_YYYY_MM_DD(new Date());
-        Integer appNumCount = xUserRiskDao.queryAppNum(userGid, updateDate);
-        xLoanQualification.setAppCount(appNumCount);
-
-        return xLoanQualification;
-    }
-
-    @Override
-    public XLoanQualification getLoanQualificationObj(XLoanQualification xLoanQualification, String userGid) {
-        //查询历史最大逾期天数
-        Integer maxOverdueDay = xUserInfoDao.getMaxOverdueDay(userGid);
-        if (maxOverdueDay == null) {
-            maxOverdueDay = 0;
-        }
-        xLoanQualification.setMaxOverdueDay(maxOverdueDay);
-
-        //查询当前是否处于逾期中
-        Integer overdueDaysnow = xUserInfoDao.getOverdueCountsNow(userGid);
-        if (overdueDaysnow > 0) {
-            xLoanQualification.setOverdueFlag(true);
-        }
-        //最近一笔结清交易逾期天数
-        Integer lastOverdueDay = xUserInfoDao.getlastOverdueDay(userGid);
-        if (lastOverdueDay == null) {
-            lastOverdueDay = 0;
-        }
-        xLoanQualification.setLastOverdueDay(lastOverdueDay);
-
-        // 实时计算14天内社交类app的最大个数
-        String updateDate = DateUtils.dateToString_MM_DD(new Date());
-        Integer appMaxCount = xUserRiskDao.queryMaxAppNum(userGid, updateDate);
-        xLoanQualification.setAppMaxCount(appMaxCount);
-
-        return xLoanQualification;
-    }
-
     @Autowired
     private BlackUserService blackUserService;
-
-    /**
-     * 获得某人的风控审核结果，空字符串表示通过审核
-     *
-     * @param userGid
-     * @param flag    0 授信策略 1 借款策略
-     * @return 返回未通过审核的理由
-     */
-    @Override
-    public String queryRiskQualificationDemo(String userGid, int flag) {
-        // region --用户风控管理
-        Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
-        if (userManageConfig != null) {
-            Map config = (LinkedHashMap) userManageConfig.get("blackUser");
-            boolean allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
-            logger.info("{}允许黑名单通过风控", allowBlackFlag ? "" : "不");
-
-            XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
-            if (!allowBlackFlag) {
-                // 黑名单用户 拒绝
-                if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
-                    logger.info("黑名单用户: {}", userGid);
-                    return "黑名单用户: " + userGid;
-                }
-            }
-
-            config = (LinkedHashMap) userManageConfig.get("normalUser");
-            allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
-            logger.info("{}允许自然人通过风控", allowBlackFlag ? "" : "不");
-
-            if (!allowBlackFlag) {
-                // 自然人（非白名单用户和黑名单用户）
-                List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
-                if (whiteList.size() == 0) {
-                    logger.info("非白名单用户，不允许通过风控: {}", userGid);
-                    return "非白名单用户，不允许通过风控: " + userGid;
-                }
-            }
-        }
-        // endregion
-
-        // region --风控管理配置
-        Map riskConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_RISK));
-        if (riskConfig == null || "false".equals(riskConfig.get("enable").toString())) {
-            return null;
-        }
-
-        // 获取风控对象
-        XLoanQualification xLoanQualification = getAuditQualificationObj(userGid, flag);
-        // 借款需要查询逾期记录
-        if (flag == SysVariable.RISK_TYPE_LOAN) {
-            xLoanQualification = getLoanQualificationObj(xLoanQualification, userGid);
-        }
-        // endregion
-
-        Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
-        StringBuilder sb = new StringBuilder();
-        for (Object key : config.keySet()) {
-            String[] values = config.get(key).toString().split("~");
-            int min = Integer.parseInt(values[0]);
-            int max = (values.length == 1) ? Integer.MAX_VALUE : Integer.parseInt(values[1]);
-            // region --风控风控规则返回拒绝信息
-            switch (key.toString()) {
-                case "age":
-                    // 年龄<18或者年龄>50岁时，则拒贷
-                    if (xLoanQualification.getAge() < min || xLoanQualification.getAge() > max) {
-                        sb.append("年龄不符: ").append(xLoanQualification.getAge()).append(";");
-                    }
-                    break;
-                case "contact":
-                    // 实时计算的联系人个数<10且14天内的最大联系人个数<10,拒贷（人数使用配置）
-                    if (xLoanQualification.getContactsNum() < min || xLoanQualification.getContactsNum() > max) {
-                        sb.append("联系人个数不符: ").append(xLoanQualification.getContactsNum()).append(";");
-                    }
-                    break;
-                case "gps":
-                    // 近一个月同一gps(精确到10m)注册用户数>1，拒贷
-                    if (xLoanQualification.getOneGpsNum() < min || xLoanQualification.getOneGpsNum() > max) {
-                        sb.append("近一个月同一gps(精确到10m)注册用户数不符: ").append(xLoanQualification.getOneGpsNum()).append(";");
-                    }
-                    break;
-                case "macCode":
-                    // 近一个月同一设备id注册用户数>1，拒贷
-                    if (xLoanQualification.getOnePhoneNum() < min || xLoanQualification.getOnePhoneNum() > max) {
-                        sb.append("近一个月同一设备id注册用户数不符: ").append(xLoanQualification.getOnePhoneNum()).append(";");
-                    }
-                    break;
-                case "majorRelation":
-                    // 亲密联系人号码出现次数> 2，拒贷（人数使用配置）
-                    if (xLoanQualification.getOneMajorPhoneNum() < min || xLoanQualification.getOneMajorPhoneNum() > max) {
-                        sb.append("亲密联系人号码出现次数不符: ").append(xLoanQualification.getOneMajorPhoneNum()).append(";");
-                    }
-                    break;
-                case "appNum":
-                    //社交类app的个数不符
-                    //贷前策略
-                    if (flag == 0) {
-                        if (xLoanQualification.getAppCount() <= min) {
-                            sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
-                        }
-                    }
-
-                    //贷中策略
-                    if (flag == 1) {
-                        if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
-                            sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
-                        }
-                    }
-
-                    break;
-                case "overdueDay":
-                    //历史最大逾期天数>=30天，拒贷
-                    if (xLoanQualification.getMaxOverdueDay() >= max) {
-                        sb.append("历史最大逾期天数不符: ").append(xLoanQualification.getMaxOverdueDay()).append(";");
-                    }
-                    break;
-                case "overdueDay2":
-                    //历史最大逾期天数在[15,30)天且最近一笔结清交易逾期天数大于5天，拒贷
-                    if (xLoanQualification.getMaxOverdueDay() >= 15
-                            && xLoanQualification.getMaxOverdueDay() < 30
-                            && xLoanQualification.getLastOverdueDay() > max) {
-                        sb.append("历史最大逾期天数和结清交易逾期天数不符: ").append(xLoanQualification.getMaxOverdueDay()).append(";");
-                    }
-                    break;
-                default:
-                    logger.info("未知的类型：{}", key.toString());
-            }
-            // endregion
-        }
-        //当前处于逾期中，拒贷
-        if (xLoanQualification.isOverdueFlag()) {
-            sb.append("当前处于逾期中: ").append(userGid).append(";");
-        }
-        return sb.toString();
-    }
 
     /**
      * 对待授信用户进行自动审核或分配审计员
