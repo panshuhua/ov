@@ -28,6 +28,7 @@ timer:
   # 逾期费用
   overdueFee: 0 0 1 1/1 * ?
   firebaseNotice: 0 23 11 * * ?
+  autoCreateVA: 0 0 0-23 * * ?
 
 # 借款url
 #baokim

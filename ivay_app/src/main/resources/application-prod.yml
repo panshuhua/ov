@@ -27,7 +27,7 @@ timer:
   # 逾期费用
   overdueFee: 0 0 1 1/1 * ?
   firebaseNotice: 0 30 06 * * ?
-
+  autoCreateVA: 0 0 0-23 * * ?
 # 借款url
 #baokim
 api_transfer_url: http://210.245.83.82:9095/Golive/FirmBanking

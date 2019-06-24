@@ -16,4 +16,7 @@ public interface XVirtualAccountService {
     XVirtualAccount selectByOrderId(String orderId);
 
     ValVirtualAccountRsp updateXVirtualAccount(XVirtualAccount xVirtualAccount, Long collectAmount);
+
+    boolean saveVirtualAccount();
+
 }
