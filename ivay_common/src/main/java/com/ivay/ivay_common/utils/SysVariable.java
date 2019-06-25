@@ -158,4 +158,13 @@ public class SysVariable {
     public static final String GPS = "gps"; // gps信息
     public static final String OTHER = "other"; // mac地址/手机品牌/使用什么手机流量
 
+    // 日志记录的参数名
+    public static final String PARAM_MOBILE = "mobile";
+    public static final String PARAM_OPTTYPE = "optType";
+    public static final String PARAM_LOGININFO = "loginInfo";
+    public static final String PARAM_NOTICE = "notice";
+    public static final String PARAM_REQUEST = "request";
+    public static final String RETURN_SUCESS_CODE = "200";
+    public static final String METHOD_SENDREGISTERCODE = "sendRegisterCode";
+
 }
