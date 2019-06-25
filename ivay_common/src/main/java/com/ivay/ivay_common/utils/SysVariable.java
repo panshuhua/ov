@@ -18,7 +18,6 @@ public class SysVariable {
     // 交易密碼設置狀態: 沒設置
     public static final String TRANSFER_PWD_NONE = "0";
 
-
     // 照片类型: 正面照
     public static final String PHOTO_TYPE_FRONT = "1";
     // 照片类型: 侧面照
@@ -91,6 +90,12 @@ public class SysVariable {
     public static final String TEMPLATE_CREDIT_RISK = "riskManage";
     // 配置模板: 用户风控管理配置
     public static final String TEMPLATE_USER_MANAGE = "userManage";
+    // 配置模板：用户状态
+    public static final String TEMPLATE_USER_STATUS = "userStatus";
+    // 配置模板：借款状态
+    public static final String TEMPLATE_LOAN_STATUS = "loanStatus";
+    // 配置模板：还款状态
+    public static final String TEMPLATE_REPAYMENT_STATUS = "repaymentStatus";
 
     // 接口对接
     public static final String API_ACC_TYPE_0 = "0";
@@ -118,12 +123,10 @@ public class SysVariable {
     // redis 借款锁前缀
     public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";
 
-
     // 角色配置
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";
     public static final String ROLE_OVAY_AUDIT = "ovayAudit";
-
 
     // 审核拒绝类型
     // 0人工审核
@@ -132,7 +135,7 @@ public class SysVariable {
     public static final String AUDIT_REFUSE_TYPE_AUTO = "1";
     // 9 黑名单用户的审核代码
     public static final String AUDIT_BLACK_USER_CODE = "9";
-    //  0 拒绝
+    // 0 拒绝
     public static final int AUDIT_REFUSE = 0;
     // 1 通过
     public static final int AUDIT_PASS = 1;
@@ -148,12 +151,11 @@ public class SysVariable {
     public static final String APP_EVENT_LOAN = "1";
     public static final String APP_EVENT_SUCCESS = "1";
     public static final String APP_EVENT_FAIL = "0";
-    
-    //上传风控数据的类型
-    public static final String CONTACT = "contact"; //通讯录联系人
-    public static final String APPNUM = "appNum";   //社交类app的个数
-    public static final String GPS = "gps";         //gps信息
-    public static final String OTHER = "other";     //mac地址/手机品牌/使用什么手机流量
 
+    // 上传风控数据的类型
+    public static final String CONTACT = "contact"; // 通讯录联系人
+    public static final String APPNUM = "appNum"; // 社交类app的个数
+    public static final String GPS = "gps"; // gps信息
+    public static final String OTHER = "other"; // mac地址/手机品牌/使用什么手机流量
 
 }
