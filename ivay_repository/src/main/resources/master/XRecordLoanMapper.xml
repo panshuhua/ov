@@ -91,7 +91,7 @@
         </where>
     </select>
 
-    <!--找出某个用户的所有借款成功的记录，会置顶未还清借款-->
+    <!--找出某个用户的所有借款记录，会置顶未还清借款-->
     <select id="list" resultType="com.ivay.ivay_repository.model.XRecordLoan">
         SELECT * FROM (
             (

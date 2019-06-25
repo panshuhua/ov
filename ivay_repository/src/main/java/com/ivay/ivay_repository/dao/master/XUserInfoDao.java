@@ -177,7 +177,6 @@ public interface XUserInfoDao {
                               @Param("offset") Integer offset,
                               @Param("limit") Integer limit);
 
-
     int countOverDueUsers(@Param("params") Map<String, Object> params);
 
     List<XUserInfo> overDueUsers(@Param("params") Map<String, Object> params,

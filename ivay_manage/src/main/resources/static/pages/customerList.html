@@ -279,7 +279,7 @@ function init(){
         	"language": {
             },
         	"ajax": {
-        		"url" : "/customer/listBasicInfos",
+        		"url" : "/manage/customer/listBasicInfos",
         		"type":"get",
         		"data":function(d){
         			d.mobile = $("#mobile").val();
@@ -394,7 +394,7 @@ function showContact(gid){
             //"url": "/js/plugin/datatables/Chinese.lang"
         },
     	"ajax": {
-    		"url" : "/customer/listContactInfos",
+    		"url" : "/manage/customer/listContactInfos",
     		"type":"get",
     		"data":{"userGid":gid,"lang":lang},
 			"error":function(xhr, textStatus, errorThrown){

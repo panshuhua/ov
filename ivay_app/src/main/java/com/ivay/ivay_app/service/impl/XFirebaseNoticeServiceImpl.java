@@ -161,8 +161,8 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 i++;
                 logger.info("正在发送第" + i + "条信息----------------");
 
-                logger.info("发送firebase到期通知开始-------------");
                 // 发送firebase消息推送
+                logger.info("发送firebase到期通知开始-------------");
                 if (!StringUtils.isEmpty(fmcToken)) {
                     FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
                 }
@@ -224,6 +224,48 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
         }
 
+    }
+
+    @Override
+    public boolean sendOverDueNotice() {
+        // 发送逾期提醒
+        List<XOverDueFee> xOverDueFeeList = xRecordLoanDao.findOverdue();
+        logger.info("逾期提醒的总条数：" + xOverDueFeeList.size() + "-----------------------");
+        // firebase消息标题
+        String title = "";
+        // 短信发送内容
+        String message = "";
+
+        int i = 0;
+        for (XOverDueFee fee : xOverDueFeeList) {
+            try {
+                String fmcToken = fee.getFmcToken();
+                title = i18nService.getMessage("firebase.notice.overdue.remind.titlemsg");
+                message = i18nService.getMessage("firebase.notice.overdue.remind.msg");
+                Integer dueDate = fee.getDueDate();
+                message = MessageFormat.format(message, dueDate);
+
+                i++;
+                logger.info("正在发送第" + i + "条信息----------------");
+
+                // 发送firebase消息推送
+                logger.info("发送firebase到期通知开始-------------");
+                if (!StringUtils.isEmpty(fmcToken)) {
+                    FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
+                }
+                logger.info("发送firebase到期通知结束-------------");
+                Thread.sleep(10000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+                return false;
+            }
+
+        }
+
+        logger.info("发送完毕，总共成功发送" + i + "条");
+
+        return true;
     }
 
 }

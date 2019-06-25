@@ -39,15 +39,21 @@ public interface XRecordLoanDao {
     int count(@Param("params") Map<String, Object> params);
 
     /**
-     * 找出某个用户的所有借款成功的记录，会置顶未还清借款
+     * 找出某个用户的所有借款记录，会置顶未还清借款
      *
      * @param params
      * @param offset
      * @param limit
      * @return
      */
+<<<<<<< HEAD
     List<XRecordLoan> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
         @Param("limit") Integer limit);
+=======
+    List<XRecordLoan> list(@Param("params") Map<String, Object> params,
+                           @Param("offset") Integer offset,
+                           @Param("limit") Integer limit);
+>>>>>>> branch 'master' of https://gitee.com/loveanime/ivay_integration.git
 
     @Select("select IFNULL(SUM(t.due_amount+t.overdue_fee+t.overdue_interest),0) from x_record_loan t"
         + " where t.user_gid = #{userGid} AND t.loan_status='1' AND (t.repayment_status ='0' OR t.repayment_status='1')")
