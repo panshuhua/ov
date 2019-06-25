@@ -93,7 +93,7 @@ public class DateUtils {
         return dateToString(date, YYYY_MM_DD);
 
     }
-    
+
     public static String dateToString_YYYYMMDD(Date date) {
         return dateToString(date, YYYYMMDD);
     }
@@ -139,7 +139,7 @@ public class DateUtils {
     public static String getNowDateYYYY_MM_DD() {
         return dateToString_YYYY_MM_DD(new Date());
     }
-    
+
     public static String getNowDateYYYY_MM_DD_HH_MM() {
         return dateToString(new Date(), YYYY_MM_DD_HH_MM);
     }
@@ -263,8 +263,8 @@ public class DateUtils {
             return d1 - d2;
         } catch (Exception ex) {
             ex.printStackTrace();
+            return 0;
         }
-        return 0;
     }
 
     public static boolean isIndexDCDateBefore(Date date) {
@@ -497,6 +497,7 @@ public class DateUtils {
 
     /**
      * 获取某天的最后一秒
+     *
      * @param time
      * @return
      */
@@ -513,6 +514,7 @@ public class DateUtils {
 
     /**
      * 获取某天的最后一秒
+     *
      * @param date
      * @return
      */
@@ -524,19 +526,20 @@ public class DateUtils {
         calendar.set(Calendar.SECOND, 59);
         return calendar.getTime();
     }
-    
+
     /**
      * 在当前日期的基础上加上几年
+     *
      * @return
      */
     public static String addYears(int year) {
-    	Calendar calendar = new GregorianCalendar();
-    	Date date = new Date();
-    	calendar.setTime(date);
-    	calendar.add(Calendar.YEAR, year);
-    	date=calendar.getTime();
-    	String dateStr=dateToString_YYYYMMDD(date);
-		return dateStr;
+        Calendar calendar = new GregorianCalendar();
+        Date date = new Date();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, year);
+        date = calendar.getTime();
+        String dateStr = dateToString_YYYYMMDD(date);
+        return dateStr;
     }
 
     public static void main(String[] args) throws Exception {
@@ -545,5 +548,5 @@ public class DateUtils {
         System.out.println(getDateEnd(new Date()));
         System.out.println(addYears(5));
     }
-    
+
 }

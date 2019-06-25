@@ -22,7 +22,7 @@ import java.util.*;
 
 @Service
 public class XLoanServiceImpl implements XLoanService {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XLoanService.class);
 
     @Resource
     private XLoanRateDao xLoanRateDao;
@@ -252,12 +252,12 @@ public class XLoanServiceImpl implements XLoanService {
     public void initLoanRateAndCreditLimit(String userGid) {
         // 授信額度
         threadPoolService.execute(() -> {
-            logger.info("开始计算授信额度");
+            logger.info("开始计算授信额度--start");
             refreshCreditLimit(userGid);
         });
         // 借款利率
         threadPoolService.execute(() -> {
-            logger.info("开始计算借款利率");
+            logger.info("开始计算借款利率--start");
             saveLoanRate(userGid);
         });
     }
@@ -294,7 +294,6 @@ public class XLoanServiceImpl implements XLoanService {
             throw new BusinessException("0014", "用户不存在");
         }
         if (checkCreditLimitFlag(xUserInfo)) {
-            logger.info("进行提额..");
             updateCreditLimit(xUserInfo);
         }
         return xUserInfo.getCreditLine();
@@ -308,7 +307,7 @@ public class XLoanServiceImpl implements XLoanService {
      */
     private boolean checkCreditLimitFlag(XUserInfo xUserInfo) {
         if (xUserInfo.getCreditLine() == null || xUserInfo.getCreditLine() == 0) {
-            // 未初始化授信额度，返回true
+            logger.info("{}: 没有授信额度, 允许进行初始化", xUserInfo.getUserGid());
             return true;
         }
 
@@ -318,90 +317,102 @@ public class XLoanServiceImpl implements XLoanService {
         List<XRecordLoan> list = xRecordLoanDao.list(params, 1, 0);
         // 已初始化授信额度，但没借过钱
         if (list.size() == 0) {
+            logger.info("{}: 未借过款, 不允许提额", xUserInfo.getUserGid());
             return false;
         }
 
         // 计算最后一笔结清订单的逾期时间
         long overdueDay = 0;
+        Date firstRepaymentTime = null;
         Date lastRepaymentDay = null;
         for (XRecordLoan xrl : list) {
-            // 已还清的借款
-            if (SysVariable.REPAYMENT_STATUS_SUCCESS == xrl.getRepaymentStatus()) {
-                // 最近一笔还款
-                if (lastRepaymentDay == null || DateUtils.isDateAfter(lastRepaymentDay, xrl.getLastRepaymentTime()) < 0) {
-                    lastRepaymentDay = xrl.getLastRepaymentTime();
-                    // 逾期
-                    if (DateUtils.isDateAfter(lastRepaymentDay, xrl.getDueTime()) > 0) {
-                        overdueDay = Long.parseLong(DateUtils.getTwoDay(xrl.getDueTime(), lastRepaymentDay));
+            if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS) {
+                // 已还清借款
+                if (SysVariable.REPAYMENT_STATUS_SUCCESS == xrl.getRepaymentStatus()) {
+                    // 最近一笔还款时间
+                    if (lastRepaymentDay == null || DateUtils.isDateAfter(lastRepaymentDay, xrl.getLastRepaymentTime()) < 0) {
+                        lastRepaymentDay = xrl.getLastRepaymentTime();
+                        // 逾期
+                        if (DateUtils.isDateAfter(lastRepaymentDay, xrl.getDueTime()) > 0) {
+                            overdueDay = Long.parseLong(DateUtils.getTwoDay(xrl.getDueTime(), lastRepaymentDay));
+                        }
                     }
+                    // 第一笔还款时间
+                    if (firstRepaymentTime == null) {
+                        firstRepaymentTime = lastRepaymentDay;
+                    } else if (DateUtils.isDateAfter(firstRepaymentTime, xrl.getLastRepaymentTime()) > 0) {
+                        firstRepaymentTime = xrl.getLastRepaymentTime();
+                    }
+                } else if (System.currentTimeMillis() > xrl.getDueTime().getTime()) {
+                    // 有未还清的逾期借款
+                    logger.info("{}: 有未还清的逾期借款:{}, 不允许提额", xUserInfo.getUserGid(), xrl.getOrderId());
+                    return false;
                 }
             }
         }
-        // 最近一笔结清订单的逾期天数>5不提额
-        if (overdueDay > 5) {
+        logger.info("{}: 首笔成功交易时间:{},最近一笔结清时间:{},逾期天数:{}", xUserInfo.getUserGid(), firstRepaymentTime, lastRepaymentDay, overdueDay);
+        // 最近一笔结清订单的逾期天数>5不提额, 没有成功交易的记录不提额
+        if (overdueDay > 5 || firstRepaymentTime == null) {
             return false;
         }
 
         // 與第一次交易的天數間隔
-        Date firstRepaymentTime = xRecordLoanDao.getFirstRepaymentTime(xUserInfo.getUserGid());
-        if (firstRepaymentTime == null) {
-            return false;
-        }
         long diff = Long.parseLong(DateUtils.getTwoDay(firstRepaymentTime, new Date()));
-        int count = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
+        int creditLineCount = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
         // 根据实际还清借款时间触发, 第N次提额时间距离首笔交易时间分别不小于5*N天
-        return 5 * (count + 1) <= diff;
+        return 5 * (creditLineCount + 1) <= diff;
     }
+
 
     private void updateCreditLimit(XUserInfo xUserInfo) {
-        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_LIMIT));
-        if (config == null) {
-            logger.error("提額配置获取出错");
-        } else {
-            String typeFlag = "normal";
-            long borrowAmount = 0;
-            // 判斷 用户 是白名單用戶還是正常用戶
-            List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
-            if (whiteList.size() > 0) {
-                typeFlag = "white";
-                borrowAmount = Long.parseLong(whiteList.get(0).getAmount());
-            }
-            Map creditConfig = (LinkedHashMap) config.get(typeFlag);
+        // 判斷 用户 是白名單用戶還是正常用戶
+        String typeFlag = "normal";
+        long borrowAmount = 0;
+        List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
+        if (whiteList.size() > 0) {
+            typeFlag = "white";
+            borrowAmount = Long.parseLong(whiteList.get(0).getAmount());
+        }
 
-            if (xUserInfo.getCreditLine() == null || xUserInfo.getCreditLine() == 0) {
-                // 设置授信额度
-                if (borrowAmount == 0) {
-                    borrowAmount = Long.parseLong(creditConfig.get("start").toString());
+        // 提额配置
+        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_LIMIT));
+        Map creditConfig = (LinkedHashMap) config.get(typeFlag);
+
+        if (xUserInfo.getCreditLine() == null || xUserInfo.getCreditLine() == 0) {
+            // 初始化授信额度和可借款额度
+            if (borrowAmount == 0) {
+                borrowAmount = Long.parseLong(creditConfig.get("start").toString());
+            }
+            xUserInfo.setCreditLine(borrowAmount);
+            xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
+            xUserInfo.setCreditLineCount(0);
+            xUserInfoDao.update(xUserInfo);
+            logger.info(" {}: 初始化授信额度:{}", xUserInfo.getUserGid(), xUserInfo.getCreditLine());
+        } else {
+            // 提额
+            Map<String, Object> params = new HashMap<>();
+            params.put("userGid", xUserInfo.getUserGid());
+            params.put("repaymentStatus", SysVariable.REPAYMENT_STATUS_SUCCESS);
+            int count = xRecordLoanDao.count(params);
+            if (count > 0) {
+                Object step = ((LinkedHashMap) creditConfig.get("step")).get(String.valueOf(count));
+                if (step == null) {
+                    step = ((LinkedHashMap) creditConfig.get("step")).get(">");
                 }
-                xUserInfo.setCreditLine(borrowAmount);
-                xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
-                xUserInfo.setCreditLineCount(0);
+                long s = Long.parseLong(step.toString());
+                long max = Long.parseLong(creditConfig.get("end").toString());
+                if (max < s + xUserInfo.getCreditLine()) {
+                    s = max - xUserInfo.getCreditLine();
+                }
+                xUserInfo.setCreditLine(s + xUserInfo.getCreditLine());
+                xUserInfo.setCanborrowAmount(s + xUserInfo.getCanborrowAmount());
+                int n = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
+                xUserInfo.setCreditLineCount(n + 1);
+                logger.info("{}: 第{}次提額，提額數目: {}, 新額度: {}", xUserInfo.getUserGid(), xUserInfo.getCreditLineCount(), s, xUserInfo.getCreditLine());
                 xUserInfoDao.update(xUserInfo);
-            } else {
-                // 提额
-                Map<String, Object> params = new HashMap<>();
-                params.put("userGid", xUserInfo.getUserGid());
-                params.put("repaymentStatus", SysVariable.REPAYMENT_STATUS_SUCCESS);
-                int count = xRecordLoanDao.count(params);
-                if (count > 0) {
-                    Object step = ((LinkedHashMap) creditConfig.get("step")).get(String.valueOf(count));
-                    if (step == null) {
-                        step = ((LinkedHashMap) creditConfig.get("step")).get(">");
-                    }
-                    long s = Long.parseLong(step.toString());
-                    long max = Long.parseLong(creditConfig.get("end").toString());
-                    if (max < s + xUserInfo.getCreditLine()) {
-                        s = max - xUserInfo.getCreditLine();
-                    }
-                    xUserInfo.setCreditLine(s + xUserInfo.getCreditLine());
-                    xUserInfo.setCanborrowAmount(s + xUserInfo.getCanborrowAmount());
-                    int n = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
-                    xUserInfo.setCreditLineCount(n + 1);
-                    logger.info("第{}次提額，提額數目: {}, 新額度: {}", xUserInfo.getCreditLineCount(), s, xUserInfo.getCreditLine());
-                    xUserInfoDao.update(xUserInfo);
-                }
             }
         }
     }
+
 
 }
