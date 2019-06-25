@@ -91,12 +91,12 @@
         </where>
     </select>
 
+    <!--找出某个用户的所有借款成功的记录，会置顶未还清借款-->
     <select id="list" resultType="com.ivay.ivay_repository.model.XRecordLoan">
         SELECT * FROM (
             (
                 select * from x_record_loan t
-                WHERE user_gid = #{params.userGid}
-                AND loan_status=1 AND repayment_status!=2
+                WHERE loan_status=1 AND repayment_status!=2
                 <include refid="list_condition"/>
                 <if test="params.orderBy != null and params.orderBy != ''">
                     order by ${params.orderBy} desc
@@ -105,8 +105,7 @@
             UNION ALL
             (
                 select * from x_record_loan t
-                WHERE user_gid = #{params.userGid}
-                AND( ( loan_status=1 AND repayment_status=2) OR LOAn_status!=1 )
+                WHERE ( ( loan_status=1 AND repayment_status=2) OR LOAn_status!=1 )
                 <include refid="list_condition"/>
                 <if test="params.orderBy != null and params.orderBy != ''">
                     order by ${params.orderBy} desc
