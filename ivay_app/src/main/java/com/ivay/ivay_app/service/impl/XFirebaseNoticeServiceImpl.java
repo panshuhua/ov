@@ -1,6 +1,8 @@
 package com.ivay.ivay_app.service.impl;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -126,52 +128,53 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         // 发送到期前一天/当天提醒
         List<XOverDueFee> xOverDueFeeList = xRecordLoanDao.findOneOverdue();
         logger.info("到期前一天/当天提醒的总条数：" + xOverDueFeeList.size() + "-----------------------");
-
-        for (XOverDueFee fee : xOverDueFeeList) {
-            // 逾期一天的费用计算
-        }
-
-        List<String> registrationTokens = new ArrayList<String>();
-
+        // firebase消息标题
+        String title = "";
+        // 短信发送内容
+        String message = "";
         int i = 0;
         for (XOverDueFee fee : xOverDueFeeList) {
             try {
                 String fmcToken = fee.getFmcToken();
-                if (!StringUtils.isEmpty(fmcToken)) {
-                    // FirebaseUtil.sendMsgToFmcToken(fmcToken,
-                    // i18nService.getMessage("firebase.notice.repayment.msg"));
-                    registrationTokens.add(fmcToken);
+                Date dueTime = fee.getDueTime();
+                if (dueTime.getDate() == new Date().getDate()) {
+                    title = i18nService.getMessage("firebase.notice.dueDay.remind.titlemsg");
+                    message = i18nService.getMessage("firebase.notice.dueDay.remind.msg");
+                    logger.info("当天到期");
+                } else if (dueTime.getDate() == new Date().getDate() + 1) {
+                    title = i18nService.getMessage("firebase.notice.dueDay.remind.titlemsg");
+                    message = i18nService.getMessage("firebase.notice.beforeDueDay.remind.msg");
+                    logger.info("明天到期");
                 }
+
+                Long dueAmount = fee.getDueAmount();
+                long overdueFee = 0; // 逾期手续费计算
+                message = MessageFormat.format(message, dueAmount, overdueFee);
+
                 i++;
-                logger.info("正在发送第" + i + "条短信----------------");
+                logger.info("正在发送第" + i + "条信息----------------");
+
+                logger.info("发送firebase到期通知开始-------------");
+                // 发送firebase消息推送
+                if (!StringUtils.isEmpty(fmcToken)) {
+                    FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
+                }
+                logger.info("发送firebase到期通知结束-------------");
+
                 // 发送手机短信
                 String phone = fee.getPhone();
-                sendPhoneNotice(phone, i18nService.getMessage("firebase.notice.repayment.msg"));
+                sendPhoneNotice(phone, message);
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error(e.getMessage());
                 return false;
             }
+
         }
 
-        logger.info("短信已发送完毕，总共成功发送" + i + "条");
+        logger.info("发送完毕，总共成功发送" + i + "条");
 
-        logger.info("批量发送firebase还款通知开始-------------");
-        if (registrationTokens.size() > 0) {
-            try {
-                FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens,
-                    i18nService.getMessage("firebase.notice.repayment.titlemsg"),
-                    i18nService.getMessage("firebase.notice.repayment.msg"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-                return false;
-            }
-        }
-        logger.info("批量发送firebase还款通知结束-------------");
-
-        logger.info("还款到期的通知成功发送！");
         return true;
     }
 
