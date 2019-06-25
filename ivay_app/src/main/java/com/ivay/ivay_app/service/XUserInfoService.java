@@ -88,5 +88,6 @@ public interface XUserInfoService {
      */
     VerifyCodeInfo checkIdentify(String gid, String idCard);
 
+    String checkMacCode(String macCode);
 }
 

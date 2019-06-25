@@ -218,7 +218,7 @@ public class StringUtil {
     }
 
     private static final Pattern PATTERN_BLANK_CHARACTERS = Pattern.compile("\\s*|\t|\r|\n");
-    
+
     /**
      * 去除所有的空白字符
      *
@@ -236,4 +236,16 @@ public class StringUtil {
         }
     }
 
+    /**
+     * 电话号码脱敏
+     *
+     * @param phone
+     * @return
+     */
+    public static String phoneDesensitization(String phone) {
+        if (StringUtils.isEmpty(phone)) {
+            return "";
+        }
+        return phone.replaceAll("(\\d{3})(.+)(\\d{4})", "$1***$3");
+    }
 }

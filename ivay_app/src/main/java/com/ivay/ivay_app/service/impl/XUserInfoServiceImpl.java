@@ -183,4 +183,15 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         return null;
     }
+
+    @Override
+    public String checkMacCode(String macCode) {
+        List<String> phones = xUserInfoDao.checkMacCode(macCode);
+        if (phones.size() > 0) {
+            return StringUtil.phoneDesensitization(phones.get(0));
+        }
+        return null;
+    }
+
+
 }

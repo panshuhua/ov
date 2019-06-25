@@ -106,7 +106,7 @@ public interface XUserInfoDao {
             "select count(1) as num from x_user_contacts where user_gid=#{userGid}" +
             " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=14 GROUP BY update_date ) temp")
     int countContacts(String userGid);
-    
+
     /**
      * 贷前策略
      *
@@ -158,15 +158,15 @@ public interface XUserInfoDao {
 
     @Update("update x_user_info set fmc_token=#{fmcToken} where user_gid=#{userGid}")
     int updateTmcToken(@Param("fmcToken") String fmcToken, @Param("userGid") String userGid);
-    
+
     //查询审核通过的用户的fmc_token
     @Select("select * from x_user_info where user_status='3'")
     List<XUserInfo> findAuditPassUsers();
-    
+
     //查询放款成功的用户的fmc_token
     @Select("select * from x_user_info where user_status='5'")
     List<XUserInfo> findLoanSuccessUsers();
-    
+
     //查询到期还款的用户的fmc_token
     @Select("SELECT u.* FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE (r.due_time <= date_format(DATE_ADD(sysdate(), INTERVAL 2 DAY), '%Y%m%d') and r.due_time >= date_format(DATE_ADD(sysdate(), INTERVAL -1 DAY), '%Y%m%d')) AND u.id IS NOT NULL and r.repayment_status !=2 and r.loan_status=1")
     List<XUserInfo> findShouldRepaymentUsers();
@@ -174,8 +174,8 @@ public interface XUserInfoDao {
     int countSameName(@Param("params") Map<String, Object> params);
 
     List<XUserInfo> listSameName(@Param("params") Map<String, Object> params,
-                              @Param("offset") Integer offset,
-                              @Param("limit") Integer limit);
+                                 @Param("offset") Integer offset,
+                                 @Param("limit") Integer limit);
 
     int countOverDueUsers(@Param("params") Map<String, Object> params);
 
@@ -186,6 +186,9 @@ public interface XUserInfoDao {
     int countOverDueLoan(@Param("params") Map<String, Object> params);
 
     List<XRecordLoan> overDueLoan(@Param("params") Map<String, Object> params,
-                                 @Param("offset") Integer offset,
-                                 @Param("limit") Integer limit);
+                                  @Param("offset") Integer offset,
+                                  @Param("limit") Integer limit);
+
+    @Select("select phone from x_user_info where mac_code=#{macCode} and enable_flag='Y' and user_status!='7' and account_status='0'")
+    List<String> checkMacCode(String macCode);
 }

@@ -1,15 +1,16 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_app.service.XRegisterService;
+import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.annotation.Decrypt;
 import com.ivay.ivay_common.annotation.Encryption;
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
+import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
-import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -48,12 +49,12 @@ public class XRegisterController {
             @ApiImplicitParam(name = "macCode", value = "设备id", dataType = "String", paramType = "query")
     })
     @Encryption
-    @LogAnnotation(module="发送短信验证码")
+    @LogAnnotation(module = "发送短信验证码")
     public Response<VerifyCodeInfo> sendRegisterCode(@RequestParam @Decrypt String mobile,
                                                      @RequestParam Integer optType,
                                                      @RequestParam(required = false) String macCode
             , HttpServletRequest request) {
-       
+
         logger.info("进入发送短信验证码的方法：" + "手机号：" + mobile + "----------------");
         Response<VerifyCodeInfo> response = new Response<>();
         response.setBo(xRegisterService.sendRegisterCode(optType, mobile));
@@ -62,7 +63,7 @@ public class XRegisterController {
 
     @PostMapping("reg")
     @ApiOperation(value = "用户注册")
-    @LogAnnotation(module="用户注册与短信验证码登录")
+    @LogAnnotation(module = "用户注册与短信验证码登录")
     public Response<ReturnUser> register(@RequestBody LoginInfo loginInfo, HttpServletRequest request) {
         Response<ReturnUser> response = new Response<>();
         response.setBo(xRegisterService.register(loginInfo));
@@ -72,7 +73,7 @@ public class XRegisterController {
 
     @PostMapping("login")
     @ApiOperation(value = "用户登录")
-    @LogAnnotation(module="用户登录(用户名和密码登录)")
+    @LogAnnotation(module = "用户登录(用户名和密码登录)")
     public Response<ReturnUser> login(@Validated({Update.class}) @RequestBody LoginInfo loginInfo) {
         Response<ReturnUser> response = new Response<>();
         response.setBo(xRegisterService.login(loginInfo));
@@ -81,8 +82,8 @@ public class XRegisterController {
 
     @GetMapping("/logout/{userGid}")
     @ApiOperation(value = "用户注销")
-    @LogAnnotation(module="用户退出")
-    public Response<String> logout(@PathVariable String userGid,HttpServletRequest request) {
+    @LogAnnotation(module = "用户退出")
+    public Response<String> logout(@PathVariable String userGid, HttpServletRequest request) {
         Response<String> response = new Response<>();
         xRegisterService.logout(userGid);
         return response;
@@ -96,7 +97,7 @@ public class XRegisterController {
             @ApiImplicitParam(name = "password", value = "新设的密码", dataType = "String", paramType = "query", required = true)
     })
     @Encryption
-    @LogAnnotation(module="重设登录密码")
+    @LogAnnotation(module = "重设登录密码")
     public Response<String> resetPwd(@RequestParam String mobile,
                                      @RequestParam String verifyCode,
                                      @RequestParam @Password(type = "1", message = "validated.loginpassword.error") String password) {
@@ -105,6 +106,14 @@ public class XRegisterController {
         return response;
     }
 
+    @Autowired
+    private XUserInfoService xUserInfoService;
 
-
+    @GetMapping("checkMacCode")
+    @ApiOperation("检测手机注册手机号")
+    public Response<String> checkMacCode(@RequestParam String macCode) {
+        Response<String> response = new Response<>();
+        response.setBo(xUserInfoService.checkMacCode(macCode));
+        return response;
+    }
 }
