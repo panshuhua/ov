@@ -125,7 +125,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "当前登录用户")
-    @GetMapping("/current")
+    @GetMapping("current")
     public SysUser currentUser() {
         return UserUtil.getLoginUser();
     }

@@ -79,7 +79,7 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 获取当前用户的最高角色，用户审计
      *
-     * @return
+     * @return 审计管理员、审计员
      */
     @Override
     public String getLoginUserAuditRole() {
@@ -93,7 +93,7 @@ public class RoleServiceImpl implements RoleService {
         }
         // admin 能查看管理所有角色
         // ovayAdmin 不能查看admin，能管理和查看所有ovayAdmin和ovayAudit角色
-        String role = SysVariable.ROLE_OVAY_AUDIT;
+        String role = "";
         for (Role r : roles) {
             if (SysVariable.ROLE_ADMIN.equals(r.getName())) {
                 role = SysVariable.ROLE_ADMIN;
@@ -101,6 +101,8 @@ public class RoleServiceImpl implements RoleService {
             }
             if (SysVariable.ROLE_OVAY_ADMIN.equals(r.getName())) {
                 role = SysVariable.ROLE_OVAY_ADMIN;
+            } else if (SysVariable.ROLE_OVAY_AUDIT.equals(r.getName()) && !SysVariable.ROLE_OVAY_ADMIN.equals(r.getName())) {
+                role = SysVariable.ROLE_OVAY_AUDIT;
             }
         }
         return role;
