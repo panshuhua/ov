@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.ivay.ivay_repository.dto.XOverDueFee;
+import com.ivay.ivay_repository.dto.XRecordLoanInfo;
 import com.ivay.ivay_repository.model.XRecordLoan;
 
 @Mapper
@@ -59,18 +60,18 @@ public interface XRecordLoanDao {
     @Select("select * from x_record_loan where order_id=#{orderId}")
     XRecordLoan getXRecordLoanByOrderId(String orderId);
 
-    @Select("SELECT r.order_id order_id, r.user_gid user_gid, u.`name` `name`,r.overdue_fee overdue_fee,r.overdue_interest overdue_interest,r.due_amount due_amount FROM  x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE    r.loan_status = 1 AND r.repayment_status != 2 AND TO_DAYS(r.create_time) = TO_DAYS(NOW())")
-    List<Map<String, Object>> findRecordLoanInfo();
+    @Select("SELECT r.order_id, r.user_gid, u.`name`,r.overdue_fee,r.overdue_interest,r.due_amount FROM  x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE    r.loan_status = 1 AND r.repayment_status != 2 AND TO_DAYS(r.create_time) = TO_DAYS(NOW())")
+    List<XRecordLoanInfo> findRecordLoanInfo();
 
     // 查询明天/今天到期的用户-到期前1天/到期当天提醒
-    @Select("SELECT r.due_time,r.due_amount due_amount,u.fmc_token fmc_token,u.phone phone,r.loan_period,r.loan_rate "
+    @Select("SELECT r.due_time,r.due_amount,u.fmc_token,u.phone,r.loan_period,r.loan_rate "
         + "FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid "
         + "WHERE(r.due_time <= date_format(DATE_ADD(sysdate(), INTERVAL +2 DAY),'%Y%m%d')AND r.due_time >= date_format(sysdate(),'%Y%m%d'))"
         + "AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
     List<XOverDueFee> findOneOverdue();
 
     // 查询逾期的用户-逾期提醒
-    @Select("SELECT r.due_time due_time,r.due_amount due_amount,u.fmc_token fmc_token, DATEDIFF(SYSDATE(),r.due_time)due_date FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE( r.due_time <= date_format(sysdate(), '%Y%m%d'))AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
+    @Select("SELECT r.due_time,r.due_amount,u.fmc_token, DATEDIFF(SYSDATE(),r.due_time)due_date FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE( r.due_time <= date_format(sysdate(), '%Y%m%d'))AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
     List<XOverDueFee> findOverdue();
 
 }

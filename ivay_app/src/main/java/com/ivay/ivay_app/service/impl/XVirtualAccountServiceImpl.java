@@ -2,7 +2,6 @@ package com.ivay.ivay_app.service.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,7 @@ import com.ivay.ivay_repository.dao.master.TokenDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dao.master.XVirtualAccountDao;
+import com.ivay.ivay_repository.dto.XRecordLoanInfo;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -238,19 +238,19 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
     @Override
     public boolean saveVirtualAccount() {
         try {
-            List<Map<String, Object>> recordLoanInfos = xRecordLoanDao.findRecordLoanInfo();
+            List<XRecordLoanInfo> recordLoanInfos = xRecordLoanDao.findRecordLoanInfo();
             logger.info("需要自动创建的虚拟账号的个数为：" + recordLoanInfos.size() + "-----------");
             if (recordLoanInfos.size() == 0) {
                 logger.info("当前列表没有用户需要生成虚拟账号");
             }
 
-            for (Map<String, Object> m : recordLoanInfos) {
-                String userGid = (String)m.get("user_gid");
-                String orderId = (String)m.get("order_id");
-                String accName = (String)m.get("name");
-                Long overdue_fee = (Long)m.get("overdue_fee");
-                Long overdue_interest = (Long)m.get("overdue_interest");
-                Long due_amount = (Long)m.get("due_amount");
+            for (XRecordLoanInfo xRecordLoanInfo : recordLoanInfos) {
+                String userGid = xRecordLoanInfo.getUserGid();
+                String orderId = xRecordLoanInfo.getOrderId();
+                String accName = xRecordLoanInfo.getName();
+                Long overdue_fee = xRecordLoanInfo.getOverdueFee();
+                Long overdue_interest = xRecordLoanInfo.getOverdueInterest();
+                Long due_amount = xRecordLoanInfo.getDueAmount();
                 Long collectAmount = overdue_fee + overdue_interest + due_amount;
 
                 // 查询虚拟账号有没有被创建了，如果创建了就不需要再创建了

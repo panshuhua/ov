@@ -124,7 +124,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
             return rsp;
         }
 
-        boolean isCorrectRequestTime = DateUtils.verifyDateTime(RequestTime);
+        boolean isCorrectRequestTime = DateUtils.verifyDateTime(RequestTime); // TODO 时间校验增加规则
         if (!isCorrectRequestTime) {
             ResponseCode = BaokimResponseStatus.IncorrectRequestId.getCode();
             ResponseMessage = BaokimResponseStatus.IncorrectRequestId.getMessage();
