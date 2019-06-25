@@ -262,7 +262,8 @@
                     WHEN '7' THEN '7'
                     WHEN '8' THEN '8'
                 END audit_status,
-                xuei.update_time create_time
+                xuei.update_time create_time,
+                (SELECT "白名单" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
             from x_user_info xui
             <include refid="audit_list_condition"/>
             order by xuei.update_time desc
@@ -284,7 +285,7 @@
             (SELECT url from file_info t WHERE t.id=xuei.photo1_url) photo1_url,
             (SELECT url from file_info t WHERE t.id=xuei.photo2_url) photo2_url,
             (SELECT url from file_info t WHERE t.id=xuei.photo3_url) photo3_url,
-            (SELECT 1 WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
+            (SELECT "白名单" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
         from x_user_info xui
         left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
         where xui.user_gid=#{userGid} and xui.enable_flag='Y'

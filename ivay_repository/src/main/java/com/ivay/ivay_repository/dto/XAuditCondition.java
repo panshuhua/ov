@@ -30,4 +30,7 @@ public class XAuditCondition {
 
     @ApiModelProperty("审核状态")
     private String auditStatus;
+
+    @ApiModelProperty("用户类型：黑名单 白名单 自然人")
+    private String userType;
 }

@@ -11,7 +11,7 @@ public class XAuditDetail {
     private String userGid;
 
     @ApiModelProperty("用户类型：黑名单 白名单 自然人")
-    private int userType;
+    private String userType;
 
     @ApiModelProperty("用户名")
     private String name;
