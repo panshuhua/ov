@@ -16,6 +16,7 @@ import org.tempuri.ApiBulkReturn;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
+import com.ivay.ivay_app.service.XRecordLoanService;
 import com.ivay.ivay_app.service.XRegisterService;
 import com.ivay.ivay_app.utils.FirebaseUtil;
 import com.ivay.ivay_common.config.I18nService;
@@ -123,6 +124,9 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     }
 
+    @Autowired
+    private XRecordLoanService xRecordLoanService;
+
     @Override
     public boolean sendRepaymentNotice() {
         // 发送到期前一天/当天提醒
@@ -132,6 +136,9 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         String title = "";
         // 短信发送内容
         String message = "";
+        // 计算逾期一天的滞纳金
+        xRecordLoanService.calc1DayOverDueFee(xOverDueFeeList);
+
         int i = 0;
         for (XOverDueFee fee : xOverDueFeeList) {
             try {
@@ -148,7 +155,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 }
 
                 Long dueAmount = fee.getDueAmount();
-                long overdueFee = 0; // 逾期手续费计算
+                Long overdueFee = fee.getOverdueFee();
                 message = MessageFormat.format(message, dueAmount, overdueFee);
 
                 i++;
