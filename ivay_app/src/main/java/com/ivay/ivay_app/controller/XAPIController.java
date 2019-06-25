@@ -3,16 +3,20 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_common.utils.RedisUtils;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dto.XOverDueFee;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("star/api")
@@ -66,26 +70,22 @@ public class XAPIController {
     private static final Logger logger = LoggerFactory.getLogger(XAPIController.class);
 
     @PostMapping("calcOverDueFee")
-    @ApiOperation("测试逾期利息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "diff", value = "额外逾期时间", dataType = "Long", paramType = "query", defaultValue = "0")
-    })
-    public boolean calcOverDueFee(@RequestParam(required = false) Integer diff) {
+    @ApiOperation("手动触发逾期利息的计算")
+    public boolean calcOverDueFee() {
+        boolean flag = false;
         int count = 0;
         String start = "开始计算逾期费用---start";
-        while (true) {
+        while (!flag) {
             if (count > 0) {
                 start = "正在进行第" + count + "次重试--start";
             }
             logger.info(start);
-            boolean flag = xRecordLoanService.calcOverDueFee2ForTest(diff == null ? 0 : diff);
+            flag = xRecordLoanService.calcOverDueFee2();
             logger.info("逾期费用计算结束---{}", flag ? "成功" : "失败");
-            if (flag) {
-                return true;
-            } else {
+            if (!flag) {
                 if ((count++ > 5)) {
+                    flag = true;
                     logger.error("逾期费用计算出错，请及时查看");
-                    return false;
                 } else {
                     try {
                         Thread.sleep(1000);
@@ -93,16 +93,20 @@ public class XAPIController {
                         logger.error("逾期费用计算暂停异常: {}", ex);
                     }
                 }
+            } else {
+                return true;
             }
         }
+        return false;
     }
 
     @Autowired
-    private RedisUtils redisUtils;
+    private XRecordLoanDao xRecordLoanDao;
 
     @GetMapping("test")
     public boolean test(String key) {
-        redisUtils.set(key, "test redis");
+        List<XOverDueFee> xOverDueFeeList = xRecordLoanDao.findOneOverdue();
+        xRecordLoanService.calc1DayOverDueFee(xOverDueFeeList);
         return true;
     }
 }

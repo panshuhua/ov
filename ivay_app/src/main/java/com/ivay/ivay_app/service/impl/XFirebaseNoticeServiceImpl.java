@@ -1,19 +1,9 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.tempuri.ApiBulkReturn;
-
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
+import com.ivay.ivay_app.service.XRecordLoanService;
 import com.ivay.ivay_app.service.XRegisterService;
 import com.ivay.ivay_app.utils.FirebaseUtil;
 import com.ivay.ivay_common.config.I18nService;
@@ -23,6 +13,16 @@ import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XOverDueFee;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.tempuri.ApiBulkReturn;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
@@ -121,15 +121,17 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     }
 
+    @Autowired
+    private XRecordLoanService xRecordLoanService;
+
     @Override
     public boolean sendRepaymentNotice() {
         // 发送到期前一天/当天提醒
         List<XOverDueFee> xOverDueFeeList = xRecordLoanDao.findOneOverdue();
         logger.info("到期前一天/当天提醒的总条数：" + xOverDueFeeList.size() + "-----------------------");
 
-        for (XOverDueFee fee : xOverDueFeeList) {
-            // 逾期一天的费用计算
-        }
+        // 计算逾期一天的滞纳金
+        xRecordLoanService.calc1DayOverDueFee(xOverDueFeeList);
 
         List<String> registrationTokens = new ArrayList<String>();
 

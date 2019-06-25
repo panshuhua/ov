@@ -13,6 +13,7 @@ import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dto.XOverDueFee;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XLoanRate;
@@ -321,15 +322,16 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         return xRecordLoanDao.getByGid(gid, userGid);
     }
 
+    /**
+     * 逾期计息 + 逾期滞纳金，都不能超过本金
+     *
+     * @return
+     */
     @Override
     public boolean calcOverDueFee() {
         List<XRecordLoan> xrlList = xRecordLoanDao.list(new HashMap<>(), null, null);
         // 滞纳金配置
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
-        if (config == null) {
-            logger.error("滞纳金配置获取出错");
-            return false;
-        }
         List<XRecordLoan> updateList = new ArrayList<>();
         Date now = new Date();
         try {
@@ -403,15 +405,16 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         return true;
     }
 
+    /**
+     * 逾期计息 + 逾期滞纳金，加起来不能超过本金
+     *
+     * @return
+     */
     @Override
     public boolean calcOverDueFee2() {
         List<XRecordLoan> xrlList = xRecordLoanDao.list(new HashMap<>(), null, null);
         // 滞纳金配置
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
-        if (config == null) {
-            logger.error("滞纳金配置获取出错");
-            return false;
-        }
         List<XRecordLoan> updateList = new ArrayList<>();
         try {
             for (XRecordLoan xrl : xrlList) {
@@ -474,65 +477,41 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         return true;
     }
 
+    /**
+     * 计算逾期一天的滞纳金
+     *
+     * @param list
+     */
     @Override
-    public boolean calcOverDueFee2ForTest(long diff) {
-        List<XRecordLoan> xrlList = xRecordLoanDao.list(new HashMap<>(), null, null);
-        // 滞纳金配置
+    public void calc1DayOverDueFee(List<XOverDueFee> list) {
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
-        if (config == null) {
-            logger.error("滞纳金配置获取出错");
-            return false;
-        }
-        List<XRecordLoan> updateList = new ArrayList<>();
-        try {
-            for (XRecordLoan xrl : xrlList) {
-                // 还没还清借款
-                if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS &&
-                        xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
-                    // 逾期天数
-                    long day = (System.currentTimeMillis() + diff * 3600 * 1000 * 24 - xrl.getDueTime().getTime()) / (3600 * 1000 * 24) + 1;
-                    if (day > 0 && xrl.getDueAmount() > xrl.getOverdueFee()) {
-                        long totalFee = 0L;
+        // 逾期平台管理费率
+        BigDecimal manageFeeRate = new BigDecimal(config.get("0").toString());
 
-                        // 平台管理费
-                        if (day == 1) {
-                            // 平台管理费 = 剩余本金 * 0.03
-                            totalFee = CommonUtil.longAddBigDecimal(xrl.getDueAmount(), new BigDecimal(config.get("0").toString()));
-                        }
-
-                        // 逾期计息
-                        BigDecimal interestPerDay = xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
-                        totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPerDay);
-
-                        // 逾期滞纳金
-                        for (Object key : config.keySet()) {
-                            BigDecimal value = new BigDecimal(config.get(key).toString());
-                            long start = Long.parseLong(key.toString().split("~")[0]);
-                            if (start != 0L) {
-                                long end = Long.parseLong(key.toString().split("~")[1]);
-                                if (day >= start && day <= end) {
-                                    long feePerDay = CommonUtil.longMultiplyBigDecimal(xrl.getDueAmount(), value);
-                                    totalFee += feePerDay;
-                                }
-                            }
-                        }
-                        if (xrl.getOverdueFee() + totalFee >= xrl.getDueAmount()) {
-                            xrl.setOverdueFee(xrl.getDueAmount());
-                        } else {
-                            xrl.setOverdueFee(xrl.getOverdueFee() + totalFee);
-                        }
-                        updateList.add(xrl);
-                    }
-                }
+        // 逾期滞纳金费率
+        BigDecimal feeRate = new BigDecimal(0);
+        for (Object key : config.keySet()) {
+            long start = Long.parseLong(key.toString().split("~")[0]);
+            if (start == 1L) {
+                feeRate = new BigDecimal(config.get(key).toString());
             }
-        } catch (Exception ex) {
-            logger.error("滞纳金计算过程出错");
-            return false;
         }
-        if (!updateList.isEmpty()) {
-            xRecordLoanDao.updateByBatch(updateList);
+
+        for (XOverDueFee x : list) {
+            x.setDueAmount(2000000L);
+            // 逾期平台管理费
+            long totalFee = CommonUtil.longMultiplyBigDecimal(x.getDueAmount(), manageFeeRate);
+            // 逾期计息
+            BigDecimal interestPerDay = x.getLoanRate().multiply(new BigDecimal(x.getDueAmount() / x.getLoanPeriod()));
+            totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPerDay);
+            // 逾期滞纳金
+            totalFee += CommonUtil.longMultiplyBigDecimal(x.getDueAmount(), feeRate);
+            if (totalFee >= x.getDueAmount()) {
+                x.setOverdueFee(x.getDueAmount());
+            } else {
+                x.setOverdueFee(totalFee);
+            }
         }
-        return true;
     }
 
     @Override

@@ -2,7 +2,10 @@ package com.ivay.ivay_app.service;
 
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.dto.XOverDueFee;
 import com.ivay.ivay_repository.model.XRecordLoan;
+
+import java.util.List;
 
 public interface XRecordLoanService {
     /**
@@ -48,11 +51,11 @@ public interface XRecordLoanService {
     boolean calcOverDueFee2();
 
     /**
-     * 测试逾期利息
+     * 计算逾期一天的滞纳金
      *
-     * @return
+     * @param list
      */
-    boolean calcOverDueFee2ForTest(long diff);
+    void calc1DayOverDueFee(List<XOverDueFee> list);
 
     /**
      * 确认放款
