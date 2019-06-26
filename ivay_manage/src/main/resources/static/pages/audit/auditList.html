@@ -80,7 +80,7 @@
                             <th>行号</th>
                             <th>Tên người dùng</th>
                             <th>Id người dùng</th>
-                            <th>Tên người dùng</th>
+                            <th>Số điện thoại</th>
                             <th>Thời gian xin</th>
                             <th>用户类型</th>
                             <th>Thao tác</th>
@@ -474,7 +474,7 @@
         });
     }
 
-    var AUDIT_STATUS = {"2": "待审核", "3": "审核通过", "7": "审核不通过", "8": "Từ chối và điền lạ"};
+    var AUDIT_STATUS = {"2":"Đang chờ xét duyệt","3":"Xét duyệt thông qua","7":"Xét duyệt không thông qua","8":"Từ chối và điền lạ"};
 
     // 显示重名用户
     function showSameName(userGid) {
@@ -494,12 +494,12 @@
                     window.a = currentSameNameParentDom;
 
                     var sameNameDom = "<tr class='sameName_detail sameNameBackground'>" +
-                        "<td>姓名</td>" +
-                        "<td>用户状态</td>" +
-                        "<td>电话号码</td>" +
-                        "<td>申请时间</td>" +
-                        "<td>用户类型</td>" +
-                        "<td>审核时间</td></tr>";
+                        "<td>Tên người dùng</td>" +
+                        "<td>Tình trạng xét duyệt</td>" +
+                        "<td>Số điện thoạiTên người dùng</td>" +
+                        "<td>Thời gian xin</td>" +
+                        "<td>Nhóm khách hàng</td>" +
+                        "<td>Thời gian thẩm định</td></tr>";
                     for(var i=0;i<data.bo.data.length;i++){
                         // 只展示10条
                         if (i > 10) {
