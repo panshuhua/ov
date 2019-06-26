@@ -1,8 +1,9 @@
 package com.ivay.ivay_common.config;
 
-import com.ivay.ivay_common.utils.LocaleUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+
+import com.ivay.ivay_common.utils.LocaleUtils;
 
 @Component
 public class I18nService {
@@ -19,4 +20,15 @@ public class I18nService {
     public String getMessage(String msgKey) {
         return messageSource.getMessage(msgKey, null, LocaleUtils.getContextLocale());
     }
+
+    /**
+     * 获取越南语提示语
+     * 
+     * @param msgKey
+     * @return
+     */
+    public String getViMessage(String msgKey) {
+        return messageSource.getMessage(msgKey, null, LocaleUtils.getViLocale());
+    }
+
 }

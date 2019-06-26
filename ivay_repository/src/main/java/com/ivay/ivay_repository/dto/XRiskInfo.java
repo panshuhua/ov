@@ -1,11 +1,12 @@
 package com.ivay.ivay_repository.dto;
 
-import com.ivay.ivay_repository.model.XUserContacts;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.Set;
+
+import com.ivay.ivay_repository.model.XUserContacts;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * 风控需要审核的信息
@@ -24,12 +25,24 @@ public class XRiskInfo {
     private BigDecimal latitude;
     @ApiModelProperty("社交类app的个数")
     private Integer appNum;
-    @ApiModelProperty("风控数据类型")
-    private String type;
-    @ApiModelProperty("mac地址")
-    private String macAddress;
-    @ApiModelProperty("手机品牌")
-    private String phoneBrand;
-    @ApiModelProperty("手机流量类型")
-    private String trafficWay;
+
+    @ApiModelProperty("设备imei")
+    public String imei;
+    @ApiModelProperty("国际移动用户识别码")
+    public String imsi;
+    @ApiModelProperty("手机号码")
+    public String phoneNumber;
+
+    public String carrierName;
+    @ApiModelProperty("手机型号")
+    public String phoneModel;
+    @ApiModelProperty("用户唯一识别 id（userId, 上报极光所用的别名）")
+    public String uid;
+    @ApiModelProperty("wifimac地址")
+    public String wifiMacAddress;
+    @ApiModelProperty("系统版本")
+    public String systemVersion;
+    @ApiModelProperty("设备ipV4值")
+    public String ipv4Address;
+
 }

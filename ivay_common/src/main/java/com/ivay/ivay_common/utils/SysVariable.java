@@ -171,4 +171,7 @@ public class SysVariable {
     public static final String RETURN_TYPE_LOGIN = "login";
     public static final String RETURN_TYPE_REGISTER = "register";
 
+    // 发送通知/短信提醒时的语言
+    public static final String LANG_VI = "vi";
+
 }

@@ -8,20 +8,32 @@ import lombok.Data;
 
 @Data
 public class XUserRisk {
-   @ApiModelProperty("用户gid")
-   private String userGid;
-   @ApiModelProperty("经度")
-   private BigDecimal longitude;
-   @ApiModelProperty("纬度")
-   private BigDecimal latitude;
-   @ApiModelProperty("mac地址")
-   private String macAddress;
-   @ApiModelProperty("手机品牌")
-   private String phoneBrand;
-   @ApiModelProperty("手机流量类型")
-   private String trafficWay;
-   
-   private Date createTime;
-   private Date updateTime;
-}
+    @ApiModelProperty("用户gid")
+    private String userGid;
+    @ApiModelProperty("经度")
+    private BigDecimal longitude;
+    @ApiModelProperty("纬度")
+    private BigDecimal latitude;
 
+    @ApiModelProperty("设备imei")
+    public String imei;
+    @ApiModelProperty("国际移动用户识别码")
+    public String imsi;
+    @ApiModelProperty("手机号码")
+    public String phoneNumber;
+
+    public String carrierName;
+    @ApiModelProperty("手机型号")
+    public String phoneModel;
+    @ApiModelProperty("用户唯一识别 id（userId, 上报极光所用的别名）")
+    public String uid;
+    @ApiModelProperty("wifimac地址")
+    public String wifiMacAddress;
+    @ApiModelProperty("系统版本")
+    public String systemVersion;
+    @ApiModelProperty("设备ipV4值")
+    public String ipv4Address;
+
+    private Date createTime;
+    private Date updateTime;
+}
