@@ -9,8 +9,11 @@
     <link rel="stylesheet" href="../../css/dialog.css" type="text/css">
     <style>
         .sameName{
-            color: blue;
+            font-weight: 600;
             cursor: pointer;
+        }
+        .sameName:active{
+            color: black;
         }
         .sameName:hover{
             color: red;
@@ -295,7 +298,7 @@
                             return name
                         }else{
                             var userGid = row['userGid'];
-                            return "<a href='javascript:void(0);' class='sameName' title='查看重名用户' onclick='showSameName("+ '\"' + userGid +"\")'>" + name + "("+countSameName + ")</a>"
+                            return "<a id='sameName_" +userGid + "' href='javascript:void(0);' class='sameName' title='查看重名用户' onclick='showSameName("+ '\"' + userGid +"\")'>" + name + "("+countSameName + ")</a>"
                         }
                     }
                 },
@@ -461,8 +464,9 @@
     }
 
     // 显示重名用户
-    function showSameName() {
-        alert("待开发")
+    function showSameName(userGid) {
+        window.j = $("#sameName_" + userGid)
+        console.log(j)
     }
 
     /**
