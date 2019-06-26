@@ -263,6 +263,7 @@
                     WHEN '8' THEN '8'
                 END audit_status,
                 xuei.update_time create_time,
+                (SELECT count(*)-1 FROM x_user_info x WHERE x.name=xui.name and x.enable_flag='Y') countSameName,
                 (SELECT "白名单" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
             from x_user_info xui
             <include refid="audit_list_condition"/>

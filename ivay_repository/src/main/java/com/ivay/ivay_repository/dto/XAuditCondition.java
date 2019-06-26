@@ -33,4 +33,7 @@ public class XAuditCondition {
 
     @ApiModelProperty("用户类型：黑名单 白名单 自然人")
     private String userType;
+
+    @ApiModelProperty("同名人数")
+    private int countSameName;
 }

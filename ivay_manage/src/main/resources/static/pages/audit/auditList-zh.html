@@ -7,6 +7,15 @@
     <link rel="stylesheet" type="text/css" media="screen" href="../../css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="../../layui/css/layui.css" media="all"/>
     <link rel="stylesheet" href="../../css/dialog.css" type="text/css">
+    <style>
+        .sameName{
+            color: blue;
+            cursor: pointer;
+        }
+        .sameName:hover{
+            color: red;
+        }
+    </style>
 </head>
 <body>
 <div>
@@ -276,7 +285,20 @@
             "columns": [
                 {"data": "num", "defaultContent": "", "visible": false},
                 {"data": "userGid", "defaultContent": ""},
-                {"data": "name", "defaultContent": ""},
+                {
+                    "data": "name",
+                    "defaultContent": "",
+                    "render": function (data, type, row) {
+                        var name = row['name'];
+                        var countSameName = row['countSameName'];
+                        if (countSameName == 0) {
+                            return name
+                        }else{
+                            var userGid = row['userGid'];
+                            return "<a href='javascript:void(0);' class='sameName' title='查看重名用户' onclick='showSameName("+ '\"' + userGid +"\")'>" + name + "("+countSameName + ")</a>"
+                        }
+                    }
+                },
                 {"data": "phone", "defaultContent": ""},
                 {"data": "createTime", "defaultContent": ""},
                 {"data": "userType", "defaultContent": ""},
@@ -304,13 +326,10 @@
         var layer = layui.layer;
         var laydate = layui.laydate;
         laydate.render({
-            elem: '#birthday'
+            elem: '#condition_fromTime'
         });
         laydate.render({
-            elem: '#fromTime'
-        });
-        laydate.render({
-            elem: '#toTime'
+            elem: '#condition_toTime'
         });
         laydate.render({
             elem: '#audit_detail_birthday'
@@ -439,6 +458,11 @@
                 alert("Audit system error")
             }
         });
+    }
+
+    // 显示重名用户
+    function showSameName() {
+        alert("待开发")
     }
 
     /**
