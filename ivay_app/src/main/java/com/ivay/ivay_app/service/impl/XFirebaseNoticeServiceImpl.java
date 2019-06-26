@@ -21,6 +21,7 @@ import com.ivay.ivay_app.service.XRegisterService;
 import com.ivay.ivay_app.utils.FirebaseUtil;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -142,23 +143,30 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         int i = 0;
         for (XOverDueFee fee : xOverDueFeeList) {
             try {
+                i++;
                 String fmcToken = fee.getFmcToken();
+                // 测试
+                // fmcToken =
+                // "fM8ho2YnGJc:APA91bEtCo7NZv6OeL-CIba8B4YuSfijyAxF64lNykwrLpAAVYodp7poSeDpDG9xyP9Y_PtiJw7mhg1CmOrtU6hUtGy6ShZWyu88tszUyY0tK0DmFthHrtGLuC5kUcl1Id-REBuu10eY";
                 Date dueTime = fee.getDueTime();
                 if (dueTime.getDate() == new Date().getDate()) {
-                    title = i18nService.getMessage("firebase.notice.dueDay.remind.titlemsg");
-                    message = i18nService.getMessage("firebase.notice.dueDay.remind.msg");
+                    title = i18nService.getViMessage("firebase.notice.dueDay.remind.titlemsg");
+                    message = i18nService.getViMessage("firebase.notice.dueDay.remind.msg");
                     logger.info("当天到期");
                 } else if (dueTime.getDate() == new Date().getDate() + 1) {
-                    title = i18nService.getMessage("firebase.notice.dueDay.remind.titlemsg");
-                    message = i18nService.getMessage("firebase.notice.beforeDueDay.remind.msg");
+                    title = i18nService.getViMessage("firebase.notice.dueDay.remind.titlemsg");
+                    message = i18nService.getViMessage("firebase.notice.beforeDueDay.remind.msg");
                     logger.info("明天到期");
                 }
 
                 Long dueAmount = fee.getDueAmount();
                 Long overdueFee = fee.getOverdueFee();
                 message = MessageFormat.format(message, dueAmount, overdueFee);
+                message = message.replace(",", ".");
+                title = StringUtil.vietnameseToEnglish(title);
+                message = StringUtil.vietnameseToEnglish(message);
+                logger.info("发送的第" + i + "条到期消息为：" + message);
 
-                i++;
                 logger.info("正在发送第" + i + "条信息----------------");
 
                 // 发送firebase消息推送
@@ -170,7 +178,14 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
                 // 发送手机短信
                 String phone = fee.getPhone();
+                // 测试
+                // phone = "0961255324";
                 sendPhoneNotice(phone, message);
+                // 测试发5条
+                // if (i == 5) {
+                // break;
+                // }
+
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -239,13 +254,20 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         int i = 0;
         for (XOverDueFee fee : xOverDueFeeList) {
             try {
+                i++;
                 String fmcToken = fee.getFmcToken();
-                title = i18nService.getMessage("firebase.notice.overdue.remind.titlemsg");
-                message = i18nService.getMessage("firebase.notice.overdue.remind.msg");
+                // 测试
+                // fmcToken =
+                // "fM8ho2YnGJc:APA91bEtCo7NZv6OeL-CIba8B4YuSfijyAxF64lNykwrLpAAVYodp7poSeDpDG9xyP9Y_PtiJw7mhg1CmOrtU6hUtGy6ShZWyu88tszUyY0tK0DmFthHrtGLuC5kUcl1Id-REBuu10eY";
+
+                title = i18nService.getViMessage("firebase.notice.overdue.remind.titlemsg");
+                message = i18nService.getViMessage("firebase.notice.overdue.remind.msg");
                 Integer dueDate = fee.getDueDate();
                 message = MessageFormat.format(message, dueDate);
+                title = StringUtil.vietnameseToEnglish(title);
+                message = StringUtil.vietnameseToEnglish(message);
+                logger.info("发送的第" + i + "条逾期消息为：" + message);
 
-                i++;
                 logger.info("正在发送第" + i + "条信息----------------");
 
                 // 发送firebase消息推送
@@ -254,6 +276,10 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
                 }
                 logger.info("发送firebase到期通知结束-------------");
+                // 测试发10条
+                // if (i == 10) {
+                // break;
+                // }
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
