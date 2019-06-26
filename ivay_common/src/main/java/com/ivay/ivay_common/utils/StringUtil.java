@@ -1,14 +1,15 @@
 package com.ivay.ivay_common.utils;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
 
 /**
  * 字符串转化工具类
@@ -80,7 +81,7 @@ public class StringUtil {
      * @param str
      */
     public static boolean isNumeric(String str) {
-        for (int i = str.length(); --i >= 0; ) {
+        for (int i = str.length(); --i >= 0;) {
             if (!Character.isDigit(str.charAt(i))) {
                 return false;
             }
@@ -88,8 +89,8 @@ public class StringUtil {
         return true;
     }
 
-
-    private static final char[] BCD_LOOKUP = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] BCD_LOOKUP =
+        {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
      * 将字节数组转换为16进制字符串的形式.
@@ -115,7 +116,7 @@ public class StringUtil {
         bytes = new byte[s.length() / 2];
 
         for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
+            bytes[i] = (byte)Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
         }
 
         return bytes;
@@ -142,13 +143,13 @@ public class StringUtil {
         String specialCharEx = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         Pattern p = Pattern.compile(specialCharEx);
         Matcher m = p.matcher(str);
-        return m.find(); //true表示含有特殊字符
+        return m.find(); // true表示含有特殊字符
     }
 
     // 只含数字或字母
     private static final String CHARACTER_REGEX = "\\W{1,}|_{1,}";
 
-    //只含数字/字母/下划线
+    // 只含数字/字母/下划线
     private static final String PASSWORD_REGEX = "^[0-9a-zA-Z_]{1,}$";
 
     public static Boolean isCharacter(String input) {
@@ -199,7 +200,7 @@ public class StringUtil {
     private static final Pattern PATTERN_ACCENTED_CHARACTERS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
     /**
-     * 越南语转英文字母
+     * 越南语转英文大写字母
      *
      * @param vi
      * @return
@@ -214,7 +215,27 @@ public class StringUtil {
         }
         // 去掉重音符号
         String nfdNormalizedString = Normalizer.normalize(vi, Normalizer.Form.NFD);
-        return PATTERN_ACCENTED_CHARACTERS.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D").replaceAll("đ", "d");
+        return PATTERN_ACCENTED_CHARACTERS.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D")
+            .replaceAll("đ", "d");
+    }
+
+    /**
+     * 越南语转英文字母
+     *
+     * @param vi
+     * @return
+     */
+    public static String vietnameseToEnglish(String vi) {
+        if (vi == null) {
+            return null;
+        }
+        if (StringUtils.isEmpty(vi)) {
+            return "";
+        }
+        // 去掉重音符号
+        String nfdNormalizedString = Normalizer.normalize(vi, Normalizer.Form.NFD);
+        return PATTERN_ACCENTED_CHARACTERS.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D")
+            .replaceAll("đ", "d");
     }
 
     private static final Pattern PATTERN_BLANK_CHARACTERS = Pattern.compile("\\s*|\t|\r|\n");
@@ -248,4 +269,11 @@ public class StringUtil {
         }
         return phone.replaceAll("(\\d{3})(.+)(\\d{4})", "$1***$3");
     }
+
+    public static void main(String[] args) {
+        System.out.println(vietnameseToEnglish(
+            "Khoản vay {0} của quý khách trên OVAY sắp đến hạn vào ngày mai, vui lòng trả nợ trước thời hạn để trành phát sinh phí quá hạn{1}.\n"
+                + ""));
+    }
+
 }
