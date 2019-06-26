@@ -19,12 +19,12 @@
                             <td>
                                 <form class="form-inline" onsubmit="return false">
                                     <div class="form-group">
-                                        Id người dùng：<input id="condition_userGid" type="text" class="form-control"
-                                                             placeholder="userGid">
-                                        Tên người dùng：<input id="condition_name" type="text" class="form-control"
-                                                              placeholder="name">
-                                        Số điện thoại：<input id="condition_phone" type="text" class="form-control"
-                                                             placeholder="phone">
+                                        Id người dùng：
+                                        <input id="condition_userGid" type="text" class="form-control" placeholder="userGid">
+                                        Tên người dùng：
+                                        <input id="condition_name" type="text" class="form-control" placeholder="name">
+                                        Số điện thoại：
+                                        <input id="condition_phone" type="text" class="form-control" placeholder="phone">
                                         <span id="condition_audit_box" style="display: none">
                                             审计员：
                                             <select id="condition_auditId" class="form-control">
@@ -35,19 +35,18 @@
                                     </div>
                                     <div class="form-group" style="margin:2px">
                                         Thời gian xin：
-                                        <input id="condition_fromTime" type="text" class="form-control"
-                                               placeholder="fromTime" readonly="readonly">
-                                        - <input id="condition_toTime" type="text" class="form-control"
-                                                 placeholder="toTime" readonly="readonly">
+                                        <input id="condition_fromTime" type="text" class="form-control" placeholder="fromTime" readonly="readonly">
+                                        - <input id="condition_toTime" type="text" class="form-control" placeholder="toTime" readonly="readonly">
                                         Tình trạng xét duyệt：
                                         <select id="condition_auditStatus" class="form-control">
                                             <option value="2">Đang chờ xét duyệt</option>
                                             <option value="3">Xét duyệt thông qua</option>
                                             <option value="7">Xét duyệt không thông qua</option>
-                                            <option value="8">驳回重新提交</option>
+                                            <option value="8">Từ chối và điền lạ</option>
                                         </select>
                                         <button id="searchBtn" class="layui-btn layui-btn-sm">
-                                            <i class="layui-icon">&#xe615;</i>Tìm kiếm
+                                            <i class="layui-icon">&#xe615;</i>
+                                            Tìm kiếm
                                         </button>
                                     </div>
                                 </form>
@@ -68,16 +67,16 @@
                             <th>Tên người dùng</th>
                             <th>Tên người dùng</th>
                             <th>Thời gian xin</th>
+                            <th>用户类型</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
 
                 <!-- 审核详情 -->
-                <div id="detail" class="widget-body no-padding" style="display: none">
+                <div id="audit_detail" class="widget-body no-padding" style="display: none">
                     <div>
                         <img id="photo1" src="" width="30%" height="300px" alt="photo1"/>
                         <img id="photo2" src="" width="30%" height="300px" alt="photo2"/>
@@ -85,36 +84,37 @@
                     </div>
                     <form class="form-inline" onsubmit="return false" style="margin: 2px">
                         <div class="form-group">
-                            Tên người dùng：<input id="detail_name2" type="text" class=" form-control"
-                                                  placeholder="name">
-                            Số CMND：<input id="detail_identityCard2" type="text" class=" form-control"
-                                           placeholder="identityCard">
-                            Ngày tháng năm sinh：<input id="detail_birthday2" type="text" class=" form-control"
-                                                       placeholder="birthday">
-                            Giới tính：<input type="radio" name="sex" value="0"/>Male
+                            Tên người dùng：
+                            <input id="audit_detail_name" type="text" class=" form-control" placeholder="name">
+                            Số CMND：
+                            <input id="audit_detail_identityCard" type="text" class=" form-control" placeholder="identityCard">
+                            Ngày tháng năm sinh：
+                            <input id="audit_detail_birthday" type="text" class=" form-control" placeholder="birthday">
+                            Giới tính：
+                            <input type="radio" name="sex" value="0"/>Male
                             <input type="radio" name="sex" value="1"/>Female
                         </div>
                     </form>
                     <div class="form-group" style="margin:2px">
                         <button onclick="auditSubmit(1)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>Duyệt
+                            <i class="layui-icon">&#xe615;</i>
+                            Duyệt
                         </button>
                         <button onclick="auditSubmit(0)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>Từ chối
+                            <i class="layui-icon">&#xe615;</i>
+                            Từ chối
                         </button>
                         <label>Lý do từ chố：</label>
                         <select id="refuseReason">
                             <option value="">Chọn lý do</option>
-                            <option value="1001">1001:Mặt trước và mặt sau của CMND không rõ, hay chụp ở góc độ kém
-                            </option>
+                            <option value="1001">1001:Mặt trước và mặt sau của CMND không rõ, hay chụp ở góc độ kém</option>
                             <option value="1002">1002:Chưa chụp được ảnh CMND</option>
                             <option value="1003">1003:Chưa chụp được bản góc CMND(e.g. bản sao、bản điện tử)</option>
                             <option value="1004">1004:Ảnh chính diện cùng CMND không rõ</option>
                             <option value="1005">1005:Chưa đăng lên ảnh chính diện cùng CMND</option>
                             <option value="1006">1006:Ảnh chính diện/ chính diện cùng CMND chưa đạt tiêu chuẩn</option>
                             <option value="2001">2001:Giấy CMND quá hạn</option>
-                            <option value="2002">2002:Số CMND/ tên họ/ ngày sinh ghi mà không thống nhất với giấy CMND
-                            </option>
+                            <option value="2002">2002:Số CMND/ tên họ/ ngày sinh ghi mà không thống nhất với giấy CMND</option>
                             <option value="2003">2003:Giấy CMND giả(Photoshop、dán ảnh phía sau)</option>
                             <option value="2004">2004:Bị trùng lặp(ảnh hoạt hình hoặc ảnh cầm tay hoặc ảnh giấy CMND
                                 trùng với ảnh người xin khác)
@@ -125,8 +125,7 @@
                                 diện giấy chứng kiến cầm tay
                             </option>
                             <option value="3004">3004:Ảnh chính diện không thống nhất với ảnh CMND</option>
-                            <option value="3005">3005:Tên họ thông tin cá nhân không thông nhất với tên họ giấy CMND
-                            </option>
+                            <option value="3005">3005:Tên họ thông tin cá nhân không thông nhất với tên họ giấy CMND</option>
                         </select>
                     </div>
                 </div>
@@ -284,6 +283,7 @@
                 {"data": "name", "defaultContent": ""},
                 {"data": "phone", "defaultContent": ""},
                 {"data": "createTime", "defaultContent": ""},
+                {"data": "userType", "defaultContent": ""},
                 {
                     "data": "",
                     "defaultContent": "",
@@ -291,7 +291,7 @@
                     "render": function (data, type, row) {
                         var gid = row['userGid'];
                         var status = row['auditStatus'];
-                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\",' + '\"' + status + '\"' + ")' >详情<i class='fa fa-edit'></i></button>&nbsp;";
+                        var operation = "<button class='btn btn-success' type='button' onclick='showDetail(" + '\"' + gid + '\",' + '\"' + status + '\"' + ")' >Chi tiết<i class='fa fa-edit'></i></button>&nbsp;";
                         if (hasAuditAdminRight(LOGIN_ROLE)) {
                             operation += "<button class='btn btn-success' type='button' onclick='assignUser(" + '\"' + gid + '\"' + ")' >指派给<i class='fa fa-edit'></i></button>&nbsp;";
                         }
@@ -317,7 +317,7 @@
             elem: '#toTime'
         });
         laydate.render({
-            elem: '#detail_birthday2'
+            elem: '#audit_detail_birthday'
         });
     });
 
@@ -364,10 +364,10 @@
         detail_birthday = "";
         detail_sex = "";
         handle_userGid = "";
-        $("#detail_name2").val("");
-        $("#detail_identityCard2").val("");
-        $("#detail_birthday2").val("");
-        $('#detail').css("display", "none");
+        $("#audit_detail_name").val("");
+        $("#audit_detail_identityCard").val("");
+        $("#audit_detail_birthday").val("");
+        $('#audit_detail').css("display", "none");
     }
 
     // 查看审核详情
@@ -380,7 +380,7 @@
                 if (data.status.code != "200") {
                     alert(data.status.message);
                 } else {
-                    $("#detail").css("display", "block");
+                    $("#audit_detail").css("display", "block");
                     detail_name = data.bo.name;
                     detail_identityCard = data.bo.identityCard;
                     detail_birthday = data.bo.birthday;
@@ -401,11 +401,11 @@
     // 审核
     function auditSubmit(flag) {
         if (flag == 1) {
-            if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != detail_name.replace(/\s/g, '').toUpperCase()) {
+            if ($("#audit_detail_name").val().replace(/\s/g, '').toUpperCase() != detail_name.replace(/\s/g, '').toUpperCase()) {
                 alert("Please check the user name");
                 return;
             }
-            if ($("#detail_identityCard2").val().replace(/\s/g, '').toUpperCase() != detail_identityCard.replace(/\s/g, '').toUpperCase()) {
+            if ($("#audit_detail_identityCard").val().replace(/\s/g, '').toUpperCase() != detail_identityCard.replace(/\s/g, '').toUpperCase()) {
                 alert("Please check the ID Card No");
                 return;
             }
@@ -414,8 +414,8 @@
                 return;
             }
             if (
-                $("#detail_birthday2").val() == "" ||
-                detail_birthday.indexOf($("#detail_birthday2").val()) == -1
+                $("#audit_detail_birthday").val() == "" ||
+                detail_birthday.indexOf($("#audit_detail_birthday").val()) == -1
             ) {
                 alert("Please check the birthday");
                 return;

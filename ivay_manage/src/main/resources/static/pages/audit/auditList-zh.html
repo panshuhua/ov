@@ -19,12 +19,12 @@
                             <td>
                                 <form class="form-inline" onsubmit="return false">
                                     <div class="form-group">
-                                        用户ID：<input id="condition_userGid" type="text" class="form-control"
-                                                    placeholder="userGid">
-                                        姓名：<input id="condition_name" type="text" class="form-control"
-                                                  placeholder="name">
-                                        手机号：<input id="condition_phone" type="text" class="form-control"
-                                                   placeholder="phone">
+                                        用户ID：
+                                        <input id="condition_userGid" type="text" class="form-control" placeholder="userGid">
+                                        姓名：
+                                        <input id="condition_name" type="text" class="form-control" placeholder="name">
+                                        手机号：
+                                        <input id="condition_phone" type="text" class="form-control" placeholder="phone">
                                         <span id="condition_audit_box" style="display: none">
                                             审计员：
                                             <select id="condition_auditId" class="form-control">
@@ -35,10 +35,8 @@
                                     </div>
                                     <div class="form-group" style="margin:2px">
                                         申请时间：
-                                        <input id="condition_fromTime" type="text" class="form-control"
-                                               placeholder="fromTime" readonly="readonly">
-                                        - <input id="condition_toTime" type="text" class="form-control"
-                                                 placeholder="toTime" readonly="readonly">
+                                        <input id="condition_fromTime" type="text" class="form-control" placeholder="fromTime" readonly="readonly">
+                                        - <input id="condition_toTime" type="text" class="form-control" placeholder="toTime" readonly="readonly">
                                         审核状态：
                                         <select id="condition_auditStatus" class="form-control">
                                             <option value="2">待审核</option>
@@ -47,7 +45,8 @@
                                             <option value="8">驳回重新提交</option>
                                         </select>
                                         <button id="searchBtn" class="layui-btn layui-btn-sm">
-                                            <i class="layui-icon">&#xe615;</i>搜索
+                                            <i class="layui-icon">&#xe615;</i>
+                                            搜索
                                         </button>
                                     </div>
                                 </form>
@@ -72,13 +71,12 @@
                             <th>操作</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
 
                 <!-- 审核详情 -->
-                <div id="detail" class="widget-body no-padding" style="display: none">
+                <div id="audit_detail" class="widget-body no-padding" style="display: none">
                     <div>
                         <img id="photo1" src="" width="30%" height="300px" alt="photo1"/>
                         <img id="photo2" src="" width="30%" height="300px" alt="photo2"/>
@@ -86,20 +84,25 @@
                     </div>
                     <form class="form-inline" onsubmit="return false" style="margin: 2px">
                         <div class="form-group">
-                            姓名： <input id="detail_name2" type="text" class=" form-control" placeholder="name">
-                            身份证： <input id="detail_identityCard2" type="text" class=" form-control"
-                                        placeholder="identityCard">
-                            生日： <input id="detail_birthday2" type="text" class=" form-control" placeholder="birthday">
-                            性别：<input type="radio" name="sex" value="0"/>Male
+                            姓名：
+                            <input id="audit_detail_name" type="text" class=" form-control" placeholder="name">
+                            身份证：
+                            <input id="audit_detail_identityCard" type="text" class=" form-control" placeholder="identityCard">
+                            生日：
+                            <input id="audit_detail_birthday" type="text" class=" form-control" placeholder="birthday">
+                            性别：
+                            <input type="radio" name="sex" value="0"/>Male
                             <input type="radio" name="sex" value="1"/>Female
                         </div>
                     </form>
                     <div class="form-group" style="margin:2px">
                         <button onclick="auditSubmit(1)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>审核通过
+                            <i class="layui-icon">&#xe615;</i>
+                            审核通过
                         </button>
                         <button onclick="auditSubmit(0)" class="layui-btn layui-btn-sm">
-                            <i class="layui-icon">&#xe615;</i>审核驳回
+                            <i class="layui-icon">&#xe615;</i>
+                            审核驳回
                         </button>
                         <label>驳回理由：</label>
                         <select id="refuseReason">
@@ -230,9 +233,9 @@
             "searching": false,
             "processing": false,
             "serverSide": true,
-            "language": {
-                "url": "/js/plugin/datatables/Chinese.lang"
-            },
+            // "language": {
+            //     "url": "/js/plugin/datatables/Chinese.lang"
+            // },
             "ajax": {
                 "url": "/audit/list",
                 "type": "post",
@@ -310,7 +313,7 @@
             elem: '#toTime'
         });
         laydate.render({
-            elem: '#detail_birthday2'
+            elem: '#audit_detail_birthday'
         });
     });
 
@@ -357,10 +360,10 @@
         detail_birthday = "";
         detail_sex = "";
         handle_userGid = "";
-        $("#detail_name2").val("");
-        $("#detail_identityCard2").val("");
-        $("#detail_birthday2").val("");
-        $('#detail').css("display", "none");
+        $("#audit_detail_name").val("");
+        $("#audit_detail_identityCard").val("");
+        $("#audit_detail_birthday").val("");
+        $('#audit_detail').css("display", "none");
     }
 
     // 查看审核详情
@@ -373,7 +376,7 @@
                 if (data.status.code != "200") {
                     alert(data.status.message);
                 } else {
-                    $("#detail").css("display", "block");
+                    $("#audit_detail").css("display", "block");
                     detail_name = data.bo.name;
                     detail_identityCard = data.bo.identityCard;
                     detail_birthday = data.bo.birthday;
@@ -394,11 +397,11 @@
     // 审核
     function auditSubmit(flag) {
         if (flag == 1) {
-            if ($("#detail_name2").val().replace(/\s/g, '').toUpperCase() != detail_name.replace(/\s/g, '').toUpperCase()) {
+            if ($("#audit_detail_name").val().replace(/\s/g, '').toUpperCase() != detail_name.replace(/\s/g, '').toUpperCase()) {
                 alert("Please check the user name");
                 return;
             }
-            if ($("#detail_identityCard2").val().replace(/\s/g, '').toUpperCase() != detail_identityCard.replace(/\s/g, '').toUpperCase()) {
+            if ($("#audit_detail_identityCard").val().replace(/\s/g, '').toUpperCase() != detail_identityCard.replace(/\s/g, '').toUpperCase()) {
                 alert("Please check the ID Card No");
                 return;
             }
@@ -407,8 +410,8 @@
                 return;
             }
             if (
-                $("#detail_birthday2").val() == "" ||
-                detail_birthday.indexOf($("#detail_birthday2").val()) == -1
+                $("#audit_detail_birthday").val() == "" ||
+                detail_birthday.indexOf($("#audit_detail_birthday").val()) == -1
             ) {
                 alert("Please check the birthday");
                 return;
