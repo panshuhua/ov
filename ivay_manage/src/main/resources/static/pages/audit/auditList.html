@@ -18,6 +18,9 @@
         .sameName:hover{
             color: red;
         }
+        .sameNameBackground{
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -75,8 +78,8 @@
                         <thead>
                         <tr>
                             <th>行号</th>
-                            <th>Id người dùng</th>
                             <th>Tên người dùng</th>
+                            <th>Id người dùng</th>
                             <th>Tên người dùng</th>
                             <th>Thời gian xin</th>
                             <th>用户类型</th>
@@ -291,7 +294,6 @@
             "dom": "<'dt-toolbar'r>t<'dt-toolbar-footer'<'col-sm-10 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-10' p v>>",
             "columns": [
                 {"data": "num", "defaultContent": "", "visible": false},
-                {"data": "userGid", "defaultContent": ""},
                 {
                     "data": "name",
                     "defaultContent": "",
@@ -300,12 +302,17 @@
                         var countSameName = row['countSameName'];
                         if (countSameName == 0) {
                             return name
-                        }else{
+                        } else{
                             var userGid = row['userGid'];
-                            return "<a id='sameName_" +userGid + "' href='javascript:void(0);' class='sameName' title='查看重名用户' onclick='showSameName("+ '\"' + userGid +"\")'>" + name + "("+countSameName + ")</a>"
+                            // 只展示10条
+                            if (countSameName > 10) {
+                                countSameName += "+"
+                            }
+                            return "<a id='sameName_" +userGid + "' href='javascript:void(0);' class='sameName' title='查看重名用户' onclick='showSameName("+ '\"' + userGid +"\")'>" + name + "("+countSameName + ")</a>";
                         }
                     }
                 },
+                {"data": "userGid", "defaultContent": ""},
                 {"data": "phone", "defaultContent": ""},
                 {"data": "createTime", "defaultContent": ""},
                 {"data": "userType", "defaultContent": ""},
@@ -467,10 +474,58 @@
         });
     }
 
+    var AUDIT_STATUS = {"2": "待审核", "3": "审核通过", "7": "审核不通过", "8": "Từ chối và điền lạ"};
+
     // 显示重名用户
     function showSameName(userGid) {
-        window.j = $("#sameName_" + userGid)
-        console.log(j)
+        // 删除已有的同名dom
+        $(".sameName_detail").remove();
+
+        // 查询同名用户信息
+        $.ajax({
+            url: "/audit/listSameName?userGid=" + userGid,
+            type: "get",
+            success: function (data, textStatus) {
+                if (data.status.code != "200") {
+                    alert(data.status.message);
+                } else if (data.bo.data.length > 0){
+                    // 当前选中的同名信息
+                    var currentSameNameParentDom = $("#sameName_" + userGid).parent().parent();
+                    window.a = currentSameNameParentDom;
+
+                    var sameNameDom = "<tr class='sameName_detail sameNameBackground'>" +
+                        "<td>姓名</td>" +
+                        "<td>用户状态</td>" +
+                        "<td>电话号码</td>" +
+                        "<td>申请时间</td>" +
+                        "<td>用户类型</td>" +
+                        "<td>审核时间</td></tr>";
+                    for(var i=0;i<data.bo.data.length;i++){
+                        // 只展示10条
+                        if (i > 10) {
+                            break;
+                        }
+
+                        var userType = data.bo.data[i]["userType"] == null ? "": data.bo.data[i]["userType"];
+                        var auditTime = data.bo.data[i]["auditTime"] == null ? "": data.bo.data[i]["auditTime"];
+                        var auditStatus = AUDIT_STATUS[data.bo.data[i]["auditStatus"]];
+
+                        sameNameDom += "<tr class='sameName_detail sameNameBackground'>" +
+                            "<td>" + data.bo.data[i]["name"] + "</td>" +
+                            "<td>" + auditStatus + "</td>" +
+                            "<td>" + data.bo.data[i]["phone"] + "</td>" +
+                            "<td>" + data.bo.data[i]["createTime"] + "</td>" +
+                            "<td>" + userType + "</td>" +
+                            "<td>" + auditTime + "</td></tr>";
+                    }
+                    currentSameNameParentDom.after(sameNameDom);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // 同名检测报错
+                alert("Search same name error")
+            }
+        });
     }
 
     /**

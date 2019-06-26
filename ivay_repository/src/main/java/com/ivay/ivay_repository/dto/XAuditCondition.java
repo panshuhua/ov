@@ -21,6 +21,8 @@ public class XAuditCondition {
 
     @ApiModelProperty("申请时间")
     private Date createTime;
+    @ApiModelProperty("审核时间")
+    private Date auditTime;
 
     @ApiModelProperty("起始时间")
     private Date fromTime;

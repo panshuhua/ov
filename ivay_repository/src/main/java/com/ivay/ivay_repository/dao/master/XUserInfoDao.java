@@ -173,7 +173,7 @@ public interface XUserInfoDao {
 
     int countSameName(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> listSameName(@Param("params") Map<String, Object> params,
+    List<XAuditCondition> listSameName(@Param("params") Map<String, Object> params,
                                  @Param("offset") Integer offset,
                                  @Param("limit") Integer limit);
 

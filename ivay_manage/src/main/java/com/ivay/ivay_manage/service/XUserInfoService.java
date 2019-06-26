@@ -45,10 +45,12 @@ public interface XUserInfoService {
     /**
      * 获取与某用户同名得所有用户
      *
-     * @param request
+     * @param limit
+     * @param num
+     * @param userGid
      * @return
      */
-    PageTableResponse listSameName(PageTableRequest request);
+    PageTableResponse listSameName(int limit, int num, String userGid);
 
     /**
      * 查看逾期用户

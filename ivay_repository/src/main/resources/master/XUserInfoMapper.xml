@@ -379,21 +379,34 @@
         SELECT count(*) FROM x_user_info
         WHERE user_gid != #{params.userGid}
         AND `name`=(
-            SELECT name
-            FROM x_user_info
-            WHERE user_gid = #{params.userGid}
+            SELECT name FROM x_user_info WHERE user_gid = #{params.userGid}
         )
     </select>
 
-    <select id="listSameName" resultType="com.ivay.ivay_repository.model.XUserInfo">
-        SELECT * FROM x_user_info
-        WHERE user_gid != #{params.userGid}
+    <select id="listSameName" resultType="com.ivay.ivay_repository.dto.XAuditCondition">
+        select
+            xui.user_gid,
+            xui.name,
+            xui.phone,
+            case xui.user_status
+                WHEN '2' THEN '2'
+                WHEN '3' THEN '3'
+                WHEN '4' THEN '3'
+                WHEN '5' THEN '3'
+                WHEN '6' THEN '3'
+                WHEN '7' THEN '7'
+                WHEN '8' THEN '8'
+            END audit_status,
+            xuei.create_time createTime,
+            xui.audit_time auditTime,
+            (SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
+        from x_user_info xui
+        left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
+        WHERE xui.user_gid != #{params.userGid}
         AND `name`=(
-            SELECT name
-            FROM x_user_info
-            WHERE user_gid = #{params.userGid}
+            SELECT name FROM x_user_info t WHERE t.user_gid = #{params.userGid}
         )
-        ORDER BY update_time DESC
+        ORDER BY xui.update_time DESC
         <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
         </if>

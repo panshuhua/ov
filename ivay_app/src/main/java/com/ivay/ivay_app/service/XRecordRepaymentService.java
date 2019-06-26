@@ -38,14 +38,6 @@ public interface XRecordRepaymentService {
     XVirtualAccount repaymentMoney(String orderGid, String userGid, String bankShortName, long repaymentAmount, Integer deductType);
 
     /**
-     * 调用银行还款接口
-     *
-     * @param xRecordLoan
-     * @param xRecordRepayment
-     */
-    void repayMoneyToBank(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode);
-
-    /**
      * 还款接口返回后，更新借款和还款表
      *
      * @param xRecordLoan

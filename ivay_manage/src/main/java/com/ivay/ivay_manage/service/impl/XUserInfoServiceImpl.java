@@ -266,11 +266,17 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     /**
      * 获取与某用户同名得所有用户
      *
-     * @param request
+     * @param limit
+     * @param num
+     * @param userGid
      * @return
      */
     @Override
-    public PageTableResponse listSameName(PageTableRequest request) {
+    public PageTableResponse listSameName(int limit, int num, String userGid) {
+        PageTableRequest request = new PageTableRequest();
+        request.getParams().put("userGid", userGid);
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
         return new PageTableHandler(
                 a -> xUserInfoDao.countSameName(a.getParams()),
                 a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())
