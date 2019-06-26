@@ -167,4 +167,8 @@ public class SysVariable {
     public static final String RETURN_SUCESS_CODE = "200";
     public static final String METHOD_SENDREGISTERCODE = "sendRegisterCode";
 
+    // 短信验证码登录/注册类型
+    public static final String RETURN_TYPE_LOGIN = "login";
+    public static final String RETURN_TYPE_REGISTER = "register";
+
 }

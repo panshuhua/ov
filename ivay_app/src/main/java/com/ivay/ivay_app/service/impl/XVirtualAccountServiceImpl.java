@@ -244,6 +244,7 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
                 logger.info("当前列表没有用户需要生成虚拟账号");
             }
 
+            int i = 0;
             for (XRecordLoanInfo xRecordLoanInfo : recordLoanInfos) {
                 String userGid = xRecordLoanInfo.getUserGid();
                 String orderId = xRecordLoanInfo.getOrderId();
@@ -257,6 +258,7 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
                 XVirtualAccount xVirtualAccount = selectByOrderId(orderId);
 
                 if (xVirtualAccount == null) {
+                    i++;
                     ValVirtualAccountRsp valVirtualAccountRsp =
                         autoAddVirtualAccount(accName, orderId, userGid, collectAmount);
                     String responseCode = valVirtualAccountRsp.getResponseCode();
@@ -301,6 +303,7 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
                 }
 
             }
+            logger.info("创建虚拟账号的总数：" + i + "-----------------------------");
         } catch (NumberFormatException e) {
             logger.error("自动创建虚拟账号出错，错误信息为：" + e.getMessage());
             e.printStackTrace();
