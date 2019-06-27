@@ -252,6 +252,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         if (BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             logger.info("{}: 还款金额:{}, 应还本金:{},应还利息:{}",
                     xRecordRepayment.getOrderId(),
+                    xRecordRepayment.getRepaymentAmount(),
                     xRecordLoan.getDueAmount(),
                     xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
             // 实际扣款时间
@@ -264,12 +265,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             // 更新借款表的还款额度和滞纳金等
             long diff = xRecordRepayment.getRepaymentAmount() - xRecordLoan.getDueAmount();
             if (diff < 0) {
+                // 更新可借额度
+                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordRepayment.getRepaymentAmount());
                 // 还有本金没还完
                 xRecordLoan.setDueAmount(-diff);
                 xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
-                // 更新可借额度
-                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordRepayment.getRepaymentAmount());
             } else {
+                // 更新可借额度,不可往下挪
+                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
                 // 本金已还完
                 xRecordLoan.setDueAmount(0L);
                 if (xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() <= diff) {
@@ -287,8 +290,6 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                     }
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
                 }
-                // 更新可借额度
-                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
             }
             // 最后一次还款时间
             xRecordLoan.setLastRepaymentTime(now);
