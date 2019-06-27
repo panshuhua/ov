@@ -6,26 +6,44 @@
 	<update id="updateGpsInfo">
 	  update x_user_risk set 
       <if test="longitude!=null and longitude!='' or longitude==0">
-      longitude=#{longitude},
+      longitude = IFNULL(longitude,#{longitude}),  <!-- 该字段为空时才更新，不为空则不更新 -->
       </if>
       <if test="latitude!=null and latitude!='' or latitude==0">
-      latitude=#{latitude},
+      latitude = IFNULL(latitude,#{latitude}),
       </if>
       update_time=#{updateTime} 
       where user_gid=#{userGid}
    </update>
    
    <update id="updateOthers">
-     update x_user_risk set
-      <if test="macAddress!=null and macAddress!=''">
-       mac_address=#{macAddress},
+      update x_user_risk set
+      <if test="imei!=null and imei!=''">
+       imei = IFNULL(imei,#{imei}), 
       </if>
-       <if test="phoneBrand!=null and phoneBrand!=''">
-       phone_brand=#{phoneBrand},
+       <if test="imsi!=null and imsi!=''">
+       imsi = IFNULL(imsi,#{imsi}), 
       </if>
-       <if test="trafficWay!=null and trafficWay!=''">
-       traffic_way=#{trafficWay},
+      <if test="phoneNumber!=null and phoneNumber!=''">
+       phone_number = IFNULL(phone_number,#{phoneNumber}), 
       </if>
+      <if test="carrierName!=null and carrierName!=''">
+        carrier_name = IFNULL(carrier_name,#{carrierName}), 
+      </if>
+      <if test="phoneModel!=null and phoneModel!=''">
+        phone_model = IFNULL(phone_model,#{phoneModel}), 
+      </if>
+      <if test="uid!=null and uid!=''">
+        uid = IFNULL(uid,#{uid}), 
+      </if>
+       <if test="wifiMacAddress!=null and wifiMacAddress!=''">
+        wifi_mac_address = IFNULL(wifi_mac_address,#{wifiMacAddress}), 
+       </if>
+       <if test="systemVersion!=null and systemVersion!=''">
+        system_version = IFNULL(system_version,#{systemVersion}), 
+       </if>
+       <if test="ipv4Address!=null and ipv4Address!=''">
+        ipv4_address = IFNULL(ipv4_address,#{ipv4Address}), 
+       </if>
        update_time=#{updateTime} 
        where user_gid=#{userGid} 
    </update>

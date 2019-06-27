@@ -1,7 +1,12 @@
 package com.ivay.ivay_repository.dao.master;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
 import com.ivay.ivay_repository.model.XUserRisk;
-import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface XUserRiskDao {
@@ -17,15 +22,14 @@ public interface XUserRiskDao {
     Integer findUser(String userGid);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("INSERT INTO x_user_risk(user_gid, longitude, latitude, create_time, update_time, mac_address, phone_brand, traffic_way) VALUES (#{userGid}, #{longitude}, #{latitude}, #{createTime}, #{updateTime}, #{macAddress}, #{phoneBrand}, #{trafficWay})")
+    @Insert("INSERT INTO x_user_risk (user_gid, longitude, latitude, enable_flag, create_time, update_time, imei, imsi, phone_number, carrier_name, phone_model, uid, wifi_mac_address, system_version, ipv4_address) VALUES (#{userGid}, #{longitude}, #{latitude}, 'Y', now(), now(), #{imei}, #{imsi}, #{phoneNumber}, #{carrierName}, #{phoneModel}, #{uid}, #{wifiMacAddress}, #{systemVersion}, #{ipv4Address})")
     Integer save(XUserRisk xUserRisk);
 
     Integer updateGpsInfo(XUserRisk xUserRisk);
 
     Integer updateOthers(XUserRisk xUserRisk);
 
-    //查询gps信息
+    // 查询gps信息
     @Select("select * from  x_user_risk where user_gid=#{userGid}")
     XUserRisk getGps(String userGid);
 }
-

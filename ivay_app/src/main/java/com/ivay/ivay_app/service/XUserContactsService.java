@@ -1,6 +1,7 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_common.table.PageTableResponse;
+import javax.servlet.http.HttpServletRequest;
+
 import com.ivay.ivay_repository.dto.XRiskInfo;
 
 public interface XUserContactsService {
@@ -11,5 +12,6 @@ public interface XUserContactsService {
      * @param riskInfo
      * @return
      */
-    boolean saveAll(XRiskInfo riskInfo);
+    boolean saveAll(String type, XRiskInfo riskInfo, HttpServletRequest request) throws Exception;
+
 }

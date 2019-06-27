@@ -328,6 +328,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     public ReturnUser register(LoginInfo loginInfo) {
         String mobile = loginInfo.getMobile();
         String macCode = loginInfo.getMacCode();
+        logger.info("前台传过来的macCode:" + macCode + "---------------");
 
         // 手机验证码校验
         String verifyCode = loginInfo.getVerifyCode();
@@ -383,7 +384,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                                 i18nService.getMessage("response.error.register.passworderror.code"),
                                 i18nService.getMessage("response.error.register.passworderror.msg"));
                         }
-
+                        logger.info("密码注册：" + macCode + "-------------------");
                         String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
                         if (StringUtils.isEmpty(macCodeRepeatPhone)) {
                             XUser xUser = registerLogin(loginInfo);
@@ -406,6 +407,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                                 i18nService.getMessage("response.error.register.blankpassword.msg"));
                         } else {
                             // 短信验证码登录：还未注册，短信验证码注册后再自动登录
+                            logger.info("短信验证码注册：" + macCode + "-------------------");
                             String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
                             if (StringUtils.isEmpty(macCodeRepeatPhone)) {
                                 XUser xUser = registerLogin(loginInfo);
