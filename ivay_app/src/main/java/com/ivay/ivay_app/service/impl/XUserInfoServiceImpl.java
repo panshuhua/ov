@@ -32,8 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class XUserInfoServiceImpl implements XUserInfoService {
-
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XUserInfoService.class);
 
     @Autowired
     private I18nService i18nService;
@@ -141,11 +140,6 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     }
 
     @Override
-    public int approve(String gid, int flag) {
-        return updateUserStatus(gid, flag > 0 ? SysVariable.USER_STATUS_AUTH_SUCCESS : SysVariable.USER_STATUS_AUTH_FAIL);
-    }
-
-    @Override
     public CreditLine getCreditLine(String gid) {
         return xUserInfoDao.getCreditLine(gid);
     }
@@ -192,6 +186,4 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         }
         return null;
     }
-
-
 }

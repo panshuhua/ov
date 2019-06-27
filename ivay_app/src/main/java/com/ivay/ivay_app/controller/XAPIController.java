@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("star/api")
-@Api(tags = "接口联调 - test")
+@Api(tags = "baokim借款接口联调 - test")
 public class XAPIController {
     @Autowired
     private XAPIService xapiService;

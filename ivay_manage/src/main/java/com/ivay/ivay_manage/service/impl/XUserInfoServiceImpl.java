@@ -290,15 +290,21 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * @param limit
      * @param num
      * @param type
+     * @param identityCard
+     * @param phone
+     * @param name
      * @return
      */
     @Override
-    public PageTableResponse overDueUsers(int limit, int num, String type) {
+    public PageTableResponse overDueUsers(int limit, int num, String type, String identityCard, String phone, String name) {
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
         // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
         request.getParams().put("type", type);
+        request.getParams().put("identityCard", identityCard);
+        request.getParams().put("phone", phone);
+        request.getParams().put("name", name);
         return new PageTableHandler(
                 a -> xUserInfoDao.countOverDueUsers(a.getParams()),
                 a -> xUserInfoDao.overDueUsers(a.getParams(), a.getOffset(), a.getLimit())
