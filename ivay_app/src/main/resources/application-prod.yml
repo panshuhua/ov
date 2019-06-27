@@ -59,8 +59,8 @@ api_authenticate_user: vmgtest1
 api_authenticate_pass: vmG@123b
 # 风控授权url
 risk_control_url: http://10.53.104.178:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
-# 风控提额url
-update_credit_limit_url: http://10.53.104.178:8081/audit/updateCreditLimit?userGid={userGid}
+# 还款成功的后置处理url, 提额、增加白名单
+repayment_success_post_handle_url: http://10.53.104.178:8081/audit/repaymentSuccessPostHandle?userGid={userGid}
 # 授信自动审计url
 auto_audit_url: http://10.53.104.178:8081/audit/autoAudit?userGid={userGid}
 
