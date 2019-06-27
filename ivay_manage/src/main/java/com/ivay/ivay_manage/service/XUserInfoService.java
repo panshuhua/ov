@@ -58,9 +58,12 @@ public interface XUserInfoService {
      * @param limit
      * @param num
      * @param type
+     * @param identityCard
+     * @param phone
+     * @param name
      * @return
      */
-    PageTableResponse overDueUsers(int limit, int num, String type);
+    PageTableResponse overDueUsers(int limit, int num, String type, String identityCard, String phone, String name);
 
     /**
      * 查看逾期借款信息

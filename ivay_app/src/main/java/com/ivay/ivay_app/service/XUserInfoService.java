@@ -59,16 +59,6 @@ public interface XUserInfoService {
     int submit(String gid);
 
     /**
-     * 审核
-     *
-     * @param gid
-     * @param flag
-     * @return
-     */
-    int approve(String gid, int flag);
-
-
-    /**
      * 判断交易密码是否为空
      *
      * @return

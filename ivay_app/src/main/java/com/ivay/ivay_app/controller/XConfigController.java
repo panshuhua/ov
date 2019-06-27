@@ -1,15 +1,13 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_repository.model.XConfig;
-import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_app.service.XConfigService;
+import com.ivay.ivay_common.dto.Response;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_repository.model.XConfig;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("star/config")
 public class XConfigController {
-    private static final Logger logger = LoggerFactory.getLogger(XConfigController.class);
+
     @Autowired
     private XConfigService xConfigService;
 

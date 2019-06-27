@@ -32,8 +32,7 @@ import java.util.Map;
  *
  * @author xx
  */
-@Api(tags = "现金贷公共")
-
+@Api(tags = "公共接口")
 @RestController
 public class BillCommonController {
 

@@ -49,8 +49,8 @@ public class XUserInfoController {
 
     @PostMapping("update")
     @ApiOperation(value = "编辑")
-    @LogAnnotation(module="编辑授信信息")
-    public Response<XUserInfo> update(@Validated({Update.class}) @RequestBody XUserInfo xUserInfo,HttpServletRequest request) {
+    @LogAnnotation(module = "编辑授信信息")
+    public Response<XUserInfo> update(@Validated({Update.class}) @RequestBody XUserInfo xUserInfo, HttpServletRequest request) {
         Response<XUserInfo> response = new Response<>();
         response.setBo(xUserInfoService.update(xUserInfo));
         return response;
@@ -61,8 +61,8 @@ public class XUserInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })
-    @LogAnnotation(module="获取授信信息")
-    public Response<XUserInfo> get(@RequestParam String userGid,HttpServletRequest request) {
+    @LogAnnotation(module = "获取授信信息")
+    public Response<XUserInfo> get(@RequestParam String userGid, HttpServletRequest request) {
         Response<XUserInfo> response = new Response<>();
         response.setBo(xUserInfoService.getByGid(userGid));
         return response;
@@ -73,15 +73,15 @@ public class XUserInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })
-    @LogAnnotation(module="删除授信信息")
-    public void delete(@RequestParam String gid,HttpServletRequest request) {
+    @LogAnnotation(module = "删除授信信息")
+    public void delete(@RequestParam String gid, HttpServletRequest request) {
         xUserInfoService.delete(gid);
     }
 
     @GetMapping("getcreditLine/{gid}")
     @ApiOperation(value = "获取授信额度")
-    @LogAnnotation(module="获取授信额度")
-    public Response<CreditLine> getCreditLine(@PathVariable String gid,HttpServletRequest request) {
+    @LogAnnotation(module = "获取授信额度")
+    public Response<CreditLine> getCreditLine(@PathVariable String gid, HttpServletRequest request) {
         Response<CreditLine> response = new Response<>();
         //验证userGid有效性
         XUserInfo xUserInfo = xUserInfoService.getByGid(gid);
@@ -99,8 +99,8 @@ public class XUserInfoController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })
-    @LogAnnotation(module="获取授信认证信息状态")
-    public Response<String> getUserStatus(@RequestParam String gid,HttpServletRequest request) {
+    @LogAnnotation(module = "获取授信认证信息状态")
+    public Response<String> getUserStatus(@RequestParam String gid, HttpServletRequest request) {
         Response<String> response = new Response<>();
         response.setBo(xUserInfoService.getUserStatus(gid));
         return response;
@@ -108,8 +108,8 @@ public class XUserInfoController {
 
     @GetMapping("hasTransPwd")
     @ApiOperation(value = "是否有交易密码")
-    @LogAnnotation(module="查询是否有交易密码")
-    public Response<String> hasTransPwd(@RequestParam String userGid,HttpServletRequest request) {
+    @LogAnnotation(module = "查询是否有交易密码")
+    public Response<String> hasTransPwd(@RequestParam String userGid, HttpServletRequest request) {
         Response<String> response = new Response<>();
         response.setBo(xUserInfoService.hasTransPwd(userGid) ? SysVariable.TRANSFER_PWD_HAS : SysVariable.TRANSFER_PWD_NONE);
         return response;
@@ -121,9 +121,9 @@ public class XUserInfoController {
             @ApiImplicitParam(name = "password", value = "交易密码", dataType = "String", paramType = "query")
     })
     @Encryption
-    @LogAnnotation(module="设置交易密码")
+    @LogAnnotation(module = "设置交易密码")
     public Response<String> setTransPwd(@Password @RequestParam String password,
-                                        @RequestParam String userGid,HttpServletRequest request) {
+                                        @RequestParam String userGid, HttpServletRequest request) {
         Response<String> response = new Response<>();
         // 交易密码不允许修改
         if (xUserInfoService.hasTransPwd(userGid)) {
@@ -140,11 +140,11 @@ public class XUserInfoController {
     @GetMapping("checkIdentity")
     @ApiOperation("修改交易密码前校验身份")
     @Encryption
-    @LogAnnotation(module="修改交易密码前校验身份")
+    @LogAnnotation(module = "修改交易密码前校验身份")
     public Response<VerifyCodeInfo> checkIdentity(@RequestParam @Decrypt String mobile,
                                                   @RequestParam String verifyCode,
                                                   @RequestParam String userGid,
-                                                  @RequestParam @IdentityCard String identityCard,HttpServletRequest request) {
+                                                  @RequestParam @IdentityCard String identityCard, HttpServletRequest request) {
         Response<VerifyCodeInfo> response = new Response<>();
         if (!StringUtils.isEmpty(verifyCode)) {
             long existTime = redisTemplate.boundHashOps(mobile).getExpire();
@@ -182,10 +182,10 @@ public class XUserInfoController {
             @ApiImplicitParam(name = "password", value = "交易密码", dataType = "String", paramType = "query")
     })
     @Encryption
-    @LogAnnotation(module="修改交易密码")
+    @LogAnnotation(module = "修改交易密码")
     public Response<String> updateTransPwd(@RequestParam String codeToken,
                                            @RequestParam String userGid,
-                                           @Password @RequestParam String password,HttpServletRequest request) {
+                                           @Password @RequestParam String password, HttpServletRequest request) {
         Response<String> response = new Response<>();
         long existTime = redisTemplate.boundHashOps(userGid).getExpire();
         logger.info("获取到key的有效时间existTime=" + existTime + "--------");
