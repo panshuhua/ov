@@ -183,12 +183,6 @@ public interface XUserInfoDao {
                                  @Param("offset") Integer offset,
                                  @Param("limit") Integer limit);
 
-    int countOverDueLoan(@Param("params") Map<String, Object> params);
-
-    List<XRecordLoan> overDueLoan(@Param("params") Map<String, Object> params,
-                                  @Param("offset") Integer offset,
-                                  @Param("limit") Integer limit);
-
     @Select("select phone from x_user_info where mac_code=#{macCode} and enable_flag='Y' and user_status!='7' and account_status='0'")
     List<String> checkMacCode(String macCode);
 }

@@ -282,4 +282,36 @@
             where id = #{item.id}
         </foreach>
     </update>
+
+
+    <sql id="over_due_loan_condition">
+        where loan_status=1 AND repayment_status!=2 AND xrl.user_gid=#{params.userGid}
+        <choose>
+            <!-- 逾期三天之内,不含3天 -->
+            <when test="params.type == '0'.toString()">
+                AND xrl.due_time &lt; sysdate() AND sysdate() &lt; DATE_ADD(xrl.due_time,INTERVAL 2 DAY)
+            </when>
+            <!-- 逾期超过三天,含3天 -->
+            <when test="params.type == '1'.toString()">
+                AND xrl.due_time &lt; DATE_ADD(sysdate(),INTERVAL -2 DAY)
+            </when>
+            <otherwise>
+                AND xrl.due_time &lt; sysdate()
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="countOverDueLoan" resultType="int">
+        select count(1) from x_record_loan xrl
+        <include refid="over_due_loan_condition" />
+    </select>
+
+    <select id="overDueLoan" resultType="com.ivay.ivay_repository.model.XRecordLoan">
+        select * from x_record_loan xrl
+        <include refid="over_due_loan_condition" />
+        order by due_time asc
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
 </mapper>
