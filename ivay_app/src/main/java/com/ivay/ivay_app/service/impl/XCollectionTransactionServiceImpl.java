@@ -193,12 +193,12 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         boolean b = RSAEncryptShaCollection.decrypt2Sha1(encryptStr, Signature);
         System.out.println("签名校验结果：" + b);
 
-        if (!b) {
-            ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
-            ResponseMessage = BaokimResponseStatus.IncorrectSignature.getMessage();
-            setRsp(rsp, ResponseCode, ResponseMessage);
-            return rsp;
-        }
+        // if (!b) {
+        // ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
+        // ResponseMessage = BaokimResponseStatus.IncorrectSignature.getMessage();
+        // setRsp(rsp, ResponseCode, ResponseMessage);
+        // return rsp;
+        // }
 
         // 请求字段存入数据库
         XCollectionTransaction xCollectionTransaction = new XCollectionTransaction();
