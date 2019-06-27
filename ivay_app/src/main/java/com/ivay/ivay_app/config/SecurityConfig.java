@@ -45,10 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
-                        "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
-                        "/statics/**", "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**",
+                        "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**", "/statics/**",
+                        "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**", "/star/register/checkMacCode",
                         "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**",
-                        "/star/error/**", "/star/appVersion/**","/star/xAppEvents/**","/star/ebayLoanApi/**","/star/ebayRepayApi/**","/star/repay/**",
+                        "/star/error/**", "/star/appVersion/**", "/star/xAppEvents/**", "/star/ebayLoanApi/**",
+                        "/star/ebayRepayApi/**", "/star/repay/**",
 //                        "/star/**","/info")  //开发时调试用
                         "/info")  //部署时用
                 .permitAll().anyRequest().authenticated();

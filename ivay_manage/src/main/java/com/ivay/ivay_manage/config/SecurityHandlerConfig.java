@@ -89,7 +89,6 @@ public class SecurityHandlerConfig {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new AuthenticationEntryPoint() {
-
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response,
                                  AuthenticationException authException) throws IOException, ServletException {
@@ -107,7 +106,6 @@ public class SecurityHandlerConfig {
     @Bean
     public LogoutSuccessHandler logoutSussHandler() {
         return new LogoutSuccessHandler() {
-
             @Override
             public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -119,7 +117,5 @@ public class SecurityHandlerConfig {
                 ResponseUtil.responseJson(response, HttpStatus.OK.value(), info);
             }
         };
-
     }
-
 }

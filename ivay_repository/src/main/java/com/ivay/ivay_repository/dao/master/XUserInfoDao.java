@@ -62,9 +62,13 @@ public interface XUserInfoDao {
                                     @Param("offset") Integer offset,
                                     @Param("limit") Integer limit);
 
-    @Select("select user_gid,credit_line,credit_line_count,canborrow_amount,user_status from x_user_info t" +
-            " where t.user_gid = #{gid} and t.enable_flag='Y'")
-    CreditLine getCreditLine(String gid);
+    /**
+     * 获取授信额度
+     *
+     * @param userGid
+     * @return
+     */
+    CreditLine getCreditLine(String userGid);
 
     @Select("select user_status from x_user_info where user_gid=#{gid}")
     String getUserStatus(String gid);
@@ -174,8 +178,8 @@ public interface XUserInfoDao {
     int countSameName(@Param("params") Map<String, Object> params);
 
     List<XAuditCondition> listSameName(@Param("params") Map<String, Object> params,
-                                 @Param("offset") Integer offset,
-                                 @Param("limit") Integer limit);
+                                       @Param("offset") Integer offset,
+                                       @Param("limit") Integer limit);
 
     int countOverDueUsers(@Param("params") Map<String, Object> params);
 
