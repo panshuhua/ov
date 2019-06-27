@@ -238,6 +238,7 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
     @Override
     public boolean saveVirtualAccount() {
         try {
+            // 查询没有创建虚拟账号已借款没还款的用户
             List<XRecordLoanInfo> recordLoanInfos = xRecordLoanDao.findRecordLoanInfo();
             logger.info("需要自动创建的虚拟账号的个数为：" + recordLoanInfos.size() + "-----------");
             if (recordLoanInfos.size() == 0) {
@@ -254,52 +255,46 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
                 Long due_amount = xRecordLoanInfo.getDueAmount();
                 Long collectAmount = overdue_fee + overdue_interest + due_amount;
 
-                // 查询虚拟账号有没有被创建了，如果创建了就不需要再创建了
-                XVirtualAccount xVirtualAccount = selectByOrderId(orderId);
+                i++;
+                ValVirtualAccountRsp valVirtualAccountRsp =
+                    autoAddVirtualAccount(accName, orderId, userGid, collectAmount);
+                String responseCode = valVirtualAccountRsp.getResponseCode();
+                String responseMsg = valVirtualAccountRsp.getResponseMessage();
+                XVirtualAccount xVirtualAccount = new XVirtualAccount();
 
-                if (xVirtualAccount == null) {
-                    i++;
-                    ValVirtualAccountRsp valVirtualAccountRsp =
-                        autoAddVirtualAccount(accName, orderId, userGid, collectAmount);
-                    String responseCode = valVirtualAccountRsp.getResponseCode();
-                    String responseMsg = valVirtualAccountRsp.getResponseMessage();
-                    xVirtualAccount = new XVirtualAccount();
-
-                    if (BaokimResponseStatus.CollectionSuccess.getCode().equals(responseCode)) {
-                        // 保存虚拟账号信息
-                        xVirtualAccount.setAccName(valVirtualAccountRsp.getAccName());
-                        xVirtualAccount.setAccNo(valVirtualAccountRsp.getAccNo());
-                        xVirtualAccount.setClientidNo(valVirtualAccountRsp.getClientIdNo());
-                        xVirtualAccount.setIssuedDate(valVirtualAccountRsp.getIssuedDate());
-                        xVirtualAccount.setIssuedPlace(valVirtualAccountRsp.getIssuedPlace());
-                        if (valVirtualAccountRsp.getCollectAmount() != null) {
-                            xVirtualAccount.setCollectAmount(Integer.parseInt(valVirtualAccountRsp.getCollectAmount()));
-                        }
-                        xVirtualAccount.setOrderId(orderId);
-                        xVirtualAccount.setExpireDate(valVirtualAccountRsp.getExpireDate());
-                        xVirtualAccount.setAccountType(Integer.parseInt(valVirtualAccountRsp.getAccountType()));
-                        xVirtualAccount.setCreateTime(new Date());
-                        xVirtualAccount.setUpdateTime(new Date());
-                        xVirtualAccount.setEnableFlag("Y");
-                        xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
-                        xVirtualAccount.setResponseCode(responseCode);
-                        xVirtualAccount.setResponseMessage(responseMsg);
-                        xVirtualAccountDao.insert(xVirtualAccount);
-
-                        logger.info("创建虚拟账号成功");
-                        sysLogService.save(userGid, null, "还款-自动创建虚拟账号", true, responseMsg, responseCode);
-                    } else {
-                        logger.info("创建虚拟账号失败，返回状态码：{}，错误信息：{}", responseCode, responseMsg);
-                        sysLogService.save(userGid, null, "还款-自动创建虚拟账号", false, responseMsg, responseCode);
-                        xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
-                        xVirtualAccount.setResponseCode(responseCode);
-                        xVirtualAccount.setResponseMessage(responseMsg);
-                        xVirtualAccount.setCreateTime(new Date());
-                        xVirtualAccount.setUpdateTime(new Date());
-                        xVirtualAccount.setEnableFlag("Y");
-                        xVirtualAccountDao.insert(xVirtualAccount);
+                if (BaokimResponseStatus.CollectionSuccess.getCode().equals(responseCode)) {
+                    // 保存虚拟账号信息
+                    xVirtualAccount.setAccName(valVirtualAccountRsp.getAccName());
+                    xVirtualAccount.setAccNo(valVirtualAccountRsp.getAccNo());
+                    xVirtualAccount.setClientidNo(valVirtualAccountRsp.getClientIdNo());
+                    xVirtualAccount.setIssuedDate(valVirtualAccountRsp.getIssuedDate());
+                    xVirtualAccount.setIssuedPlace(valVirtualAccountRsp.getIssuedPlace());
+                    if (valVirtualAccountRsp.getCollectAmount() != null) {
+                        xVirtualAccount.setCollectAmount(Integer.parseInt(valVirtualAccountRsp.getCollectAmount()));
                     }
+                    xVirtualAccount.setOrderId(orderId);
+                    xVirtualAccount.setExpireDate(valVirtualAccountRsp.getExpireDate());
+                    xVirtualAccount.setAccountType(Integer.parseInt(valVirtualAccountRsp.getAccountType()));
+                    xVirtualAccount.setCreateTime(new Date());
+                    xVirtualAccount.setUpdateTime(new Date());
+                    xVirtualAccount.setEnableFlag("Y");
+                    xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
+                    xVirtualAccount.setResponseCode(responseCode);
+                    xVirtualAccount.setResponseMessage(responseMsg);
+                    xVirtualAccountDao.insert(xVirtualAccount);
 
+                    logger.info("创建虚拟账号成功");
+                    sysLogService.save(userGid, null, "还款-自动创建虚拟账号", true, responseMsg, responseCode);
+                } else {
+                    logger.info("创建虚拟账号失败，返回状态码：{}，错误信息：{}", responseCode, responseMsg);
+                    sysLogService.save(userGid, null, "还款-自动创建虚拟账号", false, responseMsg, responseCode);
+                    xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
+                    xVirtualAccount.setResponseCode(responseCode);
+                    xVirtualAccount.setResponseMessage(responseMsg);
+                    xVirtualAccount.setCreateTime(new Date());
+                    xVirtualAccount.setUpdateTime(new Date());
+                    xVirtualAccount.setEnableFlag("Y");
+                    xVirtualAccountDao.insert(xVirtualAccount);
                 }
 
             }

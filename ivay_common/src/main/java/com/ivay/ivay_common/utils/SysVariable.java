@@ -153,10 +153,10 @@ public class SysVariable {
     public static final String APP_EVENT_FAIL = "0";
 
     // 上传风控数据的类型
-    public static final String CONTACT = "contact"; // 通讯录联系人
+    public static final String CONTACT = "contacts"; // 通讯录联系人
     public static final String APPNUM = "appNum"; // 社交类app的个数
-    public static final String GPS = "gps"; // gps信息
-    public static final String OTHER = "other"; // mac地址/手机品牌/使用什么手机流量
+    public static final String GPS = "location"; // gps信息
+    public static final String OTHER = "otherRiskInfo"; // mac地址/手机品牌/使用什么手机流量
 
     // 日志记录的参数名
     public static final String PARAM_MOBILE = "mobile";

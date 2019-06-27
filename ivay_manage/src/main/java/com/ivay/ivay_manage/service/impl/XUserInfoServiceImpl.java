@@ -11,6 +11,7 @@ import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_manage.utils.UserUtil;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.model.RiskUser;
@@ -304,6 +305,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         ).handle(request);
     }
 
+    @Autowired
+    private XRecordLoanDao xRecordLoanDao;
+
     /**
      * 查看逾期借款信息
      *
@@ -322,8 +326,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("type", type);
         request.getParams().put("userGid", userGid);
         return new PageTableHandler(
-                a -> xUserInfoDao.countOverDueLoan(a.getParams()),
-                a -> xUserInfoDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())
+                a -> xRecordLoanDao.countOverDueLoan(a.getParams()),
+                a -> xRecordLoanDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
 }

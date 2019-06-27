@@ -169,23 +169,40 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
                 logger.info("正在发送第" + i + "条信息----------------");
 
+                boolean firebaseFlag = true;
+                // 分开捕获异常，避免其中一种发送方式出问题了，另外一种方式发送不了
                 // 发送firebase消息推送
                 logger.info("发送firebase到期通知开始-------------");
                 if (!StringUtils.isEmpty(fmcToken)) {
-                    FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
+                    try {
+                        FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        firebaseFlag = false;
+                    }
                 }
                 logger.info("发送firebase到期通知结束-------------");
 
+                boolean phoneFlag = true;
                 // 发送手机短信
                 String phone = fee.getPhone();
                 // 测试
                 // phone = "0961255324";
-                sendPhoneNotice(phone, message);
+                try {
+                    phoneFlag = sendPhoneNotice(phone, message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    phoneFlag = false;
+                }
                 // 测试发5条
                 // if (i == 5) {
                 // break;
                 // }
 
+                // 推送和短信都出现异常
+                if (!firebaseFlag && !phoneFlag) {
+                    return false;
+                }
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -201,7 +218,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     }
 
     // 通过手机短信的方式发送通知
-    private void sendPhoneNotice(String mobile, String msg) {
+    private boolean sendPhoneNotice(String mobile, String msg) {
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_SEND_PHONEMSG));
         if (config == null) {
             logger.error("发送短信验证码配置获取出错");
@@ -219,8 +236,9 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     String messageid = msgMap.get("messageid");
                     logger.info("发送的短信id：" + messageid);
                     logger.info("SMG成功发送的内容是：" + msg);
+                    return true;
                 }
-                return;
+                return false;
                 // 使用方法二发送短信验证码
             } else if ("2".equals(value)) {
                 ApiBulkReturn re = xRegisterService.sendMsgByVMG(mobile, msg);
@@ -228,16 +246,18 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
                 if ("0".equals(errorCode)) {
                     logger.info("VMG发送的短信是：" + msg);
+                    return true;
                 }
-                return;
+                return false;
 
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if ("0".equals(value)) {
                 logger.info("发送的短信是：" + msg);
-                return;
+                return true;
             }
 
         }
+        return false;
 
     }
 

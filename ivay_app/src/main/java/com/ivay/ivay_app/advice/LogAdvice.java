@@ -30,6 +30,7 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.dto.ResponseInfo;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.ReturnUser;
 import com.ivay.ivay_repository.model.SysLogs;
 
 import io.swagger.annotations.ApiOperation;
@@ -129,6 +130,14 @@ public class LogAdvice {
                     if (SysVariable.METHOD_SENDREGISTERCODE.equals(methodName)) {
                         sysLogs.setFlag(true);
                         sysLogs.setRemark("发送短信验证码成功，发送类型：" + optType);
+                    }
+                    // 注册方法通过返回值区分短信验证码登录的类型
+                    if (SysVariable.RETURN_TYPE_REGISTER.equals(methodName)) {
+                        Response<ReturnUser> responseR = (Response<ReturnUser>)object;
+                        ReturnUser user = responseR.getBo();
+                        String type = user.getType();
+                        sysLogs.setFlag(true);
+                        sysLogs.setRemark("短信验证码登录成功，操作类型：" + type);
                     }
 
                 }

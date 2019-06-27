@@ -18,12 +18,12 @@ public class CreditLine {
     @ApiModelProperty("授信额度")
     private Long creditLine;
 
-    @ApiModelProperty("提額次數")
-    private Integer creditLineCount;
-
     @ApiModelProperty("可用额度")
     private Long canborrowAmount;
 
     @ApiModelProperty("授信状态")
     private String userStatus;
+
+    @ApiModelProperty("逾期笔数")
+    private int overdueCount;
 }

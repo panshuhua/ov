@@ -45,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
+<<<<<<< HEAD
             .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
                 "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**", "/statics/**",
                 "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**", "/star/register/reg/**",
@@ -53,6 +54,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // "/star/**","/info") //开发时调试用
                 "/info") // 部署时用
             .permitAll().anyRequest().authenticated();
+=======
+                .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
+                        "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**", "/statics/**",
+                        "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**", "/star/register/checkMacCode",
+                        "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**",
+                        "/star/error/**", "/star/appVersion/**", "/star/xAppEvents/**", "/star/ebayLoanApi/**",
+                        "/star/ebayRepayApi/**", "/star/repay/**",
+//                        "/star/**","/info")  //开发时调试用
+                        "/info")  //部署时用
+                .permitAll().anyRequest().authenticated();
+>>>>>>> branch 'master' of https://gitee.com/loveanime/ivay_integration.git
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         // 解决不允许显示在iframe的问题
         http.headers().frameOptions().disable();

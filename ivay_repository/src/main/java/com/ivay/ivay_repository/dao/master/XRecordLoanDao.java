@@ -74,4 +74,9 @@ public interface XRecordLoanDao {
     @Select("SELECT r.due_time,r.due_amount,u.fmc_token, DATEDIFF(SYSDATE(),r.due_time)due_date FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE( r.due_time <= date_format(sysdate(), '%Y%m%d'))AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
     List<XOverDueFee> findOverdue();
 
+    int countOverDueLoan(@Param("params") Map<String, Object> params);
+
+    List<XRecordLoan> overDueLoan(@Param("params") Map<String, Object> params,
+                                  @Param("offset") Integer offset,
+                                  @Param("limit") Integer limit);
 }
