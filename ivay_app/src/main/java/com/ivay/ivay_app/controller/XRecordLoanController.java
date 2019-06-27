@@ -5,7 +5,6 @@ import com.ivay.ivay_app.service.XRecordLoanService;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_repository.model.XLoanRate;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,8 +12,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Api(tags = "借款")
 @RestController
@@ -25,36 +22,6 @@ public class XRecordLoanController {
 
     @Autowired
     private XRecordLoanService xRecordLoanService;
-
-    @PostMapping("loanRate/add")
-    @ApiOperation(value = "添加借款利率")
-    @LogAnnotation(module = "添加借款利率")
-    public Response<Integer> loanRateSave(@RequestBody XLoanRate xLoanRate) {
-        Response<Integer> response = new Response<>();
-        response.setBo(xLoanRateService.save(xLoanRate));
-        return response;
-    }
-
-    @PostMapping("loanRate/adds")
-    @ApiOperation(value = "批量添加借款利率")
-    @LogAnnotation(module = "批量添加借款利率")
-    public Response<Integer> loanRatesSave(@RequestBody List<XLoanRate> list) {
-        Response<Integer> response = new Response<>();
-        response.setBo(xLoanRateService.saveByBatch(list));
-        return response;
-    }
-
-    @PostMapping("loanRate/update")
-    @ApiOperation(value = "根據配置更新借款利率")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
-    })
-    @LogAnnotation(module = "根据配置更新借款利率")
-    public Response<Integer> loanRatesUpdate(@RequestParam String userGid) {
-        Response<Integer> response = new Response<>();
-        response.setBo(xLoanRateService.acquireLoanRate(userGid));
-        return response;
-    }
 
     @GetMapping("loanRate/list")
     @ApiOperation(value = "获取某用户的借款利率")

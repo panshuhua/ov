@@ -28,13 +28,13 @@ public class XAuditController {
     private XUserInfoService xUserInfoService;
 
     @PostMapping("list")
-    @ApiOperation(value = "审核记录")
+    @ApiOperation("审核记录")
     public PageTableResponse auditList(PageTableRequest request) {
         return xUserInfoService.auditList(request);
     }
 
     @GetMapping("detail")
-    @ApiOperation(value = "审核详情")
+    @ApiOperation("审核详情")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
@@ -45,7 +45,7 @@ public class XAuditController {
     }
 
     @PostMapping("update")
-    @ApiOperation(value = "对待授信用户进行人工审核")
+    @ApiOperation("对待授信用户进行人工审核")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0拒绝 1通过", dataType = "Long", paramType = "query", defaultValue = "1"),
@@ -65,7 +65,7 @@ public class XAuditController {
     private XLoanService xLoanService;
 
     @GetMapping("queryAuditQualification")
-    @ApiOperation(value = "查询贷款权限")
+    @ApiOperation("查询贷款权限")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "flag", value = "0 授信 1借款", dataType = "Long", paramType = "query", defaultValue = "0")
@@ -76,17 +76,17 @@ public class XAuditController {
         return xLoanService.queryRiskQualificationDemo(userGid, flag);
     }
 
-    @PostMapping("updateCreditLimit")
-    @ApiOperation(value = "提額")
+    @PostMapping("repaymentSuccessPostHandle")
+    @ApiOperation("还款成功的后置处理: 包括提额、增加白名单")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    public long updateCreditLimit(@RequestParam String userGid) {
-        return xLoanService.refreshCreditLimit(userGid);
+    public long repaymentSuccessPostHandle(@RequestParam String userGid) {
+        return xLoanService.repaymentSuccessPostHandle(userGid);
     }
 
     @PostMapping("autoAudit")
-    @ApiOperation(value = "对待授信用户进行自动审核或分配审计员")
+    @ApiOperation("对待授信用户进行自动审核或分配审计员")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
@@ -100,7 +100,7 @@ public class XAuditController {
     private XUserInfoDao xUserInfoDao;
 
     @PostMapping("riskRefuseList")
-    @ApiOperation(value = "被风控规则拒绝得名单")
+    @ApiOperation("被风控规则拒绝得名单")
     public PageTableResponse riskRefuseList(PageTableRequest request) {
         request.getParams().put("refuseType", SysVariable.AUDIT_REFUSE_TYPE_AUTO);
         request.getParams().put("orderBy", null);
@@ -116,8 +116,8 @@ public class XAuditController {
     })
     @ApiOperation("获取与某用户同名得所有用户")
     public Response<PageTableResponse> listSameName(@RequestParam(required = false, defaultValue = "0") int limit,
-                                          @RequestParam(required = false, defaultValue = "1") int num,
-                                          @RequestParam String userGid) {
+                                                    @RequestParam(required = false, defaultValue = "1") int num,
+                                                    @RequestParam String userGid) {
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xUserInfoService.listSameName(limit, num, userGid));
         return response;

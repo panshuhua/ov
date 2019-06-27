@@ -61,8 +61,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     @Autowired
     private SysLogService sysLogService;
 
-    @Value("${update_credit_limit_url}")
-    private String update_credit_limit_url;
+    @Value("${repayment_success_post_handle_url}")
+    private String repayment_success_post_handle_url;
 
     @Override
     public XRecordRepayment getByGid(String repaymentGid, String userGid) {
@@ -310,7 +310,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             threadPoolService.execute(() -> {
                 Map<String, Object> params = new HashMap<>();
                 params.put("userGid", xRecordLoan.getUserGid());
-                restTemplate.postForObject(update_credit_limit_url, null, Long.class, params);
+                restTemplate.postForObject(repayment_success_post_handle_url, null, Long.class, params);
             });
         }
     }
