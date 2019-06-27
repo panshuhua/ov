@@ -60,7 +60,7 @@ public interface XRecordLoanDao {
     @Select("select * from x_record_loan where order_id=#{orderId}")
     XRecordLoan getXRecordLoanByOrderId(String orderId);
 
-    @Select("SELECT r.order_id, r.user_gid, u.`name`,r.overdue_fee,r.overdue_interest,r.due_amount FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE r.loan_status = 1 AND r.repayment_status != 2")
+    @Select("SELECT r.order_id, r.user_gid, u.`name`,r.overdue_fee,r.overdue_interest,r.due_amount FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE r.loan_status = 1 AND r.repayment_status != 2 and r.order_id NOT in(SELECT order_id from x_virtual_account x where x.response_code=200)")
     List<XRecordLoanInfo> findRecordLoanInfo();
 
     // 查询明天/今天到期的用户-到期前1天/到期当天提醒
