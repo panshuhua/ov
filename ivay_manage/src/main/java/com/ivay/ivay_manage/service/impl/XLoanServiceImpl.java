@@ -287,6 +287,26 @@ public class XLoanServiceImpl implements XLoanService {
         return xLoanRateDao.saveByBatch(list);
     }
 
+    @Autowired
+    private XLoanService xLoanService;
+
+    /**
+     * 还款成功的后置处理: 包括提额、增加白名单
+     *
+     * @param userGid
+     */
+    @Override
+    public long repaymentSuccessPostHandle(String userGid) {
+        // todo 已还款的无逾期自然人加入白名单用户
+
+        return xLoanService.refreshCreditLimit(userGid);
+    }
+
+    /**
+     * 獲得某人的授信額度，如果滿足提額條件則提額
+     *
+     * @param userGid
+     */
     @Override
     public long refreshCreditLimit(String userGid) {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
@@ -371,7 +391,12 @@ public class XLoanServiceImpl implements XLoanService {
         List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
         if (whiteList.size() > 0) {
             typeFlag = "white";
-            borrowAmount = Long.parseLong(whiteList.get(0).getAmount());
+            try {
+                borrowAmount = Long.parseLong(whiteList.get(0).getAmount());
+            } catch (Exception ex) {
+                logger.info("{}: 白名单用户无授信额度", xUserInfo.getPhone());
+                borrowAmount = 0;
+            }
         }
 
         // 提额配置

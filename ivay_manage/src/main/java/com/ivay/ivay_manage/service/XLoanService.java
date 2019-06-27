@@ -44,6 +44,13 @@ public interface XLoanService {
     int saveLoanRate(String userGid);
 
     /**
+     * 还款成功的后置处理: 包括提额、增加白名单
+     *
+     * @param userGid
+     */
+    long repaymentSuccessPostHandle(String userGid);
+
+    /**
      * 獲得某人的授信額度，如果滿足提額條件則提額
      *
      * @param userGid

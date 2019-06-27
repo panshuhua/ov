@@ -21,11 +21,7 @@ public interface RiskUserDao {
 
     List<RiskUser> selectUserList();
 
-    //List<RiskUser> selectUserListByUserId(Integer userId);
-
     List<RiskUser> selectUserListByPhone(String phone);
 
     String selectPhoneByBatch(@Param("phones") String[] phones);
-
-    //void update(RiskUser user);
 }

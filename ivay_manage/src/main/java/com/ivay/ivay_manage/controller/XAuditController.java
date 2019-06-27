@@ -81,8 +81,8 @@ public class XAuditController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    public long updateCreditLimit(@RequestParam String userGid) {
-        return xLoanService.refreshCreditLimit(userGid);
+    public long repaymentSuccessPostHandle(@RequestParam String userGid) {
+        return xLoanService.repaymentSuccessPostHandle(userGid);
     }
 
     @PostMapping("autoAudit")
