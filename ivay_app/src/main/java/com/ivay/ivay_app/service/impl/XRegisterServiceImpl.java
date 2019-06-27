@@ -1,6 +1,7 @@
 package com.ivay.ivay_app.service.impl;
 
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -326,6 +327,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     @Override
     public ReturnUser register(LoginInfo loginInfo) {
         String mobile = loginInfo.getMobile();
+        String macCode = loginInfo.getMacCode();
 
         // 手机验证码校验
         String verifyCode = loginInfo.getVerifyCode();
@@ -382,10 +384,21 @@ public class XRegisterServiceImpl implements XRegisterService {
                                 i18nService.getMessage("response.error.register.passworderror.msg"));
                         }
 
-                        XUser xUser = registerLogin(loginInfo);
-                        ReturnUser user = setReturnUser(xUser);
-                        user.setNeedverifyMapCode(0);
-                        return user;
+                        String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
+                        if (StringUtils.isEmpty(macCodeRepeatPhone)) {
+                            XUser xUser = registerLogin(loginInfo);
+                            ReturnUser user = setReturnUser(xUser);
+                            user.setNeedverifyMapCode(0);
+                            return user;
+                        } else {
+                            // 使用了同一个设备注册，返回错误信息
+                            String msg = MessageFormat.format(
+                                i18nService.getMessage("response.error.register.macCodeRepeat.msg"),
+                                macCodeRepeatPhone);
+                            throw new BusinessException(
+                                i18nService.getMessage("response.error.register.macCodeRepeat.code"), msg);
+                        }
+
                     } else {
                         if (!"1".equals(isVerifyCodeLogin)) {
                             throw new BusinessException(
@@ -393,12 +406,23 @@ public class XRegisterServiceImpl implements XRegisterService {
                                 i18nService.getMessage("response.error.register.blankpassword.msg"));
                         } else {
                             // 短信验证码登录：还未注册，短信验证码注册后再自动登录
-                            XUser xUser = registerLogin(loginInfo);
-                            ReturnUser user = setReturnUser(xUser);
-                            user.setNeedverifyMapCode(0);
-                            // 标识告诉前台是登录还是注册
-                            user.setType(SysVariable.RETURN_TYPE_REGISTER);
-                            return user;
+                            String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
+                            if (StringUtils.isEmpty(macCodeRepeatPhone)) {
+                                XUser xUser = registerLogin(loginInfo);
+                                ReturnUser user = setReturnUser(xUser);
+                                user.setNeedverifyMapCode(0);
+                                // 标识告诉前台是登录还是注册
+                                user.setType(SysVariable.RETURN_TYPE_REGISTER);
+                                return user;
+                            } else {
+                                // 使用了同一个设备注册，返回错误信息
+                                String msg = MessageFormat.format(
+                                    i18nService.getMessage("response.error.register.macCodeRepeat.msg"),
+                                    macCodeRepeatPhone);
+                                throw new BusinessException(
+                                    i18nService.getMessage("response.error.register.macCodeRepeat.code"), msg);
+                            }
+
                         }
 
                     }
