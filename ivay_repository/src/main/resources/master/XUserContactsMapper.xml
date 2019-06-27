@@ -24,13 +24,14 @@
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(distinct(phone_number)) from x_user_contacts t
+		select count(DISTINCT(phone_number))  from x_user_contacts
 		<include refid="list_condition" />
 	</select>
 
 	<select id="list" resultType="com.ivay.ivay_repository.model.XUserContacts">
-		select distinct(phone_number),contact_name from x_user_contacts t
+		select phone_number,min(contact_name) contact_name  from x_user_contacts t
 		<include refid="list_condition" />
+		GROUP BY phone_number
 		order by contact_name asc
 		<if test="limit != null and limit != 0">
 			limit #{offset}, #{limit}
