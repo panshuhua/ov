@@ -188,8 +188,8 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
             + TransId + "|" + TransAmount + "|" + TransTime + "|" + BefTransDebt + "|" + AffTransDebt + "|"
             + AccountType + "|" + OrderId;
 
-        System.out.println("请求的签名明文：" + encryptStr);
-        System.out.println("请求发送的签名：" + Signature);
+        System.out.println("baokim请求的签名明文：" + encryptStr);
+        System.out.println("baokim请求发送的签名：" + Signature);
 
         // 生产环境才校验签名
         if (environment.contains("prod")) {

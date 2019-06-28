@@ -40,8 +40,6 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     @Override
     public boolean saveAll(String type, XRiskInfo riskInfo, HttpServletRequest request) throws Exception {
-        String ip = getPublicNetworkIP(request);
-        logger.info("后台查询的IP地址：" + ip + "-----------------");
         String gid = riskInfo.getUserGid();
         XUserInfo xUserInfo = new XUserInfo();
         xUserInfo.setUserGid(gid);
@@ -106,7 +104,8 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         String uid = riskInfo.getUid();
         String wifiMacAddress = riskInfo.getWifiMacAddress();
         String systemVersion = riskInfo.getSystemVersion();
-        String ipv4Address = riskInfo.getIpv4Address();
+        String ipv4Address = getPublicNetworkIP(request);
+        logger.info("后台获取到的IP地址：" + ipv4Address + "-----------------");
 
         xUserRisk.setLongitude(longitude);
         xUserRisk.setLatitude(latitude);
@@ -153,6 +152,13 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         return true;
     }
 
+    /**
+     * 根据请求获取公网IP地址
+     * 
+     * @param request
+     * @return
+     * @throws Exception
+     */
     private String getPublicNetworkIP(HttpServletRequest request) throws Exception {
         if (request == null) {
             throw (new Exception("getIpAddr method HttpServletRequest Object is null"));
