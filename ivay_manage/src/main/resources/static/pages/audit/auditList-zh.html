@@ -491,7 +491,7 @@
 
                     var sameNameDom = "<tr class='sameName_detail sameNameBackground'>" +
                         "<td>姓名</td>" +
-                        "<td>用户状态</td>" +
+                        "<td>审核状态</td>" +
                         "<td>电话号码</td>" +
                         "<td>申请时间</td>" +
                         "<td>用户类型</td>" +
@@ -505,6 +505,9 @@
                         var userType = data.bo.data[i]["userType"] == null ? "": data.bo.data[i]["userType"];
                         var auditTime = data.bo.data[i]["auditTime"] == null ? "": data.bo.data[i]["auditTime"];
                         var auditStatus = AUDIT_STATUS[data.bo.data[i]["auditStatus"]];
+                        if (auditStatus == undefined) {
+                            auditStatus = "未填写授信资料"
+                        }
 
                         sameNameDom += "<tr class='sameName_detail sameNameBackground'>" +
                             "<td>" + data.bo.data[i]["name"] + "</td>" +

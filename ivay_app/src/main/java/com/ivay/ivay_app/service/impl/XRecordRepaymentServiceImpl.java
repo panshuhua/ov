@@ -255,50 +255,54 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                     xRecordRepayment.getRepaymentAmount(),
                     xRecordLoan.getDueAmount(),
                     xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
-            // 实际扣款时间
-            xRecordRepayment.setEndTime(now);
-            // 还款单的还款状态
-            xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_SUCCESS);
-
             // 获取用户可借款金额
             XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
             // 更新借款表的还款额度和滞纳金等
             long diff = xRecordRepayment.getRepaymentAmount() - xRecordLoan.getDueAmount();
             if (diff < 0) {
-                // 更新可借额度
-                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordRepayment.getRepaymentAmount());
                 // 还有本金没还完
+                // 首先：更新可借额度
+                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordRepayment.getRepaymentAmount());
+                // 然后：更新剩余本金
                 xRecordLoan.setDueAmount(-diff);
+                // 还款单的还款状态
                 xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
+                logger.info("{}: 还有本金没还完:{}", xRecordRepayment.getOrderId(), xRecordLoan.getDueAmount());
             } else {
-                // 更新可借额度,不可往下挪
-                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
                 // 本金已还完
+                // 首先：更新可借额度, 注意顺序
+                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
+                // 再更新剩余本金为零
                 xRecordLoan.setDueAmount(0L);
                 if (xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() <= diff) {
-                    // 还完本金 + 逾期费用
+                    // 用于记录或许多还的金额
+                    xRecordLoan.setOverdueFeeTotal(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
+                    // 还清全部逾期费用
                     xRecordLoan.setOverdueFee(0L);
                     xRecordLoan.setOverdueInterest(0L);
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_SUCCESS);
+                    logger.info("{}: 还清全部费用", xRecordRepayment.getOrderId());
                 } else {
                     // 还有逾期费用没还, 先还利息, 再还滞纳金
                     if (xRecordLoan.getOverdueInterest() >= diff) {
                         xRecordLoan.setOverdueInterest(xRecordLoan.getOverdueInterest() - diff);
                     } else {
                         xRecordLoan.setOverdueInterest(0L);
-                        xRecordLoan.setOverdueFee(diff - xRecordLoan.getOverdueInterest());
+                        xRecordLoan.setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
                     }
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
+                    logger.info("{}: 部分逾期费用未还清:{}", xRecordRepayment.getOrderId(), xRecordLoan.getOverdueFee());
                 }
             }
+            xUserInfo.setUpdateTime(now);
             // 最后一次还款时间
             xRecordLoan.setLastRepaymentTime(now);
             xRecordLoan.setUpdateTime(now);
-            xRecordLoanDao.update(xRecordLoan);
-            // 更新用户表可借额度
             xUserInfoDao.updateCanborrowAmount(xUserInfo.getCanborrowAmount(), xRecordLoan.getUserGid());
+            xRecordLoanDao.update(xRecordLoan);
+            // 实际扣款时间
+            xRecordRepayment.setEndTime(now);
         } else {
-            xRecordRepayment.setUpdateTime(now);
             // 还款失败原因
             xRecordRepayment.setFailReason("baokim调用接口失败，还款失败");
             // 还款状态
