@@ -31,7 +31,7 @@ public class XUserContactsController {
     @PostMapping("add_contacts")
     @ApiOperation(value = "批量保存")
     @LogAnnotation(module = "上传联系人/GPS/社交类app的个数等风控信息")
-    public Response<String> saveAll(@RequestParam String type, @RequestBody XRiskInfo riskInfo,
+    public Response<String> saveAll(@RequestParam(required = false) String type, @RequestBody XRiskInfo riskInfo,
         HttpServletRequest request) throws Exception {
         logger.info("前台参数类型：" + type + "参数内容：" + riskInfo.toString());
         logger.info("上传风控数据方法入口-----------------");
