@@ -284,10 +284,10 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
                     xVirtualAccountDao.insert(xVirtualAccount);
 
                     logger.info("创建虚拟账号成功");
-                    sysLogService.save(userGid, null, "还款-自动创建虚拟账号", true, responseMsg, responseCode);
+
                 } else {
                     logger.info("创建虚拟账号失败，返回状态码：{}，错误信息：{}", responseCode, responseMsg);
-                    sysLogService.save(userGid, null, "还款-自动创建虚拟账号", false, responseMsg, responseCode);
+
                     xVirtualAccount.setRequestId(valVirtualAccountRsp.getRequestId());
                     xVirtualAccount.setResponseCode(responseCode);
                     xVirtualAccount.setResponseMessage(responseMsg);

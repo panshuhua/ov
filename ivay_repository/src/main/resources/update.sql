@@ -165,7 +165,7 @@ CREATE TABLE `x_ebay_collection_notice` (
 --风控表新增新字段，删除没用字段
 ALTER TABLE `x_user_risk` ADD `imei` varchar(36) DEFAULT NULL COMMENT '设备imei';
 ALTER TABLE `x_user_risk` ADD `imsi` varchar(36) DEFAULT NULL COMMENT '设备imsi';
-ALTER TABLE `x_user_risk` ADD `phone_number` varchar(11) DEFAULT NULL COMMENT '手机号码';
+ALTER TABLE `x_user_risk` ADD `phone_number` varchar(32) DEFAULT NULL COMMENT '手机号码';
 ALTER TABLE `x_user_risk` ADD `carrier_name` varchar(36) DEFAULT NULL;
 ALTER TABLE `x_user_risk` ADD `phone_model` varchar(32) DEFAULT NULL COMMENT '手机型号';
 ALTER TABLE `x_user_risk` ADD `uid` varchar(36) DEFAULT NULL COMMENT '用户唯一识别id（userId，上报极光所用的别名）';
