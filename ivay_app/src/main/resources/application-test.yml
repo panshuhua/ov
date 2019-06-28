@@ -70,6 +70,6 @@ auto_audit_url: http://localhost:8081/audit/autoAudit?userGid={userGid}
 errorInfo.path: /data/errorInfo/
 
 #firebase SDK路径：
-firebase_sdk_url: /usr/firebase/ovay-release-firebase-adminsdk-3evco-943d00a328.json
+firebase_sdk_url: /usr/firebase/ovay-staging-firebase-adminsdk-y0oiy-5a971cabf6.json
 #firebase ovay项目地址：
-firebase_project_url: https://ovay-release.firebaseio.com
+firebase_project_url: https://ovay-staging.firebaseio.com

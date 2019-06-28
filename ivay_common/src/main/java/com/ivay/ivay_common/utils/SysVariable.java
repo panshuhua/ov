@@ -96,6 +96,8 @@ public class SysVariable {
     public static final String TEMPLATE_LOAN_STATUS = "loanStatus";
     // 配置模板：还款状态
     public static final String TEMPLATE_REPAYMENT_STATUS = "repaymentStatus";
+    // 配置模板：baokim还款回调接口是否开启签名校验
+    public static final String BAOKIM_NOTICE_SIGNATURE = "baokimNoticeSignature";
 
     // 接口对接
     public static final String API_ACC_TYPE_0 = "0";

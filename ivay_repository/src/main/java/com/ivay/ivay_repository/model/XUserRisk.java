@@ -37,7 +37,4 @@ public class XUserRisk {
     private Date createTime;
     private Date updateTime;
 
-    public String macAddress;
-    public String phoneBrand;
-    public String trafficWay;
 }

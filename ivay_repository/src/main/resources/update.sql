@@ -176,4 +176,8 @@ ALTER TABLE `x_user_risk` drop column `mac_address`;
 ALTER TABLE `x_user_risk` drop column `phone_brand`;
 ALTER TABLE `x_user_risk` drop column `traffic_way`;
 
+--配置表添加baokim还款回调接口签名校验开关
+INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES ('33', 'baokimNoticeSignature', '', '{\"enable\":true}', '宝金回调接口是否开启公钥校验');
+
+
 
