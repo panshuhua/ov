@@ -1,13 +1,23 @@
 package com.ivay.ivay_repository.dao.master;
 
-import com.ivay.ivay_repository.dto.*;
-import com.ivay.ivay_repository.model.XRecordLoan;
-import com.ivay.ivay_repository.model.XUserInfo;
-import org.apache.ibatis.annotations.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import com.ivay.ivay_repository.dto.CreditLine;
+import com.ivay.ivay_repository.dto.XAuditCondition;
+import com.ivay.ivay_repository.dto.XAuditDetail;
+import com.ivay.ivay_repository.dto.XLoanQualification;
+import com.ivay.ivay_repository.dto.XUser;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XUserInfo;
 
 @Mapper
 public interface XUserInfoDao {
@@ -18,23 +28,26 @@ public interface XUserInfoDao {
     @Select("select user_gid from x_user_info where phone=#{mobile} and enable_flag='Y'")
     String getUserGid(@Param("mobile") String mobile);
 
+    @Select("select * from x_user_info where phone=#{mobile} and enable_flag='Y'")
+    XUser getUserByPhone(@Param("mobile") String mobile);
+
     @Select("select password from x_user_info where phone=#{mobile} and enable_flag='Y'")
     String getPassword(@Param("mobile") String mobile);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code," +
-            " update_time,fmc_token,refuse_reason,refuse_type,audit_time)" +
-            " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode}," +
-            " #{updateTime},#{fmcToken},#{refuseReason},#{refuseType},#{auditTime})")
+    @Insert("insert into x_user_info(phone,password,user_gid,create_time,user_status,account_status, enable_flag,mac_code,"
+        + " update_time,fmc_token,refuse_reason,refuse_type,audit_time)"
+        + " values(#{phone},#{password},#{userGid},#{createTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{macCode},"
+        + " #{updateTime},#{fmcToken},#{refuseReason},#{refuseType},#{auditTime})")
     int addUser(XUserInfo xUserInfo);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_user_info(phone, user_gid, name, identity_card, birthday, sex, education, marital, place, income," +
-            " create_time, update_time,user_status,account_status, enable_flag,credit_line,credit_line_count,canborrow_amount,trans_pwd," +
-            " refuse_reason,refuse_type,audit_time)" +
-            " values(#{phone}, #{userGid}, #{name}, #{identityCard}, #{birthday}, #{sex}, #{education}, #{marital}, #{place}, #{income}," +
-            " #{createTime}, #{updateTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{credit_line},#{credit_line_count},#{canborrow_amount},#{trans_pwd}," +
-            "#{refuseReason},#{refuseType},#{auditTime})")
+    @Insert("insert into x_user_info(phone, user_gid, name, identity_card, birthday, sex, education, marital, place, income,"
+        + " create_time, update_time,user_status,account_status, enable_flag,credit_line,credit_line_count,canborrow_amount,trans_pwd,"
+        + " refuse_reason,refuse_type,audit_time)"
+        + " values(#{phone}, #{userGid}, #{name}, #{identityCard}, #{birthday}, #{sex}, #{education}, #{marital}, #{place}, #{income},"
+        + " #{createTime}, #{updateTime}, #{userStatus}, #{accountStatus}, #{enableFlag},#{credit_line},#{credit_line_count},#{canborrow_amount},#{trans_pwd},"
+        + "#{refuseReason},#{refuseType},#{auditTime})")
     int save(XUserInfo xUserInfo);
 
     @Select("select * from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y' and t.account_status='0'")
@@ -52,15 +65,13 @@ public interface XUserInfoDao {
 
     int count(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> list(@Param("params") Map<String, Object> params,
-                         @Param("offset") Integer offset,
-                         @Param("limit") Integer limit);
+    List<XUserInfo> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+        @Param("limit") Integer limit);
 
     int auditCount(@Param("params") Map<String, Object> params);
 
-    List<XAuditCondition> auditList(@Param("params") Map<String, Object> params,
-                                    @Param("offset") Integer offset,
-                                    @Param("limit") Integer limit);
+    List<XAuditCondition> auditList(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+        @Param("limit") Integer limit);
 
     /**
      * 获取授信额度
@@ -106,9 +117,9 @@ public interface XUserInfoDao {
     int countOnePhone(String macCode);
 
     // 统计14天内 最大的联系人个数
-    @Select("SELECT IFNULL(max(num),0) from ( " +
-            "select count(1) as num from x_user_contacts where user_gid=#{userGid}" +
-            " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=14 GROUP BY update_date ) temp")
+    @Select("SELECT IFNULL(max(num),0) from ( "
+        + "select count(1) as num from x_user_contacts where user_gid=#{userGid}"
+        + " AND DATEDIFF(date_format(now(), '%Y-%m-%d'),update_date)<=14 GROUP BY update_date ) temp")
     int countContacts(String userGid);
 
     /**
@@ -155,7 +166,8 @@ public interface XUserInfoDao {
     /**
      * 查出待审核用户
      *
-     * @param num 天数
+     * @param num
+     *            天数
      * @return
      */
     List<XUserInfo> toBeAuditedList(@Param("num") Integer num);
@@ -163,29 +175,27 @@ public interface XUserInfoDao {
     @Update("update x_user_info set fmc_token=#{fmcToken} where user_gid=#{userGid}")
     int updateTmcToken(@Param("fmcToken") String fmcToken, @Param("userGid") String userGid);
 
-    //查询审核通过的用户的fmc_token
+    // 查询审核通过的用户的fmc_token
     @Select("select * from x_user_info where user_status='3'")
     List<XUserInfo> findAuditPassUsers();
 
-    //查询放款成功的用户的fmc_token
+    // 查询放款成功的用户的fmc_token
     @Select("select * from x_user_info where user_status='5'")
     List<XUserInfo> findLoanSuccessUsers();
 
-    //查询到期还款的用户的fmc_token
+    // 查询到期还款的用户的fmc_token
     @Select("SELECT u.* FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE (r.due_time <= date_format(DATE_ADD(sysdate(), INTERVAL 2 DAY), '%Y%m%d') and r.due_time >= date_format(DATE_ADD(sysdate(), INTERVAL -1 DAY), '%Y%m%d')) AND u.id IS NOT NULL and r.repayment_status !=2 and r.loan_status=1")
     List<XUserInfo> findShouldRepaymentUsers();
 
     int countSameName(@Param("params") Map<String, Object> params);
 
-    List<XAuditCondition> listSameName(@Param("params") Map<String, Object> params,
-                                       @Param("offset") Integer offset,
-                                       @Param("limit") Integer limit);
+    List<XAuditCondition> listSameName(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+        @Param("limit") Integer limit);
 
     int countOverDueUsers(@Param("params") Map<String, Object> params);
 
-    List<XUserInfo> overDueUsers(@Param("params") Map<String, Object> params,
-                                 @Param("offset") Integer offset,
-                                 @Param("limit") Integer limit);
+    List<XUserInfo> overDueUsers(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+        @Param("limit") Integer limit);
 
     @Select("select phone from x_user_info where mac_code=#{macCode} and enable_flag='Y' and user_status!='7' and account_status='0'")
     List<String> checkMacCode(String macCode);

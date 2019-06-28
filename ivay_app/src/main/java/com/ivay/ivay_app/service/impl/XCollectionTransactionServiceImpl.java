@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,8 +20,10 @@ import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
 import com.ivay.ivay_app.dto.EbayResponseStatus;
 import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
 import com.ivay.ivay_app.service.XCollectionTransactionService;
+import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.RSAEncryptShaCollection;
 import com.ivay.ivay_common.utils.RSASign;
@@ -35,6 +40,8 @@ import com.ivay.ivay_repository.model.XRecordRepayment;
 
 @Service
 public class XCollectionTransactionServiceImpl implements XCollectionTransactionService {
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+
     @Autowired
     TokenDao tokenDao;
     @Autowired
@@ -43,6 +50,9 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
     private XRecordRepaymentService xRecordRepaymentService;
     @Autowired
     private XRecordLoanDao xRecordLoanDao;
+    @Autowired
+    private XConfigService xConfigService;
+
     @Value("${ebay_api_notice_publickey}")
     private String ebayNoticePublicKeyPath;
     @Value("${ebay_api_merchant_code}")
@@ -191,19 +201,33 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         System.out.println("baokim请求的签名明文：" + encryptStr);
         System.out.println("baokim请求发送的签名：" + Signature);
 
-        // 生产环境才校验签名
-        if (environment.contains("prod")) {
-            // 验证签名认证
-            boolean b = RSAEncryptShaCollection.decrypt2Sha1(encryptStr, Signature);
-            System.out.println("签名校验结果：" + b);
-            System.out.println(environment);
+        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.BAOKIM_NOTICE_SIGNATURE));
+        if (config == null) {
+            logger.error("发送短信验证码配置获取出错");
+            return null;
+        }
 
-            if (!b) {
-                ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
-                ResponseMessage = BaokimResponseStatus.IncorrectSignature.getMessage();
-                setRsp(rsp, ResponseCode, ResponseMessage);
-                return rsp;
+        for (Object key : config.keySet()) {
+            if ("enable".equals(key)) {
+                String value = config.get(key).toString();
+                if ("true".equals(value)) {
+                    // 生产环境才校验签名
+                    System.out.println(environment);
+                    if (environment.contains("prod")) {
+                        // 验证签名认证
+                        boolean b = RSAEncryptShaCollection.decrypt2Sha1(encryptStr, Signature);
+                        System.out.println("签名校验结果：" + b);
+
+                        if (!b) {
+                            ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
+                            ResponseMessage = BaokimResponseStatus.IncorrectSignature.getMessage();
+                            setRsp(rsp, ResponseCode, ResponseMessage);
+                            return rsp;
+                        }
+                    }
+                }
             }
+
         }
 
         // 请求字段存入数据库

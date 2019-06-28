@@ -143,6 +143,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             }
 
         } else {
+            xUser = xUserInfoDao.getUserByPhone(mobile);
             // 更新fmcToken
             xUserInfoDao.updateTmcToken(xUser.getFmcToken(), xUser.getUserGid());
             return xUser;
