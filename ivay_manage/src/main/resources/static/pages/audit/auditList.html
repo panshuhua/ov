@@ -509,6 +509,9 @@
                         var userType = data.bo.data[i]["userType"] == null ? "": data.bo.data[i]["userType"];
                         var auditTime = data.bo.data[i]["auditTime"] == null ? "": data.bo.data[i]["auditTime"];
                         var auditStatus = AUDIT_STATUS[data.bo.data[i]["auditStatus"]];
+                        if (auditStatus == undefined) {
+                            auditStatus = "Tín dụng chưa thanh toán"
+                        }
 
                         sameNameDom += "<tr class='sameName_detail sameNameBackground'>" +
                             "<td>" + data.bo.data[i]["name"] + "</td>" +
