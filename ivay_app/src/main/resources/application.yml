@@ -10,10 +10,10 @@ dataSource:
 
 spring:
   profiles:
-    # 多模块使用include取代active
-    include: dev, comDev, dbDev
-#    include: test, comTest, dbTest
-#    include: prod, comProd, dbProd
+    # 多模块使用include取代active dbDev
+#   include: dev, comDev, dbLoc
+#   include: test, comTest, dbTest
+   include: prod, comProd, dbProd
   servlet:
     multipart:
       max-file-size: 100MB
