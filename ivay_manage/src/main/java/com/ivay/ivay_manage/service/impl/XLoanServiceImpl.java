@@ -411,33 +411,29 @@ public class XLoanServiceImpl implements XLoanService {
             xUserInfo.setCreditLine(borrowAmount);
             xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
             xUserInfo.setCreditLineCount(0);
-            xUserInfoDao.update(xUserInfo);
             logger.info(" {}: 初始化授信额度:{}", xUserInfo.getUserGid(), xUserInfo.getCreditLine());
         } else {
-            // 提额
-            Map<String, Object> params = new HashMap<>();
-            params.put("userGid", xUserInfo.getUserGid());
-            params.put("repaymentStatus", SysVariable.REPAYMENT_STATUS_SUCCESS);
-            int count = xRecordLoanDao.count(params);
-            if (count > 0) {
-                Object step = ((LinkedHashMap) creditConfig.get("step")).get(String.valueOf(count));
-                if (step == null) {
-                    step = ((LinkedHashMap) creditConfig.get("step")).get(">");
-                }
-                long s = Long.parseLong(step.toString());
-                long max = Long.parseLong(creditConfig.get("end").toString());
-                if (max < s + xUserInfo.getCreditLine()) {
-                    s = max - xUserInfo.getCreditLine();
-                }
-                xUserInfo.setCreditLine(s + xUserInfo.getCreditLine());
-                xUserInfo.setCanborrowAmount(s + xUserInfo.getCanborrowAmount());
-                int n = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
-                xUserInfo.setCreditLineCount(n + 1);
-                logger.info("{}: 第{}次提額，提額數目: {}, 新額度: {}", xUserInfo.getUserGid(), xUserInfo.getCreditLineCount(), s, xUserInfo.getCreditLine());
-                xUserInfoDao.update(xUserInfo);
+            // 没提过额度，初始化为0
+            if (xUserInfo.getCreditLineCount() == null) {
+                xUserInfo.setCreditLineCount(0);
             }
+            // 第count次提额
+            int count = xUserInfo.getCreditLineCount() + 1;
+            Object stepConfig = ((LinkedHashMap) creditConfig.get("step")).get(String.valueOf(count));
+            if (stepConfig == null) {
+                stepConfig = ((LinkedHashMap) creditConfig.get("step")).get(">");
+            }
+            long step = Long.parseLong(stepConfig.toString());
+            long max = Long.parseLong(creditConfig.get("end").toString());
+            if (max < step + xUserInfo.getCreditLine()) {
+                step = max - xUserInfo.getCreditLine();
+            }
+            xUserInfo.setCreditLine(step + xUserInfo.getCreditLine());
+            xUserInfo.setCanborrowAmount(step + xUserInfo.getCanborrowAmount());
+            xUserInfo.setCreditLineCount(count);
+            logger.info("{}: 第{}次提額，提額數目: {}, 新額度: {}", xUserInfo.getUserGid(), xUserInfo.getCreditLineCount(), count, xUserInfo.getCreditLine());
         }
+        xUserInfo.setUpdateTime(new Date());
+        xUserInfoDao.update(xUserInfo);
     }
-
-
 }

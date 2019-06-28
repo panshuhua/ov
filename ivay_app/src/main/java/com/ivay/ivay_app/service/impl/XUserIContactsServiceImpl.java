@@ -1,18 +1,5 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ivay.ivay_app.service.XUserContactsService;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.SysVariable;
@@ -24,6 +11,17 @@ import com.ivay.ivay_repository.model.XUserAppNum;
 import com.ivay.ivay_repository.model.XUserContacts;
 import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_repository.model.XUserRisk;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class XUserIContactsServiceImpl implements XUserContactsService {
@@ -108,7 +106,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     private void saveContacts(XRiskInfo riskInfo, String gid, String updateDate) {
         Set<XUserContacts> contacts = riskInfo.getContacts();
-        Set<XUserContacts> xUserContacts = new HashSet();
+        Set<XUserContacts> xUserContacts = new HashSet<>();
         // 查询当天该用户有没有上传通讯录，如果上传了就不再重复上传了
         int contactsCount = xUserContactsDao.findContactsByUserGid(gid, updateDate);
         if (contactsCount <= 0) {

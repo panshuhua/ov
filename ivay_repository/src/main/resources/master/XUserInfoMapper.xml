@@ -38,12 +38,6 @@
             <if test="accountStatus != null">
                 account_status = #{accountStatus},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime},
-            </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime},
-            </if>
             <if test="password != null">
                 password = #{password},
             </if>
@@ -53,14 +47,23 @@
             <if test="creditLineCount != null">
                 credit_line_count = #{creditLineCount},
             </if>
-            <if test="creditLineCount != null">
-                credit_line_count = #{creditLineCount},
-            </if>
             <if test="canborrowAmount != null">
                 canborrow_amount = #{canborrowAmount},
             </if>
             <if test="transPwd != null">
                 trans_pwd = #{transPwd},
+            </if>
+            <if test="macCode != null">
+                mac_code = #{macCode},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="fmcToken != null">
+                fmc_token = #{fmcToken},
             </if>
             <if test="refuseReason != null">
                 refuse_reason = #{refuseReason},

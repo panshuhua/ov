@@ -275,7 +275,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 // 再更新剩余本金为零
                 xRecordLoan.setDueAmount(0L);
                 if (xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() <= diff) {
-                    // 用于记录或许多还的金额
+                    // 记录或许多还的金额
                     xRecordLoan.setOverdueFeeTotal(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
                     // 还清全部逾期费用
                     xRecordLoan.setOverdueFee(0L);
