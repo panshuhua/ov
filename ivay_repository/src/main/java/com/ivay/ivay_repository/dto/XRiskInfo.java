@@ -1,11 +1,12 @@
 package com.ivay.ivay_repository.dto;
 
-import com.ivay.ivay_repository.model.XUserContacts;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.Set;
+
+import com.ivay.ivay_repository.model.XUserContacts;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * 风控需要审核的信息
@@ -43,10 +44,5 @@ public class XRiskInfo {
     public String systemVersion;
     @ApiModelProperty("设备ipV4值")
     public String ipv4Address;
-
-    public String type;
-    public String macAddress;
-    public String phoneBrand;
-    public String trafficWay;
 
 }
