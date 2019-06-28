@@ -47,6 +47,8 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
     private String ebayNoticePublicKeyPath;
     @Value("${ebay_api_merchant_code}")
     private String ebayMerchantCode;
+    @Value("${spring.profiles.include}")
+    private String environment;
 
     @Override
     public String getRequestId(String PartnerCode, String date) {
@@ -189,16 +191,20 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         System.out.println("请求的签名明文：" + encryptStr);
         System.out.println("请求发送的签名：" + Signature);
 
-        // 验证签名认证
-        boolean b = RSAEncryptShaCollection.decrypt2Sha1(encryptStr, Signature);
-        System.out.println("签名校验结果：" + b);
+        // 生产环境才校验签名
+        if (environment.contains("prod")) {
+            // 验证签名认证
+            boolean b = RSAEncryptShaCollection.decrypt2Sha1(encryptStr, Signature);
+            System.out.println("签名校验结果：" + b);
+            System.out.println(environment);
 
-        // if (!b) {
-        // ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
-        // ResponseMessage = BaokimResponseStatus.IncorrectSignature.getMessage();
-        // setRsp(rsp, ResponseCode, ResponseMessage);
-        // return rsp;
-        // }
+            if (!b) {
+                ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
+                ResponseMessage = BaokimResponseStatus.IncorrectSignature.getMessage();
+                setRsp(rsp, ResponseCode, ResponseMessage);
+                return rsp;
+            }
+        }
 
         // 请求字段存入数据库
         XCollectionTransaction xCollectionTransaction = new XCollectionTransaction();
