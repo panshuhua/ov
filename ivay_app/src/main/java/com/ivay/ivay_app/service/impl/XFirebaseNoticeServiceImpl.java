@@ -153,7 +153,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     message = i18nService.getViMessage("firebase.notice.dueDay.remind.msg");
                     logger.info("当天到期");
                 } else if (dueTime.getDate() == new Date().getDate() + 1) {
-                    title = i18nService.getViMessage("firebase.notice.dueDay.remind.titlemsg");
+                    title = i18nService.getViMessage("firebase.notice.beforeDueDay.remind.titlemsg");
                     message = i18nService.getViMessage("firebase.notice.beforeDueDay.remind.msg");
                     logger.info("明天到期");
                 }

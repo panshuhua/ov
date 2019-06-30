@@ -498,7 +498,6 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         }
 
         for (XOverDueFee x : list) {
-            x.setDueAmount(2000000L);
             // 逾期平台管理费
             long totalFee = CommonUtil.longMultiplyBigDecimal(x.getDueAmount(), manageFeeRate);
             // 逾期计息
