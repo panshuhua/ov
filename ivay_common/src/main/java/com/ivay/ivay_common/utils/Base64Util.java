@@ -28,9 +28,9 @@ public class Base64Util {
             return str;
         }
     }
-    
+
     public static String encode(byte[] textByte) {
-            return ENCODER.encodeToString(textByte);
+        return ENCODER.encodeToString(textByte);
 
     }
 
@@ -44,11 +44,9 @@ public class Base64Util {
         }
 
     }
-    
+
     public static byte[] decode2(String str) {
-    	return DECODER.decode(str);
+        return DECODER.decode(str);
     }
-    
-    
 
 }

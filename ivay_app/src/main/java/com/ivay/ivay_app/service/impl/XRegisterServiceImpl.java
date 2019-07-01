@@ -391,6 +391,8 @@ public class XRegisterServiceImpl implements XRegisterService {
                             XUser xUser = registerLogin(loginInfo);
                             ReturnUser user = setReturnUser(xUser);
                             user.setNeedverifyMapCode(0);
+                            // 标识告诉前台是登录还是注册
+                            user.setType(SysVariable.RETURN_TYPE_REGISTER);
                             return user;
                         } else {
                             // 使用了同一个设备注册，返回错误信息

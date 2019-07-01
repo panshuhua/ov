@@ -29,7 +29,7 @@ timer:
   overdueFee: 0 0 1 1/1 * ?
   firebaseExpireNotice: 0 23 11 * * ?   #对当天逾期的用户发送一次
   firebaseOverDueNotice: 0 0 9 1/3 * ?  #每3天发送一次
-  autoCreateVA: 0 0 0-23 * * ?  #每小时创建一次
+  autoCreateVA: 0 30 0-23 * * ?  #每小时创建一次
 # 借款url
 #baokim
 api_transfer_url: http://13.250.110.81:9095/Sandbox/FirmBanking
@@ -59,6 +59,15 @@ api_vmgmedia_url: http://brandsms.vn:8018/VMGAPI.asmx
 api_alias: VMGtest
 api_authenticate_user: vmgtest1
 api_authenticate_pass: vmG@123b
+# 发送短信url-fpt
+api_fpt_grant_type: client_credentials
+api_fpt_client_id: b696C77E5FB5d553Ac771fea8834Ab86dAa0fda5
+api_fpt_client_secret: aaad67b7d11bb83e10da122cdA8fda0b40Dbc00f61179a5e6c5cfCd598668Fe6e00d8C7c
+api_fpt_scope: send_brandname_otp
+api_fpt_accesstoken_url: http://sandbox.sms.fpt.net/oauth2/token
+api_fpt_sendmsg_url: http://sandbox.sms.fpt.net/api/push-brandname-otp
+api_fpt_brandName: FTI
+
 # 风控授权url
 risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 还款成功的后置处理url, 提额、增加白名单
