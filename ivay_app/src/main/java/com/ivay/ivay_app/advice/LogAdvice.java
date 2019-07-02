@@ -243,7 +243,6 @@ public class LogAdvice {
         sysLogs.setModule(module);
 
         try {
-
             logService.save(sysLogs);
         } catch (Throwable ex) {
             sysLogs.setFlag(false);
