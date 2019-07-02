@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.ivay.ivay_repository.dto.CreditLine;
-import com.ivay.ivay_repository.dto.XAuditCondition;
+import com.ivay.ivay_repository.dto.XAuditListInfo;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.dto.XLoanQualification;
 import com.ivay.ivay_repository.dto.XUser;
@@ -70,8 +70,8 @@ public interface XUserInfoDao {
 
     int auditCount(@Param("params") Map<String, Object> params);
 
-    List<XAuditCondition> auditList(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
-        @Param("limit") Integer limit);
+    List<XAuditListInfo> auditList(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+                                   @Param("limit") Integer limit);
 
     /**
      * 获取授信额度
@@ -189,8 +189,8 @@ public interface XUserInfoDao {
 
     int countSameName(@Param("params") Map<String, Object> params);
 
-    List<XAuditCondition> listSameName(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
-        @Param("limit") Integer limit);
+    List<XAuditListInfo> listSameName(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+                                      @Param("limit") Integer limit);
 
     int countOverDueUsers(@Param("params") Map<String, Object> params);
 

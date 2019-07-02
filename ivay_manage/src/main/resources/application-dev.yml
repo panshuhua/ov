@@ -13,9 +13,11 @@ spring:
   redis:
     host: localhost
     port: 6379
-    timeout: 10s
+    # 连接等待时间（ms）
+    timeout: 5000
     lettuce:
       pool:
+        # 空闲连接数
         min-idle: 0
         max-idle: 8
         max-active: 8

@@ -9,6 +9,7 @@ import com.ivay.ivay_manage.service.XLoanService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
+import com.ivay.ivay_repository.dto.XAuditListInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,6 +32,20 @@ public class XAuditController {
     @ApiOperation("审核记录")
     public PageTableResponse auditList(PageTableRequest request) {
         return xUserInfoService.auditList(request);
+    }
+
+    @PostMapping("list/v2")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1")
+    })
+    @ApiOperation("审核记录")
+    public Response<PageTableResponse> auditListNew(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                    @RequestParam(required = false, defaultValue = "1") int num,
+                                                    @RequestBody(required = false) XAuditListInfo xAuditListInfo) {
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xUserInfoService.auditList(limit,num,xAuditListInfo));
+        return response;
     }
 
     @GetMapping("detail")

@@ -24,6 +24,6 @@ public interface {daoName} {
     int count(@Param("params") Map<String, Object> params);
 
     List<{beanName}> list(@Param("params") Map<String, Object> params,
-                         @Param("offset") Integer offset,
-                         @Param("limit") Integer limit);
+                          @Param("offset") Integer offset,
+                          @Param("limit") Integer limit);
 }

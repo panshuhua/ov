@@ -3,6 +3,7 @@ package com.ivay.ivay_manage.service;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.XAuditDetail;
+import com.ivay.ivay_repository.dto.XAuditListInfo;
 
 
 public interface XUserInfoService {
@@ -13,6 +14,16 @@ public interface XUserInfoService {
      * @return
      */
     PageTableResponse auditList(PageTableRequest request);
+
+    /**
+     * 获取审核记录列表
+     *
+     * @param limit
+     * @param num
+     * @param xAuditListInfo
+     * @return
+     */
+    PageTableResponse auditList(int limit, int num, XAuditListInfo xAuditListInfo);
 
     /**
      * 被审核人详细信息

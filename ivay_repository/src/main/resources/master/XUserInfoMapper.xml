@@ -260,35 +260,29 @@
         <include refid="audit_list_condition"/>
     </select>
 
-    <select id="auditList" resultType="com.ivay.ivay_repository.dto.XAuditCondition">
-        set @num=0;
-        SELECT
-            @num:=@num+1 as num,
-            t.*
-        FROM (
-            select
-                xui.user_gid,
-                xui.name,
-                xui.phone,
-                case xui.user_status
-                    WHEN '2' THEN '2'
-                    WHEN '3' THEN '3'
-                    WHEN '4' THEN '3'
-                    WHEN '5' THEN '3'
-                    WHEN '6' THEN '3'
-                    WHEN '7' THEN '7'
-                    WHEN '8' THEN '8'
-                END audit_status,
-                xuei.update_time create_time,
-                (SELECT count(*)-1 FROM x_user_info x WHERE x.name=xui.name and x.enable_flag='Y') countSameName,
-                (SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
-            from x_user_info xui
-            <include refid="audit_list_condition"/>
-            order by xuei.update_time desc
-            <if test="limit != null and limit != 0">
-                limit #{offset}, #{limit}
-            </if>
-        ) t
+    <select id="auditList" resultType="com.ivay.ivay_repository.dto.XAuditListInfo">
+        select
+            xui.user_gid,
+            xui.name,
+            xui.phone,
+            case xui.user_status
+                WHEN '2' THEN '2'
+                WHEN '3' THEN '3'
+                WHEN '4' THEN '3'
+                WHEN '5' THEN '3'
+                WHEN '6' THEN '3'
+                WHEN '7' THEN '7'
+                WHEN '8' THEN '8'
+            END audit_status,
+            xuei.update_time create_time,
+            (SELECT count(*)-1 FROM x_user_info x WHERE x.name=xui.name and x.enable_flag='Y') countSameName,
+            (SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
+        from x_user_info xui
+        <include refid="audit_list_condition"/>
+        order by xuei.update_time desc
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
     </select>
 
     <select id="auditDetail" parameterType="java.lang.String" resultType="com.ivay.ivay_repository.dto.XAuditDetail">
@@ -400,7 +394,7 @@
         )
     </select>
 
-    <select id="listSameName" resultType="com.ivay.ivay_repository.dto.XAuditCondition">
+    <select id="listSameName" resultType="com.ivay.ivay_repository.dto.XAuditListInfo">
         select
             xui.user_gid,
             xui.name,

@@ -65,7 +65,7 @@ public class XLoanController {
             @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    @ApiOperation(value = "联系人列表")
+    @ApiOperation("联系人列表")
     public Response<PageTableResponse> listContactInfo(@RequestParam(required = false, defaultValue = "0") int limit,
                                                        @RequestParam(required = false, defaultValue = "1") int num,
                                                        @RequestParam String userGid) {

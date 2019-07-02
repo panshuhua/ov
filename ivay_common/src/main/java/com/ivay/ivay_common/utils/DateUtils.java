@@ -1,5 +1,6 @@
 package com.ivay.ivay_common.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -498,33 +499,33 @@ public class DateUtils {
     /**
      * 获取某天的最后一秒
      *
-     * @param time
+     * @param date
      * @return
      */
-    public static String getDateEnd(String time) {
-        Date date = stringToDate_YYYY_MM_DD_HH_MM_SS(time);
+    public static Date getDateEnd(Date date) {
+        if (date == null) {
+            return null;
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
-        Date dateEnd = calendar.getTime();
-        return dateToString_YYYY_MM_DD_HH_MM_SS(dateEnd);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
     }
 
     /**
      * 获取某天的最后一秒
      *
-     * @param date
+     * @param time
      * @return
      */
-    public static Date getDateEnd(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        return calendar.getTime();
+    public static String getDateEnd(String time) {
+        if (StringUtils.isEmpty(time)) {
+            return time;
+        }
+        return dateToString_YYYY_MM_DD_HH_MM_SS(getDateEnd(stringToDate_YYYY_MM_DD_HH_MM_SS(time)));
     }
 
     /**

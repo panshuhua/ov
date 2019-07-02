@@ -59,11 +59,11 @@ public class TemplateUtil {
         int size = beanFieldName.size();
         for (int i = 0; i < size; i++) {
             String name = beanFieldName.get(i);
-            if ("id".equals(name) || "createTime".equals(name) || "updateTime".equals(name)) {
-                continue;
-            }
+//            if ("id".equals(name) || "createTime".equals(name) || "updateTime".equals(name)) {
+//                continue;
+//            }
             if (!StringUtils.isEmpty(beanFieldComment.get(i))) {
-                buffer.append("\t@ApiModelProperty(value = \"").append(beanFieldComment.get(i)).append("\")\n");
+                buffer.append("\t@ApiModelProperty(\"").append(beanFieldComment.get(i)).append("\")\n");
             }
             String type = beanFieldType.get(i);
             buffer.append("\tprivate ").append(type).append(" ").append(name);
@@ -94,9 +94,9 @@ public class TemplateUtil {
         int size = beanFieldName.size();
         for (int i = 0; i < size; i++) {
             String name = beanFieldName.get(i);
-            if ("id".equals(name) || "createTime".equals(name) || "updateTime".equals(name)) {
-                continue;
-            }
+//            if ("id".equals(name) || "createTime".equals(name) || "updateTime".equals(name)) {
+//                continue;
+//            }
 
             String type = beanFieldType.get(i);
             buffer.append("\tpublic ").append(type).append(" get")

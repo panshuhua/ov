@@ -181,3 +181,29 @@ INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES (
 
 
 
+-- 催收系统 2.19-7-2
+CREATE TABLE `x_collection_task` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(32) NOT NULL COMMENT '借款订单号',
+  `repayment_gid` varchar(32) COMMENT '还款gid',
+  `collector_id` int(11) COMMENT '催收员id',
+  `collection_status` char(1) NOT NULL DEFAULT '0' COMMENT '催收状态：0等待指派, 1已指派 2正在催收 3催收完成 4催收失败',
+  `due_collection_amount` bigint(32) NOT NULL DEFAULT '0' COMMENT '应追回的本金, 不含逾期利息',
+  `collection_amount` bigint(32) NOT NULL DEFAULT '0' COMMENT '追回本金',
+  `collection_overdue_fee` bigint(32) NOT NULL DEFAULT '0' COMMENT '追回逾期利息',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收任务表';
+
+CREATE TABLE `x_collection_record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL COMMENT '催收任务id',
+  `collector_id` int(11) COMMENT '催收员id',
+  `collection_amount` bigint(32) COMMENT '追回额度',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收记录表';

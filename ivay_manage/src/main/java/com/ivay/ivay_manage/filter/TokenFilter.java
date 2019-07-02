@@ -30,8 +30,10 @@ public class TokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private TokenService tokenService;
+
     @Autowired
     private UserDetailsService userDetailsService;
+
     private static final Long MINUTES_10 = 10 * 60 * 1000L;
 
     @Override

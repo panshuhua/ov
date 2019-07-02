@@ -14,6 +14,7 @@ import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
+import com.ivay.ivay_repository.dto.XAuditListInfo;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -77,6 +78,34 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                 calendar.set(Calendar.SECOND, 59);
                 request.getParams().put("toTime", DateUtils.dateToString_YYYY_MM_DD_HH_MM_SS(calendar.getTime()));
             }
+        }
+
+        // 设置角色与登录用户id
+        request.getParams().put("role", roleService.getLoginUserAuditRole());
+        request.getParams().put("loginId", UserUtil.getLoginUser().getId());
+
+        return new PageTableHandler(
+                a -> xUserInfoDao.auditCount(a.getParams()),
+                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
+    }
+
+    @Override
+    public PageTableResponse auditList(int limit, int num, XAuditListInfo xAuditListInfo) {
+        PageTableRequest request = new PageTableRequest();
+        request.setOffset((num - 1) * limit);
+        request.setLimit(limit);
+
+        // 设置条件
+        if (xAuditListInfo != null) {
+            if (xAuditListInfo.getToTime() != null) {
+                request.getParams().put("toTime", DateUtils.getDateEnd(xAuditListInfo.getToTime()));
+            }
+            request.getParams().put("phone", xAuditListInfo.getPhone());
+            request.getParams().put("userGid", xAuditListInfo.getUserGid());
+            request.getParams().put("name", xAuditListInfo.getName());
+            request.getParams().put("auditStatus", xAuditListInfo.getAuditStatus());
+            request.getParams().put("fromTime", xAuditListInfo.getFromTime());
         }
 
         // 设置角色与登录用户id

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.master.XCollectionRecordDao">
+
+    <sql id="list_condition">
+        <where>
+            <if test="params.id != null and params.id != ''">
+				and id = #{params.id} 
+			</if>
+			<if test="params.taskId != null and params.taskId != ''">
+				and task_id = #{params.taskId} 
+			</if>
+			<if test="params.collectorId != null and params.collectorId != ''">
+				and collector_id = #{params.collectorId} 
+			</if>
+			<if test="params.collectionAmount != null and params.collectionAmount != ''">
+				and collection_amount = #{params.collectionAmount} 
+			</if>
+			<if test="params.createTime != null and params.createTime != ''">
+				and create_time = #{params.createTime} 
+			</if>
+			<if test="params.updateTime != null and params.updateTime != ''">
+				and update_time = #{params.updateTime} 
+			</if>
+			<if test="params.enableFlag != null and params.enableFlag != ''">
+				and enable_flag = #{params.enableFlag} 
+			</if>
+        </where>
+    </sql>
+
+    <select id="count" resultType="int">
+        select count(1) from x_collection_record t
+        <include refid="list_condition"/>
+    </select>
+
+    <select id="list" resultType="com.ivay.ivay_repository.model.XCollectionRecord">
+        select * from x_collection_record t
+        <include refid="list_condition"/>
+        <if test="params.orderBy!=null and params.orderBy!=''">
+            ${params.orderBy}
+        </if>
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <update id="update">
+        update x_collection_record t
+        <set>
+            <if test="taskId != null">
+				task_id = #{taskId}, 
+			</if>
+			<if test="collectorId != null">
+				collector_id = #{collectorId}, 
+			</if>
+			<if test="collectionAmount != null">
+				collection_amount = #{collectionAmount}, 
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime}, 
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime}, 
+			</if>
+			<if test="enableFlag != null">
+				enable_flag = #{enableFlag}, 
+			</if>
+        </set>
+        where t.id = #{id}
+    </update>
+</mapper>
