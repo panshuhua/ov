@@ -17,6 +17,9 @@ public class XOverDueFee {
     @ApiModelProperty("手机号码")
     private String phone;
 
+    @ApiModelProperty("用户gid")
+    private String userGid;
+
     @ApiModelProperty("到期时间")
     private Date dueTime;
 

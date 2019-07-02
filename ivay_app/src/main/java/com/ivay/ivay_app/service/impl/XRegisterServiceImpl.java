@@ -254,7 +254,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                     return verifyCodeInfo;
                 }
             } else if ("3".equals(value)) {
-                String responseBody = sendByFpt(mobile, authCode);
+                String responseBody = sendMsgByFpt(mobile, authCode);
                 Map<String, String> map = JsonUtils.jsonToMap(responseBody);
                 String messageId = map.get("MessageId");
                 logger.info("fpt方式发送的短信id：" + messageId);
@@ -316,7 +316,8 @@ public class XRegisterServiceImpl implements XRegisterService {
     }
 
     // 调用接口3发送短信
-    public String sendByFpt(String mobile, String text) {
+    @Override
+    public String sendMsgByFpt(String mobile, String text) {
         // 获取access_token
         String sessionId = UUIDUtils.getUUID();
         FptAccessTokenReq req = new FptAccessTokenReq();
@@ -351,7 +352,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             sendReq.setSession_id(sessionId);
 
             formEntity = new HttpEntity<String>(JsonUtils.objectToJson(sendReq), headers);
-            //注意：如果手机号码不对，这里会直接报400
+            // 注意：如果手机号码不对，这里会直接报400
             responseBody = restTemplate.postForEntity(fptSendmsgUrl, formEntity, String.class).getBody();
             logger.info("发送短信返回：" + responseBody);
 

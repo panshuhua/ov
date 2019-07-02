@@ -176,4 +176,31 @@ public class SysVariable {
     // 发送通知/短信提醒时的语言
     public static final String LANG_VI = "vi";
 
+    // firebase跳转页面加密短名称
+    public static final String PAGE_PERSONALDATA = "WVhSUQ==";
+    public static final String PAGE_BINDBANKCARD = "WkhKQw==";
+    public static final String PAGE_BANKCARD = "WkhKVUk9";
+    public static final String PAGE_FORGETPASSWORD = "WkhKWT0=";
+    public static final String PAGE_RESETTRANPWD = "WkhkUw==";
+    public static final String PAGE_MINE = "Wlc1PT0=";
+    public static final String PAGE_HOME = "WlcxPT0=";
+    public static final String PAGE_GUIDE = "WldSYz0=";
+    public static final String PAGE_REGISTER = "Y21WVkk9";
+    public static final String PAGE_BILL = "Ykd4PT0="; // 账单页
+    public static final String PAGE_BILLDETAIL = "YkdsPQ=="; // 账单详情页 要带参数gid
+    public static final String PAGE_PERSONALDATADETAIL = "YkdsbVZR:";
+    public static final String PAGE_LOANCONFIRM = "YlhKPQ==";
+    public static final String PAGE_LOAN = "Ym1GPT0=";
+    public static final String PAGE_LOGIN = "Ym1sdz0=";
+    public static final String PAGE_LOANAPPLICATION = "Ym05OU0="; // 借款申请页
+    public static final String PAGE_SETTINGS = "YzJkVk09";
+    public static final String PAGE_LOANSUCCESS = "YzNOPQ==";
+    public static final String PAGE_CREDITSTATUS = "YzNWRA==";
+    public static final String PAGE_WEBVIEW = "ZDJWdz09";
+    public static final String PAGE_REPAYMENT = "ZEc1R1ZT";
+    public static final String PAGE_EMERGENCYCONTACT = "ZEdOUT09";
+    public static final String PAGE_CREDIT = "ZEdsSkQ=";
+    public static final String PAGE_TABNAV = "ZG1GRlU=";
+    public static final String PAGE_HISTORY = "ZVhKQT09";
+
 }

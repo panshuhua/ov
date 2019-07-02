@@ -1,5 +1,18 @@
 package com.ivay.ivay_app.service.impl;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.tempuri.ApiBulkReturn;
+
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
@@ -14,18 +27,6 @@ import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XOverDueFee;
 import com.ivay.ivay_repository.model.XUserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.tempuri.ApiBulkReturn;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
@@ -146,7 +147,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 String fmcToken = fee.getFmcToken();
                 // 测试
                 // fmcToken =
-                // "fM8ho2YnGJc:APA91bEtCo7NZv6OeL-CIba8B4YuSfijyAxF64lNykwrLpAAVYodp7poSeDpDG9xyP9Y_PtiJw7mhg1CmOrtU6hUtGy6ShZWyu88tszUyY0tK0DmFthHrtGLuC5kUcl1Id-REBuu10eY";
+                // "dudv9DClHKw:APA91bEb905uYw7hufHFw106JNELg8oGMOLDlY4ndBt6sGE__ivDxvEwFifyfuQV8_sXAr4Cux89RUeTPD674YYdCzj7Dhd6YvyhuN8s6zympBqCwDoCjaesx6nHyiBX3UmCy3ndMSC8";
                 Date dueTime = fee.getDueTime();
                 if (dueTime.getDate() == new Date().getDate()) {
                     title = i18nService.getViMessage("firebase.notice.dueDay.remind.titlemsg");
@@ -172,9 +173,11 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 // 分开捕获异常，避免其中一种发送方式出问题了，另外一种方式发送不了
                 // 发送firebase消息推送
                 logger.info("发送firebase到期通知开始-------------");
+
                 if (!StringUtils.isEmpty(fmcToken)) {
                     try {
-                        FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
+                        String userGid = fee.getUserGid();
+                        FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message, SysVariable.PAGE_BILLDETAIL, userGid);
                     } catch (Exception e) {
                         e.printStackTrace();
                         firebaseFlag = false;
@@ -248,7 +251,17 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     return true;
                 }
                 return false;
+            } else if ("3".equals(value)) {
+                String responseBody = xRegisterService.sendMsgByFpt(mobile, msg);
+                Map<String, String> map = JsonUtils.jsonToMap(responseBody);
+                String messageId = map.get("MessageId");
+                logger.info("fpt方式发送的短信id：" + messageId);
+                if (messageId != null) {
+                    logger.info("Fpt方式发送的短信验证码是：" + msg);
+                    return true;
+                }
 
+                logger.info("fpt发送短信失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if ("0".equals(value)) {
                 logger.info("发送的短信是：" + msg);
@@ -291,8 +304,10 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
                 // 发送firebase消息推送
                 logger.info("发送firebase到期通知开始-------------");
+
                 if (!StringUtils.isEmpty(fmcToken)) {
-                    FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message);
+                    String userGid = fee.getUserGid();
+                    FirebaseUtil.sendMsgToFmcToken(fmcToken, title, message, SysVariable.PAGE_BILLDETAIL, userGid);
                 }
                 logger.info("发送firebase到期通知结束-------------");
                 // 测试发10条
