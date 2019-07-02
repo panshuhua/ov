@@ -171,14 +171,22 @@ public class LogAdvice {
     public void errorLogSave(JoinPoint joinPoint, Exception e) throws Throwable {
         SysLogs sysLogs = new SysLogs();
         MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
+        String methodName = methodSignature.getMethod().getName();
         Object[] args = joinPoint.getArgs(); // 参数值
         String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
         String phone = "";
+        Integer optType = 0;
         for (int i = 0; i < argNames.length; i++) {
             // 发送短信验证码，重设密码
             if (SysVariable.PARAM_MOBILE.equals(argNames[i])) {
                 phone = (String)args[i];
             }
+
+            // 发送短信的类型
+            if (SysVariable.PARAM_OPTTYPE.equals(argNames[i])) {
+                optType = (Integer)args[i];
+            }
+
             // 登录与注册
             if (SysVariable.PARAM_LOGININFO.equals(argNames[i])) {
                 LoginInfo loginInfo = (LoginInfo)args[i];
@@ -205,14 +213,20 @@ public class LogAdvice {
         PrintWriter printWriter = new PrintWriter(stringWriter);
         e.printStackTrace(printWriter);
         StringBuffer error = stringWriter.getBuffer();
-        // String errInfo=error.toString().substring(0, 1000);
+        String errInfo = error.toString().substring(0, 1000);
         if (e instanceof BusinessException) {
             BusinessException be = (BusinessException)e;
             String code = be.getCode();
             sysLogs.setCode(code);
             sysLogs.setRemark("app操作失败，错误信息：" + e.getMessage());
+            if (SysVariable.METHOD_SENDREGISTERCODE.equals(methodName)) {
+                sysLogs.setRemark("发送短信验证码失败，发送类型：" + optType + "，错误信息：" + e.getMessage());
+            }
         } else {
-            sysLogs.setRemark("app操作失败，错误信息：" + e.getMessage() + "\n" + error.toString());
+            sysLogs.setRemark("app操作失败，错误信息：" + e.getMessage() + "\n" + errInfo);
+            if (SysVariable.METHOD_SENDREGISTERCODE.equals(methodName)) {
+                sysLogs.setRemark("发送短信验证码失败，发送类型：" + optType + "，异常信息：" + e.getMessage() + "\n" + errInfo);
+            }
         }
 
         sysLogs.setFlag(false);
