@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -20,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import org.tempuri.ApiBulkReturn;
 import org.tempuri.VMGAPISoapProxy;
 
+import com.ivay.ivay_app.dto.FptAccessTokenReq;
+import com.ivay.ivay_app.dto.FptSendReq;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;
@@ -29,6 +34,7 @@ import com.ivay.ivay_app.service.XTokenService;
 import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.utils.Base64Util;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
@@ -85,6 +91,21 @@ public class XRegisterServiceImpl implements XRegisterService {
     private String authenticatePass;
     @Value("${verifycode.effectiveTime}")
     private long effectiveTime;
+
+    @Value("${api_fpt_grant_type}")
+    private String grantType;
+    @Value("${api_fpt_client_id}")
+    private String clientId;
+    @Value("${api_fpt_client_secret}")
+    private String clientSecret;
+    @Value("${api_fpt_scope}")
+    private String scope;
+    @Value("${api_fpt_accesstoken_url}")
+    private String fptAccessTokenUrl;
+    @Value("${api_fpt_sendmsg_url}")
+    private String fptSendmsgUrl;
+    @Value("${api_fpt_brandName}")
+    private String brandName;
 
     @Override
     public XUser addUser(LoginInfo loginInfo) {
@@ -232,6 +253,19 @@ public class XRegisterServiceImpl implements XRegisterService {
                     redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
                     return verifyCodeInfo;
                 }
+            } else if ("3".equals(value)) {
+                String responseBody = sendByFpt(mobile, authCode);
+                Map<String, String> map = JsonUtils.jsonToMap(responseBody);
+                String messageId = map.get("MessageId");
+                logger.info("fpt方式发送的短信id：" + messageId);
+                if (messageId != null) {
+                    logger.info("Fpt方式发送的短信验证码是：" + authCode);
+                    redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
+                    verifyCodeInfo.setStatus("0");
+                    return verifyCodeInfo;
+                }
+
+                logger.info("fpt发送短信失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
 
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if ("0".equals(value)) {
@@ -277,6 +311,54 @@ public class XRegisterServiceImpl implements XRegisterService {
             e.printStackTrace();
         }
 
+        return null;
+
+    }
+
+    // 调用接口3发送短信
+    public String sendByFpt(String mobile, String text) {
+        // 获取access_token
+        String sessionId = UUIDUtils.getUUID();
+        FptAccessTokenReq req = new FptAccessTokenReq();
+        req.setGrant_type(grantType);
+        req.setClient_id(clientId);
+        req.setClient_secret(clientSecret);
+        req.setScope(scope);
+        req.setSession_id(sessionId);
+
+        HttpHeaders headers = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+
+        HttpEntity<String> formEntity = new HttpEntity<String>(JsonUtils.objectToJson(req), headers);
+        String responseBody = restTemplate.postForEntity(fptAccessTokenUrl, formEntity, String.class).getBody();
+        logger.info("获取token返回：" + responseBody);
+
+        Map<String, String> map = JsonUtils.jsonToMap(responseBody);
+        String accessToken = map.get("access_token");
+
+        if (accessToken != null) {
+            // 发送短信
+            String message = Base64Util.encode(text);
+            System.out.println("加密后的message：" + message);
+
+            FptSendReq sendReq = new FptSendReq();
+            sendReq.setAccess_token(accessToken);
+            sendReq.setBrandName(brandName);
+            sendReq.setMessage(message);
+            sendReq.setPhone(mobile);
+            sendReq.setSession_id(sessionId);
+
+            formEntity = new HttpEntity<String>(JsonUtils.objectToJson(sendReq), headers);
+            //注意：如果手机号码不对，这里会直接报400
+            responseBody = restTemplate.postForEntity(fptSendmsgUrl, formEntity, String.class).getBody();
+            logger.info("发送短信返回：" + responseBody);
+
+            return responseBody;
+        }
+
+        logger.info("fpt发送短信获取accessToken失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
         return null;
 
     }

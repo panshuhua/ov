@@ -45,7 +45,7 @@ import io.swagger.annotations.ApiOperation;
 @Aspect
 @Component
 public class LogAdvice {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(LogAdvice.class);
 
     @Autowired
     private SysLogService logService;
