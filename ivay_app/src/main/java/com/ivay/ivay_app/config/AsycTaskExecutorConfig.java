@@ -7,22 +7,23 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
+ * <p>
  * 线程池配置、启用异步
- * 
- * @author xx
  *
- *         2017年8月19日
+ * @author xx
+ * <p>
+ * 2017年8月19日
  */
 @EnableAsync(proxyTargetClass = true)
 @Configuration
 public class AsycTaskExecutorConfig {
 
-	@Bean
-	public TaskExecutor taskExecutor() {
-		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		taskExecutor.setCorePoolSize(50);
-		taskExecutor.setMaxPoolSize(100);
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(50);
+        taskExecutor.setMaxPoolSize(100);
 
-		return taskExecutor;
-	}
+        return taskExecutor;
+    }
 }

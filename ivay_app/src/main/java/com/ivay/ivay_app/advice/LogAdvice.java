@@ -1,23 +1,5 @@
 package com.ivay.ivay_app.advice;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.poi.ss.formula.functions.T;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
 import com.ivay.ivay_app.dto.XLoginUser;
@@ -32,8 +14,23 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
 import com.ivay.ivay_repository.model.SysLogs;
-
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.formula.functions.T;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * <p>
@@ -45,7 +42,7 @@ import io.swagger.annotations.ApiOperation;
 @Aspect
 @Component
 public class LogAdvice {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(LogAdvice.class);
 
     @Autowired
     private SysLogService logService;
@@ -55,37 +52,37 @@ public class LogAdvice {
     @Around(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)")
     public Object logSave(ProceedingJoinPoint joinPoint) throws Throwable {
         SysLogs sysLogs = new SysLogs();
-        MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         String methodName = methodSignature.getMethod().getName();
         Object[] args = joinPoint.getArgs(); // 参数值
-        String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
+        String[] argNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames(); // 参数名
         String phone = "";
         boolean isNotice = false;
         Integer optType = 0;
         for (int i = 0; i < argNames.length; i++) {
             // 发送短信验证码，重设密码
             if (SysVariable.PARAM_MOBILE.equals(argNames[i])) {
-                phone = (String)args[i];
+                phone = (String) args[i];
             }
             // 发送短信的类型
             if (SysVariable.PARAM_OPTTYPE.equals(argNames[i])) {
-                optType = (Integer)args[i];
+                optType = (Integer) args[i];
             }
             // 登录与注册
             if (SysVariable.PARAM_LOGININFO.equals(argNames[i])) {
-                LoginInfo loginInfo = (LoginInfo)args[i];
+                LoginInfo loginInfo = (LoginInfo) args[i];
                 phone = loginInfo.getMobile();
             }
             // 还款回调接口
             if (SysVariable.PARAM_NOTICE.equals(argNames[i])) {
-                CollectionTransactionNotice c = (CollectionTransactionNotice)args[i];
+                CollectionTransactionNotice c = (CollectionTransactionNotice) args[i];
                 String requestId = c.getRequestId();
                 sysLogs.setRequestId(requestId);
                 isNotice = true;
             }
             // 其他接口，参数必须加上request
             if (SysVariable.PARAM_REQUEST.equals(argNames[i])) {
-                HttpServletRequest req = (HttpServletRequest)args[i];
+                HttpServletRequest req = (HttpServletRequest) args[i];
                 String token = TokenFilter.getToken(req);
                 XLoginUser xLoginUser = tokenService.getLoginUser(token);
                 if (xLoginUser != null) {
@@ -116,7 +113,7 @@ public class LogAdvice {
         try {
             Object object = joinPoint.proceed();
             if (!isNotice) {
-                Response<T> response = (Response<T>)object;
+                Response<T> response = (Response<T>) object;
                 ResponseInfo status = response.getStatus();
                 String code = status.getCode();
                 String message = status.getMessage();
@@ -133,7 +130,7 @@ public class LogAdvice {
                     }
                     // 注册方法通过返回值区分短信验证码登录的类型
                     if (SysVariable.RETURN_TYPE_REGISTER.equals(methodName)) {
-                        Response<ReturnUser> responseR = (Response<ReturnUser>)object;
+                        Response<ReturnUser> responseR = (Response<ReturnUser>) object;
                         ReturnUser user = responseR.getBo();
                         String type = user.getType();
                         sysLogs.setFlag(true);
@@ -143,7 +140,7 @@ public class LogAdvice {
                 }
             } else {
                 // 还款回调接口
-                CollectionTransactionRsp rsp = (CollectionTransactionRsp)object;
+                CollectionTransactionRsp rsp = (CollectionTransactionRsp) object;
                 String code = rsp.getResponseCode();
                 String message = rsp.getResponseMessage();
                 sysLogs.setCode(code);
@@ -170,24 +167,24 @@ public class LogAdvice {
     @AfterThrowing(value = "@annotation(com.ivay.ivay_common.annotation.LogAnnotation)", throwing = "e")
     public void errorLogSave(JoinPoint joinPoint, Exception e) throws Throwable {
         SysLogs sysLogs = new SysLogs();
-        MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Object[] args = joinPoint.getArgs(); // 参数值
-        String[] argNames = ((MethodSignature)joinPoint.getSignature()).getParameterNames(); // 参数名
+        String[] argNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames(); // 参数名
         String phone = "";
         for (int i = 0; i < argNames.length; i++) {
             // 发送短信验证码，重设密码
             if (SysVariable.PARAM_MOBILE.equals(argNames[i])) {
-                phone = (String)args[i];
+                phone = (String) args[i];
             }
             // 登录与注册
             if (SysVariable.PARAM_LOGININFO.equals(argNames[i])) {
-                LoginInfo loginInfo = (LoginInfo)args[i];
+                LoginInfo loginInfo = (LoginInfo) args[i];
                 phone = loginInfo.getMobile();
             }
 
             // 其他接口，参数必须加上request
             if (SysVariable.PARAM_REQUEST.equals(argNames[i])) {
-                HttpServletRequest req = (HttpServletRequest)args[i];
+                HttpServletRequest req = (HttpServletRequest) args[i];
                 String token = TokenFilter.getToken(req);
                 XLoginUser xLoginUser = tokenService.getLoginUser(token);
                 if (xLoginUser != null) {
@@ -207,7 +204,7 @@ public class LogAdvice {
         StringBuffer error = stringWriter.getBuffer();
         // String errInfo=error.toString().substring(0, 1000);
         if (e instanceof BusinessException) {
-            BusinessException be = (BusinessException)e;
+            BusinessException be = (BusinessException) e;
             String code = be.getCode();
             sysLogs.setCode(code);
             sysLogs.setRemark("app操作失败，错误信息：" + e.getMessage());

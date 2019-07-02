@@ -58,7 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 , "/manage/**", "/table/**"
         ).permitAll().anyRequest().authenticated();
         http.formLogin().loginProcessingUrl("/login")
-                .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler).and()
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler).and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
         // 解决不允许显示在iframe的问题

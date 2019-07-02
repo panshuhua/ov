@@ -45,12 +45,9 @@ public class PermissionController {
     public List<Permission> permissionsCurrent() {
         LoginUser loginUser = UserUtil.getLoginUser();
         List<Permission> list = loginUser.getPermissions();
-        final List<Permission> permissions = list.stream().filter(l -> l.getType().equals(1))
+        final List<Permission> permissions = list.stream().filter(t -> t.getType().equals(1))
                 .collect(Collectors.toList());
 
-//		setChild(permissions);
-//
-//		return permissions.stream().filter(p -> p.getParentId().equals(0L)).collect(Collectors.toList());
         // 2018.06.09 支持多级菜单
         List<Permission> firstLevel = permissions.stream().filter(p -> p.getParentId().equals(0L)).collect(Collectors.toList());
         firstLevel.parallelStream().forEach(p -> {
