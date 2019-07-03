@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.master.CheckAccountDataDao">
+
+   <insert id="insertBatchBkCollTrans" parameterType="java.util.List">
+		insert into baokim_collection_data  (account_no,transaction_id_baokim, time_recorded, amount, account_name, order_id, status, create_time, update_time,enable_flag) values
+		<foreach collection="collection" item="item" index="index" separator=",">
+			(#{item.accountNo},
+			#{item.transactionIdBaokim},
+			#{item.timeRecorded}, 
+			#{item.amount},
+			#{item.accountName},
+			#{item.orderId},
+			#{item.status},
+			now(), now(),'Y')
+		</foreach>
+	</insert>
+	
+	
+	<insert id="insertBatchBkTransfers" parameterType="java.util.List">
+		insert into baokim_transfer_data (trans_time, baokim_trans_id, amount, transfer_real_amount, card_no, customer_name, status, create_time, update_time, enable_flag) values
+		<foreach collection="collection" item="item" index="index" separator=",">
+			(#{item.transTime},
+			#{item.baokimTransId},
+			#{item.amount},
+			#{item.transferRealAmount},
+			#{item.cardNo},
+			#{item.customerName},
+			#{item.status},
+			now(), now(),'Y')
+		</foreach>
+	</insert>
+
+</mapper>

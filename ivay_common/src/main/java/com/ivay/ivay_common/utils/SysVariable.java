@@ -203,4 +203,9 @@ public class SysVariable {
     public static final String PAGE_TABNAV = "ZG1GRlU=";
     public static final String PAGE_HISTORY = "ZVhKQT09";
 
+    // 借还款合作伙伴名称
+    public static final String PARTNER_BAOKIM = "baokim";
+    // 对账类型
+    public static final String CHECK_TYPE_LOAN = "1"; // 1-借款
+    public static final String CHECK_TYPE_REPAY = "2"; // 2-还款
 }

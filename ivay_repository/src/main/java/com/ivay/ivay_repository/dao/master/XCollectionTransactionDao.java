@@ -1,9 +1,13 @@
 package com.ivay.ivay_repository.dao.master;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
 import com.ivay.ivay_repository.model.XCollectionTransaction;
 import com.ivay.ivay_repository.model.XEbayCollectionNotice;
-
-import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface XCollectionTransactionDao {
@@ -20,13 +24,14 @@ public interface XCollectionTransactionDao {
 
     @Select("select count(1) from x_collection_transaction where trans_id=#{transId}")
     int queryByTransId(String transId);
-    
-    //ebay-findrefenceId
+
+    // ebay-findrefenceId
     @Select("select * from x_ebay_collection_notice where reference_id=#{referenceId}")
     String findRefenceId(@Param("referenceId") String referenceId);
 
-    //ebay-保存回调请求数据
-    @Options(useGeneratedKeys = true,keyProperty = "id")
+    // ebay-保存回调请求数据
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     @Select("insert into x_ebay_collection_notice (request_id, request_time, bank_tran_time, reference_id, map_id, amount, merchant_code, fee, va_name, va_acc, bank_code, bank_name, enable_flag, create_time, update_time) VALUES (#{requestId}, #{requestTime}, #{bankTranTime}, #{referenceId}, #{mapId}, #{amount}, #{merchantCode}, #{fee}, #{vaName}, #{vaAcc}, #{bankCode}, #{bankName}, 'Y', now(), now())")
     Integer insertEbayNotice(XEbayCollectionNotice xEbayCollectionNotice);
+
 }
