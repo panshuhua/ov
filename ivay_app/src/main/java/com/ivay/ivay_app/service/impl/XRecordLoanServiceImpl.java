@@ -263,6 +263,13 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_REPEATEDLY);
             }
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_SUCCESS);
+        } else if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
+            // todo 需要定时查询汇款状态
+            logger.info("超时了：" + transfersRsp.getResponseMessage());
+            // 借款失败原因
+            xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
+            flag = true;
+            xAppEvent.setIsSuccess(SysVariable.APP_EVENT_FAIL);
         } else {
             logger.info(transfersRsp.getResponseMessage());
             // 借款状态
