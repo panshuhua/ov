@@ -1,11 +1,13 @@
 package com.ivay.ivay_repository.dto;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
+@ApiModel("审核列表信息")
 public class XAuditListInfo {
     @ApiModelProperty("用户gid")
     private String userGid;
@@ -36,4 +38,7 @@ public class XAuditListInfo {
 
     @ApiModelProperty("审核状态")
     private String auditStatus;
+
+    @ApiModelProperty("审计员")
+    private Integer auditId;
 }

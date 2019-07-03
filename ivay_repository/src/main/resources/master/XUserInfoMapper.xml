@@ -226,10 +226,10 @@
                     and "3456" like concat("%", xui.user_status,"%")
                 </if>
             </if>
-            <if test="params.fromTime != null and params.fromTime != ''">
+            <if test="params.fromTime != null">
                 and unix_timestamp(xuei.update_time) >= unix_timestamp(#{params.fromTime})
             </if>
-            <if test="params.toTime != null and params.toTime != ''">
+            <if test="params.toTime != null">
                 and unix_timestamp(#{params.toTime}) >= unix_timestamp(xuei.update_time)
             </if>
 

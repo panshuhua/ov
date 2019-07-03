@@ -106,6 +106,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             request.getParams().put("name", xAuditListInfo.getName());
             request.getParams().put("auditStatus", xAuditListInfo.getAuditStatus());
             request.getParams().put("fromTime", xAuditListInfo.getFromTime());
+            request.getParams().put("auditId", xAuditListInfo.getAuditId());
         }
 
         // 设置角色与登录用户id

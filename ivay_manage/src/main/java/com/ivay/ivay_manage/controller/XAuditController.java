@@ -44,7 +44,7 @@ public class XAuditController {
                                                     @RequestParam(required = false, defaultValue = "1") int num,
                                                     @RequestBody(required = false) XAuditListInfo xAuditListInfo) {
         Response<PageTableResponse> response = new Response<>();
-        response.setBo(xUserInfoService.auditList(limit,num,xAuditListInfo));
+        response.setBo(xUserInfoService.auditList(limit, num, xAuditListInfo));
         return response;
     }
 
