@@ -36,8 +36,7 @@ public interface CheckAccountDataDao {
     @Select("SELECT count(1) baokimCount,sum(amount) baokimAmount FROM  baokim_transfer_data WHERE trans_time like CONCAT('%',#{time},'%')  and status='Thành công'")
     AccountCheckResult countByBkTransfer(@Param("time") String time);
 
-    // TODO 跟baokim对账的金额是哪个字段？
-    @Select("SELECT count(1) ovayCount,sum(overdue_fee+overdue_interest+due_amount) ovayAmount FROM `x_record_loan` WHERE create_time like CONCAT('%',#{time},'%') and loan_status=1")
+    @Select("SELECT count(1) ovayCount,sum(net_amount) ovayAmount FROM `x_record_loan` WHERE create_time like CONCAT('%',#{time},'%') and loan_status=1")
     AccountCheckResult countByOvayTransfer(@Param("time") String time);
 
     // 存储对账结果
