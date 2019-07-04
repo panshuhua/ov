@@ -1,5 +1,6 @@
 package com.ivay.ivay_app.config;
 
+import com.ivay.ivay_app.filter.TokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
@@ -13,14 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.ivay.ivay_app.filter.TokenFilter;
-
 /**
  * spring security配置
  *
  * @author xx
- *         <p>
- *         2017年10月16日
+ * <p>
+ * 2017年10月16日
  */
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -45,14 +44,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-            .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
-                "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**", "/statics/**",
-                "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**", "/star/register/checkMacCode",
-                "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**", "/star/error/**",
-                "/star/appVersion/**", "/star/xAppEvents/**", "/star/ebayLoanApi/**", "/star/ebayRepayApi/**",
-                "/star/repay/**", "/info", "/star/accountCheck"
-            // "/star/**" // 开发时调试用
-            ).permitAll().anyRequest().authenticated();
+                .antMatchers("/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
+                        "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**", "/statics/**",
+                        "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**", "/star/register/checkMacCode",
+                        "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**", "/star/error/**",
+                        "/star/appVersion/**", "/star/xAppEvents/**", "/star/ebayLoanApi/**", "/star/ebayRepayApi/**",
+                        "/star/repay/**", "/info", "/star/accountCheck"
+//                        , "/star/**" // 开发时调试用
+                ).permitAll().anyRequest().authenticated();
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         // 解决不允许显示在iframe的问题
         http.headers().frameOptions().disable();

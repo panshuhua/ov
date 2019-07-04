@@ -84,7 +84,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         xUserInfo.setPhone(old.getPhone());
         if (StringUtils.isEmpty(old.getUserStatus())) {
             xUserInfo.setUserStatus(SysVariable.USER_STATUS_REGISTRY);
-        } else {
+        } else if(StringUtils.isEmpty(xUserInfo.getUserStatus())){
             xUserInfo.setUserStatus(old.getUserStatus());
         }
         xUserInfo.setAccountStatus(old.getAccountStatus());

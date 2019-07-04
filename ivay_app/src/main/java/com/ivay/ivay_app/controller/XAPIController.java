@@ -3,8 +3,6 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
-import com.ivay.ivay_repository.dto.XOverDueFee;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("star/api")
@@ -46,16 +42,16 @@ public class XAPIController {
         accNo = "060017483539";
         memo = "test api";
         type = "0";
-        TransfersRsp transfersRsp = xapiService.transfers(bankNo, accNo, requestAmount, memo, type);
+        TransfersRsp transfersRsp = xapiService.transfers(bankNo, accNo, requestAmount, memo, type, "");
         return transfersRsp;
     }
 
     @GetMapping("transfersInfo")
     public TransfersRsp transfersInfo(String referenceId) {
         if (StringUtils.isEmpty(referenceId)) {
-            referenceId = "f563cd5f095741b780d1a2a2d9f6ea3b"; // 值为transfer接口产生的uuid
+            referenceId = "f7a7d9bf26ff49dbae5539e03dfa9fe8"; // 值为transfer接口产生的uuid
         }
-        TransfersRsp transfersRsp = xapiService.transfersInfo(referenceId);
+        TransfersRsp transfersRsp = xapiService.transfersInfo(referenceId, "");
         return transfersRsp;
     }
 
@@ -98,15 +94,5 @@ public class XAPIController {
             }
         }
         return false;
-    }
-
-    @Autowired
-    private XRecordLoanDao xRecordLoanDao;
-
-    @GetMapping("test")
-    public boolean test(String key) {
-        List<XOverDueFee> xOverDueFeeList = xRecordLoanDao.findOneOverdue();
-        xRecordLoanService.calc1DayOverDueFee(xOverDueFeeList);
-        return true;
     }
 }

@@ -226,10 +226,10 @@
                     and "3456" like concat("%", xui.user_status,"%")
                 </if>
             </if>
-            <if test="params.fromTime != null">
+            <if test="params.fromTime != null and params.fromTime != ''">
                 and unix_timestamp(xuei.update_time) >= unix_timestamp(#{params.fromTime})
             </if>
-            <if test="params.toTime != null">
+            <if test="params.toTime != null and params.toTime != ''">
                 and unix_timestamp(#{params.toTime}) >= unix_timestamp(xuei.update_time)
             </if>
 
@@ -279,6 +279,90 @@
             (SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
         from x_user_info xui
         <include refid="audit_list_condition"/>
+        order by xuei.update_time desc
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <sql id="audit_list_condition_v2">
+        left JOIN x_user_ext_info xuei ON xui.user_gid=xuei.user_gid
+        left JOIN x_audit_user xau ON xui.user_gid=xau.user_gid
+        <where>
+            xui.user_status >=2
+            and xui.account_status=0
+            and xui.enable_flag='Y'
+            and xuei.enable_flag='Y'
+            <if test="params.phone != null and params.phone != ''">
+                and xui.phone like concat("%",#{params.phone},"%")
+            </if>
+            <if test="params.userGid != null and params.userGid != ''">
+                and xui.user_gid like concat("%", #{params.userGid},"%")
+            </if>
+            <if test="params.name != null and params.name != ''">
+                and xui.name like concat("%", #{params.name},"%")
+            </if>
+            <if test="params.auditStatus != null and params.auditStatus != ''">
+                <if test="params.auditStatus!= '3'.toString()">
+                    and xui.user_status = #{params.auditStatus}
+                </if>
+                <if test="params.auditStatus == '3'.toString()">
+                    and "3456" like concat("%", xui.user_status,"%")
+                </if>
+            </if>
+            <if test="params.fromTime != null and params.fromTime != ''">
+                and unix_timestamp(xuei.update_time) >= unix_timestamp(#{params.fromTime})
+            </if>
+            <if test="params.toTime != null and params.toTime != ''">
+                and unix_timestamp(#{params.toTime}) >= unix_timestamp(xuei.update_time)
+            </if>
+
+            <if test="params.auditId != null and params.auditId != ''">
+                and xau.sys_user_id
+                <choose>
+                    <when test="params.auditId == '-2'">
+                        --                     未指定审计员
+                        is null
+                    </when>
+                    <otherwise>
+                        =#{params.auditId}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="params.role != null and params.role != ''">
+                <if test="params.role == 'ovayAudit'">
+                    and xau.sys_user_id = #{params.loginId}
+                    and xau.enable_flag='Y'
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="auditCountV2" resultType="int">
+        select count(1)
+        from x_user_info xui
+        <include refid="audit_list_condition_v2"/>
+    </select>
+
+    <select id="auditListV2" resultType="com.ivay.ivay_repository.dto.XAuditListInfo">
+        select
+        xui.user_gid,
+        xui.name,
+        xui.phone,
+        case xui.user_status
+        WHEN '2' THEN '2'
+        WHEN '3' THEN '3'
+        WHEN '4' THEN '3'
+        WHEN '5' THEN '3'
+        WHEN '6' THEN '3'
+        WHEN '7' THEN '7'
+        WHEN '8' THEN '8'
+        END audit_status,
+        xuei.update_time create_time,
+        (SELECT count(*)-1 FROM x_user_info x WHERE x.name=xui.name and x.enable_flag='Y') countSameName,
+        (SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone)) userType
+        from x_user_info xui
+        <include refid="audit_list_condition_v2"/>
         order by xuei.update_time desc
         <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
