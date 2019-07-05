@@ -50,8 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/star/repay/noticeCollTran/**", "/star/register/sendVerifyCode/**", "/star/register/checkMacCode",
                 "/star/register/reg/**", "/star/register/login/**", "/star/register/resetpwd/**", "/star/error/**",
                 "/star/appVersion/**", "/star/xAppEvents/**", "/star/ebayLoanApi/**", "/star/ebayRepayApi/**",
-                "/star/repay/**", "/info", "/star/accountCheck"
-            // "/star/**" // 开发时调试用
+                "/star/repay/**", "/info", "/star/accountCheck", "/star/sendNoticeMsg", "/star/**" // 开发时调试用
             ).permitAll().anyRequest().authenticated();
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
         // 解决不允许显示在iframe的问题

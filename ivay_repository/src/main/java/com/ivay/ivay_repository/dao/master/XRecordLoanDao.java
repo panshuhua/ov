@@ -64,14 +64,14 @@ public interface XRecordLoanDao {
     List<XRecordLoanInfo> findRecordLoanInfo();
 
     // 查询明天/今天到期的用户-到期前1天/到期当天提醒
-    @Select("SELECT r.user_gid,r.due_time,r.due_amount,u.fmc_token,u.phone,r.loan_period,r.loan_rate "
+    @Select("SELECT r.user_gid,r.gid,r.due_time,r.due_amount,u.fmc_token,u.phone,r.loan_period,r.loan_rate "
         + "FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid "
         + "WHERE(r.due_time <= date_format(DATE_ADD(sysdate(), INTERVAL +2 DAY),'%Y%m%d')AND r.due_time >= date_format(sysdate(),'%Y%m%d'))"
         + "AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
     List<XOverDueFee> findOneOverdue();
 
     // 查询逾期的用户-逾期提醒
-    @Select("SELECT r.due_time,r.due_amount,u.fmc_token, DATEDIFF(SYSDATE(),r.due_time)due_date FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE( r.due_time <= date_format(sysdate(), '%Y%m%d'))AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
+    @Select("SELECT r.user_gid,r.overdue_fee,r.overdue_interest,r.gid,r.due_time,r.due_amount,u.fmc_token, DATEDIFF(SYSDATE(),r.due_time)due_date FROM x_record_loan r LEFT JOIN x_user_info u ON r.user_gid = u.user_gid WHERE( r.due_time <= date_format(sysdate(), '%Y%m%d'))AND u.id IS NOT NULL AND r.repayment_status != 2 AND r.loan_status = 1 ")
     List<XOverDueFee> findOverdue();
 
     int countOverDueLoan(@Param("params") Map<String, Object> params);
