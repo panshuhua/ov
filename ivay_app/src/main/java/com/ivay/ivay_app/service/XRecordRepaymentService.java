@@ -28,14 +28,14 @@ public interface XRecordRepaymentService {
     /**
      * 还款
      *
-     * @param orderGid        借款gid
+     * @param loanGid         借款gid
      * @param userGid         用户gid
      * @param bankShortName   银行名简称
      * @param repaymentAmount 还款金额
      * @param deductType      还款类型 0:银行卡
      * @return
      */
-    XVirtualAccount repaymentMoney(String orderGid, String userGid, String bankShortName, long repaymentAmount, Integer deductType);
+    XVirtualAccount repaymentMoney(String loanGid, String userGid, String bankShortName, long repaymentAmount, Integer deductType);
 
     /**
      * 还款接口返回后，更新借款和还款表

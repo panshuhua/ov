@@ -1,21 +1,20 @@
 package com.ivay.ivay_app.controller;
 
+import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XVirtualAccount;
-import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_app.service.XRecordRepaymentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -29,7 +28,7 @@ public class XRecordRepaymentController {
     private I18nService i18nService;
 
     @PostMapping("update")
-    @ApiOperation(value = "提交还款")
+    @ApiOperation(value = "创建虚拟账号")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "orderGid", value = "借款gid", dataType = "String", paramType = "query", required = true),
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true),
@@ -37,7 +36,7 @@ public class XRecordRepaymentController {
             @ApiImplicitParam(name = "repaymentAmount", value = "还款金额", dataType = "Long", paramType = "query", required = true),
             @ApiImplicitParam(name = "deductType", value = "还款类型 0:银行卡", dataType = "Long", paramType = "query", defaultValue = "0", required = true)
     })
-    @LogAnnotation(module="提交还款")
+    @LogAnnotation(module="创建虚拟账号")
     public Response<XVirtualAccount> update(@RequestParam String orderGid,
                                             @RequestParam String userGid,
                                             @RequestParam(required = false) String bankShortName,

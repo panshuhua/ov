@@ -179,9 +179,11 @@ ALTER TABLE `x_user_risk` drop column `traffic_way`;
 --配置表添加baokim还款回调接口签名校验开关
 INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES ('33', 'baokimNoticeSignature', '', '{\"enable\":true}', '宝金回调接口是否开启公钥校验');
 
-
-
 alter table x_baokim_transfers_info add order_id varchar(32) DEFAULT NULL COMMENT '借款订单号';
+
+alter  table x_baokim_transfers_info change order_id loan_gid varchar(32) NULL COMMENT '借款记录gid';
+UPDATE x_baokim_transfers_info,x_record_loan set loan_gid = x_record_loan.gid WHERE loan_gid is not null AND x_record_loan.order_id = x_baokim_transfers_info.loan_gid;
+
 
 -- 催收系统 2.19-7-2
 CREATE TABLE `x_collection_task` (

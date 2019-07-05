@@ -27,10 +27,10 @@ public interface XBaokimTransfersInfoDao {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into x_baokim_transfers_info(request_id, request_time, partner_code, operation, bank_no," +
             " acc_no, acc_name, acc_type, reference_id, request_amount, memo, response_code, response_message," +
-            " transaction_id, transaction_time, transfer_amount, create_time, update_time, enable_flag, order_id) " +
+            " transaction_id, transaction_time, transfer_amount, create_time, update_time, enable_flag, loan_gid) " +
             "values(#{requestId}, #{requestTime}, #{partnerCode}, #{operation}, #{bankNo}, #{accNo}," +
             " #{accName}, #{accType}, #{referenceId}, #{requestAmount}, #{memo}, #{responseCode}, #{responseMessage}," +
-            " #{transactionId}, #{transactionTime}, #{transferAmount}, #{createTime}, #{updateTime}, #{enableFlag}, #{orderId})")
+            " #{transactionId}, #{transactionTime}, #{transferAmount}, #{createTime}, #{updateTime}, #{enableFlag}, #{loanGid})")
     int save(XBaokimTransfersInfo xBaokimTransfersInfo);
     
     @Options(useGeneratedKeys = true, keyProperty = "id")

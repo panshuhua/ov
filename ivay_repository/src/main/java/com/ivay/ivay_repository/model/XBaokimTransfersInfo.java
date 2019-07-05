@@ -19,13 +19,13 @@ public class XBaokimTransfersInfo extends BaseEntity<Long> {
 	private String transactionTime;
 	private String transferAmount;
 	private String enableFlag;
-	private String orderId;
+	private String loanGid;
 
-	public String getOrderId() {
-		return orderId;
+	public String getLoanGid() {
+		return loanGid;
 	}
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
+	public void setLoanGid(String loanGid) {
+		this.loanGid = loanGid;
 	}
 	public String getRequestId() {
 		return requestId;

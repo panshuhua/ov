@@ -73,4 +73,9 @@ public interface XRecordLoanService {
      * @return
      */
     long getSumLoanAmount(String userGid);
+
+    /**
+     * 查看借款超时的到账信息
+     */
+    void timeoutTransferInfo();
 }

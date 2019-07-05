@@ -14,6 +14,7 @@ import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XOverDueFee;
+import com.ivay.ivay_repository.dto.XTimeoutTransferInfo;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XLoanRate;
@@ -33,9 +34,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class XRecordLoanServiceImpl implements XRecordLoanService {
@@ -216,7 +214,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 boolean apiFlag = true;
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());
                 try {
-                    transfersRsp = xapiService.transfers(bankNo, cardNo, xRecordLoan.getNetAmount(), xRecordLoan.getMemo(), accType, xRecordLoan.getOrderId());
+                    transfersRsp = xapiService.transfers(bankNo, cardNo, xRecordLoan.getNetAmount(), xRecordLoan.getMemo(), accType, xRecordLoan.getGid());
                 } catch (Exception ex) {
                     apiFlag = false;
                     return;
@@ -234,22 +232,6 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 transfersRsp.setResponseMessage("风控规则不通过: " + loanQualify);
             }
             confirmLoan(xRecordLoan, transfersRsp);
-            //出现超时，查询交易状态
-            if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
-                ScheduledExecutorService pool = ScheduledPoolUtils.getInstance();
-                String referenceId = transfersRsp.getReferenceId();
-                ScheduledFuture<?> future = pool.scheduleAtFixedRate(() -> {
-                    TransfersRsp rsp = xapiService.transfersInfo(referenceId, xRecordLoan.getOrderId());
-                    if (BaokimResponseStatus.SUCCESS.getCode().equals(rsp.getResponseCode())) {
-                        logger.info("{}: 超时检测成功", xRecordLoan.getOrderId());
-                        confirmLoan(xRecordLoan, rsp);
-                        Thread.currentThread().interrupt();
-                    }
-                }, 1, 1, TimeUnit.HOURS);
-                pool.schedule(() -> {
-                    future.cancel(true);
-                }, 168, TimeUnit.HOURS);
-            }
         });
     }
 
@@ -284,9 +266,6 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_SUCCESS);
         } else if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
             // 借款超时
-            // 需要定时查询汇款状态
-            logger.info("超时了：" + transfersRsp.getResponseMessage());
-            // 借款失败原因
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
             appEventFlag = false;
         } else {
@@ -541,5 +520,24 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Override
     public long getSumLoanAmount(String userGid) {
         return xRecordLoanDao.getSumLoanAmount(userGid);
+    }
+
+    /**
+     * 查看借款超时的到账信息
+     */
+    @Override
+    public void timeoutTransferInfo() {
+        List<XTimeoutTransferInfo> timeouts = xRecordLoanDao.getTimeoutTransfer();
+        for (XTimeoutTransferInfo x : timeouts) {
+            //出现超时，查询交易状态
+            TransfersRsp rsp = xapiService.transfersInfo(x.getReferenceId(), x.getLoanGid());
+            if (BaokimResponseStatus.SUCCESS.getCode().equals(rsp.getResponseCode()) ||
+                    BaokimResponseStatus.FAIL.getCode().equals(rsp.getResponseCode())) {
+                XRecordLoan xrl = xRecordLoanDao.getByLoanGid(x.getLoanGid());
+                if (xrl != null) {
+                    confirmLoan(xrl, rsp);
+                }
+            }
+        }
     }
 }

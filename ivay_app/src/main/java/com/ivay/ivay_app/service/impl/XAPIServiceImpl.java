@@ -49,9 +49,9 @@ public class XAPIServiceImpl implements XAPIService {
         return callTransfersApi(transferUrl, transfersReq, null);
     }
 
-    private TransfersRsp callTransfersApi(String url, TransfersReq transfersReq, String orderId) {
+    private TransfersRsp callTransfersApi(String url, TransfersReq transfersReq, String loanGid) {
         TransfersRsp transfersRsp = JsonUtils.jsonToPojo(HttpClientUtils.postForObject(transferUrl, transfersReq), TransfersRsp.class);
-        loggerTransferInfo(transfersReq, transfersRsp, orderId);
+        loggerTransferInfo(transfersReq, transfersRsp, loanGid);
         return transfersRsp;
     }
 
@@ -60,9 +60,9 @@ public class XAPIServiceImpl implements XAPIService {
      *
      * @param transfersReq
      * @param transfersRsp
-     * @param orderId
+     * @param loanGid
      */
-    private void loggerTransferInfo(TransfersReq transfersReq, TransfersRsp transfersRsp, String orderId) {
+    private void loggerTransferInfo(TransfersReq transfersReq, TransfersRsp transfersRsp, String loanGid) {
         XBaokimTransfersInfo xBaokimTransfersInfo = new XBaokimTransfersInfo();
         // 保存 request
         xBaokimTransfersInfo.setRequestId(transfersReq.getRequestId());
@@ -88,7 +88,7 @@ public class XAPIServiceImpl implements XAPIService {
             xBaokimTransfersInfo.setRequestAmount(transfersRsp.getRequestAmount());
             xBaokimTransfersInfo.setTransferAmount(transfersRsp.getTransferAmount());
         }
-        xBaokimTransfersInfo.setOrderId(orderId);
+        xBaokimTransfersInfo.setLoanGid(loanGid);
         xBaokimTransfersInfo.setResponseCode(transfersRsp.getResponseCode());
         xBaokimTransfersInfo.setResponseMessage(transfersRsp.getResponseMessage());
         xBaokimTransfersInfo.setReferenceId(transfersRsp.getReferenceId());
@@ -96,7 +96,7 @@ public class XAPIServiceImpl implements XAPIService {
     }
 
     @Override
-    public TransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType, String orderId) {
+    public TransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType, String loanGid) {
         TransfersReq transfersReq = new TransfersReq();
         String referenceId = UUIDUtils.getUUID();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
@@ -121,11 +121,11 @@ public class XAPIServiceImpl implements XAPIService {
                 + transfersReq.getMemo();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-        return callTransfersApi(transferUrl, transfersReq, orderId);
+        return callTransfersApi(transferUrl, transfersReq, loanGid);
     }
 
     @Override
-    public TransfersRsp transfersInfo(String referenceId, String orderId) {
+    public TransfersRsp transfersInfo(String referenceId, String loanGid) {
         TransfersReq transfersReq = new TransfersReq();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
@@ -139,7 +139,7 @@ public class XAPIServiceImpl implements XAPIService {
                 + transfersReq.getReferenceId();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-        return callTransfersApi(transferUrl, transfersReq, orderId);
+        return callTransfersApi(transferUrl, transfersReq, loanGid);
     }
 
     @Override

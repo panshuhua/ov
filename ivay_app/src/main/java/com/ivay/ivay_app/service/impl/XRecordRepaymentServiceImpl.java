@@ -85,9 +85,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public XVirtualAccount repaymentMoney(String orderGid, String userGid, String bankShortName, long repaymentAmount,
+    public XVirtualAccount repaymentMoney(String loanGid, String userGid, String bankShortName, long repaymentAmount,
                                           Integer deductType) {
-        XRecordLoan xRecordLoan = xRecordLoanDao.getByGid(orderGid, userGid);
+        XRecordLoan xRecordLoan = xRecordLoanDao.getByGid(loanGid, userGid);
 
         XVirtualAccount xVirtualAccount = xVirtualAccountService.selectByOrderId(xRecordLoan.getOrderId());
         // 查询正在还款中的记录
@@ -109,7 +109,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         // 订单id
         xRecordRepayment.setOrderId(xRecordLoan.getOrderId());
         // 借款gid
-        xRecordRepayment.setRecordLoanGid(orderGid);
+        xRecordRepayment.setRecordLoanGid(loanGid);
         List<XRecordRepayment> result = xRecordRepaymentDao.getSelective(xRecordRepayment);
         // 还过款
         if (result != null && !result.isEmpty()) {

@@ -6,8 +6,6 @@ import com.ivay.ivay_app.service.XRecordLoanService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,36 +61,16 @@ public class XAPIController {
 
     @Autowired
     private XRecordLoanService xRecordLoanService;
-    private static final Logger logger = LoggerFactory.getLogger(XAPIController.class);
 
     @PostMapping("calcOverDueFee")
     @ApiOperation("手动触发逾期利息的计算")
     public boolean calcOverDueFee() {
-        boolean flag = false;
-        int count = 0;
-        String start = "开始计算逾期费用---start";
-        while (!flag) {
-            if (count > 0) {
-                start = "正在进行第" + count + "次重试--start";
-            }
-            logger.info(start);
-            flag = xRecordLoanService.calcOverDueFee2();
-            logger.info("逾期费用计算结束---{}", flag ? "成功" : "失败");
-            if (!flag) {
-                if ((count++ > 5)) {
-                    flag = true;
-                    logger.error("逾期费用计算出错，请及时查看");
-                } else {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception ex) {
-                        logger.error("逾期费用计算暂停异常: {}", ex);
-                    }
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
+        return xRecordLoanService.calcOverDueFee2();
+    }
+
+    @GetMapping("test")
+    public boolean test(){
+        xRecordLoanService.timeoutTransferInfo();
+        return true;
     }
 }
