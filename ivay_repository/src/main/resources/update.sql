@@ -210,4 +210,53 @@ CREATE TABLE `x_collection_record` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收记录表';
 
+--baokim后台导出的还款记录表
+CREATE TABLE `baokim_collection_data` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `transaction_id_baokim` varchar(20) DEFAULT NULL,
+  `time_recorded` varchar(20) DEFAULT NULL,
+  `account_no` varchar(50) DEFAULT NULL,
+  `amount` varchar(20) DEFAULT NULL,
+  `account_name` varchar(50) DEFAULT NULL,
+  `order_id` varchar(20) DEFAULT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `enable_flag` char(1) DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=451 DEFAULT CHARSET=utf8mb4;
+
+--baokim后台导出的借款记录表
+CREATE TABLE `baokim_transfer_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `trans_time` varchar(20) DEFAULT NULL,
+  `baokim_trans_id` varchar(20) DEFAULT NULL,
+  `amount` varchar(20) DEFAULT NULL,
+  `transfer_real_amount` varchar(20) DEFAULT NULL,
+  `card_no` varchar(50) DEFAULT NULL,
+  `customer_name` varchar(100) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `enable_flag` char(1) DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3196 DEFAULT CHARSET=utf8mb4;
+
+--对账比对结果表
+CREATE TABLE `account_check_result` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `baokim_count` int(50) DEFAULT NULL,
+  `baokim_amount` bigint(100) DEFAULT NULL,
+  `ovay_count` int(50) DEFAULT NULL,
+  `ovay_amount` bigint(100) DEFAULT NULL,
+  `type` char(1) DEFAULT NULL COMMENT '比对类型：1-借款，2-还款',
+  `partner` varchar(20) DEFAULT NULL COMMENT '合作伙伴：baokim/ebay',
+  `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `enable_flag` char(1) DEFAULT 'Y',
+  `stime` varchar(50) DEFAULT NULL COMMENT '统计开始时间',
+  `etime` varchar(50) DEFAULT NULL COMMENT '统计结束时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+
 
