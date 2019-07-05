@@ -298,6 +298,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             // 最后一次还款时间
             xRecordLoan.setLastRepaymentTime(now);
             xRecordLoan.setUpdateTime(now);
+            if (xUserInfo.getCreditLine() < xUserInfo.getCanborrowAmount()) {
+                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount());
+            }
             xUserInfoDao.updateCanborrowAmount(xUserInfo.getCanborrowAmount(), xRecordLoan.getUserGid());
             xRecordLoanDao.update(xRecordLoan);
             // 实际扣款时间
