@@ -17,8 +17,8 @@ public class XOverDueFee {
     @ApiModelProperty("手机号码")
     private String phone;
 
-    @ApiModelProperty("用户gid")
-    private String userGid;
+    @ApiModelProperty("借款gid")
+    private String gid;
 
     @ApiModelProperty("到期时间")
     private Date dueTime;
@@ -26,12 +26,18 @@ public class XOverDueFee {
     @ApiModelProperty("逾期天数")
     private Integer dueDate;
 
-    @ApiModelProperty("逾期一天的费用")
+    @ApiModelProperty("逾期一天的费用/逾期费用")
     private long overdueFee;
+
+    @ApiModelProperty("逾期利息")
+    private long overdueInterest;
 
     @ApiModelProperty("借款时间")
     private long loanPeriod;
 
     @ApiModelProperty("借款利率")
     private BigDecimal loanRate;
+
+    @ApiModelProperty("用户gid")
+    private String userGid;
 }

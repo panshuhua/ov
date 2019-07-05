@@ -1,13 +1,17 @@
 package com.ivay.ivay_common.utils;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DateUtils {
     private static Logger logger = LoggerFactory.getLogger(DateUtils.class);
@@ -158,7 +162,6 @@ public class DateUtils {
     }
     // endregion
 
-
     public static Integer handleIntTime(Date date, String weekDayName) {
         for (int i = 0; i <= 3; i++) {
             Calendar cal = Calendar.getInstance();
@@ -186,11 +189,11 @@ public class DateUtils {
     }
 
     /**
-     * 补充年份
-     * 排除1月份获取同年12月份时间&12月份获取同年1月份时间
+     * 补充年份 排除1月份获取同年12月份时间&12月份获取同年1月份时间
      *
      * @param dateStr
-     * @param date    参考时间
+     * @param date
+     *            参考时间
      * @return
      */
     public static Date strToDateDafueYear(String dateStr, Date date) {
@@ -200,15 +203,17 @@ public class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(matchDate);
         Calendar now = Calendar.getInstance();
-        //有参考值使用参考值的年份
+        // 有参考值使用参考值的年份
         if (date != null) {
             now.setTime(date);
             calendar.set(Calendar.YEAR, now.get(Calendar.YEAR));
         } else {
-            //排除1月份获取同年12月份时间&12月份获取同年1月份时间
-            if (calendar.getTimeInMillis() < now.getTimeInMillis() && calendar.get(Calendar.MONTH) == 0 && now.get(Calendar.MONTH) == 11) {
+            // 排除1月份获取同年12月份时间&12月份获取同年1月份时间
+            if (calendar.getTimeInMillis() < now.getTimeInMillis() && calendar.get(Calendar.MONTH) == 0
+                && now.get(Calendar.MONTH) == 11) {
                 calendar.set(Calendar.YEAR, now.get(Calendar.YEAR) + 1);
-            } else if (calendar.getTimeInMillis() > now.getTimeInMillis() && calendar.get(Calendar.MONTH) == 11 && now.get(Calendar.MONTH) == 0) {
+            } else if (calendar.getTimeInMillis() > now.getTimeInMillis() && calendar.get(Calendar.MONTH) == 11
+                && now.get(Calendar.MONTH) == 0) {
                 calendar.set(Calendar.YEAR, now.get(Calendar.YEAR) - 1);
             }
         }
@@ -241,7 +246,7 @@ public class DateUtils {
      *
      * @param day1
      * @param day2
-     * @return 0 同一天 正数 快   负数 慢
+     * @return 0 同一天 正数 快 负数 慢
      */
     public static int isDateAfter(Date day1, Date day2) {
         try {
@@ -250,14 +255,14 @@ public class DateUtils {
             cal1.setTime(day1);
             cal2.setTime(day2);
 
-            //获取年份
+            // 获取年份
             int y1 = cal1.get(Calendar.YEAR);
             int y2 = cal2.get(Calendar.YEAR);
             if (y1 != y2) {
                 return y1 - y2;
             }
 
-            //获取年中第几天
+            // 获取年中第几天
             int d1 = cal1.get(Calendar.DAY_OF_YEAR);
             int d2 = cal2.get(Calendar.DAY_OF_YEAR);
 
@@ -273,7 +278,7 @@ public class DateUtils {
             Calendar c = Calendar.getInstance();
             GregorianCalendar ca = new GregorianCalendar();
 
-            if (ca.get(GregorianCalendar.AM_PM) == 1)//判断上下午时间
+            if (ca.get(GregorianCalendar.AM_PM) == 1)// 判断上下午时间
             {
                 c.set(Calendar.HOUR, -2);
             } else {
@@ -283,7 +288,7 @@ public class DateUtils {
             c.set(Calendar.SECOND, 0);
             c.set(Calendar.MINUTE, 0);
 
-            Date afterTime = c.getTime();//当天10时后
+            Date afterTime = c.getTime();// 当天10时后
             return afterTime.before(date);
         } catch (Exception e) {
             System.out.print(e.getMessage());
@@ -296,7 +301,7 @@ public class DateUtils {
             Calendar c = Calendar.getInstance();
             GregorianCalendar ca = new GregorianCalendar();
 
-            if (ca.get(GregorianCalendar.AM_PM) == 1)//判断上下午时间
+            if (ca.get(GregorianCalendar.AM_PM) == 1)// 判断上下午时间
             {
                 c.set(Calendar.HOUR, +22);
             } else {
@@ -306,7 +311,7 @@ public class DateUtils {
             c.set(Calendar.SECOND, 0);
             c.set(Calendar.MINUTE, 0);
 
-            Date beforeTime = c.getTime();//明天10时前
+            Date beforeTime = c.getTime();// 明天10时前
             return beforeTime.after(date);
         } catch (Exception e) {
             System.out.print(e.getMessage());
@@ -322,12 +327,12 @@ public class DateUtils {
         Calendar matchCal = Calendar.getInstance();
         matchCal.setTime(matchTime);
 
-        Calendar stopPlayTicketCal = (Calendar) matchCal.clone();
+        Calendar stopPlayTicketCal = (Calendar)matchCal.clone();
         stopPlayTicketCal.set(Calendar.HOUR_OF_DAY, 4);
         stopPlayTicketCal.set(Calendar.MINUTE, 50);
         stopPlayTicketCal.set(Calendar.SECOND, 0);
 
-        //欧洲杯延长销售时间 9点开始至次日凌晨6点
+        // 欧洲杯延长销售时间 9点开始至次日凌晨6点
         Date euroCupStart = DateUtils.stringToDate_YYYY_MM_DD_HH_MM_SS("2012-06-08 9:00:00");
         Date euroCupEnd = DateUtils.stringToDate_YYYY_MM_DD_HH_MM_SS("2012-07-03 06:00:00");
         if (matchTime.getTime() > euroCupStart.getTime() && matchTime.getTime() < euroCupEnd.getTime()) {
@@ -335,12 +340,12 @@ public class DateUtils {
         }
         stopPlayTicketCal.add(Calendar.MILLISECOND, -aheadMilli);
 
-        Calendar startPlayTicketCal = (Calendar) matchCal.clone();
+        Calendar startPlayTicketCal = (Calendar)matchCal.clone();
         startPlayTicketCal.set(Calendar.HOUR_OF_DAY, 9);
         startPlayTicketCal.set(Calendar.MINUTE, 0);
         startPlayTicketCal.set(Calendar.SECOND, 0);
 
-        Calendar weStartPlayTicketCal = (Calendar) startPlayTicketCal.clone();
+        Calendar weStartPlayTicketCal = (Calendar)startPlayTicketCal.clone();
         weStartPlayTicketCal.add(Calendar.MILLISECOND, +aheadMilli);
         // if(matchCal.after(stopPlayTicketCal)&&(matchCal.before(startPlayTicketCal)||matchCal.equals(startPlayTicketCal))){
         //
@@ -362,27 +367,26 @@ public class DateUtils {
         }
     }
 
-
     /**
      * 获取距离现在的时间
      */
     public static String getMinutes(Date times) {
-        long time = System.currentTimeMillis() - times.getTime();//time 单位是 毫秒
+        long time = System.currentTimeMillis() - times.getTime();// time 单位是 毫秒
         String res = null;
-        //转化成天数
-        //先判断是不是小于 60 * 60 * 1000  也就是 小于1小时，那么显示 ： **分钟前
+        // 转化成天数
+        // 先判断是不是小于 60 * 60 * 1000 也就是 小于1小时，那么显示 ： **分钟前
         if (time < 60 * 60 * 1000) {
             res = (time / 1000 / 60) + "分钟前";
         }
-        //如果大于等于1小时 小于等于一天，那么显示 ： **小时前
+        // 如果大于等于1小时 小于等于一天，那么显示 ： **小时前
         else if (time >= 60 * 60 * 1000 && time < 24 * 60 * 60 * 1000) {
             res = (time / 1000 / 60 / 60) + "小时前";
         }
-        //如果大于等于1小时 小于等于一天，那么显示 ： **小时前
+        // 如果大于等于1小时 小于等于一天，那么显示 ： **小时前
         else if (time >= 24 * 60 * 60 * 1000) {
             res = (time / 1000 / 60 / 60 / 24) + "天前";
         }
-        //如果时间不明确或者发帖不足一分钟 ，则不显示
+        // 如果时间不明确或者发帖不足一分钟 ，则不显示
         else {
             res = "";
         }
@@ -392,7 +396,8 @@ public class DateUtils {
     /**
      * 取得系统当前时间前n个月的相对应的一天
      *
-     * @param n int
+     * @param n
+     *            int
      * @return String yyyy-mm-dd
      */
     public static String getNMonthBeforeCurrentDay(int n) {
@@ -422,7 +427,7 @@ public class DateUtils {
         return date;
     }
 
-    /*******得到昨天日期*******/
+    /******* 得到昨天日期 *******/
     public static String getYesterday() {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
@@ -467,7 +472,7 @@ public class DateUtils {
         return false;
     }
 
-    //根据日期取得星期几
+    // 根据日期取得星期几
     public static String getWeek(Date date) {
         String[] weeks = {"周日", "周一", "周二", "周三", "周四", "周五", "周六"};
         Calendar cal = Calendar.getInstance();
@@ -548,6 +553,9 @@ public class DateUtils {
         System.out.println(getDateEnd(time));
         System.out.println(getDateEnd(new Date()));
         System.out.println(addYears(5));
+        Date dueTime = new Date();
+        String dt = dateToString(dueTime, "dd-MM-yyyy");
+        System.out.println(dt);
     }
 
 }

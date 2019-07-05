@@ -11,18 +11,17 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class ThreadPoolServiceImpl implements ThreadPoolService {
-    // 核心线程池数
-    private static int CORE_POOL_SIZE = 10;
-    // 最大线程池数
-    private static int MAXIMUM_POOL_SIZE = 50;
-    // 空闲时间
-    private static long KEEP_ALIVE_TIME = 60;
-    private static String THREAD_POOL_NAME_PREFIX = "x_ool_";
-
     private ThreadPoolExecutor executor;
 
     @PostConstruct
     public void init() {
+        // 核心线程池数
+        int CORE_POOL_SIZE = 10;
+        // 最大线程池数
+        int MAXIMUM_POOL_SIZE = 50;
+        // 空闲时间
+        long KEEP_ALIVE_TIME = 60;
+        String THREAD_POOL_NAME_PREFIX = "x_pool_";
         ThreadFactory threadFactory = r -> new Thread(r, THREAD_POOL_NAME_PREFIX + r.hashCode());
         executor = new ThreadPoolExecutor(CORE_POOL_SIZE,
                 MAXIMUM_POOL_SIZE,

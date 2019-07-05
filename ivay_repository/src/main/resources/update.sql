@@ -181,6 +181,8 @@ INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES (
 
 
 
+alter table x_baokim_transfers_info add order_id varchar(32) DEFAULT NULL COMMENT '借款订单号';
+
 -- 催收系统 2.19-7-2
 CREATE TABLE `x_collection_task` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -207,3 +209,5 @@ CREATE TABLE `x_collection_record` (
 	`enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收记录表';
+
+

@@ -23,7 +23,7 @@ public interface XAPIService {
      * @param accType
      * @return
      */
-    TransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType);
+    TransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType, String orderId);
 
     /**
      * 接口：查询交易状态
@@ -31,7 +31,7 @@ public interface XAPIService {
      * @param referenceId
      * @return
      */
-    TransfersRsp transfersInfo(String referenceId);
+    TransfersRsp transfersInfo(String referenceId, String orderId);
 
     /**
      * 接口：查询账户余额?

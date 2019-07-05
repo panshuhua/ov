@@ -19,7 +19,14 @@ public class XBaokimTransfersInfo extends BaseEntity<Long> {
 	private String transactionTime;
 	private String transferAmount;
 	private String enableFlag;
-	
+	private String orderId;
+
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
 	public String getRequestId() {
 		return requestId;
 	}

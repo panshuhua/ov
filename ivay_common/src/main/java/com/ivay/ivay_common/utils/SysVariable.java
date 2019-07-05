@@ -208,4 +208,7 @@ public class SysVariable {
     // 对账类型
     public static final String CHECK_TYPE_LOAN = "1"; // 1-借款
     public static final String CHECK_TYPE_REPAY = "2"; // 2-还款
+
+    // 发送通知短信链接固定前缀
+    public static final String PHONEMSG_PREFIX_LINK = "https://ovay.vn/";
 }

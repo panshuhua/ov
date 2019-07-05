@@ -228,13 +228,14 @@ public class XRegisterServiceImpl implements XRegisterService {
         for (Object key : config.keySet()) {
             String value = config.get(key).toString();
 
-            // 使用方法一发送短信验证码
+            // 使用方法一发送短信验证码：只要是10位数字的手机号码都不会报错
             if ("1".equals(value)) {
                 Map<String, String> msgMap = sendMsgBySMS(mobile, authCode);
                 String status = msgMap.get("status");
                 logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 verifyCodeInfo.setStatus(status);
-                if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
+                System.out.println(SMSResponseStatus.SUCCESS.getCode().equals(status));
+                if (status.equals(SMSResponseStatus.SUCCESS.getCode())) {
                     String messageid = msgMap.get("messageid");
                     logger.info("发送的短信id：" + messageid);
                     logger.info("SMG成功发送的短信验证码是：" + authCode);
@@ -242,30 +243,37 @@ public class XRegisterServiceImpl implements XRegisterService {
                     return verifyCodeInfo;
                 }
 
-                // 使用方法二发送短信验证码
+                // 使用方法二发送短信验证码-这个短信平台已停用
             } else if ("2".equals(value)) {
                 ApiBulkReturn re = sendMsgByVMG(mobile, authCode);
                 String errorCode = Long.toString(re.getError_code());
                 verifyCodeInfo.setStatus(errorCode);
 
-                if (SMSResponseStatus.SUCCESS.getCode().equals(errorCode)) {
+                if (errorCode.equals(SMSResponseStatus.SUCCESS.getCode())) {
                     logger.info("VMG发送的短信验证码是：" + authCode);
                     redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
                     return verifyCodeInfo;
                 }
             } else if ("3".equals(value)) {
-                String responseBody = sendMsgByFpt(mobile, authCode);
-                Map<String, String> map = JsonUtils.jsonToMap(responseBody);
-                String messageId = map.get("MessageId");
-                logger.info("fpt方式发送的短信id：" + messageId);
-                if (messageId != null) {
-                    logger.info("Fpt方式发送的短信验证码是：" + authCode);
-                    redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
-                    verifyCodeInfo.setStatus("0");
-                    return verifyCodeInfo;
+                String responseBody = "";
+                try {
+                    responseBody = sendMsgByFpt(mobile, authCode);
+                    Map<String, String> map = JsonUtils.jsonToMap(responseBody);
+                    String messageId = map.get("MessageId");
+                    logger.info("fpt方式发送的短信id：" + messageId);
+                    if (messageId != null) {
+                        logger.info("Fpt方式发送的短信验证码是：" + authCode);
+                        redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
+                        verifyCodeInfo.setStatus("0");
+                        return verifyCodeInfo;
+                    } else {
+                        logger.info("fpt发送短信失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
+                        continue;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
                 }
-
-                logger.info("fpt发送短信失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
 
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if ("0".equals(value)) {
@@ -276,7 +284,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             }
         }
 
-        return null;
+        return verifyCodeInfo;
 
     }
 
@@ -291,6 +299,7 @@ public class XRegisterServiceImpl implements XRegisterService {
         params.put("text", authCode);
         String ret = restTemplate.getForObject(paasooUrl, String.class, params);
         logger.info("调用短信验证码接口返回ret：" + ret + "------------");
+        logger.info("【发送的短信内容】：" + authCode + "----------------------");
         Map<String, String> msgMap = JsonUtils.jsonToMap(ret);
         return msgMap;
     }

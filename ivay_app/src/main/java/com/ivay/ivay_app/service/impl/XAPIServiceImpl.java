@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_repository.dao.master.XBaokimTransfersInfoDao;
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersReq;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_repository.model.XBaokimTransfersInfo;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_common.utils.*;
+import com.ivay.ivay_repository.dao.master.XBaokimTransfersInfoDao;
+import com.ivay.ivay_repository.model.XBaokimTransfersInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,6 @@ import javax.annotation.Resource;
 @Service
 public class XAPIServiceImpl implements XAPIService {
     private static final Logger logger = LoggerFactory.getLogger(XAPIService.class);
-
 
     @Resource
     private XBaokimTransfersInfoDao xBaokimTransfersInfoDao;
@@ -47,12 +46,12 @@ public class XAPIServiceImpl implements XAPIService {
                 + transfersReq.getAccType();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-        return callTransfersApi(transferUrl, transfersReq);
+        return callTransfersApi(transferUrl, transfersReq, null);
     }
 
-    private TransfersRsp callTransfersApi(String url, TransfersReq transfersReq) {
+    private TransfersRsp callTransfersApi(String url, TransfersReq transfersReq, String orderId) {
         TransfersRsp transfersRsp = JsonUtils.jsonToPojo(HttpClientUtils.postForObject(transferUrl, transfersReq), TransfersRsp.class);
-        loggerTransferInfo(transfersReq, transfersRsp);
+        loggerTransferInfo(transfersReq, transfersRsp, orderId);
         return transfersRsp;
     }
 
@@ -61,8 +60,9 @@ public class XAPIServiceImpl implements XAPIService {
      *
      * @param transfersReq
      * @param transfersRsp
+     * @param orderId
      */
-    private void loggerTransferInfo(TransfersReq transfersReq, TransfersRsp transfersRsp) {
+    private void loggerTransferInfo(TransfersReq transfersReq, TransfersRsp transfersRsp, String orderId) {
         XBaokimTransfersInfo xBaokimTransfersInfo = new XBaokimTransfersInfo();
         // 保存 request
         xBaokimTransfersInfo.setRequestId(transfersReq.getRequestId());
@@ -88,6 +88,7 @@ public class XAPIServiceImpl implements XAPIService {
             xBaokimTransfersInfo.setRequestAmount(transfersRsp.getRequestAmount());
             xBaokimTransfersInfo.setTransferAmount(transfersRsp.getTransferAmount());
         }
+        xBaokimTransfersInfo.setOrderId(orderId);
         xBaokimTransfersInfo.setResponseCode(transfersRsp.getResponseCode());
         xBaokimTransfersInfo.setResponseMessage(transfersRsp.getResponseMessage());
         xBaokimTransfersInfo.setReferenceId(transfersRsp.getReferenceId());
@@ -95,7 +96,7 @@ public class XAPIServiceImpl implements XAPIService {
     }
 
     @Override
-    public TransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType) {
+    public TransfersRsp transfers(String bankNo, String accNo, long requestAmount, String memo, String accType, String orderId) {
         TransfersReq transfersReq = new TransfersReq();
         String referenceId = UUIDUtils.getUUID();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
@@ -120,11 +121,11 @@ public class XAPIServiceImpl implements XAPIService {
                 + transfersReq.getMemo();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-        return callTransfersApi(transferUrl, transfersReq);
+        return callTransfersApi(transferUrl, transfersReq, orderId);
     }
 
     @Override
-    public TransfersRsp transfersInfo(String referenceId) {
+    public TransfersRsp transfersInfo(String referenceId, String orderId) {
         TransfersReq transfersReq = new TransfersReq();
         transfersReq.setRequestId(UUIDUtils.getRequestId());
         transfersReq.setRequestTime(UUIDUtils.getRequestTime());
@@ -138,7 +139,7 @@ public class XAPIServiceImpl implements XAPIService {
                 + transfersReq.getReferenceId();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-        return callTransfersApi(transferUrl, transfersReq);
+        return callTransfersApi(transferUrl, transfersReq, orderId);
     }
 
     @Override
@@ -154,6 +155,6 @@ public class XAPIServiceImpl implements XAPIService {
                 + transfersReq.getOperation();
         String signature = RSAEncryptSha1.encrypt2Sha1(encryptStr);
         transfersReq.setSignature(signature);
-        return callTransfersApi(transferUrl, transfersReq);
+        return callTransfersApi(transferUrl, transfersReq, null);
     }
 }

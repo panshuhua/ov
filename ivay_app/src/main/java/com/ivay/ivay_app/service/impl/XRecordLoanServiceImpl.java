@@ -33,6 +33,9 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class XRecordLoanServiceImpl implements XRecordLoanService {
@@ -58,6 +61,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
 
     @Autowired
     private XAPIService xapiService;
+
     @Autowired
     private XUserBankcardInfoDao xUserBankcardInfoDao;
 
@@ -190,46 +194,62 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
      * 异步调用借款接口，借款成功、失败时更新数据库，并记录交易情况
      *
      * @param xRecordLoan
+     * @param cardNo      借款方账号
+     * @param bankNo      银行代码
+     * @param accType
      */
     private void borrowMoneyFromBank(XRecordLoan xRecordLoan, String cardNo, String bankNo, String accType) {
         threadPoolService.execute(() -> {
-            TransfersRsp transfersRsp = new TransfersRsp();
             //调用风控规则接口判断是否有借款规则
             Map<String, Object> params = new HashMap<>();
             params.put("userGid", xRecordLoan.getUserGid());
             params.put("flag", SysVariable.RISK_TYPE_LOAN);
-            String ret;
+            String loanQualify;
             try {
-                ret = restTemplate.getForObject(riskControlUrl, String.class, params);
+                loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
             } catch (Exception ex) {
-                ret = "借款资格接口调用异常";
-
+                loanQualify = "借款资格接口调用异常";
             }
-            if (StringUtils.isEmpty(ret)) {
+
+            TransfersRsp transfersRsp = new TransfersRsp();
+            if (StringUtils.isEmpty(loanQualify)) {
+                boolean apiFlag = true;
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());
                 try {
-                    transfersRsp = xapiService.transfers(bankNo,  // 银行代码
-                            cardNo, // 借款方账号
-                            xRecordLoan.getNetAmount(),
-                            xRecordLoan.getMemo(),
-                            accType);
-                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", true, transfersRsp.getResponseMessage(), transfersRsp.getResponseCode());
+                    transfersRsp = xapiService.transfers(bankNo, cardNo, xRecordLoan.getNetAmount(), xRecordLoan.getMemo(), accType, xRecordLoan.getOrderId());
                 } catch (Exception ex) {
-                    logger.info("调用借款接口发生异常了");
-                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", false, transfersRsp.getResponseMessage(), transfersRsp.getResponseCode());
-                    xRecordLoanDao.delete(xRecordLoan.getId());
+                    apiFlag = false;
                     return;
-                }
-                logger.info("调用baokim接口结束--");
-                //出现超时，查询交易状态
-                if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
-                    transfersRsp = xapiService.transfersInfo(transfersRsp.getReferenceId());
+                } finally {
+                    sysLogService.save(xRecordLoan.getUserGid(), null, "借款", apiFlag, transfersRsp.getResponseMessage(), transfersRsp.getResponseCode());
+                    if (apiFlag) {
+                        logger.info("调用baokim借款接口结束--");
+                    } else {
+                        logger.info("调用baokim借款接口发生异常--");
+                        xRecordLoanDao.delete(xRecordLoan.getId());
+                    }
                 }
             } else {
                 transfersRsp.setResponseCode(i18nService.getMessage("response.error.borrow.riskcheck.code"));
-                transfersRsp.setResponseMessage("风控规则不通过——" + ret);
+                transfersRsp.setResponseMessage("风控规则不通过: " + loanQualify);
             }
             confirmLoan(xRecordLoan, transfersRsp);
+            //出现超时，查询交易状态
+            if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
+                ScheduledExecutorService pool = ScheduledPoolUtils.getInstance();
+                String referenceId = transfersRsp.getReferenceId();
+                ScheduledFuture<?> future = pool.scheduleAtFixedRate(() -> {
+                    TransfersRsp rsp = xapiService.transfersInfo(referenceId, xRecordLoan.getOrderId());
+                    if (BaokimResponseStatus.SUCCESS.getCode().equals(rsp.getResponseCode())) {
+                        logger.info("{}: 超时检测成功", xRecordLoan.getOrderId());
+                        confirmLoan(xRecordLoan, rsp);
+                        Thread.currentThread().interrupt();
+                    }
+                }, 1, 1, TimeUnit.HOURS);
+                pool.schedule(() -> {
+                    future.cancel(true);
+                }, 168, TimeUnit.HOURS);
+            }
         });
     }
 
@@ -240,55 +260,53 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         xRecordLoan.setUpdateTime(now);
         XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
         xUserInfo.setUpdateTime(now);
-        boolean flag = false;
 
         XAppEvent xAppEvent = new XAppEvent();
+        boolean appEventFlag = true;
+
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
+            // 借款成功
+            Date loanTime = DateUtils.stringToDate_YYYY_MM_DD_HH_MM_SS(transfersRsp.getTransactionTime());
             // 实际到账时间
-            xRecordLoan.setLoanTime(now);
+            xRecordLoan.setLoanTime(loanTime);
             // 应还款时间
-            xRecordLoan.setDueTime(calcDueTime(now, xRecordLoan.getLoanPeriod()));
+            xRecordLoan.setDueTime(calcDueTime(loanTime, xRecordLoan.getLoanPeriod()));
             // 实际到账金额
             xRecordLoan.setNetAmount(Long.parseLong(transfersRsp.getTransferAmount()));
-            logger.info(transfersRsp.getRequestAmount().equals(transfersRsp.getTransferAmount())
-                    ? "{}:实际到账等于汇款的数目"
-                    : "{}:实际到账小于需要汇款的数目", xRecordLoan.getUserGid());
             // 借款状态
             xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_SUCCESS);
-            if (SysVariable.USER_STATUS_BANKCARD_SUCCESS.equals(xUserInfo.getUserStatus())) {
-                flag = true;
-                xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_SUCCESS);
-            } else if (SysVariable.USER_STATUS_LOAN_SUCCESS.equals(xUserInfo.getUserStatus())) {
-                flag = true;
+            // 用户状态
+            if (SysVariable.USER_STATUS_LOAN_SUCCESS.equals(xUserInfo.getUserStatus())) {
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_REPEATEDLY);
+            } else {
+                xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_SUCCESS);
             }
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_SUCCESS);
         } else if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
-            // todo 需要定时查询汇款状态
+            // 借款超时
+            // 需要定时查询汇款状态
             logger.info("超时了：" + transfersRsp.getResponseMessage());
             // 借款失败原因
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
-            flag = true;
-            xAppEvent.setIsSuccess(SysVariable.APP_EVENT_FAIL);
+            appEventFlag = false;
         } else {
             logger.info(transfersRsp.getResponseMessage());
             // 借款状态
             xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_FAIL);
             // 借款失败原因
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
-            flag = true;
             xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getLoanAmount());
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_FAIL);
         }
-        if (flag) {
-            xUserInfoDao.update(xUserInfo);
-        }
+        xUserInfoDao.update(xUserInfo);
         xRecordLoanDao.update(xRecordLoan);
 
         // 记录待上报的app事件
-        xAppEvent.setType(SysVariable.APP_EVENT_LOAN);
-        xAppEvent.setGid(xRecordLoan.getOrderId());
-        xAppEventService.save(xAppEvent);
+        if (appEventFlag) {
+            xAppEvent.setType(SysVariable.APP_EVENT_LOAN);
+            xAppEvent.setGid(xRecordLoan.getOrderId());
+            xAppEventService.save(xAppEvent);
+        }
     }
 
     /**
