@@ -194,12 +194,7 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- firebase消息推送 -->
-        <dependency>
-            <groupId>com.google.firebase</groupId>
-            <artifactId>firebase-admin</artifactId>
-            <version>6.8.0</version>
-        </dependency>
+       
     </dependencies>
 
     <build>

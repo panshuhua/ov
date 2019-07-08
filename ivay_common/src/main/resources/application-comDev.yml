@@ -13,15 +13,30 @@ spring:
     encoding: UTF-8
     fallback-to-system-locale: false
     use-code-as-default-message: true
-
+    
 # 自定义配置
 # baokim接口私钥存放路径
-keyfilepath: /usr/key/test/
+keyfilepath: C:/usr/key/test/
 # baokim接口参数
 api_request_id_prefix: FINTECHBK
 # ebay接口参数
 ebay_api_request_id_prefix: PARTNERTEST01EP
 
+#firebase SDK路径：
+firebase_sdk_url: C:/usr/firebase/ovay-release-firebase-adminsdk-3evco-943d00a328.json
+#firebase ovay项目地址：
+firebase_project_url: https://ovay-release.firebaseio.com
 
+# 发送短信url
+api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
+api_paasoo_key: nzwzxcuv
+api_paasoo_secret: 2aandS4r
 
-
+# 发送短信url-fpt
+api_fpt_grant_type: client_credentials
+api_fpt_client_id: b696C77E5FB5d553Ac771fea8834Ab86dAa0fda5
+api_fpt_client_secret: aaad67b7d11bb83e10da122cdA8fda0b40Dbc00f61179a5e6c5cfCd598668Fe6e00d8C7c
+api_fpt_scope: send_brandname_otp
+api_fpt_accesstoken_url: http://sandbox.sms.fpt.net/oauth2/token
+api_fpt_sendmsg_url: http://sandbox.sms.fpt.net/api/push-brandname-otp
+api_fpt_brandName: FTI

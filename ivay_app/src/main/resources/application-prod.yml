@@ -50,23 +50,6 @@ ebay_api_effective_year: 5
 #ebay还款回调接口公钥路径
 ebay_api_notice_publickey: /usr/ebay_notice_key/ebay_notice_public_key.pem
 
-# 发送短信url
-api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
-api_paasoo_key: nzwzxcuv
-api_paasoo_secret: 2aandS4r
-# 发送短信url
-api_vmgmedia_url: http://brandsms.vn:8018/VMGAPI.asmx
-api_alias: VMGtest
-api_authenticate_user: vmgtest1
-api_authenticate_pass: vmG@123b
-# 发送短信url-fpt
-api_fpt_grant_type: client_credentials
-api_fpt_client_id: b06e9A9bB0d984d14D37b957A33D7597c37a9c44
-api_fpt_client_secret: f5fC98c0c6526b0bd80c283738f40ba48884e7b7fda469b26B98a38bB432f30ccaA3233c
-api_fpt_scope: send_brandname_otp
-api_fpt_accesstoken_url: http://app.sms.fpt.net/oauth2/token
-api_fpt_sendmsg_url: http://app.sms.fpt.net/api/push-brandname-otp
-api_fpt_brandName: FTI
 # 风控授权url
 risk_control_url: http://10.53.104.178:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 还款成功的后置处理url, 提额、增加白名单
@@ -77,8 +60,3 @@ auto_audit_url: http://10.53.104.178:8081/audit/autoAudit?userGid={userGid}
 
 # 前端错误日志路径：
 errorInfo.path: /data/errorInfo/
-
-#firebase SDK路径：
-firebase_sdk_url: /usr/firebase/ovay-release-firebase-adminsdk-3evco-943d00a328.json
-#firebase ovay项目地址：
-firebase_project_url: https://ovay-release.firebaseio.com

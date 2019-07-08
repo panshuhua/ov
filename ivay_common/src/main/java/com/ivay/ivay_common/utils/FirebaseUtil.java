@@ -1,4 +1,4 @@
-package com.ivay.ivay_app.utils;
+package com.ivay.ivay_common.utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.SendResponse;
-import com.ivay.ivay_app.dto.NoticeMsg;
+import com.ivay.ivay_common.dto.NoticeMsg;
 
 @Component
 public class FirebaseUtil {
@@ -77,8 +76,7 @@ public class FirebaseUtil {
     }
 
     // 单个发送
-    public static void sendMsgToFmcToken(NoticeMsg msg)
-        throws FirebaseMessagingException, InterruptedException, ExecutionException, IOException {
+    public static void sendMsgToFmcToken(NoticeMsg msg) throws Exception {
         addInstance("app");
         FirebaseApp firebaseApp = getInstance("app");
         logger.info("firebaseApp Instance get success......");

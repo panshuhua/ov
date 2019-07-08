@@ -1,9 +1,5 @@
 package com.ivay.ivay_app.service;
 
-import java.util.Map;
-
-import org.tempuri.ApiBulkReturn;
-
 import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.dto.XUser;
 import com.ivay.ivay_repository.model.LoginInfo;
@@ -76,15 +72,6 @@ public interface XRegisterService {
      * @return
      */
     VerifyCodeInfo sendPhoneMsg(String mobile);
-
-    // 调用接口1发送短信
-    Map<String, String> sendMsgBySMS(String mobile, String authCode);
-
-    // 调用接口2发送短信
-    ApiBulkReturn sendMsgByVMG(String mobile, String authCode);
-
-    // 调用接口3发送短信
-    String sendMsgByFpt(String mobile, String text);
 
     VerifyCodeInfo sendRegisterCode(int optType, String mobile);
 

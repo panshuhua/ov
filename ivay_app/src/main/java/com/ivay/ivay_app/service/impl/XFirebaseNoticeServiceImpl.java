@@ -1,7 +1,6 @@
 package com.ivay.ivay_app.service.impl;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,18 +13,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.tempuri.ApiBulkReturn;
 
 import com.ivay.ivay_app.dto.MsgLinkData;
-import com.ivay.ivay_app.dto.NoticeMsg;
 import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
-import com.ivay.ivay_app.service.XRecordLoanService;
 import com.ivay.ivay_app.service.XRegisterService;
-import com.ivay.ivay_app.utils.FirebaseUtil;
 import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.config.SendMsgService;
+import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.FirebaseUtil;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
@@ -33,6 +31,7 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XOverDueFee;
+import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XUserInfo;
 
 @Service
@@ -52,93 +51,11 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     XRecordLoanDao xRecordLoanDao;
     @Autowired
     RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    SendMsgService sendMsgService;
 
     @Value("${noticemsg.effectiveTime}")
     private long effectiveTime;
-
-    @Override
-    public boolean sendAuditNotice() {
-        List<XUserInfo> xUserInfos = xUserInfoDao.findAuditPassUsers();
-        List<String> registrationTokens = new ArrayList<String>();
-        for (XUserInfo userInfo : xUserInfos) {
-            try {
-                String fmcToken = userInfo.getFmcToken();
-
-                if (!StringUtils.isEmpty(fmcToken)) {
-                    // 单个发
-                    // FirebaseUtil.sendMsgToFmcToken(fmcToken, i18nService.getMessage("firebase.notice.audit.msg"));
-                    registrationTokens.add(fmcToken);
-                }
-                // 发送手机短信
-                String mobile = userInfo.getPhone();
-                // sendPhoneNotice(mobile, i18nService.getMessage("firebase.notice.audit.msg"), null, null, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-                return false;
-            }
-        }
-
-        // 批量发送firebase推送消息
-        if (registrationTokens.size() > 0) {
-            try {
-                FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens,
-                    i18nService.getMessage("firebase.notice.audit.titlemsg"),
-                    i18nService.getMessage("firebase.notice.audit.msg"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-                return false;
-            }
-        }
-
-        logger.info("审核通知成功发送！");
-        return true;
-
-    }
-
-    @Override
-    public boolean sendLoanNotice() {
-        List<XUserInfo> xUserInfos = xUserInfoDao.findLoanSuccessUsers();
-        List<String> registrationTokens = new ArrayList<String>();
-        for (XUserInfo userInfo : xUserInfos) {
-            try {
-                String fmcToken = userInfo.getFmcToken();
-                if (!StringUtils.isEmpty(fmcToken)) {
-                    // FirebaseUtil.sendMsgToFmcToken(fmcToken, i18nService.getMessage("firebase.notice.loan.msg"));
-                    registrationTokens.add(fmcToken);
-                }
-
-                // 发送手机短信
-                String mobile = userInfo.getPhone();
-                // sendPhoneNotice(mobile, i18nService.getMessage("firebase.notice.loan.msg"), null, null, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-                return false;
-            }
-
-        }
-
-        if (registrationTokens.size() > 0) {
-            try {
-                FirebaseUtil.sendBatchMsgToFmcToken(registrationTokens,
-                    i18nService.getMessage("firebase.notice.loan.titlemsg"),
-                    i18nService.getMessage("firebase.notice.loan.msg"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error(e.getMessage());
-                return false;
-            }
-        }
-
-        logger.info("借款成功的通知成功发送！");
-        return true;
-
-    }
-
-    @Autowired
-    private XRecordLoanService xRecordLoanService;
 
     @Override
     public boolean sendRepaymentNotice() {
@@ -281,7 +198,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
             // 使用方法一发送短信验证码
             if ("1".equals(value)) {
-                Map<String, String> msgMap = xRegisterService.sendMsgBySMS(msg.getPhone(), msg.getPhoneMsg());
+                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(msg.getPhone(), msg.getPhoneMsg());
                 String status = msgMap.get("status");
                 logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
@@ -293,22 +210,11 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     return true;
                 }
 
-                // 使用方法二发送短信验证码
-            } else if ("2".equals(value)) {
-                ApiBulkReturn re = xRegisterService.sendMsgByVMG(msg.getPhone(), msg.getPhoneMsg());
-                String errorCode = Long.toString(re.getError_code());
-
-                if ("0".equals(errorCode)) {
-                    logger.info("VMG发送的短信是：" + msg);
-                    redisTemplate.opsForValue().set(msg.getKey(), dataJson, effectiveTime, TimeUnit.SECONDS);
-                    return true;
-                }
-
             } else if ("3".equals(value)) {
                 String responseBody = "";
                 Map<String, String> map = null;
                 try {
-                    responseBody = xRegisterService.sendMsgByFpt(msg.getPhone(), msg.getPhoneMsg());
+                    responseBody = sendMsgService.sendMsgByFpt(msg.getPhone(), msg.getPhoneMsg());
                     map = JsonUtils.jsonToMap(responseBody);
                     String messageId = map.get("MessageId");
                     logger.info("fpt方式发送的短信id：" + messageId);
@@ -332,6 +238,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             }
 
         }
+
         return false;
 
     }
@@ -438,6 +345,53 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         }
 
         return null;
+    }
+
+    // 发送firebase消息推送
+    @Override
+    public void sendFirebaseNoticeMsg(NoticeMsg msg) throws Exception {
+        sendMsgService.sendFirebaseNoticeMsg(msg);
+    }
+
+    // 发送手机短信
+    @Override
+    public void sendPhoneNoticeMsg(NoticeMsg msg) throws Exception {
+        sendMsgService.sendPhoneNoticeMsg(msg);
+        sendPhoneNotice(msg);
+    }
+
+    // 借还款发送消息通用参数准备
+    @Override
+    public NoticeMsg prepareParam(XRecordLoan xRecordLoan, XUserInfo xUserInfo) {
+        NoticeMsg msg = new NoticeMsg();
+        // firebase消息推送参数
+        msg.setFmcToken(xUserInfo.getFmcToken());
+        // 两种消息共用参数
+        msg.setGid(xRecordLoan.getGid());
+        msg.setUserGid(xRecordLoan.getUserGid());
+        msg.setPageId(SysVariable.PAGE_BILLDETAIL);
+        // 手机短信参数
+        msg.setPhone(xUserInfo.getPhone());
+        String key = MsgAuthCode.getNumBigCharRandom(6);
+        msg.setKey(key);
+        return msg;
+    }
+
+    // 发送两种通知
+    @Override
+    public void sendAllNotice(NoticeMsg msg) {
+        try {
+            sendFirebaseNoticeMsg(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            sendPhoneNoticeMsg(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -91,6 +91,13 @@
 		    <artifactId>bcprov-jdk16</artifactId>
 		    <version>1.45</version>
 		</dependency>
+		
+		 <!-- firebase消息推送 -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>6.8.0</version>
+        </dependency>
         
     </dependencies>
 </project>
