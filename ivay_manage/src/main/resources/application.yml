@@ -8,6 +8,9 @@ dataSource:
   master: true
   slave: true
 
+#短信通知失效时间
+noticemsg:
+  effectiveTime: 259200
 
 spring:
   profiles:

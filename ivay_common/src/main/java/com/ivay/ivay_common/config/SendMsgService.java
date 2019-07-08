@@ -1,27 +1,21 @@
 package com.ivay.ivay_common.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.ivay.ivay_common.dto.FptAccessTokenReq;
+import com.ivay.ivay_common.dto.FptSendReq;
+import com.ivay.ivay_common.dto.NoticeMsg;
+import com.ivay.ivay_common.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.ivay.ivay_common.dto.FptAccessTokenReq;
-import com.ivay.ivay_common.dto.FptSendReq;
-import com.ivay.ivay_common.dto.NoticeMsg;
-import com.ivay.ivay_common.utils.Base64Util;
-import com.ivay.ivay_common.utils.FirebaseUtil;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.StringUtil;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 发送短信/推送
@@ -31,13 +25,10 @@ import com.ivay.ivay_common.utils.UUIDUtils;
  */
 @Component
 public class SendMsgService {
-
     private static final Logger logger = LoggerFactory.getLogger(SendMsgService.class);
 
     @Autowired
     private RestTemplate restTemplate;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
 
     @Value("${api_paasoo_url}")
     private String paasooUrl;

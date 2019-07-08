@@ -22,7 +22,7 @@ public class XLoanController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "type", value = "type 0 逾期天数为(0,3], 1 逾期天数为 3天以上", dataType = "String", paramType = "query", required = false),
+            @ApiImplicitParam(name = "type", value = "type 0逾期天数为(0,3), 1 逾期天数为[3,10) 2逾期天数>=10天 ", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "identityCard", value = "身份证", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "phone", value = "电话号码", dataType = "String", paramType = "query", required = false),
             @ApiImplicitParam(name = "name", value = "用户姓名", dataType = "String", paramType = "query", required = false)

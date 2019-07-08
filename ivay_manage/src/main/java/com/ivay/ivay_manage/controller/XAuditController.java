@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("audit")
 @Api(tags = "审核/风控系统")
@@ -40,7 +39,7 @@ public class XAuditController {
             @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1")
     })
     @ApiOperation("审核记录")
-    public Response<PageTableResponse> auditListNew(@RequestParam(required = false, defaultValue = "0") int limit,
+    public Response<PageTableResponse> auditListV2(@RequestParam(required = false, defaultValue = "0") int limit,
                                                     @RequestParam(required = false, defaultValue = "1") int num,
                                                     @RequestBody(required = false) XAuditListInfo xAuditListInfo) {
         Response<PageTableResponse> response = new Response<>();

@@ -38,9 +38,6 @@ token:
 #短信验证码失效时间
 verifycode:
     effectiveTime: 120000
-#短信通知失效时间
-noticemsg: 
-    effectiveTime: 259200
 
 # 是否对敏感信息解密
 needDecrypt: false
