@@ -152,7 +152,6 @@
          </where>
     </select>
 
-
     <sql id="repaymentInfo_condition">
         where xrl.loan_status=1 and xrl.user_gid = t.user_gid AND xrl.repayment_status!=2 AND t.user_gid=#{params.userGid}
         <choose>

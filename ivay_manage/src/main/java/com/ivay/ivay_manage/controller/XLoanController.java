@@ -1,15 +1,20 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.CustomerService;
+import com.ivay.ivay_manage.service.XUserExtInfoService;
 import com.ivay.ivay_manage.service.XUserInfoService;
+import com.ivay.ivay_repository.model.XUserExtInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("manage/loan")
@@ -59,13 +64,27 @@ public class XLoanController {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private XUserExtInfoService xUserExtInfoService;
+
+    @GetMapping("get")
+    @ApiOperation(value = "获取")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true)
+    })
+    public Response<XUserExtInfo> get(@RequestParam String userGid, HttpServletRequest request) {
+        Response<XUserExtInfo> response = new Response<>();
+        response.setBo(xUserExtInfoService.getByGid(userGid));
+        return response;
+    }
+
     @GetMapping("listContactInfo")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
     })
-    @ApiOperation("联系人列表")
+    @ApiOperation("通讯录")
     public Response<PageTableResponse> listContactInfo(@RequestParam(required = false, defaultValue = "0") int limit,
                                                        @RequestParam(required = false, defaultValue = "1") int num,
                                                        @RequestParam String userGid) {
