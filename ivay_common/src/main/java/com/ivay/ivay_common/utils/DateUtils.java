@@ -30,6 +30,7 @@ public class DateUtils {
     private final static String YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm";
     private final static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
     private final static String YYYYMMDD_HH_MM_SS = "yyyyMMdd HH:mm:ss";
+    private final static String DD_MM_YYYY = "dd-MM-yyyy";
 
     // region -- 将字符串格式化成日期
     public static Date stringToDate(String dateString, String format) {
@@ -71,6 +72,7 @@ public class DateUtils {
     public static Date stringToDate_YY_MM_DD_HH_MM(String dateString) {
         return stringToDate(dateString, YYYY_MM_DD_HH_MM);
     }
+
     // endregion end
 
     // region -- 日期格式化成字符串
@@ -101,6 +103,11 @@ public class DateUtils {
 
     public static String dateToString_YYYYMMDD(Date date) {
         return dateToString(date, YYYYMMDD);
+    }
+
+    // 越南时间格式
+    public static String dateToString_DD_MM_YYYY(Date date) {
+        return dateToString(date, DD_MM_YYYY);
     }
     // endregion
 
@@ -553,8 +560,7 @@ public class DateUtils {
         System.out.println(getDateEnd(time));
         System.out.println(getDateEnd(new Date()));
         System.out.println(addYears(5));
-        Date dueTime = new Date();
-        String dt = dateToString(dueTime, "dd-MM-yyyy");
+        String dt = dateToString_DD_MM_YYYY(new Date());
         System.out.println(dt);
     }
 
