@@ -141,7 +141,7 @@ CREATE TABLE `x_ebay_virtual_account` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
---新增 ebay还款回调接口信息表
+-- 新增 ebay还款回调接口信息表
 CREATE TABLE `x_ebay_collection_notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `request_id` varchar(50) DEFAULT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE `x_ebay_collection_notice` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
---风控表新增新字段，删除没用字段
+-- 风控表新增新字段，删除没用字段
 ALTER TABLE `x_user_risk` ADD `imei` varchar(36) DEFAULT NULL COMMENT '设备imei';
 ALTER TABLE `x_user_risk` ADD `imsi` varchar(36) DEFAULT NULL COMMENT '设备imsi';
 ALTER TABLE `x_user_risk` ADD `phone_number` varchar(32) DEFAULT NULL COMMENT '手机号码';
@@ -176,7 +176,7 @@ ALTER TABLE `x_user_risk` drop column `mac_address`;
 ALTER TABLE `x_user_risk` drop column `phone_brand`;
 ALTER TABLE `x_user_risk` drop column `traffic_way`;
 
---配置表添加baokim还款回调接口签名校验开关
+-- 配置表添加baokim还款回调接口签名校验开关
 INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES ('33', 'baokimNoticeSignature', '', '{\"enable\":true}', '宝金回调接口是否开启公钥校验');
 
 alter table x_baokim_transfers_info add order_id varchar(32) DEFAULT NULL COMMENT '借款订单号';
@@ -212,7 +212,7 @@ CREATE TABLE `x_collection_record` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收记录表';
 
---baokim后台导出的还款记录表
+-- baokim后台导出的还款记录表
 CREATE TABLE `baokim_collection_data` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `transaction_id_baokim` varchar(20) DEFAULT NULL,
@@ -228,7 +228,7 @@ CREATE TABLE `baokim_collection_data` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=451 DEFAULT CHARSET=utf8mb4;
 
---baokim后台导出的借款记录表
+-- baokim后台导出的借款记录表
 CREATE TABLE `baokim_transfer_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trans_time` varchar(20) DEFAULT NULL,
@@ -244,7 +244,7 @@ CREATE TABLE `baokim_transfer_data` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3196 DEFAULT CHARSET=utf8mb4;
 
---对账比对结果表
+-- 对账比对结果表
 CREATE TABLE `account_check_result` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `baokim_count` int(50) DEFAULT NULL,

@@ -1,9 +1,9 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.RedisUtils;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.XLoanService;
 import com.ivay.ivay_manage.service.XUserInfoService;
@@ -137,12 +137,8 @@ public class XAuditController {
         return response;
     }
 
-    @Autowired
-    private RedisUtils redisUtils;
-
     @GetMapping("test")
     public boolean test(String key) {
-        redisUtils.set(key, "test redis");
-        return true;
+        throw new BusinessException("why.");
     }
 }
