@@ -1,14 +1,14 @@
 package com.ivay.ivay_repository.model;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.ivay.ivay_common.annotation.Encryption;
 import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import javax.validation.constraints.NotEmpty;
-import java.math.BigDecimal;
 
 @Data
 @ApiModel("注册登录参数实体")
@@ -42,12 +42,6 @@ public class LoginInfo {
 
     @ApiModelProperty("是否是短信验证码登录")
     private String isVerifyCodeLogin;
-
-    @ApiModelProperty("经度")
-    private BigDecimal longitude;
-
-    @ApiModelProperty("纬度")
-    private BigDecimal latitude;
 
     @ApiModelProperty("app消息推送token")
     private String fmcToken;

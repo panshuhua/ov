@@ -59,8 +59,7 @@ public class XRegisterController {
     @LogAnnotation(module = "发送短信验证码")
     public Response<VerifyCodeInfo> sendRegisterCode(@RequestParam @Decrypt String mobile,
         @RequestParam Integer optType, @RequestParam(required = false) String macCode, HttpServletRequest request) {
-
-        logger.info("进入发送短信验证码的方法：" + "手机号：" + mobile + "----------------");
+        logger.info("进入发送短信验证码的方法，前台传入的手机号码为:{}", mobile);
         Response<VerifyCodeInfo> response = new Response<>();
         response.setBo(xRegisterService.sendRegisterCode(optType, mobile));
         return response;
@@ -71,7 +70,6 @@ public class XRegisterController {
     @LogAnnotation(module = "用户注册与短信验证码登录")
     public Response<ReturnUser> register(@RequestBody LoginInfo loginInfo, HttpServletRequest request) {
         Response<ReturnUser> response = new Response<>();
-        logger.info("注册方法入库：前台传过来的macCode:" + loginInfo.getMacCode() + "---------------");
         response.setBo(xRegisterService.register(loginInfo));
         return response;
     }

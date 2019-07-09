@@ -1,16 +1,17 @@
 package com.ivay.ivay_repository.model;
 
+import java.util.Date;
+
+import javax.validation.constraints.NotEmpty;
+
 import com.ivay.ivay_common.annotation.Decrypt;
 import com.ivay.ivay_common.annotation.Encryption;
 import com.ivay.ivay_common.valid.IdentityCard;
 import com.ivay.ivay_common.valid.Update;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import javax.validation.constraints.NotEmpty;
-import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 @ApiModel("用户信息实体")
@@ -20,7 +21,7 @@ public class XUserInfo {
     private String userGid;
 
     @ApiModelProperty("电话号码")
-    @Decrypt  // 需要解密的字段
+    @Decrypt // 需要解密的字段
     private String phone;
 
     @NotEmpty(groups = {Update.class}, message = "validated.name.empty")
@@ -29,7 +30,7 @@ public class XUserInfo {
 
     @ApiModelProperty("身份证")
     @IdentityCard(groups = {Update.class})
-    @Decrypt  // 需要解密的字段
+    @Decrypt // 需要解密的字段
     private String identityCard;
 
     @ApiModelProperty("生日")
@@ -57,7 +58,7 @@ public class XUserInfo {
     private String accountStatus;
 
     @ApiModelProperty("密码")
-    @Decrypt  // 需要解密的字段
+    @Decrypt // 需要解密的字段
     private String password;
 
     @ApiModelProperty("授信额度")
@@ -70,7 +71,7 @@ public class XUserInfo {
     private Long canborrowAmount;
 
     @ApiModelProperty("交易密码")
-    @Decrypt  // 需要解密的字段
+    @Decrypt // 需要解密的字段
     private String transPwd;
 
     @ApiModelProperty("设备id")
@@ -78,16 +79,7 @@ public class XUserInfo {
 
     @ApiModelProperty("app消息推送token")
     private String fmcToken;
-    
-    @ApiModelProperty("经度")
-    private String longitude;
-    
-    @ApiModelProperty("纬度")
-    private String latitude;
-    
-    @ApiModelProperty("社交类app的个数")
-    private String appNum;
-    
+
     @ApiModelProperty("审核拒绝原因")
     private String refuseReason;
 

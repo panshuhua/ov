@@ -36,6 +36,10 @@ import com.ivay.ivay_repository.dto.XUser;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
 
+/**
+ * @author panshuhua
+ * @date 2019/07/09
+ */
 @Service
 public class XRegisterServiceImpl implements XRegisterService {
 
@@ -59,7 +63,9 @@ public class XRegisterServiceImpl implements XRegisterService {
     @Autowired
     private XTokenService xTokenService;
 
-    // token过期秒数
+    /**
+     * token过期秒数
+     */
     @Value("${token.expire.seconds}")
     private Integer expireSeconds;
     @Value("${verifycode.effectiveTime}")
@@ -97,7 +103,6 @@ public class XRegisterServiceImpl implements XRegisterService {
     @Override
     public boolean checkCode(String key, String value) {
         Object authCode = redisTemplate.opsForValue().get(key);
-        logger.info("redis中的key：" + key + "，redis中的value：" + authCode.toString());
         if (authCode != null && authCode.toString().equals(value)) {
             return true;
         }
@@ -150,10 +155,8 @@ public class XRegisterServiceImpl implements XRegisterService {
     @Override
     public XUser registerLogin(LoginInfo loginInfo) {
         String password = loginInfo.getPassword();
-        logger.info("注册开始........................");
         // 注册
         XUser xUser = addUser(loginInfo);
-        logger.info("注册insert数据库结束........................");
         // 更新注册状态
         xUserInfoDao.updateUseStatus(xUser.getUserGid());
         xUser.setUserStatus(SysVariable.USER_STATUS_REGISTRY);
@@ -182,7 +185,6 @@ public class XRegisterServiceImpl implements XRegisterService {
 
         String authCode = MsgAuthCode.getAuthCode();
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
-        // long effectiveTime = 120 * 1000; //2分钟有效期，ms
         verifyCodeInfo.setCodeToken(authCode);
         verifyCodeInfo.setEffectiveTime(effectiveTime);
 
@@ -190,21 +192,21 @@ public class XRegisterServiceImpl implements XRegisterService {
             String value = config.get(key).toString();
 
             // 使用方法一发送短信验证码：只要是10位数字的手机号码都不会报错
-            if ("1".equals(value)) {
+            if (SysVariable.SMS_ONE.equals(value)) {
                 Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, authCode);
                 String status = msgMap.get("status");
-                logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
+                logger.info("SMG方式发送短信验证码返回状态，返回码:{}", status);
                 verifyCodeInfo.setStatus(status);
-                System.out.println(SMSResponseStatus.SUCCESS.getCode().equals(status));
+
                 if (status.equals(SMSResponseStatus.SUCCESS.getCode())) {
                     String messageid = msgMap.get("messageid");
-                    logger.info("发送的短信id：" + messageid);
-                    logger.info("SMG成功发送的短信验证码是：" + authCode);
+                    logger.info("发送的短信id:{}", messageid);
+                    logger.info("SMG成功发送的短信验证码是:{}", authCode);
                     redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
                     return verifyCodeInfo;
                 }
 
-            } else if ("3".equals(value)) {
+            } else if (SysVariable.SMS_TWO.equals(value)) {
                 String responseBody = "";
                 try {
                     responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
@@ -217,7 +219,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                         verifyCodeInfo.setStatus("0");
                         return verifyCodeInfo;
                     } else {
-                        logger.info("fpt发送短信失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
+                        logger.info("fpt发送短信失败，返回的错误码为：{}", map.get("error"));
                         continue;
                     }
                 } catch (Exception e) {
@@ -226,9 +228,9 @@ public class XRegisterServiceImpl implements XRegisterService {
                 }
 
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
-            } else if ("0".equals(value)) {
-                verifyCodeInfo.setStatus("0");
-                logger.info("发送的短信验证码是：" + authCode);
+            } else if (SysVariable.SMS_ZERO.equals(value)) {
+                verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
+                logger.info("发送的短信验证码是:{}", authCode);
                 redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
                 return verifyCodeInfo;
             }
@@ -241,7 +243,7 @@ public class XRegisterServiceImpl implements XRegisterService {
     @Override
     public VerifyCodeInfo sendRegisterCode(int optType, String mobile) {
         // 注册发送验证码
-        if (optType == 1) {
+        if (optType == SysVariable.OPTTYPE_REGISTER) {
             String userGid = getUserGid(mobile);
             // 如果用户已注册，则提示已注册
             if (!StringUtils.isEmpty(userGid)) {
@@ -251,7 +253,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             }
         }
         // 重置/修改交易密码
-        if (optType == 4) {
+        if (optType == SysVariable.OPTTYPE_RESETTRANPWD) {
             String userGid = getUserGid(mobile);
             boolean flag = xUserInfoService.hasTransPwd(userGid);
             if (!flag) {
@@ -271,7 +273,7 @@ public class XRegisterServiceImpl implements XRegisterService {
         // 调用短信验证码接口
         VerifyCodeInfo verifyCodeInfo = sendPhoneMsg(mobile);
         String status = verifyCodeInfo.getStatus();
-        if ("0".equals(status)) {
+        if (SysVariable.SMS_SEND_SUCCESS.equals(status)) {
             return verifyCodeInfo;
         } else {
             // 请求失败
@@ -286,124 +288,132 @@ public class XRegisterServiceImpl implements XRegisterService {
     public ReturnUser register(LoginInfo loginInfo) {
         String mobile = loginInfo.getMobile();
         String macCode = loginInfo.getMacCode();
-        logger.info("前台传过来的macCode:" + macCode + "---------------");
-
-        // 手机验证码校验
         String verifyCode = loginInfo.getVerifyCode();
-        logger.info("前台传入的手机验证码：" + verifyCode);
+        logger.info("注册前台传入的手机验证码:{}", verifyCode);
         String password = loginInfo.getPassword();
         String isVerifyCodeLogin = loginInfo.getIsVerifyCodeLogin();
+        // 手机验证码校验
+        boolean isCorrect = checkVerifyCode(mobile, verifyCode);
+        if (isCorrect) {
+            String userGid = getUserGid(loginInfo.getMobile());
+            if (!StringUtils.isEmpty(userGid)) {
+                if (!SysVariable.SMS_VERIFYCODE_LOGIN.equals(isVerifyCodeLogin)) {
+                    logger.info("该用户已注册---------------------------");
+                    throw new BusinessException(i18nService.getMessage("response.error.register.isregister.code"),
+                        i18nService.getMessage("response.error.register.isregister.msg"));
+                } else {
+                    // 短信验证码登录：已经注册过，直接登录
+                    ReturnUser user = verifyCodeLogin(loginInfo, userGid);
+                    return user;
+                }
 
+            } else {
+                // 密码注册-自动登录：这里才需要校验密码
+                if (!StringUtils.isEmpty(password)) {
+                    if (!StringUtil.valiPassword(password)) {
+                        logger.info("用户名和密码输入错误--------------------");
+                        throw new BusinessException(
+                            i18nService.getMessage("response.error.register.passworderror.code"),
+                            i18nService.getMessage("response.error.register.passworderror.msg"));
+                    }
+                    // 密码注册：校验该设备是不是被注册过了
+                    ReturnUser user = checkMacCodeByphone(macCode, loginInfo);
+                    return user;
+                } else {
+                    if (!SysVariable.SMS_VERIFYCODE_LOGIN.equals(isVerifyCodeLogin)) {
+                        throw new BusinessException(
+                            i18nService.getMessage("response.error.register.blankpassword.code"),
+                            i18nService.getMessage("response.error.register.blankpassword.msg"));
+                    } else {
+                        // 短信验证码登录：还未注册，短信验证码注册后再自动登录
+                        ReturnUser user = checkMacCodeByphone(macCode, loginInfo);
+                        return user;
+                    }
+
+                }
+            }
+        } else {
+            // 短信验证码不正确
+            throw new BusinessException(i18nService.getMessage("response.error.register.verifynum.code"),
+                i18nService.getMessage("response.error.register.verifynum.msg"));
+        }
+
+    }
+
+    /**
+     * 短信验证码校验：是否为空/是否有效/是否正确
+     * 
+     * @param mobile
+     * @param verifyCode
+     * @return
+     */
+    private boolean checkVerifyCode(String mobile, String verifyCode) {
+        boolean isCorrect = false;
         if (!StringUtils.isEmpty(verifyCode)) {
             long existTime = redisTemplate.boundHashOps(mobile).getExpire();
-            logger.info("获取到key的有效时间existTime=" + existTime + "--------");
-
             if (existTime < 0) {
                 logger.info("短信验证码已失效============================");
+                isCorrect = false;
                 throw new BusinessException(i18nService.getMessage("response.error.register.verify.code"),
                     i18nService.getMessage("response.error.register.verify.msg"));
             }
 
-            boolean isCorrect = checkCode(mobile, verifyCode);
-            logger.info("手机验证码校验结果：" + isCorrect + "--------------");
-
-            if (isCorrect) {
-                logger.info("手机验证码校验正确：" + isCorrect + "--------------");
-                String userGid = getUserGid(loginInfo.getMobile());
-
-                if (!StringUtils.isEmpty(userGid)) {
-                    if (!"1".equals(isVerifyCodeLogin)) {
-                        logger.info("该用户已注册---------------------------");
-                        throw new BusinessException(i18nService.getMessage("response.error.register.isregister.code"),
-                            i18nService.getMessage("response.error.register.isregister.msg"));
-
-                    } else {
-                        // 短信验证码登录：已经注册过，直接登录
-                        XUser xUser = new XUser();
-                        xUser.setPhone(mobile);
-                        xUser.setUserGid(userGid);
-                        xUser.setCreateTime(new Date());
-                        xUser.setFmcToken(loginInfo.getFmcToken());
-                        xUser = login(xUser);
-                        xUser = getToken(xUser);
-                        ReturnUser user = setReturnUser(xUser);
-                        user.setNeedverifyMapCode(0);
-                        // 标识告诉前台是登录还是注册
-                        user.setType(SysVariable.RETURN_TYPE_LOGIN);
-                        return user;
-                    }
-
-                } else {
-                    // 密码注册-自动登录：这里才需要校验密码
-                    if (!StringUtils.isEmpty(password)) {
-                        if (!StringUtil.valiPassword(password)) {
-                            logger.info("用户名和密码输入错误--------------------");
-                            throw new BusinessException(
-                                i18nService.getMessage("response.error.register.passworderror.code"),
-                                i18nService.getMessage("response.error.register.passworderror.msg"));
-                        }
-                        logger.info("密码注册：" + macCode + "-------------------");
-                        String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
-                        if (StringUtils.isEmpty(macCodeRepeatPhone)) {
-                            XUser xUser = registerLogin(loginInfo);
-                            ReturnUser user = setReturnUser(xUser);
-                            user.setNeedverifyMapCode(0);
-                            // 标识告诉前台是登录还是注册
-                            user.setType(SysVariable.RETURN_TYPE_REGISTER);
-                            return user;
-                        } else {
-                            // 使用了同一个设备注册，返回错误信息
-                            String msg = MessageFormat.format(
-                                i18nService.getMessage("response.error.register.macCodeRepeat.msg"),
-                                macCodeRepeatPhone);
-                            throw new BusinessException(
-                                i18nService.getMessage("response.error.register.macCodeRepeat.code"), msg);
-                        }
-
-                    } else {
-                        if (!"1".equals(isVerifyCodeLogin)) {
-                            throw new BusinessException(
-                                i18nService.getMessage("response.error.register.blankpassword.code"),
-                                i18nService.getMessage("response.error.register.blankpassword.msg"));
-                        } else {
-                            // 短信验证码登录：还未注册，短信验证码注册后再自动登录
-                            logger.info("短信验证码注册：" + macCode + "-------------------");
-                            String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
-                            if (StringUtils.isEmpty(macCodeRepeatPhone)) {
-                                XUser xUser = registerLogin(loginInfo);
-                                ReturnUser user = setReturnUser(xUser);
-                                user.setNeedverifyMapCode(0);
-                                // 标识告诉前台是登录还是注册
-                                user.setType(SysVariable.RETURN_TYPE_REGISTER);
-                                return user;
-                            } else {
-                                // 使用了同一个设备注册，返回错误信息
-                                String msg = MessageFormat.format(
-                                    i18nService.getMessage("response.error.register.macCodeRepeat.msg"),
-                                    macCodeRepeatPhone);
-                                throw new BusinessException(
-                                    i18nService.getMessage("response.error.register.macCodeRepeat.code"), msg);
-                            }
-
-                        }
-
-                    }
-                }
-
-            } else {
-                logger.info("手机验证码校验错误：" + isCorrect + "--------------");
-                // 验证码错误次数
-                throw new BusinessException(i18nService.getMessage("response.error.register.verifynum.code"),
-                    i18nService.getMessage("response.error.register.verifynum.msg"));
-
-            }
-
+            isCorrect = checkCode(mobile, verifyCode);
         } else {
+            // 短信验证码不能为空
+            isCorrect = false;
             throw new BusinessException(i18nService.getMessage("response.error.register.phoneverify.code"),
                 i18nService.getMessage("response.error.register.phoneverify.msg"));
-
         }
 
+        return isCorrect;
+    }
+
+    /**
+     * 同一个设备不能使用注册两个手机号码校验
+     * 
+     * @param macCode
+     * @param loginInfo
+     * @return
+     */
+    private ReturnUser checkMacCodeByphone(String macCode, LoginInfo loginInfo) {
+        // 校验该设备是不是被注册过了
+        String macCodeRepeatPhone = xUserInfoService.checkMacCode(macCode);
+        if (StringUtils.isEmpty(macCodeRepeatPhone)) {
+            XUser xUser = registerLogin(loginInfo);
+            ReturnUser user = setReturnUser(xUser);
+            user.setNeedverifyMapCode(0);
+            // 标识告诉前台是登录还是注册
+            user.setType(SysVariable.RETURN_TYPE_REGISTER);
+            return user;
+        } else {
+            // 使用了同一个设备注册，返回错误信息
+            String msg = MessageFormat.format(i18nService.getMessage("response.error.register.macCodeRepeat.msg"),
+                macCodeRepeatPhone);
+            throw new BusinessException(i18nService.getMessage("response.error.register.macCodeRepeat.code"), msg);
+        }
+    }
+
+    /**
+     * 短信验证码登录
+     * 
+     * @param loginInfo
+     * @param userGid
+     * @return
+     */
+    private ReturnUser verifyCodeLogin(LoginInfo loginInfo, String userGid) {
+        XUser xUser = new XUser();
+        xUser.setPhone(loginInfo.getMobile());
+        xUser.setUserGid(userGid);
+        xUser.setCreateTime(new Date());
+        xUser.setFmcToken(loginInfo.getFmcToken());
+        xUser = login(xUser);
+        xUser = getToken(xUser);
+        ReturnUser user = setReturnUser(xUser);
+        user.setNeedverifyMapCode(0);
+        // 标识告诉前台是登录还是注册
+        user.setType(SysVariable.RETURN_TYPE_LOGIN);
+        return user;
     }
 
     private ReturnUser setReturnUser(XUser xUser) {
@@ -436,14 +446,13 @@ public class XRegisterServiceImpl implements XRegisterService {
         String mobile = loginInfo.getMobile();
         String password = loginInfo.getPassword();
         String needCheckVerify = loginInfo.getNeedCheckVerify();
-        logger.info("前台传过来的fmcToken:" + loginInfo.getFmcToken() + "============================");
+        logger.info("前台传过来的fmcToken:{}", loginInfo.getFmcToken());
         boolean isCorrect = true;
         // 老用户新设备登录，需要校验手机验证码
         String verifyCode = loginInfo.getVerifyCode();
-        if ("1".equals(needCheckVerify)) {
+        if (SysVariable.LOGIN_NEWEQUIPMENT.equals(needCheckVerify)) {
             if (!StringUtils.isEmpty(verifyCode)) {
                 long existTime = redisTemplate.boundHashOps(mobile).getExpire();
-                logger.info("获取到key的有效时间existTime=" + existTime + "--------");
 
                 if (existTime < 0) {
                     logger.info("手机验证码失效============================");
@@ -509,7 +518,6 @@ public class XRegisterServiceImpl implements XRegisterService {
         boolean isCorrect = true;
         if (!StringUtils.isEmpty(verifyCode)) {
             long existTime = redisTemplate.boundHashOps(mobile).getExpire();
-            logger.info("获取到key的有效时间existTime=" + existTime + "--------");
             if (existTime < 0) {
                 logger.info("短信验证码已失效============================");
                 throw new BusinessException(i18nService.getMessage("response.error.register.verify.code"),

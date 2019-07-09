@@ -8,10 +8,6 @@ dataSource:
   master: true
   slave: false
 
-#短信通知失效时间
-noticemsg:
-  effectiveTime: 259200
-
 spring:
   profiles:
     # 多模块使用include取代active
@@ -42,7 +38,10 @@ token:
 #短信验证码失效时间
 verifycode:
     effectiveTime: 120001
+    
+#短信通知失效时间(单位：s)
+noticemsg:
+  effectiveTime: 259200
 
 # 是否对敏感信息解密
 needDecrypt: false
-

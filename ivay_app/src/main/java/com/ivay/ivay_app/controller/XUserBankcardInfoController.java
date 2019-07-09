@@ -1,5 +1,22 @@
 package com.ivay.ivay_app.controller;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
@@ -15,16 +32,13 @@ import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.XUserBankcardInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
-import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(tags = "绑卡")
@@ -47,19 +61,16 @@ public class XUserBankcardInfoController {
     @PostMapping("add")
     @ApiOperation(value = "添加银行卡")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "bankNo", value = "银行编号", dataType = "String", paramType = "query", required = true)
-    })
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "result => 1 已经设置了交易密碼，0 还沒设置之交易密碼")
-    })
+        @ApiImplicitParam(name = "bankNo", value = "银行编号", dataType = "String", paramType = "query", required = true)})
+    @ApiResponses({@ApiResponse(code = 200, message = "result => 1 已经设置了交易密碼，0 还沒设置之交易密碼")})
     @LogAnnotation(module = "添加银行卡")
-    public Response<String> save(@RequestBody XUserBankcardInfo xUserBankcardInfo,
-                                 @RequestParam String bankNo) {
+    public Response<String> save(@RequestBody XUserBankcardInfo xUserBankcardInfo, @RequestParam String bankNo,
+        HttpServletRequest request) {
         Response<String> response = new Response<>();
         if (StringUtils.isEmpty(xUserBankcardInfo.getCardUserName())) {
             logger.info("{}: 输入姓名为空", xUserBankcardInfo.getUserGid());
             response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
-                    i18nService.getMessage("response.error.bank.account.msg"));
+                i18nService.getMessage("response.error.bank.account.msg"));
             return response;
         } else {
             // 将越南名字转化为大写字母
@@ -70,7 +81,7 @@ public class XUserBankcardInfoController {
         if (list != null && list.size() > 0) {
             logger.info("{}: 卡号重复：{}", xUserBankcardInfo.getUserGid(), xUserBankcardInfo.getCardNo());
             response.setStatus(i18nService.getMessage("response.error.bank.repeat.code"),
-                    i18nService.getMessage("response.error.bank.repeat.msg"));
+                i18nService.getMessage("response.error.bank.repeat.msg"));
             return response;
         }
         XUserInfo xUserInfo = xUserInfoService.getByGid(xUserBankcardInfo.getUserGid());
@@ -79,32 +90,27 @@ public class XUserBankcardInfoController {
         if (xUserInfo == null) {
             logger.info("{}: 用户不存在: {}", xUserBankcardInfo.getUserGid(), xUserBankcardInfo.getUserGid());
             response.setStatus(i18nService.getMessage("response.error.user.checkgid.code"),
-                    i18nService.getMessage("response.error.user.checkgid.msg"));
+                i18nService.getMessage("response.error.user.checkgid.msg"));
             return response;
-        } else if (StringUtils.isEmpty(xUserInfo.getName()) ||
-                MinDistance.minDistance(xUserInfo.getName(), xUserBankcardInfo.getCardUserName()) > 1) {
-            logger.info("{}: 绑定银行卡姓名与系统姓名不一致:{},{}",
-                    xUserBankcardInfo.getUserGid(),
-                    xUserBankcardInfo.getCardUserName(),
-                    xUserInfo.getName());
+        } else if (StringUtils.isEmpty(xUserInfo.getName())
+            || MinDistance.minDistance(xUserInfo.getName(), xUserBankcardInfo.getCardUserName()) > 1) {
+            logger.info("{}: 绑定银行卡姓名与系统姓名不一致:{},{}", xUserBankcardInfo.getUserGid(),
+                xUserBankcardInfo.getCardUserName(), xUserInfo.getName());
             response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
-                    i18nService.getMessage("response.error.bank.account.msg"));
+                i18nService.getMessage("response.error.bank.account.msg"));
             return response;
         }
 
         // 需要判断传入的accType 是否是银行支持的类型
         // 校验身份信息
-        TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo,
-                xUserBankcardInfo.getCardNo(),
-                xUserBankcardInfo.getAccType());
+        TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo, xUserBankcardInfo.getCardNo(),
+            xUserBankcardInfo.getAccType());
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
             if (MinDistance.minDistance(xUserBankcardInfo.getCardUserName(), transfersRsp.getAccName()) > 1) {
-                logger.info("{}: 绑定银行卡姓名校验失败：{},{}",
-                        xUserBankcardInfo.getUserGid(),
-                        xUserBankcardInfo.getCardUserName(),
-                        transfersRsp.getAccName());
+                logger.info("{}: 绑定银行卡姓名校验失败：{},{}", xUserBankcardInfo.getUserGid(),
+                    xUserBankcardInfo.getCardUserName(), transfersRsp.getAccName());
                 response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
-                        i18nService.getMessage("response.error.bank.account.msg"));
+                    i18nService.getMessage("response.error.bank.account.msg"));
                 return response;
             }
             Date now = new Date();
@@ -119,7 +125,8 @@ public class XUserBankcardInfoController {
                 xUserInfo.setUpdateTime(now);
                 xUserInfoService.update(xUserInfo);
             }
-            response.setBo(StringUtils.isEmpty(xUserInfo.getTransPwd()) ? SysVariable.TRANSFER_PWD_NONE : SysVariable.TRANSFER_PWD_HAS);
+            response.setBo(StringUtils.isEmpty(xUserInfo.getTransPwd()) ? SysVariable.TRANSFER_PWD_NONE
+                : SysVariable.TRANSFER_PWD_HAS);
         } else {
             response.setStatus(transfersRsp.getResponseCode(), transfersRsp.getResponseMessage());
             logger.info("{}: 绑卡身份验证失败： {}", xUserBankcardInfo.getUserGid(), response.getStatus().getMessage());
@@ -149,8 +156,7 @@ public class XUserBankcardInfoController {
     @PostMapping("deleteCards")
     @ApiOperation(value = "删除某张银行卡所有的绑定")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "bankcardGid", value = "银行卡gid", dataType = "String", paramType = "query")
-    })
+        @ApiImplicitParam(name = "bankcardGid", value = "银行卡gid", dataType = "String", paramType = "query")})
     @LogAnnotation(module = "删除某张银行卡所有的绑定")
     public Response<Integer> deletes(@RequestParam String bankcardGid, HttpServletRequest request) {
         int num = xUserBankcardInfoDao.deletes(bankcardGid);
@@ -162,10 +168,11 @@ public class XUserBankcardInfoController {
     @PostMapping("getCardStatus")
     @ApiOperation(value = "获取银行卡绑定结果")
     @LogAnnotation(module = "获取银行卡绑定结果")
-    public Response<List<XUserBankcardInfo>> getCardStatus(@RequestBody XUserBankcardInfo xUserBankcardInfo, HttpServletRequest request) {
+    public Response<List<XUserBankcardInfo>> getCardStatus(@RequestBody XUserBankcardInfo xUserBankcardInfo,
+        HttpServletRequest request) {
         Response<List<XUserBankcardInfo>> response = new Response<>();
-        response.setBo(xUserBankcardInfoDao.getByCardGid(xUserBankcardInfo.getBankcardGid(),
-                xUserBankcardInfo.getUserGid()));
+        response.setBo(
+            xUserBankcardInfoDao.getByCardGid(xUserBankcardInfo.getBankcardGid(), xUserBankcardInfo.getUserGid()));
         return response;
     }
 }

@@ -211,4 +211,26 @@ public class SysVariable {
 
     // 发送通知短信链接固定前缀
     public static final String PHONEMSG_PREFIX_LINK = "https://ovay.vn/";
+
+    // 发送短信的第3方接口运营商类型
+    public static final String SMS_ZERO = "0";
+    public static final String SMS_ONE = "1";
+    public static final String SMS_TWO = "2";
+    public static final String SMS_THREE = "3";
+
+    // 发送短信返回成功的状态
+    public static final String SMS_SEND_SUCCESS = "0";
+
+    // 发送短信验证码的操作类型optType
+    public static final int OPTTYPE_RESETLOGINPWD = 0; // 0. app忘记密码（需要重置登录密码）
+    public static final int OPTTYPE_REGISTER = 1; // 1. app注册设置密码（独立注册）
+    public static final int OPTTYPE_NEWEQUIPMENT = 2; // 2. app老用户新设备登录
+    public static final int OPTTYPE_SMSCODELOGIN = 3; // 3. 使用短信验证码登录
+    public static final int OPTTYPE_RESETTRANPWD = 4; // 4. 修改交易密码
+
+    // 短信验证码登录操作类型
+    public static final String SMS_VERIFYCODE_LOGIN = "1"; // 短信验证码登录(如果不存在该手机号码，实际上就是注册)
+    // needCheckVerify:是否老用户新设备登录(1.是，0否）
+    public static final String LOGIN_NEWEQUIPMENT = "1";
+    public static final String LOGIN_OLDEQUIPMENT = "0";
 }

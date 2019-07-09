@@ -4,14 +4,14 @@ server:
   name: ivay-manage
 
 # 数据库配置
-dataSource:
+dataSource: 
   master: true
   slave: true
 
-#短信通知失效时间
-noticemsg:
+#短信通知失效时间(单位：s)
+noticemsg: 
   effectiveTime: 259200
-
+  
 spring:
   profiles:
     # 多模块使用include取代active

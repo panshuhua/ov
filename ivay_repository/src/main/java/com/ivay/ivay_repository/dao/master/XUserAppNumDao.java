@@ -10,12 +10,12 @@ import io.lettuce.core.dynamic.annotation.Param;
 
 @Mapper
 public interface XUserAppNumDao {
-	
-	@Options(useGeneratedKeys = true, keyProperty = "id")
-	@Select("insert into x_user_app_num(user_gid,app_num,update_date) VALUES (#{userGid}, #{appNum}, #{updateDate})")
+
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Select("insert into x_user_app_num(user_gid,app_num,update_date,enable_flag) VALUES (#{userGid}, #{appNum}, #{updateDate},'Y')")
     Integer saveAppNum(XUserAppNum xUserAppNum);
-    
-	@Select("select count(1) from x_user_app_num where user_gid=#{userGid} and update_date=#{updateDate}")
-	Integer countAppNum(@Param("userGid")String userGid,@Param("updateDate")String updateDate);
-	
+
+    @Select("select count(1) from x_user_app_num where user_gid=#{userGid} and update_date=#{updateDate} and enable_flag='Y'")
+    Integer countAppNum(@Param("userGid") String userGid, @Param("updateDate") String updateDate);
+
 }

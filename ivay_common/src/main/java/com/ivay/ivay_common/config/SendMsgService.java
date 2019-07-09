@@ -1,9 +1,8 @@
 package com.ivay.ivay_common.config;
 
-import com.ivay.ivay_common.dto.FptAccessTokenReq;
-import com.ivay.ivay_common.dto.FptSendReq;
-import com.ivay.ivay_common.dto.NoticeMsg;
-import com.ivay.ivay_common.utils.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.ivay.ivay_common.dto.FptAccessTokenReq;
+import com.ivay.ivay_common.dto.FptSendReq;
+import com.ivay.ivay_common.dto.NoticeMsg;
+import com.ivay.ivay_common.utils.Base64Util;
+import com.ivay.ivay_common.utils.FirebaseUtil;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.StringUtil;
+import com.ivay.ivay_common.utils.UUIDUtils;
 
 /**
  * 发送短信/推送
@@ -64,8 +69,8 @@ public class SendMsgService {
         params.put("to", "84" + mobile);
         params.put("text", authCode);
         String ret = restTemplate.getForObject(paasooUrl, String.class, params);
-        logger.info("调用短信验证码接口返回ret：" + ret + "------------");
-        logger.info("【发送的短信内容】：" + authCode + "----------------------");
+        logger.info("调用短信验证码接口返回ret:{}", ret);
+        logger.info("【发送的短信内容】:{}", authCode);
         Map<String, String> msgMap = JsonUtils.jsonToMap(ret);
         return msgMap;
     }
@@ -88,7 +93,7 @@ public class SendMsgService {
 
         HttpEntity<String> formEntity = new HttpEntity<String>(JsonUtils.objectToJson(req), headers);
         String responseBody = restTemplate.postForEntity(fptAccessTokenUrl, formEntity, String.class).getBody();
-        logger.info("获取token返回：" + responseBody);
+        logger.info("获取token返回：{}", responseBody);
 
         Map<String, String> map = JsonUtils.jsonToMap(responseBody);
         String accessToken = map.get("access_token");
@@ -96,8 +101,6 @@ public class SendMsgService {
         if (accessToken != null) {
             // 发送短信
             String message = Base64Util.encode(text);
-            System.out.println("加密后的message：" + message);
-
             FptSendReq sendReq = new FptSendReq();
             sendReq.setAccess_token(accessToken);
             sendReq.setBrandName(brandName);
@@ -108,12 +111,12 @@ public class SendMsgService {
             formEntity = new HttpEntity<String>(JsonUtils.objectToJson(sendReq), headers);
             // 注意：如果手机号码不对，这里会直接报400
             responseBody = restTemplate.postForEntity(fptSendmsgUrl, formEntity, String.class).getBody();
-            logger.info("发送短信返回：" + responseBody);
+            logger.info("发送短信返回:{}", responseBody);
 
             return responseBody;
         }
 
-        logger.info("fpt发送短信获取accessToken失败，返回的错误码为：" + map.get("error") + "，错误信息：" + map.get("error_description"));
+        logger.info("fpt发送短信获取accessToken失败，返回的错误码为:{},", map.get("error"));
         return null;
     }
 
@@ -126,11 +129,11 @@ public class SendMsgService {
         firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
         msg.setTitle(firebaseTitle);
         msg.setFirebaseMsg(firebaseMsg);
-        logger.info("firebase推送标题：" + msg.getTitle());
-        logger.info("firebase推送内容：" + msg.getFirebaseMsg());
-        logger.info("firebase跳转页面to：" + msg.getPageId());
-        logger.info("firebase借款gid：" + msg.getGid());
-        logger.info("firebase用户gid：" + msg.getUserGid());
+        logger.info("firebase推送标题:{}", msg.getTitle());
+        logger.info("firebase推送内容:{}", msg.getFirebaseMsg());
+        logger.info("firebase跳转页面to:{}", msg.getPageId());
+        logger.info("firebase借款gid:{}", msg.getGid());
+        logger.info("firebase用户gid:{}", msg.getUserGid());
         FirebaseUtil.sendMsgToFmcToken(msg);
     }
 
@@ -138,12 +141,12 @@ public class SendMsgService {
     public void sendPhoneNoticeMsg(NoticeMsg msg) throws Exception {
         String phoneMsg = StringUtil.vietnameseToEnglish(msg.getPhoneMsg());
         msg.setPhoneMsg(phoneMsg);
-        logger.info("短信页面短链接的key：" + msg.getKey());
-        logger.info("手机短信发送的电话号码：" + msg.getPhone());
-        logger.info("手机短信发送内容：" + msg.getPhoneMsg());
-        logger.info("手机短信跳转页面：" + msg.getPageId());
-        logger.info("手机短信借款gid：" + msg.getGid());
-        logger.info("手机短信用户gid：" + msg.getUserGid());
+        logger.info("短信页面短链接的key:{}", msg.getKey());
+        logger.info("手机短信发送的电话号码:{}", msg.getPhone());
+        logger.info("手机短信发送内容:{}", msg.getPhoneMsg());
+        logger.info("手机短信跳转页面:{}", msg.getPageId());
+        logger.info("手机短信借款gid:{}", msg.getGid());
+        logger.info("手机短信用户gid:{}", msg.getUserGid());
     }
 
 }
