@@ -79,7 +79,7 @@ public class XLoanController {
             @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "type 0 逾期天数为(0,3), 1 逾期天数为[3,)  null全部逾期", dataType = "String", paramType = "query", required = false)
+            @ApiImplicitParam(name = "type", value = "0逾期天数[1,3], 1逾期天数[4,10], 2逾期天数[11,以上) null全部逾期", dataType = "String", paramType = "query", required = false)
     })
     @ApiOperation("查看还款信息")
     public Response<PageTableResponse> repaymentInfo(@RequestParam(required = false, defaultValue = "0") int limit,

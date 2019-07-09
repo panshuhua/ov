@@ -201,10 +201,12 @@ public class CustomerServiceImpl implements CustomerService {
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
-        // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
+        // type 0逾期天数[1,3], 1逾期天数[4,10], 2逾期天数[11,以上)
         request.getParams().put("type", type);
         request.getParams().put("userGid", userGid);
-        return new PageTableHandler(a -> xRecordRepaymentDao.countRepaymentInfo(a.getParams()),
-                a -> xRecordRepaymentDao.listRepaymentInfo(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+        return new PageTableHandler(
+                a -> xRecordRepaymentDao.countRepaymentInfo(a.getParams()),
+                a -> xRecordRepaymentDao.listRepaymentInfo(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 }
