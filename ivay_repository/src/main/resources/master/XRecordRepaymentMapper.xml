@@ -154,7 +154,7 @@
 
 
     <sql id="repaymentInfo_condition">
-        where b.loan_status=1 and b.user_gid = t.user_gid AND b.repayment_status!=2 AND t.user_gid=#{params.userGid}
+        where xrl.loan_status=1 and xrl.user_gid = t.user_gid AND xrl.repayment_status!=2 AND t.user_gid=#{params.userGid}
         <choose>
             <!-- 逾期1~3天 -->
             <when test="params.type == '0'.toString()">
@@ -169,7 +169,7 @@
                 AND xrl.due_time &lt; DATE_ADD(sysdate(),INTERVAL -10 DAY)
             </when>
             <otherwise>
-                AND b.due_time &lt; sysdate()
+                AND xrl.due_time &lt; sysdate()
             </otherwise>
         </choose>
     </sql>
@@ -179,12 +179,12 @@
             SELECT
                 t.phone,
                 t.name,
-                b.order_id,
-                date_format(b.create_time, '%Y-%m-%d') loan_time,
+                xrl.order_id,
+                date_format(xrl.create_time, '%Y-%m-%d') loan_time,
                 date_format(due_time, '%Y-%m-%d') due_time,
-                b.loan_amount loan_amount,
-                b.due_amount+b.overdue_fee+b.overdue_interest due_amount_total
-            FROM x_record_loan b,x_user_info t
+                xrl.loan_amount loan_amount,
+                xrl.due_amount+xrl.overdue_fee+xrl.overdue_interest due_amount_total
+            FROM x_record_loan xrl,x_user_info t
             <include refid="repaymentInfo_condition" />
         ) a left join x_virtual_account v on  v.order_id=a.order_id and v.response_code='200'
     </select>
@@ -194,12 +194,12 @@
             SELECT
                 t.phone,
                 t.name,
-                b.order_id,
-                date_format(b.create_time, '%Y-%m-%d') loan_time,
+                xrl.order_id,
+                date_format(xrl.create_time, '%Y-%m-%d') loan_time,
                 date_format(due_time, '%Y-%m-%d') due_time,
-                b.loan_amount loan_amount,
-                b.due_amount+b.overdue_fee+b.overdue_interest due_amount_total
-            FROM x_record_loan b,x_user_info t
+                xrl.loan_amount loan_amount,
+                xrl.due_amount+xrl.overdue_fee+xrl.overdue_interest due_amount_total
+            FROM x_record_loan xrl,x_user_info t
             <include refid="repaymentInfo_condition" />
         ) a left join x_virtual_account v on  v.order_id=a.order_id and v.response_code='200'
         order by due_time asc
