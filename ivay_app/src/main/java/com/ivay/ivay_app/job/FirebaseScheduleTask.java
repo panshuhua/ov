@@ -31,7 +31,7 @@ public class FirebaseScheduleTask {
             }
 
             logger.info(start);
-            flag = xFirebaseNoticeService.sendRepaymentNotice();
+            flag = xFirebaseNoticeService.sendRepaymentNotice1();
             logger.info("还款到期通知消息发送结束---{}", flag ? "成功" : "失败");
 
             if (!flag) {
@@ -63,7 +63,7 @@ public class FirebaseScheduleTask {
             }
 
             logger.info(start);
-            flag = xFirebaseNoticeService.sendOverDueNotice();
+            flag = xFirebaseNoticeService.sendOverDueNotice1();
             logger.info("逾期通知消息发送结束---{}", flag ? "成功" : "失败");
 
             if (!flag) {

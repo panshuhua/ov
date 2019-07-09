@@ -1,6 +1,6 @@
 # 服务相关
 server:
-  port: 8090
+  port: 8080
   name: ivay-app
 
 # 数据库配置
@@ -37,7 +37,7 @@ token:
 
 #短信验证码失效时间
 verifycode:
-    effectiveTime: 120000
+    effectiveTime: 120001
 
 # 是否对敏感信息解密
 needDecrypt: false

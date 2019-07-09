@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,6 +126,35 @@ public class FirebaseUtil {
 
                 logger.info("List of tokens that caused failures: " + failedTokens);
             }
+        }
+
+    }
+
+    // 旧的发送消息推送代码
+    // 单个发送
+    public static void sendMsgToFmcToken1(String registrationToken, String title, String msg, String pageId,
+        String userGid) throws FirebaseMessagingException, InterruptedException, ExecutionException, IOException {
+        // String registrationToken =
+        // "e0iIeVUJkqA:APA91bGRmnXuzGhAlIGu7CKpM48Ix_3wJyk3E8QM_1iNJtQVfWvmNzk1vJXMlXlfbs8Vn0eezk8xQgpTRv1Qk1VrAA_-e23_as4HJsEcN-C29ArTdSOUz2IwOeg_quW9jIxB_uOOA1fZ";
+        addInstance("app");
+        FirebaseApp firebaseApp = getInstance("app");
+        logger.info("firebaseApp Instance get success......");
+        Notification notification = new Notification(title, msg);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("to", pageId); // 跳转的页面
+        if (userGid != null) {
+            map.put("gid", userGid); // 只有部分页面需要传递userGid
+        }
+
+        if (firebaseApp != null) {
+            Message message =
+                Message.builder().setNotification(notification).putAllData(map).setToken(registrationToken).build();
+
+            logger.info("message=" + message);
+            FirebaseMessaging fbmsg = FirebaseMessaging.getInstance();
+            logger.info("fbmsg=" + fbmsg);
+            String response = fbmsg.send(message);
+            logger.info("Successfully sent message: " + response);
         }
 
     }

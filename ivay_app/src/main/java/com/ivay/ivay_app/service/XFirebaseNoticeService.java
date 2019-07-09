@@ -11,6 +11,10 @@ public interface XFirebaseNoticeService {
 
     boolean sendOverDueNotice();
 
+    boolean sendRepaymentNotice1();
+
+    boolean sendOverDueNotice1();
+
     MsgLinkData getLinkData(String key);
 
     String testSendMsg(NoticeMsg msg, String type) throws Exception;
