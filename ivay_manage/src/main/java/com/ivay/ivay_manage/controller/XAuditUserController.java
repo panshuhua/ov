@@ -1,8 +1,11 @@
 package com.ivay.ivay_manage.controller;
 
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.XAuditService;
+import com.ivay.ivay_manage.service.XUserInfoService;
+import com.ivay.ivay_repository.dto.XAuditListInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -69,21 +72,46 @@ public class XAuditUserController {
             @ApiImplicitParam(name = "auditName", value = "审计员名字", dataType = "String", paramType = "query")
     })
     @ApiOperation("获得所有的审计员")
-    public PageTableResponse listAuditV2(@RequestParam(required = false, defaultValue = "0") int limit,
-                                         @RequestParam(required = false, defaultValue = "1") int num,
-                                         @RequestParam(required = false) String auditName) {
+    public Response<PageTableResponse> listAuditV2(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                   @RequestParam(required = false, defaultValue = "1") int num,
+                                                   @RequestParam(required = false) String auditName) {
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
         request.setOffset(limit * (num - 1));
         if (!StringUtils.isEmpty(auditName)) {
             request.getParams().put("username", auditName);
         }
-        return xAuditService.listAudit(request);
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xAuditService.listAudit(request));
+        return response;
     }
 
     @GetMapping("listUser")
     @ApiOperation("获取某审计员可审计名单")
     public PageTableResponse listUser(PageTableRequest request) {
         return xAuditService.listUser(request);
+    }
+
+    @Autowired
+    private XUserInfoService xUserInfoService;
+
+    @GetMapping("listUser/v2")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "auditId", value = "审计员id", dataType = "Long", paramType = "query")
+    })
+    @ApiOperation("获取某审计员可审计名单")
+    public Response<PageTableResponse> listUserV2(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                  @RequestParam(required = false, defaultValue = "1") int num,
+                                                  @RequestParam Integer auditId) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset(limit * (num - 1));
+        XAuditListInfo xAuditListInfo = new XAuditListInfo();
+        xAuditListInfo.setAuditId(auditId);
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xUserInfoService.auditList(limit, num, xAuditListInfo));
+        return response;
     }
 }
