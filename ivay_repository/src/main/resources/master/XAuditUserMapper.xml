@@ -14,6 +14,9 @@
             <if test="params.id != null and params.id != ''">
                 and id = #{params.id}
             </if>
+            <if test="params.username != null and params.username != ''">
+                and username like concat("%",#{params.username},"%")
+            </if>
             <if test="params.sysUserId != null and params.sysUserId != ''">
                 and sys_user_id = #{params.sysUserId}
             </if>
@@ -40,8 +43,8 @@
         WHERE xau.enable_flag='Y' AND xau.sys_user_id=t.id GROUP BY xau.sys_user_id) count
         FROM sys_user t
         <include refid="list_condition"/>
+        order by username asc
         <if test="limit != null and limit != 0">
-            ${params.orderBy}
             limit #{offset}, #{limit}
         </if>
     </select>

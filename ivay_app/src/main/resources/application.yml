@@ -8,12 +8,16 @@ dataSource:
   master: true
   slave: false
 
+#短信通知失效时间
+noticemsg:
+  effectiveTime: 259200
+
 spring:
   profiles:
     # 多模块使用include取代active
 #   include: dev, comDev, dbLoc
-   include: dev, comDev, dbDev
-#   include: test, comTest, dbTest
+#   include: dev, comDev, dbDev
+   include: test, comTest, dbTest
 #   include: prod, comProd, dbProd
   servlet:
     multipart:

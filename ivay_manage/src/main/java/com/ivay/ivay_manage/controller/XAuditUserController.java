@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,9 +63,21 @@ public class XAuditUserController {
     }
 
     @GetMapping("listAudit/v2")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "auditName", value = "审计员名字", dataType = "String", paramType = "query")
+    })
     @ApiOperation("获得所有的审计员")
-    public PageTableResponse listAuditV2(PageTableRequest request) {
-        request.setLimit(0);
+    public PageTableResponse listAuditV2(@RequestParam(required = false, defaultValue = "0") int limit,
+                                         @RequestParam(required = false, defaultValue = "1") int num,
+                                         @RequestParam(required = false) String auditName) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset(limit * (num - 1));
+        if (!StringUtils.isEmpty(auditName)) {
+            request.getParams().put("username", auditName);
+        }
         return xAuditService.listAudit(request);
     }
 
