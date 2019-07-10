@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ivay.ivay_app.dto.MsgLinkData;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
+import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.dto.Response;
 
@@ -71,36 +71,6 @@ public class SendNoticeMsgController {
     public Response<String> testSendMsg(@RequestParam String type, @RequestBody NoticeMsg msg) throws Exception {
         Response<String> response = new Response<String>();
         response.setBo(xFirebaseNoticeService.testSendMsg(msg, type));
-        return response;
-    }
-
-    /**
-     * 具体场景发送消息推送测试
-     * 
-     * @param msg
-     * @return
-     * @throws Exception
-     */
-    @PostMapping("/sendFirebaseNoticeMsg")
-    public Response<String> sendFirebaseNoticeMsg(@RequestBody NoticeMsg msg) throws Exception {
-        Response<String> response = new Response<String>();
-        xFirebaseNoticeService.sendFirebaseNoticeMsg(msg);
-        // response.setBo(bo);
-        return response;
-    }
-
-    /**
-     * 具体场景发送短信测试
-     * 
-     * @param msg
-     * @return
-     * @throws Exception
-     */
-    @PostMapping("/sendPhoneNoticeMsg")
-    public Response<String> sendPhoneNoticeMsg(@RequestBody NoticeMsg msg) throws Exception {
-        Response<String> response = new Response<String>();
-        // response.setBo(bo);
-        xFirebaseNoticeService.sendPhoneNoticeMsg(msg);
         return response;
     }
 

@@ -35,9 +35,11 @@ token:
     seconds: 259200
   jwtSecret: (JUN:)_$^11244^%$_(XING:)_@@++--(KE:)_++++_.sds_(JI:)
 
-#短信验证码失效时间
 verifycode:
+    #发送短信验证码的间隔时间(约2min，单位ms)
     effectiveTime: 120001
+    #短信验证码有效时间(10min，单位ms)
+    validTime: 600000
     
 #短信通知失效时间(单位：s)
 noticemsg:

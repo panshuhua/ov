@@ -1,8 +1,9 @@
 package com.ivay.ivay_app.service;
 
-import com.ivay.ivay_app.dto.MsgLinkData;
+import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XUserInfo;
 
 public interface XFirebaseNoticeService {
@@ -23,7 +24,17 @@ public interface XFirebaseNoticeService {
 
     void sendPhoneNoticeMsg(NoticeMsg msg) throws Exception;
 
-    NoticeMsg prepareParam(XRecordLoan xRecordLoan, XUserInfo xUserInfo);
-
     void sendAllNotice(NoticeMsg msg);
+
+    /**
+     * 发送已还款通知：全部还款与部分还款
+     */
+    void sendHadRepayNotice(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, XUserInfo xUserInfo);
+
+    /**
+     * 发送借款通知：借款成功/失败
+     * 
+     * @param xRecordLoan
+     */
+    void sendLoanSuccessNotice(XRecordLoan xRecordLoan, XUserInfo xUserInfo);
 }

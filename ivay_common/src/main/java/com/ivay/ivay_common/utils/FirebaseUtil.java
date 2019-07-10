@@ -83,9 +83,13 @@ public class FirebaseUtil {
         logger.info("firebaseApp Instance get success......");
         Notification notification = new Notification(msg.getTitle(), msg.getFirebaseMsg());
         Map<String, String> map = new HashMap<String, String>();
-        map.put("to", msg.getPageId()); // 跳转的页面
+
+        if (msg.getPageId() != null) {
+            map.put("to", msg.getPageId()); // 跳转的页面
+        }
+
         if (msg.getGid() != null) {
-            map.put("gid", msg.getGid()); // 只有部分页面需要传递userGid
+            map.put("gid", msg.getGid()); // 只有部分页面需要传递借款gid
         }
 
         if (firebaseApp != null) {

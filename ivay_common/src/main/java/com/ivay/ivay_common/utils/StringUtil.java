@@ -271,9 +271,8 @@ public class StringUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(vietnameseToEnglish(
-            "Khoản vay {0} của quý khách trên OVAY sắp đến hạn vào ngày mai, vui lòng trả nợ trước thời hạn để trành phát sinh phí quá hạn{1}.\n"
-                + ""));
+        System.out.println(
+            vietnameseToEnglish("[OVAY] mã xác thực: {0}, mã xác thực có hiệu lực trong 10 phút,, không được để lộ"));
     }
 
 }

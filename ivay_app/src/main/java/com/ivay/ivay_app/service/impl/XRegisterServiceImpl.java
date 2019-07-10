@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.ivay.ivay_app.dto.SMSResponseStatus;
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;
 import com.ivay.ivay_app.service.XConfigService;
@@ -25,6 +24,7 @@ import com.ivay.ivay_app.service.XUserInfoService;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.config.SendMsgService;
+import com.ivay.ivay_common.dto.SMSResponseStatus;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
@@ -68,8 +68,10 @@ public class XRegisterServiceImpl implements XRegisterService {
      */
     @Value("${token.expire.seconds}")
     private Integer expireSeconds;
-    @Value("${verifycode.effectiveTime}")
+    @Value("${verifycode.effectiveTime}") // 可重复发送验证码时间：2分钟
     private long effectiveTime;
+    @Value("${verifycode.validTime}") // 短信验证码失效时间：10分钟
+    private long validTime;
 
     @Autowired
     private SendMsgService sendMsgService;
@@ -114,26 +116,35 @@ public class XRegisterServiceImpl implements XRegisterService {
         String mobile = xUser.getPhone();
         String password = xUser.getPassword();
         String fmcToken = xUser.getFmcToken();
+        XUser xUser2 = xUserInfoDao.getUserByPhone(mobile); // 密码登录判断用户是否存在，确定是输错密码还是用户没有注册
+
         if (!StringUtils.isEmpty(password)) {
-            String dbPwd = xUserInfoDao.getPassword(mobile);
+            if (xUser2 != null) {
+                String dbPwd = xUser2.getPassword();
 
-            // 前端与数据库密码校验
-            boolean flag = bCryptPasswordEncoder.matches(password, dbPwd);
+                // 前端与数据库密码校验
+                boolean flag = bCryptPasswordEncoder.matches(password, dbPwd);
 
-            if (flag) {
-                xUser = xUserInfoDao.getLoginUser(mobile, dbPwd);
-                // 更新fmcToken
-                xUserInfoDao.updateTmcToken(fmcToken, xUser.getUserGid());
-                return xUser;
+                if (flag) {
+                    xUser = xUserInfoDao.getLoginUser(mobile, dbPwd);
+                    // 更新fmcToken
+                    xUserInfoDao.updateTmcToken(fmcToken, xUser.getUserGid());
+                    return xUser;
+                } else {
+                    return null;
+                }
             } else {
-                return null;
+                // 该用户还未注册，请先注册后再登录或使用短信验证码方式登录
+                throw new BusinessException(i18nService.getMessage("response.error.register.noregistered.code"),
+                    i18nService.getMessage("response.error.register.noregistered.msg"));
             }
 
         } else {
-            xUser = xUserInfoDao.getUserByPhone(mobile);
+            // 短信验证码登录时，不需要密码
+            // xUser = xUserInfoDao.getUserByPhone(mobile);
             // 更新fmcToken
-            xUserInfoDao.updateTmcToken(xUser.getFmcToken(), xUser.getUserGid());
-            return xUser;
+            xUserInfoDao.updateTmcToken(xUser2.getFmcToken(), xUser2.getUserGid());
+            return xUser2;
         }
 
     }
@@ -176,47 +187,53 @@ public class XRegisterServiceImpl implements XRegisterService {
 
     @Override
     public VerifyCodeInfo sendPhoneMsg(String mobile) {
-
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_SEND_PHONEMSG));
         if (config == null) {
             logger.error("发送短信验证码配置获取出错");
             return null;
         }
 
-        String authCode = MsgAuthCode.getAuthCode();
         VerifyCodeInfo verifyCodeInfo = new VerifyCodeInfo();
-        verifyCodeInfo.setCodeToken(authCode);
-        verifyCodeInfo.setEffectiveTime(effectiveTime);
+        verifyCodeInfo.setEffectiveTime(effectiveTime); // 可重复发送短信的时间，返回给前台做倒计时
+        String authCode = MsgAuthCode.getAuthCode(); // 每次发送都更新短信验证码，用户不点击发送，该验证码10分钟内输入都有效
+        verifyCodeInfo.setCodeToken(authCode); // 生产环境可屏蔽
 
+        // 发送的短信内容
+        String phoneMsg = i18nService.getViMessage("sms.send.msg.verfiycode");
+        phoneMsg = MessageFormat.format(phoneMsg, authCode);
+        phoneMsg = StringUtil.vietnameseToEnglish(phoneMsg);
         for (Object key : config.keySet()) {
             String value = config.get(key).toString();
 
             // 使用方法一发送短信验证码：只要是10位数字的手机号码都不会报错
             if (SysVariable.SMS_ONE.equals(value)) {
-                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, authCode);
+                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, phoneMsg);
                 String status = msgMap.get("status");
-                logger.info("SMG方式发送短信验证码返回状态，返回码:{}", status);
                 verifyCodeInfo.setStatus(status);
 
                 if (status.equals(SMSResponseStatus.SUCCESS.getCode())) {
                     String messageid = msgMap.get("messageid");
-                    logger.info("发送的短信id:{}", messageid);
-                    logger.info("SMG成功发送的短信验证码是:{}", authCode);
-                    redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
+                    logger.info("国内短信平台paasoo发送的短信id:{}", messageid);
+                    logger.info("国内短信平台paasoo成功发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
+                    redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
+                    redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile, effectiveTime,
+                        TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
                     return verifyCodeInfo;
                 }
 
             } else if (SysVariable.SMS_TWO.equals(value)) {
                 String responseBody = "";
                 try {
-                    responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
-                    Map<String, String> map = JsonUtils.jsonToMap(responseBody);
-                    String messageId = map.get("MessageId");
-                    logger.info("fpt方式发送的短信id：" + messageId);
+                    responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg);
+                    Map<String, Object> map = JsonUtils.jsonToMap(responseBody);
+                    String messageId = (String)map.get("MessageId");
+                    logger.info("fpt平台发送的短信id：" + messageId);
                     if (messageId != null) {
-                        logger.info("Fpt方式发送的短信验证码是：" + authCode);
-                        redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
-                        verifyCodeInfo.setStatus("0");
+                        logger.info("Fpt平台成功发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
+                        redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
+                        redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile,
+                            effectiveTime, TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
+                        verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
                         return verifyCodeInfo;
                     } else {
                         logger.info("fpt发送短信失败，返回的错误码为：{}", map.get("error"));
@@ -230,8 +247,10 @@ public class XRegisterServiceImpl implements XRegisterService {
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if (SysVariable.SMS_ZERO.equals(value)) {
                 verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
-                logger.info("发送的短信验证码是:{}", authCode);
-                redisTemplate.opsForValue().set(mobile, authCode, effectiveTime, TimeUnit.MILLISECONDS);
+                logger.info("发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
+                redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
+                redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile, effectiveTime,
+                    TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
                 return verifyCodeInfo;
             }
         }
@@ -263,9 +282,9 @@ public class XRegisterServiceImpl implements XRegisterService {
             }
         }
 
-        String existCode = (String)redisTemplate.opsForValue().get(mobile);
-        logger.info("该手机号码已存在的验证码：" + existCode + "------------");
-        if (!StringUtils.isEmpty(existCode)) {
+        // 验证能否重复发送
+        String isSend = (String)redisTemplate.opsForValue().get(mobile + SysVariable.SEND_AUTHCODE_SUFFIX);
+        if (!StringUtils.isEmpty(isSend)) {
             logger.info("2分钟内不能使用同一个手机号重复发送手机短信验证码..............");
             throw new BusinessException(i18nService.getMessage("response.error.register.verifycoderepeat.code"),
                 i18nService.getMessage("response.error.register.verifycoderepeat.msg"));
@@ -481,6 +500,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                     xUser = getToken(xUser);
                     ReturnUser user = setReturnUser(xUser);
                     user.setNeedverifyMapCode(0);
+                    user.setType(SysVariable.RETURN_TYPE_LOGIN);
                     return user;
                 } else {
                     throw new BusinessException(i18nService.getMessage("response.error.register.loginfail.code"),
@@ -523,6 +543,7 @@ public class XRegisterServiceImpl implements XRegisterService {
                 throw new BusinessException(i18nService.getMessage("response.error.register.verify.code"),
                     i18nService.getMessage("response.error.register.verify.msg"));
             }
+            // 重置登录密码(忘记密码)时，校验验证码
             isCorrect = checkCode(mobile, verifyCode);
         }
 

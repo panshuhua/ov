@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" media="screen"
+	href="../../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="../../css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all" />
+</head>
+<body>
+	<div>
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div>
+				<header style="height: 100%">
+					<div align="left">
+						<table style="width: 100%">
+							<tr>
+								<td>
+									<form class="form-inline" onsubmit="return false">
+										<div class="form-group">
+										        <span class="phone">请输入需要人工获取验证码的手机号码</span>:
+											    <input id="phone" type="text" class="form-control"
+												placeholder="phone">
+											<button id="searchBt" class="layui-btn layui-btn-sm">
+												<i class="layui-icon">查看短信验证码</i><span class="search"></span>
+											</button>
+											<br/><br/>
+											<div id="showVerifyCode" style="display:none;">该手机号码本次的短信验证码是：<span id="verifyCode"></span>，10分钟内输入有效</div>
+										    
+										</div>
+									</form>
+								</td>
+
+							</tr>
+						</table>
+					</div>
+				</header>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript"
+	src="../../js/plugin/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript"
+	src="../../js/plugin/datatables/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/my/permission.js"></script>
+<script type="text/javascript" src="../../js/jquery.i18n.properties-1.0.9.js"></script>
+<script type="text/javascript">
+
+$("#searchBt").click(function(){
+    var phone=$("#phone").val();
+     //调用后台接口获取短信验证码
+	$.ajax({
+	    url:"/manage/verifyCode/getVerifyCode",
+	    dataType:"json",
+	    async:true,
+	    data:{"phone":phone},   
+	    type:"GET",
+	    success:function(data){
+	       if(data!=''){
+	    	  $("#showVerifyCode").show();
+        	  $("#verifyCode").text(data);
+			}
+	    },
+	    error:function(){
+	        alert("服务器错误：获取短信验证码失败！")
+	    }
+	});
+	
+    
+});
+
+</script>

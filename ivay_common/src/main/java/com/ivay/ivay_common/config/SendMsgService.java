@@ -57,9 +57,6 @@ public class SendMsgService {
     @Value("${api_fpt_brandName}")
     private String brandName;
 
-    @Value("${noticemsg.effectiveTime}")
-    private long effectiveTime;
-
     // 调用接口1发送短信
     public Map<String, String> sendMsgBySMS(String mobile, String authCode) {
         Map<String, Object> params = new HashMap<>();
@@ -75,7 +72,7 @@ public class SendMsgService {
         return msgMap;
     }
 
-    // 调用接口3发送短信
+    // 调用接口2发送短信
     public String sendMsgByFpt(String mobile, String text) {
         // 获取access_token
         String sessionId = UUIDUtils.getUUID();

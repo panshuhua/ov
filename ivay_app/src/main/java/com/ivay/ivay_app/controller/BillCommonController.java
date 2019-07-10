@@ -27,10 +27,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.ivay.ivay_app.dto.FptAccessTokenReq;
-import com.ivay.ivay_app.dto.FptSendReq;
 import com.ivay.ivay_app.dto.TransfersReq;
 import com.ivay.ivay_app.service.BillCommonService;
+import com.ivay.ivay_common.dto.FptAccessTokenReq;
+import com.ivay.ivay_common.dto.FptSendReq;
 import com.ivay.ivay_common.utils.Base64Util;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.RSAEncryptSha1;

@@ -1,5 +1,21 @@
 package com.ivay.ivay_manage.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
@@ -9,7 +25,15 @@ import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.service.*;
+import com.ivay.ivay_manage.service.BlackUserService;
+import com.ivay.ivay_manage.service.RiskUserService;
+import com.ivay.ivay_manage.service.RoleService;
+import com.ivay.ivay_manage.service.ThreadPoolService;
+import com.ivay.ivay_manage.service.XAuditService;
+import com.ivay.ivay_manage.service.XConfigService;
+import com.ivay.ivay_manage.service.XFirebaseNoticeService;
+import com.ivay.ivay_manage.service.XLoanService;
+import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -18,17 +42,6 @@ import com.ivay.ivay_repository.dto.XAuditListInfo;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XUserInfo;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.Resource;
-import java.util.*;
-
 
 @Service
 public class XUserInfoServiceImpl implements XUserInfoService {
@@ -63,6 +76,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private XFirebaseNoticeService xFirebaseNoticeService;
+
     @Value("${xAppEvents_event_url}")
     private String xAppEvents_event_url;
 
@@ -84,10 +100,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("role", roleService.getLoginUserAuditRole());
         request.getParams().put("loginId", UserUtil.getLoginUser().getId());
 
-        return new PageTableHandler(
-                a -> xUserInfoDao.auditCount(a.getParams()),
-                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        return new PageTableHandler(a -> xUserInfoDao.auditCount(a.getParams()),
+            a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Override
@@ -113,10 +127,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("role", roleService.getLoginUserAuditRole());
         request.getParams().put("loginId", UserUtil.getLoginUser().getId());
 
-        return new PageTableHandler(
-                a -> xUserInfoDao.auditCountV2(a.getParams()),
-                a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        return new PageTableHandler(a -> xUserInfoDao.auditCountV2(a.getParams()),
+            a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Override
@@ -128,10 +140,13 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * 对待授信用户进行人工审核
      *
      * @param userGid
-     * @param flag       0 审核拒绝 1 审核通过
-     * @param refuseCode 审核拒绝时，必须传入refuseCode
+     * @param flag
+     *            0 审核拒绝 1 审核通过
+     * @param refuseCode
+     *            审核拒绝时，必须传入refuseCode
      * @param refuseDemo
-     * @param type       审核类型 0人工 1自动
+     * @param type
+     *            审核类型 0人工 1自动
      * @return 1审核通过 0 审核拒绝 -1数据库异常
      */
     @Override
@@ -139,7 +154,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
         if (xUserInfo == null) {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
-                    i18nService.getMessage("response.error.user.checkgid.msg"));
+                i18nService.getMessage("response.error.user.checkgid.msg"));
         }
 
         // region -- 审核待授信用户
@@ -185,6 +200,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             }
             // 拒绝理由
             xUserInfo.setRefuseReason(refuseDemo);
+
+            // TODO 发送人工审核(拒绝后)短信提醒
+            xFirebaseNoticeService.sendManualAuditRjection(xUserInfo);
+
         }
         // endregion
 
@@ -199,13 +218,15 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     XAppEvent xAppEvent = new XAppEvent();
                     xAppEvent.setType(SysVariable.APP_EVENT_AUDIT);
                     xAppEvent.setGid(userGid);
-                    xAppEvent.setIsSuccess(xUserInfo.getUserStatus().equals(SysVariable.USER_STATUS_AUTH_SUCCESS) ? SysVariable.APP_EVENT_SUCCESS : SysVariable.APP_EVENT_FAIL);
+                    xAppEvent.setIsSuccess(xUserInfo.getUserStatus().equals(SysVariable.USER_STATUS_AUTH_SUCCESS)
+                        ? SysVariable.APP_EVENT_SUCCESS : SysVariable.APP_EVENT_FAIL);
                     restTemplate.postForObject(xAppEvents_event_url, xAppEvent, Response.class);
                 });
             }
 
             if (SysVariable.USER_STATUS_AUTH_SUCCESS.equals(xUserInfo.getUserStatus())) {
                 logger.info("{}：审核通过，开始初始化借款利率和借款额度", xUserInfo.getUserGid());
+                // TODO
                 xLoanService.initLoanRateAndCreditLimit(userGid);
                 return 1;
             } else {
@@ -249,23 +270,23 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         // region -- 用户风控配置
         Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
-        Map config = (LinkedHashMap) userManageConfig.get("blackUser");
+        Map config = (LinkedHashMap)userManageConfig.get("blackUser");
 
         // 判断黑名单用户是否允许黑名单通过授信
-        boolean allowBlackFlag = (Boolean) config.get("audit");
+        boolean allowBlackFlag = (Boolean)config.get("audit");
         if (!allowBlackFlag) {
             // 黑名单用户 拒绝
             if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
                 logger.info("黑名单用户: {}", userGid);
                 xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, SysVariable.AUDIT_BLACK_USER_CODE,
-                        "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+                    "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
                 return false;
             }
         }
 
         // 白名单自动审核
-        config = (LinkedHashMap) userManageConfig.get("whiteUser");
-        boolean autoAuditFlag = (Boolean) config.get("autoAudit");
+        config = (LinkedHashMap)userManageConfig.get("whiteUser");
+        boolean autoAuditFlag = (Boolean)config.get("autoAudit");
         logger.info("白名单启用自动审核：{}", autoAuditFlag);
         // endregion
 
@@ -273,7 +294,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         List<RiskUser> whiteList = riskUserService.selectUserListByPhone(phone);
         if (autoAuditFlag && whiteList.size() > 0) {
             logger.info("{}: 白名单用户，执行自动审核---start", phone);
-            if (xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_PASS, null, null, SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
+            if (xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_PASS, null, null,
+                SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
                 logger.info("{}: 审核通过...", phone);
             } else {
                 logger.info("{}: 审核不通过...", phone);
@@ -308,10 +330,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("userGid", userGid);
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
-        return new PageTableHandler(
-                a -> xUserInfoDao.countSameName(a.getParams()),
-                a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        return new PageTableHandler(a -> xUserInfoDao.countSameName(a.getParams()),
+            a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     /**
@@ -326,7 +346,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * @return
      */
     @Override
-    public PageTableResponse overDueUsers(int limit, int num, String type, String identityCard, String phone, String name) {
+    public PageTableResponse overDueUsers(int limit, int num, String type, String identityCard, String phone,
+        String name) {
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
@@ -335,10 +356,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("identityCard", identityCard);
         request.getParams().put("phone", phone);
         request.getParams().put("name", name);
-        return new PageTableHandler(
-                a -> xUserInfoDao.countOverDueUsers(a.getParams()),
-                a -> xUserInfoDao.overDueUsers(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        return new PageTableHandler(a -> xUserInfoDao.countOverDueUsers(a.getParams()),
+            a -> xUserInfoDao.overDueUsers(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Autowired
@@ -361,9 +380,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
         request.getParams().put("type", type);
         request.getParams().put("userGid", userGid);
-        return new PageTableHandler(
-                a -> xRecordLoanDao.countOverDueLoan(a.getParams()),
-                a -> xRecordLoanDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        return new PageTableHandler(a -> xRecordLoanDao.countOverDueLoan(a.getParams()),
+            a -> xRecordLoanDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 }

@@ -1,9 +1,23 @@
 package com.ivay.ivay_app.service.impl;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
 import com.ivay.ivay_app.service.SysLogService;
 import com.ivay.ivay_app.service.ThreadPoolService;
+import com.ivay.ivay_app.service.XFirebaseNoticeService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
 import com.ivay.ivay_common.advice.BusinessException;
@@ -20,18 +34,6 @@ import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_repository.model.XVirtualAccount;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
@@ -61,6 +63,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     @Autowired
     private SysLogService sysLogService;
 
+    @Autowired
+    private XFirebaseNoticeService xFirebaseNoticeService;
+
     @Value("${repayment_success_post_handle_url}")
     private String repayment_success_post_handle_url;
 
@@ -79,14 +84,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         params.put("userGid", userGid);
         request.setParams(params);
         return new PageTableHandler(a -> xRecordRepaymentDao.count(a.getParams()),
-                a -> xRecordRepaymentDao.list(request.getParams(), request.getOffset(), request.getLimit()))
+            a -> xRecordRepaymentDao.list(request.getParams(), request.getOffset(), request.getLimit()))
                 .handle(request);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public XVirtualAccount repaymentMoney(String loanGid, String userGid, String bankShortName, long repaymentAmount,
-                                          Integer deductType) {
+        Integer deductType) {
         XRecordLoan xRecordLoan = xRecordLoanDao.getByGid(loanGid, userGid);
 
         XVirtualAccount xVirtualAccount = xVirtualAccountService.selectByOrderId(xRecordLoan.getOrderId());
@@ -158,7 +163,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     }
 
     public XVirtualAccount createVirtualCount(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment) {
-        ValVirtualAccountRsp valVirtualAccountRsp = xVirtualAccountService.addVirtualAccount(xRecordLoan, xRecordRepayment);
+        ValVirtualAccountRsp valVirtualAccountRsp =
+            xVirtualAccountService.addVirtualAccount(xRecordLoan, xRecordRepayment);
         String responseCode = valVirtualAccountRsp.getResponseCode();
         String responseMsg = valVirtualAccountRsp.getResponseMessage();
         XVirtualAccount xVirtualAccount = new XVirtualAccount();
@@ -209,7 +215,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     public XVirtualAccount updateVirtualCount(XVirtualAccount xVirtualAccount, XRecordRepayment xRecordRepayment) {
         Long collectAmount = xRecordRepayment.getRepaymentAmount();
         ValVirtualAccountRsp valVirtualAccountRsp =
-                xVirtualAccountService.updateXVirtualAccount(xVirtualAccount, collectAmount);
+            xVirtualAccountService.updateXVirtualAccount(xVirtualAccount, collectAmount);
         String responseCode = valVirtualAccountRsp.getResponseCode();
         String responseMsg = valVirtualAccountRsp.getResponseMessage();
         if (BaokimResponseStatus.CollectionSuccess.getCode().equals(responseCode)) {
@@ -250,15 +256,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         Date now = new Date();
         xRecordRepayment.setUpdateTime(now);
         if (BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
-            logger.info("{}: 还款金额:{}, 应还本金:{},应还利息:{}",
-                    xRecordRepayment.getOrderId(),
-                    xRecordRepayment.getRepaymentAmount(),
-                    xRecordLoan.getDueAmount(),
-                    xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
+            logger.info("{}: 还款金额:{}, 应还本金:{},应还利息:{}", xRecordRepayment.getOrderId(),
+                xRecordRepayment.getRepaymentAmount(), xRecordLoan.getDueAmount(),
+                xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
             // 获取用户可借款金额
             XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
             // 更新借款表的还款额度和滞纳金等
             long diff = xRecordRepayment.getRepaymentAmount() - xRecordLoan.getDueAmount();
+
             if (diff < 0) {
                 // 还有本金没还完
                 // 首先：更新可借额度
@@ -276,7 +281,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 xRecordLoan.setDueAmount(0L);
                 if (xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() <= diff) {
                     // 记录或许多还的金额
-                    xRecordLoan.setOverdueFeeTotal(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
+                    xRecordLoan
+                        .setOverdueFeeTotal(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
                     // 还清全部逾期费用
                     xRecordLoan.setOverdueFee(0L);
                     xRecordLoan.setOverdueInterest(0L);
@@ -288,12 +294,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                         xRecordLoan.setOverdueInterest(xRecordLoan.getOverdueInterest() - diff);
                     } else {
                         xRecordLoan.setOverdueInterest(0L);
-                        xRecordLoan.setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
+                        xRecordLoan
+                            .setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
                     }
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
                     logger.info("{}: 部分逾期费用未还清:{}", xRecordRepayment.getOrderId(), xRecordLoan.getOverdueFee());
                 }
             }
+
             xUserInfo.setUpdateTime(now);
             // 最后一次还款时间
             xRecordLoan.setLastRepaymentTime(now);
@@ -305,6 +313,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xRecordLoanDao.update(xRecordLoan);
             // 实际扣款时间
             xRecordRepayment.setEndTime(now);
+
+            // TODO 发送还款成功的通知
+            xFirebaseNoticeService.sendHadRepayNotice(xRecordLoan, xRecordRepayment, xUserInfo);
         } else {
             // 还款失败原因
             xRecordRepayment.setFailReason("baokim调用接口失败，还款失败");
@@ -313,7 +324,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         }
 
         if (xRecordRepaymentDao.save(xRecordRepayment) == 1
-                && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
+            && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             // 还款提升授信額度
             threadPoolService.execute(() -> {
                 Map<String, Object> params = new HashMap<>();

@@ -1,4 +1,4 @@
-package com.ivay.ivay_app.dto;
+package com.ivay.ivay_common.dto;
 
 public enum SMSResponseStatus {
 	SUCCESS("0", "success"),

@@ -183,7 +183,7 @@ public class SysVariable {
     public static final String PAGE_FORGETPASSWORD = "WkhKWT0=";
     public static final String PAGE_RESETTRANPWD = "WkhkUw==";
     public static final String PAGE_MINE = "Wlc1PT0=";
-    public static final String PAGE_HOME = "WlcxPT0=";
+    public static final String PAGE_HOME = "WlcxPT0="; // 首页
     public static final String PAGE_GUIDE = "WldSYz0=";
     public static final String PAGE_REGISTER = "Y21WVkk9";
     public static final String PAGE_BILL = "Ykd4PT0="; // 账单页
@@ -222,15 +222,22 @@ public class SysVariable {
     public static final String SMS_SEND_SUCCESS = "0";
 
     // 发送短信验证码的操作类型optType
-    public static final int OPTTYPE_RESETLOGINPWD = 0; // 0. app忘记密码（需要重置登录密码）
-    public static final int OPTTYPE_REGISTER = 1; // 1. app注册设置密码（独立注册）
-    public static final int OPTTYPE_NEWEQUIPMENT = 2; // 2. app老用户新设备登录
-    public static final int OPTTYPE_SMSCODELOGIN = 3; // 3. 使用短信验证码登录
-    public static final int OPTTYPE_RESETTRANPWD = 4; // 4. 修改交易密码
+    public static final int OPTTYPE_RESETLOGINPWD = 0; // 0-app忘记密码（需要重置登录密码）
+    public static final int OPTTYPE_REGISTER = 1; // 1-app注册设置密码（独立注册）
+    public static final int OPTTYPE_NEWEQUIPMENT = 2; // 2-app老用户新设备登录
+    public static final int OPTTYPE_SMSCODELOGIN = 3; // 3-使用短信验证码登录
+    public static final int OPTTYPE_RESETTRANPWD = 4; // 4-修改交易密码
 
     // 短信验证码登录操作类型
     public static final String SMS_VERIFYCODE_LOGIN = "1"; // 短信验证码登录(如果不存在该手机号码，实际上就是注册)
     // needCheckVerify:是否老用户新设备登录(1.是，0否）
     public static final String LOGIN_NEWEQUIPMENT = "1";
     public static final String LOGIN_OLDEQUIPMENT = "0";
+
+    // 发送通知消息的类型
+    public static final String NOTICE_FIREBASE_MSG = "1"; // 1-firebase消息推送
+    public static final String NOTICE_PHONE_MSG = "2"; // 2-手机短信
+
+    // 2分钟内不能重复发送验证码的rediskey后缀
+    public static final String SEND_AUTHCODE_SUFFIX = "_send";
 }
