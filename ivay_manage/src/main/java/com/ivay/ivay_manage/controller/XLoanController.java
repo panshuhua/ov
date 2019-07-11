@@ -1,6 +1,5 @@
 package com.ivay.ivay_manage.controller;
 
-import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.CustomerService;
@@ -68,7 +67,7 @@ public class XLoanController {
     private XUserExtInfoService xUserExtInfoService;
 
     @GetMapping("get")
-    @ApiOperation(value = "获取")
+    @ApiOperation("获取用户扩展信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query", required = true)
     })

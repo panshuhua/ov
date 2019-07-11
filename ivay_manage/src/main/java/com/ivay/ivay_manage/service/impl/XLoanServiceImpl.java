@@ -1,40 +1,25 @@
 package com.ivay.ivay_manage.service.impl;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_manage.service.*;
+import com.ivay.ivay_repository.dao.master.XLoanRateDao;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dao.master.XUserRiskDao;
+import com.ivay.ivay_repository.dto.XLoanQualification;
+import com.ivay.ivay_repository.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.ivay.ivay_common.advice.BusinessException;
-import com.ivay.ivay_common.utils.DateUtils;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.service.BlackUserService;
-import com.ivay.ivay_manage.service.RiskUserService;
-import com.ivay.ivay_manage.service.ThreadPoolService;
-import com.ivay.ivay_manage.service.XConfigService;
-import com.ivay.ivay_manage.service.XFirebaseNoticeService;
-import com.ivay.ivay_manage.service.XLoanService;
-import com.ivay.ivay_repository.dao.master.XLoanRateDao;
-import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
-import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.dao.master.XUserRiskDao;
-import com.ivay.ivay_repository.dto.XLoanQualification;
-import com.ivay.ivay_repository.model.RiskUser;
-import com.ivay.ivay_repository.model.XLoanRate;
-import com.ivay.ivay_repository.model.XRecordLoan;
-import com.ivay.ivay_repository.model.XUserInfo;
-import com.ivay.ivay_repository.model.XUserRisk;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class XLoanServiceImpl implements XLoanService {
@@ -68,7 +53,7 @@ public class XLoanServiceImpl implements XLoanService {
     public XLoanQualification getAuditQualificationObj(String userGid, int flag) {
         XLoanQualification xLoanQualification = xUserInfoDao.getAuditQualificationObj(userGid);
         // 获取经纬度
-        XUserRisk xUserRisk = xUserRiskDao.getGps(userGid);
+        XUserRisk xUserRisk = xUserRiskDao.getByUserGid(userGid);
         if (xLoanQualification == null) {
             throw new BusinessException("很抱歉，您的借款申请未通过审核");
         }
@@ -135,8 +120,7 @@ public class XLoanServiceImpl implements XLoanService {
      * 获得某人的风控审核结果，空字符串表示通过审核
      *
      * @param userGid
-     * @param flag
-     *            0 授信策略 1 借款策略
+     * @param flag    0 授信策略 1 借款策略
      * @return 返回未通过审核的理由
      */
     @Override
@@ -144,8 +128,8 @@ public class XLoanServiceImpl implements XLoanService {
         // region --用户风控管理
         Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
         if (userManageConfig != null) {
-            Map config = (LinkedHashMap)userManageConfig.get("blackUser");
-            boolean allowBlackFlag = (Boolean)config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
+            Map config = (LinkedHashMap) userManageConfig.get("blackUser");
+            boolean allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
             logger.info("{}允许黑名单通过风控", allowBlackFlag ? "" : "不");
 
             XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
@@ -161,8 +145,8 @@ public class XLoanServiceImpl implements XLoanService {
                 }
             }
 
-            config = (LinkedHashMap)userManageConfig.get("normalUser");
-            allowBlackFlag = (Boolean)config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
+            config = (LinkedHashMap) userManageConfig.get("normalUser");
+            allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
             logger.info("{}允许自然人通过风控", allowBlackFlag ? "" : "不");
 
             if (!allowBlackFlag) {
@@ -194,7 +178,7 @@ public class XLoanServiceImpl implements XLoanService {
         }
         // endregion
 
-        Map config = (LinkedHashMap)riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
+        Map config = (LinkedHashMap) riskConfig.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
         StringBuilder sb = new StringBuilder();
         for (Object key : config.keySet()) {
             String[] values = config.get(key).toString().split("~");
@@ -229,7 +213,7 @@ public class XLoanServiceImpl implements XLoanService {
                 case "majorRelation":
                     // 亲密联系人号码出现次数> 2，拒贷（人数使用配置）
                     if (xLoanQualification.getOneMajorPhoneNum() < min
-                        || xLoanQualification.getOneMajorPhoneNum() > max) {
+                            || xLoanQualification.getOneMajorPhoneNum() > max) {
                         sb.append("亲密联系人号码出现次数不符: ").append(xLoanQualification.getOneMajorPhoneNum()).append(";");
                     }
                     break;
@@ -259,7 +243,7 @@ public class XLoanServiceImpl implements XLoanService {
                 case "overdueDay2":
                     // 历史最大逾期天数在[15,30)天且最近一笔结清交易逾期天数大于5天，拒贷
                     if (xLoanQualification.getMaxOverdueDay() >= 15 && xLoanQualification.getMaxOverdueDay() < 30
-                        && xLoanQualification.getLastOverdueDay() > max) {
+                            && xLoanQualification.getLastOverdueDay() > max) {
                         sb.append("历史最大逾期天数和结清交易逾期天数不符: ").append(xLoanQualification.getMaxOverdueDay()).append(";");
                     }
                     break;
@@ -385,7 +369,7 @@ public class XLoanServiceImpl implements XLoanService {
                 if (SysVariable.REPAYMENT_STATUS_SUCCESS == xrl.getRepaymentStatus()) {
                     // 最近一笔还款时间
                     if (lastRepaymentDay == null
-                        || DateUtils.isDateAfter(lastRepaymentDay, xrl.getLastRepaymentTime()) < 0) {
+                            || DateUtils.isDateAfter(lastRepaymentDay, xrl.getLastRepaymentTime()) < 0) {
                         lastRepaymentDay = xrl.getLastRepaymentTime();
                         // 逾期
                         if (DateUtils.isDateAfter(lastRepaymentDay, xrl.getDueTime()) > 0) {
@@ -406,7 +390,7 @@ public class XLoanServiceImpl implements XLoanService {
             }
         }
         logger.info("{}: 首笔成功交易时间:{},最近一笔结清时间:{},逾期天数:{}", xUserInfo.getUserGid(), firstRepaymentTime, lastRepaymentDay,
-            overdueDay);
+                overdueDay);
         // 最近一笔结清订单的逾期天数>5不提额, 没有成功交易的记录不提额
         if (overdueDay > 5 || firstRepaymentTime == null) {
             return false;
@@ -436,7 +420,7 @@ public class XLoanServiceImpl implements XLoanService {
 
         // 提额配置
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_CREDIT_LIMIT));
-        Map creditConfig = (LinkedHashMap)config.get(typeFlag);
+        Map creditConfig = (LinkedHashMap) config.get(typeFlag);
 
         if (xUserInfo.getCreditLine() == null || xUserInfo.getCreditLine() == 0) {
             // 初始化授信额度和可借款额度
@@ -454,9 +438,9 @@ public class XLoanServiceImpl implements XLoanService {
             }
             // 第count次提额
             int count = xUserInfo.getCreditLineCount() + 1;
-            Object stepConfig = ((LinkedHashMap)creditConfig.get("step")).get(String.valueOf(count));
+            Object stepConfig = ((LinkedHashMap) creditConfig.get("step")).get(String.valueOf(count));
             if (stepConfig == null) {
-                stepConfig = ((LinkedHashMap)creditConfig.get("step")).get(">");
+                stepConfig = ((LinkedHashMap) creditConfig.get("step")).get(">");
             }
             long step = Long.parseLong(stepConfig.toString());
             long max = Long.parseLong(creditConfig.get("end").toString());
@@ -467,7 +451,7 @@ public class XLoanServiceImpl implements XLoanService {
             xUserInfo.setCanborrowAmount(step + xUserInfo.getCanborrowAmount());
             xUserInfo.setCreditLineCount(count);
             logger.info("{}: 第{}次提額，提額數目: {}, 新額度: {}", xUserInfo.getUserGid(), xUserInfo.getCreditLineCount(), count,
-                xUserInfo.getCreditLine());
+                    xUserInfo.getCreditLine());
         }
 
         // TODO xUserInfo.getCreditLine()=0时，>0时是其他的提额次数：发送初始化额度和提额短信通知

@@ -29,6 +29,12 @@ public class PageTableResponse<T> implements Serializable {
         this.recordsFiltered = recordsFiltered;
         this.data = data;
     }
+    public PageTableResponse(List<?> data) {
+        super();
+        this.recordsTotal = data.size();
+        this.recordsFiltered = data.size();
+        this.data = data;
+    }
 
     public Integer getRecordsTotal() {
         return recordsTotal;

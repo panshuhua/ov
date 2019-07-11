@@ -94,19 +94,14 @@
         where t.bankcard_gid = #{bankcardGid}
     </update>
 
-    <select id="getByUserGid" resultType="com.ivay.ivay_repository.dto.XUserCardAndBankInfo">
-		SELECT xbi.bank_no,xbi.bank_name,xubi.*
-		from x_user_bankcoad_info xubi
-		LEFT JOIN x_bank_info xbi ON xubi.bank_gid=xbi.bank_gid
-		WHERE xubi.user_gid=#{userGid} and xubi.enable_flag = 'Y'
-	</select>
-
     <select id="getCardAndBankByGid" resultType="com.ivay.ivay_repository.dto.XUserCardAndBankInfo">
 		SELECT xbi.bank_no,xbi.bank_name,xubi.*
 		from x_user_bankcoad_info xubi
 		LEFT JOIN x_bank_info xbi ON xubi.bank_gid=xbi.bank_gid
-		WHERE xubi.bankcard_gid=#{bankcardGid}
-		AND xubi.user_gid=#{userGid}
+		WHERE xubi.user_gid=#{userGid}
+		<if test="bankcardGid != null and bankcardGid != ''">
+            and xubi.bankcard_gid=#{bankcardGid}
+        </if>
 		and xubi.enable_flag = 'Y'
 	</select>
 

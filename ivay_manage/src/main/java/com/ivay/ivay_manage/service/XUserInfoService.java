@@ -26,6 +26,16 @@ public interface XUserInfoService {
     PageTableResponse auditList(int limit, int num, XAuditListInfo xAuditListInfo);
 
     /**
+     * 获取银行卡和银行信息
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @return
+     */
+    PageTableResponse cardAndBankInfo(int limit, int num, String userGid);
+
+    /**
      * 被审核人详细信息
      *
      * @param userGid

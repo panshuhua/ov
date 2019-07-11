@@ -32,26 +32,18 @@ public interface XUserBankcardInfoDao {
                                  @Param("offset") Integer offset,
                                  @Param("limit") Integer limit);
 
-    /**
-     * 查询某用户的所有银行卡及银行信息
-     *
-     * @param userGid
-     * @return
-     */
-    List<XUserCardAndBankInfo> getByUserGid(String userGid);
-
     @Select("select * from x_user_bankcoad_info t where t.card_no = #{cardNo} and enable_flag='Y' ")
     List<XUserBankcardInfo> getByCardNo(String cardNo);
 
     /**
-     * 获取某用户的某张银行卡信息
+     * 获取某用户的银行卡和所属银行信息
      *
-     * @param bankcardGid
      * @param userGid
+     * @param bankcardGid null表示所有银行卡，不为空表示指定银行卡
      * @return
      */
-    XUserCardAndBankInfo getCardAndBankByGid(@Param("bankcardGid") String bankcardGid,
-                                             @Param("userGid") String userGid);
+    List<XUserCardAndBankInfo> getCardAndBankByGid(@Param("userGid") String userGid,
+                                             @Param("bankcardGid") String bankcardGid);
 
     @Select("select bankcard_gid, bank_gid, user_gid, card_user_name, card_no, status from x_user_bankcoad_info t " +
             "where t.bankcard_gid = #{bankcardGid} and user_gid = #{userGid} and enable_flag='Y' ")

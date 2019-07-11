@@ -1,21 +1,5 @@
 package com.ivay.ivay_manage.service.impl;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
@@ -25,23 +9,26 @@ import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.service.BlackUserService;
-import com.ivay.ivay_manage.service.RiskUserService;
-import com.ivay.ivay_manage.service.RoleService;
-import com.ivay.ivay_manage.service.ThreadPoolService;
-import com.ivay.ivay_manage.service.XAuditService;
-import com.ivay.ivay_manage.service.XConfigService;
-import com.ivay.ivay_manage.service.XFirebaseNoticeService;
-import com.ivay.ivay_manage.service.XLoanService;
-import com.ivay.ivay_manage.service.XUserInfoService;
+import com.ivay.ivay_manage.service.*;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.dto.XAuditListInfo;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 @Service
 public class XUserInfoServiceImpl implements XUserInfoService {
@@ -129,6 +116,22 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         return new PageTableHandler(a -> xUserInfoDao.auditCountV2(a.getParams()),
             a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+    }
+
+    @Autowired
+    private XUserBankcardInfoDao xUserBankcardInfoDao;
+
+    /**
+     * 获取银行卡和银行信息
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @return
+     */
+    @Override
+    public PageTableResponse cardAndBankInfo(int limit, int num, String userGid) {
+        return new PageTableResponse(xUserBankcardInfoDao.getCardAndBankByGid(userGid, null));
     }
 
     @Override

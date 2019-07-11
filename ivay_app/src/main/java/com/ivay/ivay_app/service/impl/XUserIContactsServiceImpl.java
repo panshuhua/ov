@@ -115,7 +115,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
                     contacts.forEach(u -> {
                         try {
                             XUserContacts xUserContact =
-                                new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());
+                                    new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());
                             xUserContacts.add(xUserContact);
                             if (xUserContacts.size() >= 200) {
                                 xUserContactsDao.insertBatchContacts(xUserContacts);
@@ -148,7 +148,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     private void saveGps(String gid, XUserRisk xUserRisk) {
         // 查询风控数据表有无该gid的用户，如果没有就新增一条记录
-        Integer userNum = xUserRiskDao.findUser(gid);
+        Integer userNum = xUserRiskDao.countByUserGid(gid);
         logger.info("gps风控表中已有的数据个数：" + userNum + "-------------------");
 
         if (userNum == 0 || userNum == null) {
@@ -163,21 +163,20 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     private void saveOtherRisk(XUserRisk xUserRisk, String gid) {
         // 查询风控数据表有无该gid的用户，如果没有就新增一条记录
-        Integer userNum = xUserRiskDao.findUser(gid);
+        Integer userNum = xUserRiskDao.countByUserGid(gid);
         logger.info("other风控表中已有的数据个数：" + userNum + "-------------------");
-        if (userNum == 0 || userNum == null) {
+        if (userNum == null || userNum == 0) {
             logger.info("保存风控表数据other：" + userNum + "-------------------");
             xUserRiskDao.save(xUserRisk);
         } else {
             logger.info("保存风控表数据other：" + userNum + "-------------------");
             xUserRiskDao.updateOthers(xUserRisk);
         }
-
     }
 
     /**
      * 根据请求获取公网IP地址
-     * 
+     *
      * @param request
      * @return
      * @throws Exception

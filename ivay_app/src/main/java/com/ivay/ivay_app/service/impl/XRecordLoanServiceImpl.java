@@ -1,47 +1,14 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.service.BillCommonService;
-import com.ivay.ivay_app.service.SysLogService;
-import com.ivay.ivay_app.service.ThreadPoolService;
-import com.ivay.ivay_app.service.XAPIService;
-import com.ivay.ivay_app.service.XAppEventService;
-import com.ivay.ivay_app.service.XConfigService;
-import com.ivay.ivay_app.service.XFirebaseNoticeService;
-import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_app.service.*;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.CommonUtil;
-import com.ivay.ivay_common.utils.DateUtils;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.RedisLock;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
@@ -53,6 +20,20 @@ import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XLoanRate;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class XRecordLoanServiceImpl implements XRecordLoanService {
@@ -112,29 +93,29 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         // 加锁： 防重复提交
         if (!redisLock.tryBorrowLock(xRecordLoan.getUserGid())) {
             throw new BusinessException(i18nService.getMessage("response.error.borrow.redisError.code"),
-                i18nService.getMessage("response.error.borrow.redisError.msg"));
+                    i18nService.getMessage("response.error.borrow.redisError.msg"));
         }
         try {
             // region -- 借款
             XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
             if (xUserInfo == null) {
                 throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
-                    i18nService.getMessage("response.error.user.checkgid.msg"));
+                        i18nService.getMessage("response.error.user.checkgid.msg"));
             }
             // 校验交易密码
             if (!bCryptPasswordEncoder.matches(password, xUserInfo.getTransPwd())) {
                 throw new BusinessException(i18nService.getMessage("response.error.borrow.tranpwd.code"),
-                    i18nService.getMessage("response.error.borrow.tranpwd.msg"));
+                        i18nService.getMessage("response.error.borrow.tranpwd.msg"));
             }
             // 授信失败不允许借款
             if ("78".indexOf(xUserInfo.getUserStatus()) != -1) {
                 throw new BusinessException(i18nService.getMessage("response.error.user.authority.code"),
-                    i18nService.getMessage("response.error.user.authority.msg"));
+                        i18nService.getMessage("response.error.user.authority.msg"));
             }
             // 校验可借额度
             if (xUserInfo.getCanborrowAmount() < xRecordLoan.getLoanAmount()) {
                 throw new BusinessException(i18nService.getMessage("response.error.loanAmount.more.code"),
-                    i18nService.getMessage("response.error.loanAmount.more.msg"));
+                        i18nService.getMessage("response.error.loanAmount.more.msg"));
             }
 
             // 校验是否有逾期借款记录
@@ -142,34 +123,32 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             Date now = new Date();
             if (list.getData() != null && !list.getData().isEmpty()) {
                 for (Object obj : list.getData()) {
-                    XRecordLoan xrl = (XRecordLoan)obj;
+                    XRecordLoan xrl = (XRecordLoan) obj;
                     if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS
-                        && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS
-                        && now.getTime() > xrl.getDueTime().getTime()) {
+                            && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS
+                            && now.getTime() > xrl.getDueTime().getTime()) {
                         logger.info("逾期记录：{},{}", xrl.getUserGid(), xrl.getOrderId());
                         throw new BusinessException(i18nService.getMessage("response.error.borrow.hasOverDue.code"),
-                            i18nService.getMessage("response.error.borrow.hasOverDue.msg"));
+                                i18nService.getMessage("response.error.borrow.hasOverDue.msg"));
                     }
                 }
             }
 
-            XUserCardAndBankInfo card =
-                xUserBankcardInfoDao.getCardAndBankByGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid());
+            List<XUserCardAndBankInfo> cardList = xUserBankcardInfoDao.getCardAndBankByGid(xRecordLoan.getUserGid(), xRecordLoan.getBankcardGid());
             // 校验银行卡
-            if (card == null) {
+            if (cardList.size() == 0) {
                 throw new BusinessException(i18nService.getMessage("response.error.card.lack.code"),
-                    i18nService.getMessage("response.error.card.lack.msg"));
+                        i18nService.getMessage("response.error.card.lack.msg"));
             }
 
             xRecordLoan.setGid(UUIDUtils.getUUID());
             // 借款单号
             xRecordLoan.setOrderId(billCommonService.getBillNo());
             // 借款手续费+利息
-            XLoanRate xLoanRate =
-                xLoanRateDao.getByUserAndPeriod(xRecordLoan.getUserGid(), xRecordLoan.getLoanPeriod());
+            XLoanRate xLoanRate = xLoanRateDao.getByUserAndPeriod(xRecordLoan.getUserGid(), xRecordLoan.getLoanPeriod());
             if (xLoanRate == null) {
                 throw new BusinessException(i18nService.getMessage("response.error.loanRate.lack.code"),
-                    i18nService.getMessage("response.error.loanRate.lack.msg"));
+                        i18nService.getMessage("response.error.loanRate.lack.msg"));
             }
             // 借款利率
             xRecordLoan.setLoanRate(xLoanRate.getInterestRate());
@@ -177,7 +156,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xRecordLoan.setInterest(xRecordLoan.getLoanAmount() / 1000 * xRecordLoan.getLoanPeriod());
             // 借款服务费：實際借款利息-砍頭息
             xRecordLoan.setFee(CommonUtil.longMultiplyBigDecimal(xRecordLoan.getLoanAmount(), xRecordLoan.getLoanRate())
-                - xRecordLoan.getInterest());
+                    - xRecordLoan.getInterest());
             // 实际到账金额：总金额-手续费-砍頭息
             xRecordLoan.setNetAmount(xRecordLoan.getLoanAmount() - xRecordLoan.getFee() - xRecordLoan.getInterest());
             // 应还金额
@@ -201,7 +180,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xUserInfo.setUpdateTime(now);
             if (xRecordLoanDao.save(xRecordLoan) == 1 && xUserInfoDao.update(xUserInfo) == 1) {
                 // 调用合作方接口借款
-                borrowMoneyFromBank(xRecordLoan, card.getCardNo(), card.getBankNo(), card.getAccType());
+                borrowMoneyFromBank(xRecordLoan, cardList.get(0).getCardNo(), cardList.get(0).getBankNo(), cardList.get(0).getAccType());
             } else {
                 xRecordLoan = null;
             }
@@ -216,10 +195,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
      * 异步调用借款接口，借款成功、失败时更新数据库，并记录交易情况
      *
      * @param xRecordLoan
-     * @param cardNo
-     *            借款方账号
-     * @param bankNo
-     *            银行代码
+     * @param cardNo      借款方账号
+     * @param bankNo      银行代码
      * @param accType
      */
     private void borrowMoneyFromBank(XRecordLoan xRecordLoan, String cardNo, String bankNo, String accType) {
@@ -241,13 +218,13 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());
                 try {
                     transfersRsp = xapiService.transfers(bankNo, cardNo, xRecordLoan.getNetAmount(),
-                        xRecordLoan.getMemo(), accType, xRecordLoan.getGid());
+                            xRecordLoan.getMemo(), accType, xRecordLoan.getGid());
                 } catch (Exception ex) {
                     apiFlag = false;
                     return;
                 } finally {
                     sysLogService.save(xRecordLoan.getUserGid(), null, "借款", apiFlag, transfersRsp.getResponseMessage(),
-                        transfersRsp.getResponseCode());
+                            transfersRsp.getResponseCode());
                     if (apiFlag) {
                         logger.info("调用baokim借款接口结束--");
                     } else {
@@ -349,7 +326,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         params.put("userGid", userGid);
         request.setParams(params);
         return new PageTableHandler(a -> xRecordLoanDao.count(a.getParams()),
-            a -> xRecordLoanDao.list(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+                a -> xRecordLoanDao.list(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Override
@@ -373,7 +350,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             for (XRecordLoan xrl : xrlList) {
                 // 还没还清借款
                 if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS
-                    && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
+                        && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
                     // 逾期
                     if (now.getTime() > xrl.getDueTime().getTime()) {
                         // 逾期天数
@@ -383,17 +360,17 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         if (xrl.getOverdueInterestTotal() < xrl.getDueAmount()) {
                             // 每天利息
                             BigDecimal interestPerDay =
-                                xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
+                                    xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
                             // 总利息 + 一天利息
                             long interestTotalPlusDay =
-                                CommonUtil.longAddBigDecimal(xrl.getOverdueInterestTotal(), interestPerDay);
+                                    CommonUtil.longAddBigDecimal(xrl.getOverdueInterestTotal(), interestPerDay);
                             if (interestTotalPlusDay > xrl.getDueAmount()) {
                                 xrl.setOverdueInterest(
-                                    xrl.getOverdueInterest() + xrl.getDueAmount() - xrl.getOverdueInterestTotal());
+                                        xrl.getOverdueInterest() + xrl.getDueAmount() - xrl.getOverdueInterestTotal());
                                 xrl.setOverdueInterestTotal(xrl.getDueAmount());
                             } else {
                                 xrl.setOverdueInterest(
-                                    CommonUtil.longAddBigDecimal(xrl.getOverdueInterest(), interestPerDay));
+                                        CommonUtil.longAddBigDecimal(xrl.getOverdueInterest(), interestPerDay));
                                 xrl.setOverdueInterestTotal(interestTotalPlusDay);
                             }
                         }
@@ -402,7 +379,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         if (day == 1) {
                             // 平台管理费 = 剩余本金 * 0.03
                             long manager = CommonUtil.longAddBigDecimal(xrl.getDueAmount(),
-                                new BigDecimal(config.get("0").toString()));
+                                    new BigDecimal(config.get("0").toString()));
                             if (manager >= xrl.getDueAmount()) {
                                 xrl.setOverdueFeeTotal(xrl.getDueAmount());
                                 xrl.setOverdueFee(xrl.getDueAmount());
@@ -425,7 +402,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                                             xrl.setOverdueFee(xrl.getOverdueFee() + feePerDay);
                                         } else {
                                             xrl.setOverdueFee(
-                                                xrl.getOverdueFee() + xrl.getDueAmount() - xrl.getOverdueFeeTotal());
+                                                    xrl.getOverdueFee() + xrl.getDueAmount() - xrl.getOverdueFeeTotal());
                                             xrl.setOverdueFeeTotal(xrl.getDueAmount());
                                         }
                                     }
@@ -461,7 +438,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             for (XRecordLoan xrl : xrlList) {
                 // 还没还清借款
                 if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS
-                    && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
+                        && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
                     // 逾期
                     long now = System.currentTimeMillis();
                     if (now > xrl.getDueTime().getTime() && xrl.getDueAmount() > xrl.getOverdueFee()) {
@@ -475,13 +452,13 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         if (day == 1) {
                             // 平台管理费 = 剩余本金 * 0.03
                             totalFee = CommonUtil.longMultiplyBigDecimal(xrl.getDueAmount(),
-                                new BigDecimal(config.get("0").toString()));
+                                    new BigDecimal(config.get("0").toString()));
                             logger.info("用户: {}, 平台管理费: {}", xrl.getUserGid(), totalFee);
                         }
 
                         // 逾期计息
                         BigDecimal interestPerDay =
-                            xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
+                                xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
                         totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPerDay);
                         logger.info("用户: {}, 一天的逾期计息: {}", xrl.getUserGid(), interestPerDay.toString());
 
@@ -616,7 +593,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             // 出现超时，查询交易状态
             TransfersRsp rsp = xapiService.transfersInfo(x.getReferenceId(), x.getLoanGid());
             if (BaokimResponseStatus.SUCCESS.getCode().equals(rsp.getResponseCode())
-                || BaokimResponseStatus.FAIL.getCode().equals(rsp.getResponseCode())) {
+                    || BaokimResponseStatus.FAIL.getCode().equals(rsp.getResponseCode())) {
                 XRecordLoan xrl = xRecordLoanDao.getByLoanGid(x.getLoanGid());
                 if (xrl != null) {
                     confirmLoan(xrl, rsp);
