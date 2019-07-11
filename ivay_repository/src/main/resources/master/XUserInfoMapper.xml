@@ -232,7 +232,6 @@
             <if test="params.toTime != null and params.toTime != ''">
                 and unix_timestamp(#{params.toTime}) >= unix_timestamp(xuei.update_time)
             </if>
-
             <if test="params.auditId != null and params.auditId != ''">
                 and xau.sys_user_id
                 <choose>

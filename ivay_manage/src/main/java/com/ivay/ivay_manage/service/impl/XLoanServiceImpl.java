@@ -1,6 +1,9 @@
 package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.SysVariable;
@@ -436,5 +439,25 @@ public class XLoanServiceImpl implements XLoanService {
         }
         xUserInfo.setUpdateTime(new Date());
         xUserInfoDao.update(xUserInfo);
+    }
+
+    /**
+     * 所有逾期账单的详细信息
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @return
+     */
+    @Override
+    public PageTableResponse overDueOrderList(int limit, int num, String userGid) {
+        PageTableRequest request = new PageTableRequest();
+        request.getParams().put("userGid", userGid);
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        return new PageTableHandler(
+                a -> xRecordLoanDao.countOverDueOrder(a.getParams()),
+                a -> xRecordLoanDao.listOverDueOrder(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 }

@@ -21,14 +21,6 @@ public interface XConfigService {
     String getContentByType(String type);
 
     /**
-     * 更新配置
-     *
-     * @param xConfig
-     * @return
-     */
-    XConfig update(XConfig xConfig);
-
-    /**
      * 配置列表
      *
      * @param limit

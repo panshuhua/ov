@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.service;
 
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.XLoanQualification;
 
 public interface XLoanService {
@@ -56,4 +57,14 @@ public interface XLoanService {
      * @param userGid
      */
     long refreshCreditLimit(String userGid);
+
+    /**
+     * 所有逾期账单的详细信息
+     *
+     * @param limit
+     * @param num
+     * @param userGid
+     * @return
+     */
+    PageTableResponse overDueOrderList(int limit, int num, String userGid);
 }

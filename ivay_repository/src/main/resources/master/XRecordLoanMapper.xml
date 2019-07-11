@@ -318,4 +318,43 @@
             limit #{offset}, #{limit}
         </if>
     </select>
+
+    <select id="countOverDueOrder" resultType="int">
+        SELECT COUNT(1)
+        FROM x_record_loan
+        WHERE loan_status = 1 AND (
+          (repayment_status != 2 AND due_time &lt; SYSDATE()) OR (repayment_status = 2 AND last_repayment_time>due_time)
+        )
+        <if test="params.userGid != null and params.userGid != ''">
+            and user_gid = #{params.userGid}
+        </if>
+    </select>
+
+    <!--所有逾期账单的详细信息-->
+    <select id="listOverDueOrder" resultType="com.ivay.ivay_repository.dto.XOverdueOrderInfo">
+        select * from (
+            (
+                SELECT
+                  order_id,repayment_status,DATEDIFF(SYSDATE(),due_time) overdueLevel,loan_amount,due_time,last_repayment_time
+                FROM x_record_loan
+                WHERE loan_status = 1 AND repayment_status != 2 AND due_time &lt; SYSDATE()
+                <if test="params.userGid != null and params.userGid != ''">
+                  and user_gid = #{params.userGid}
+                </if>
+            )
+            UNION ALL
+            (
+                SELECT
+                  order_id,repayment_status,DATEDIFF(last_repayment_time,due_time) overdueLevel,loan_amount,due_time,last_repayment_time
+                FROM x_record_loan
+                WHERE loan_status = 1 AND repayment_status = 2 AND last_repayment_time>due_time
+                <if test="params.userGid != null and params.userGid != ''">
+                    and user_gid = #{params.userGid}
+                </if>
+            )
+        ) t
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
 </mapper>

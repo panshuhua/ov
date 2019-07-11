@@ -3,6 +3,7 @@ package com.ivay.ivay_manage.controller;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.CustomerService;
+import com.ivay.ivay_manage.service.XLoanService;
 import com.ivay.ivay_manage.service.XUserExtInfoService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.model.XUserExtInfo;
@@ -109,6 +110,9 @@ public class XLoanController {
         return response;
     }
 
+    @Autowired
+    private XLoanService xLoanService;
+
     @GetMapping("overDueOrder")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
@@ -120,7 +124,7 @@ public class XLoanController {
                                                         @RequestParam(required = false, defaultValue = "1") int num,
                                                         @RequestParam String userGid) {
         Response<PageTableResponse> response = new Response<>();
-        response.setBo(null);
+        response.setBo(xLoanService.overDueOrderList(limit, num, userGid));
         return response;
     }
 

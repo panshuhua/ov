@@ -1,6 +1,7 @@
 package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.dto.XOverDueFee;
+import com.ivay.ivay_repository.dto.XOverdueOrderInfo;
 import com.ivay.ivay_repository.dto.XRecordLoanInfo;
 import com.ivay.ivay_repository.dto.XTimeoutTransferInfo;
 import com.ivay.ivay_repository.model.XRecordLoan;
@@ -46,7 +47,8 @@ public interface XRecordLoanDao {
      * @param limit
      * @return
      */
-    List<XRecordLoan> list(@Param("params") Map<String, Object> params, @Param("offset") Integer offset,
+    List<XRecordLoan> list(@Param("params") Map<String, Object> params,
+                           @Param("offset") Integer offset,
                            @Param("limit") Integer limit);
 
     @Select("select IFNULL(SUM(t.due_amount+t.overdue_fee+t.overdue_interest),0) from x_record_loan t"
@@ -92,14 +94,21 @@ public interface XRecordLoanDao {
             "LEFT JOIN x_baokim_transfers_info ON x_record_loan.gid = x_baokim_transfers_info.loan_gid " +
             "WHERE x_record_loan.loan_status=2 AND x_baokim_transfers_info.operation='9002' AND x_baokim_transfers_info.loan_gid IS NOT NULL")
     List<XTimeoutTransferInfo> getTimeoutTransfer();
-    
+
     /**
      * @Description 查找过期订单（用来生成催收档案）
      * @Author Ryan
      * @Param []
-     * @Return java.util.List<com.ivay.ivay_repository.model.XRecordLoan> 
+     * @Return java.util.List<com.ivay.ivay_repository.model.XRecordLoan>
      * @Date 2019/7/9 11:38
      */
     @Select("SELECT id,order_id,loan_amount,user_gid FROM `x_record_loan` WHERE loan_status = 1 AND repayment_status != 2 AND due_time < DATE_FORMAT(SYSDATE(),'%Y%m%d')")
     List<XRecordLoan> findOverdueOrder();
+
+    // 所有逾期账单的详细信息
+    int countOverDueOrder(@Param("params") Map<String, Object> params);
+
+    List<XOverdueOrderInfo> listOverDueOrder(@Param("params") Map<String, Object> params,
+                                             @Param("offset") Integer offset,
+                                             @Param("limit") Integer limit);
 }

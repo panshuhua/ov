@@ -85,10 +85,14 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         // 设置角色与登录用户id
         request.getParams().put("role", roleService.getLoginUserAuditRole());
-        request.getParams().put("loginId", UserUtil.getLoginUser().getId());
+        if (UserUtil.getLoginUser() != null) {
+            request.getParams().put("loginId", UserUtil.getLoginUser().getId());
+        }
 
-        return new PageTableHandler(a -> xUserInfoDao.auditCount(a.getParams()),
-                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+        return new PageTableHandler(
+                a -> xUserInfoDao.auditCount(a.getParams()),
+                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 
     @Override
@@ -330,8 +334,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("userGid", userGid);
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
-        return new PageTableHandler(a -> xUserInfoDao.countSameName(a.getParams()),
-                a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+        return new PageTableHandler(
+                a -> xUserInfoDao.countSameName(a.getParams()),
+                a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 
     /**
