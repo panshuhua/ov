@@ -199,28 +199,23 @@ public class XLoanServiceImpl implements XLoanService {
                     }
                     break;
                 case "majorRelation":
-                    // 亲密联系人号码出现次数> 2，拒贷（人数使用配置）
+                    // 亲密联系人号码出现次数>2，拒贷（人数使用配置）
                     if (xLoanQualification.getOneMajorPhoneNum() < min
                             || xLoanQualification.getOneMajorPhoneNum() > max) {
                         sb.append("亲密联系人号码出现次数不符: ").append(xLoanQualification.getOneMajorPhoneNum()).append(";");
                     }
                     break;
                 case "appNum":
-                    // 社交类app的个数不符
-                    // 贷前策略
-                    if (flag == 0) {
-                        if (xLoanQualification.getAppCount() <= min) {
+                    // 社交类app的个数
+                    if (xLoanQualification.getAppCount() < min) {
+                        if (flag == 0) {
+                            // 贷前策略: app个数>=1
                             sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
+                        } else if (flag == 1 && xLoanQualification.getAppMaxCount() < min) {
+                            // 贷中策略: 14内的app个数>=1
+                            sb.append("14天内最大社交类app个数不符: ").append(xLoanQualification.getAppMaxCount()).append(";");
                         }
                     }
-
-                    // 贷中策略
-                    if (flag == 1) {
-                        if (xLoanQualification.getAppCount() <= min && xLoanQualification.getAppMaxCount() <= min) {
-                            sb.append("社交类app个数不符: ").append(xLoanQualification.getAppCount()).append(";");
-                        }
-                    }
-
                     break;
                 case "overdueDay":
                     // 历史最大逾期天数>=30天，拒贷
