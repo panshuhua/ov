@@ -108,4 +108,21 @@ public class XLoanController {
         response.setBo(customerService.repaymentInfo(limit, num, userGid, type));
         return response;
     }
+
+    @GetMapping("overDueOrder")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
+    })
+    @ApiOperation("查看所有逾期账单的借还记录")
+    public Response<PageTableResponse> overDueOrderList(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                        @RequestParam(required = false, defaultValue = "1") int num,
+                                                        @RequestParam String userGid) {
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(null);
+        return response;
+    }
+
+
 }

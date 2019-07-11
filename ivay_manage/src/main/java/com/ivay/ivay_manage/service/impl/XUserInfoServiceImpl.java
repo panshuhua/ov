@@ -88,7 +88,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("loginId", UserUtil.getLoginUser().getId());
 
         return new PageTableHandler(a -> xUserInfoDao.auditCount(a.getParams()),
-            a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+                a -> xUserInfoDao.auditList(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("loginId", UserUtil.getLoginUser().getId());
 
         return new PageTableHandler(a -> xUserInfoDao.auditCountV2(a.getParams()),
-            a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+                a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Autowired
@@ -143,13 +143,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * 对待授信用户进行人工审核
      *
      * @param userGid
-     * @param flag
-     *            0 审核拒绝 1 审核通过
-     * @param refuseCode
-     *            审核拒绝时，必须传入refuseCode
+     * @param flag       0 审核拒绝 1 审核通过
+     * @param refuseCode 审核拒绝时，必须传入refuseCode
      * @param refuseDemo
-     * @param type
-     *            审核类型 0人工 1自动
+     * @param type       审核类型 0人工 1自动
      * @return 1审核通过 0 审核拒绝 -1数据库异常
      */
     @Override
@@ -157,7 +154,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
         if (xUserInfo == null) {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
-                i18nService.getMessage("response.error.user.checkgid.msg"));
+                    i18nService.getMessage("response.error.user.checkgid.msg"));
         }
 
         // region -- 审核待授信用户
@@ -222,7 +219,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
                     xAppEvent.setType(SysVariable.APP_EVENT_AUDIT);
                     xAppEvent.setGid(userGid);
                     xAppEvent.setIsSuccess(xUserInfo.getUserStatus().equals(SysVariable.USER_STATUS_AUTH_SUCCESS)
-                        ? SysVariable.APP_EVENT_SUCCESS : SysVariable.APP_EVENT_FAIL);
+                            ? SysVariable.APP_EVENT_SUCCESS : SysVariable.APP_EVENT_FAIL);
                     restTemplate.postForObject(xAppEvents_event_url, xAppEvent, Response.class);
                 });
             }
@@ -273,23 +270,23 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
         // region -- 用户风控配置
         Map userManageConfig = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_USER_MANAGE));
-        Map config = (LinkedHashMap)userManageConfig.get("blackUser");
+        Map config = (LinkedHashMap) userManageConfig.get("blackUser");
 
         // 判断黑名单用户是否允许黑名单通过授信
-        boolean allowBlackFlag = (Boolean)config.get("audit");
+        boolean allowBlackFlag = (Boolean) config.get("audit");
         if (!allowBlackFlag) {
             // 黑名单用户 拒绝
             if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
                 logger.info("黑名单用户: {}", userGid);
                 xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_REFUSE, SysVariable.AUDIT_BLACK_USER_CODE,
-                    "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
+                        "黑名单用户: " + userGid, SysVariable.AUDIT_REFUSE_TYPE_AUTO);
                 return false;
             }
         }
 
         // 白名单自动审核
-        config = (LinkedHashMap)userManageConfig.get("whiteUser");
-        boolean autoAuditFlag = (Boolean)config.get("autoAudit");
+        config = (LinkedHashMap) userManageConfig.get("whiteUser");
+        boolean autoAuditFlag = (Boolean) config.get("autoAudit");
         logger.info("白名单启用自动审核：{}", autoAuditFlag);
         // endregion
 
@@ -298,7 +295,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         if (autoAuditFlag && whiteList.size() > 0) {
             logger.info("{}: 白名单用户，执行自动审核---start", phone);
             if (xUserInfoService.auditUpdate(userGid, SysVariable.AUDIT_PASS, null, null,
-                SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
+                    SysVariable.AUDIT_REFUSE_TYPE_AUTO) == 1) {
                 logger.info("{}: 审核通过...", phone);
             } else {
                 logger.info("{}: 审核不通过...", phone);
@@ -334,7 +331,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
         return new PageTableHandler(a -> xUserInfoDao.countSameName(a.getParams()),
-            a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+                a -> xUserInfoDao.listSameName(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     /**
@@ -350,7 +347,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      */
     @Override
     public PageTableResponse overDueUsers(int limit, int num, String type, String identityCard, String phone,
-        String name) {
+                                          String name) {
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
@@ -360,7 +357,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("phone", phone);
         request.getParams().put("name", name);
         return new PageTableHandler(a -> xUserInfoDao.countOverDueUsers(a.getParams()),
-            a -> xUserInfoDao.overDueUsers(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+                a -> xUserInfoDao.overDueUsers(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
     }
 
     @Autowired
@@ -383,7 +380,9 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         // type 0 逾期天数为(0,3], 1 逾期天数为 3天以上
         request.getParams().put("type", type);
         request.getParams().put("userGid", userGid);
-        return new PageTableHandler(a -> xRecordLoanDao.countOverDueLoan(a.getParams()),
-            a -> xRecordLoanDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+        return new PageTableHandler(
+                a -> xRecordLoanDao.countOverDueLoan(a.getParams()),
+                a -> xRecordLoanDao.overDueLoan(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 }

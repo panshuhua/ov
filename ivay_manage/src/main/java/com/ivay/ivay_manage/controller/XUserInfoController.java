@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("manage/user")
-@Api(tags = "用户信息")
+@Api(tags = "用户相关信息")
 public class XUserInfoController {
     @Autowired
     private XUserInfoService xUserInfoService;

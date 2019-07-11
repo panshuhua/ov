@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
 
     @Autowired
     private I18nService i18nService;
@@ -38,14 +38,14 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler({IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response badRequestException(IllegalArgumentException exception) {
-        logger.info(exception.getMessage());
+        logger.info("非法参数: " + exception.getMessage());
         return new Response(HttpStatus.BAD_REQUEST.value() + "", exception.getMessage());
     }
 
     @ExceptionHandler({AccessDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Response badRequestException(AccessDeniedException exception) {
-        logger.info(exception.getMessage());
+        logger.info("请求拒绝: " + exception.getMessage());
         return new Response(HttpStatus.FORBIDDEN.value() + "", exception.getMessage());
     }
 
@@ -57,24 +57,23 @@ public class ExceptionHandlerAdvice {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response badRequestException(Exception exception) {
-        logger.info(exception.getMessage());
+        logger.info("非法请求: " + exception.getMessage());
         return new Response(HttpStatus.BAD_REQUEST.value() + "", exception.getMessage());
     }
 
     @ExceptionHandler({BusinessException.class})
     @ResponseStatus(HttpStatus.OK)
     public Response badRequestException(BusinessException exception) {
-        logger.info("", exception.getMessage());
         if (StringUtils.isEmpty(exception.getCode())) {
-            exception.setCode(HttpStatus.FORBIDDEN.value() + "");
+            exception.setCode(HttpStatus.BAD_REQUEST.value() + "");
         }
+        logger.info("业务报错: {}, {}", exception.getCode(), exception.getMessage());
         return new Response(exception.getCode(), exception.getMessage());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.OK)
     public Response handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        logger.error("参数校验报错: {}", exception);
         BindingResult bindingResult = exception.getBindingResult();
         StringBuilder errorMessage = new StringBuilder("");
         for (int i = 0; i < bindingResult.getFieldErrors().size(); i++) {
@@ -86,6 +85,7 @@ public class ExceptionHandlerAdvice {
             errorMessage.append(":");
             errorMessage.append(fieldError.getDefaultMessage());
         }
+        logger.error("参数校验报错: " + errorMessage.toString());
         return new Response(HttpStatus.METHOD_NOT_ALLOWED.value() + "", errorMessage.toString());
     }
 
@@ -94,7 +94,6 @@ public class ExceptionHandlerAdvice {
     })
     @ResponseStatus(HttpStatus.OK)
     public Response handleConstraintViolationException(ConstraintViolationException exception) {
-        logger.error("参数校验报错: {}", exception);
         Iterator it = exception.getConstraintViolations().iterator();
         StringBuilder error = new StringBuilder();
         while (it.hasNext()) {
@@ -106,6 +105,7 @@ public class ExceptionHandlerAdvice {
                 error.append(s.getMessageTemplate());
             }
         }
+        logger.error("参数校验报错: " + error.toString());
         return new Response(String.valueOf(HttpStatus.METHOD_NOT_ALLOWED.value()), error.toString());
     }
 
@@ -113,7 +113,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response exception(Throwable throwable) {
-        logger.error("系统内部错误: {}", throwable);
+        logger.error("系统内部错误: " + throwable);
         return new Response(HttpStatus.INTERNAL_SERVER_ERROR.value() + "", throwable.getMessage());
     }
 }

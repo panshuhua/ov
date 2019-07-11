@@ -149,6 +149,6 @@ public class XAuditController {
 
     @GetMapping("test")
     public boolean test(String key) {
-        throw new BusinessException("why.");
+        throw new BusinessException("0015","why.");
     }
 }
