@@ -13,7 +13,7 @@ public interface XCollectionTaskService {
 
     XCollectionTask update(XCollectionTask xCollectionTask);
 
-    PageTableResponse list(PageTableRequest request, CollectionTaskInfo collectionTaskInfo);
+    PageTableResponse list(int limit, int num, CollectionTaskInfo collectionTaskInfo);
 
     int delete(Long id);
 

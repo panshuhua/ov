@@ -3,11 +3,10 @@ package com.ivay.ivay_manage.service.impl;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.enums.CollectionStatusEnum;
 import com.ivay.ivay_common.enums.OverDueLevelEnum;
-import com.ivay.ivay_common.enums.RepaymentStatusEnum;
+import com.ivay.ivay_common.enums.CollectionRepayStatusEnum;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.service.XCollectionTaskService;
 import com.ivay.ivay_repository.dao.master.XCollectionTaskDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
@@ -53,8 +52,13 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
     }
 
     @Override
-    public PageTableResponse list(PageTableRequest request, CollectionTaskInfo collectionTaskInfo) {
+    public PageTableResponse list(int limit, int num, CollectionTaskInfo collectionTaskInfo) {
+
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
         Map param = request.getParams();
+
         //根据条件搜索
         if(null != collectionTaskInfo) {
             param.put("name", collectionTaskInfo.getName());
@@ -62,7 +66,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
             param.put("identityCard", collectionTaskInfo.getIdentityCard());
             param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
             param.put("username", collectionTaskInfo.getUsername());
-            param.put("repaymentStatus", collectionTaskInfo.getRepaymentStatus());
+            param.put("collectionRepayStatus", collectionTaskInfo.getCollectionRepayStatus());
             param.put("collectionStatus", collectionTaskInfo.getCollectionStatus());
 
             if(StringUtils.isNotBlank(collectionTaskInfo.getOverdueLevel())){
@@ -100,15 +104,15 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         List<XRecordLoan> recordLoanList = xRecordLoanDao.findOverdueOrder();
 
         //修改已经过期的订单状态
-        recordLoanList.forEach(o -> {
-            o.setRepaymentStatus(RepaymentStatusEnum.OVERDUE.getStatus());
+        /*recordLoanList.forEach(o -> {
+            o.setRepaymentStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
             o.setUpdateTime(new Date());
                 });
-        xRecordLoanDao.updateByBatch(recordLoanList);
+        xRecordLoanDao.updateByBatch(recordLoanList);*/
 
         //过滤掉已经插入的数据
-        //List<String> orderIdList = xCollectionTaskDao.selectOrderIds();
-        //recordLoanList = recordLoanList.stream().filter(o -> !orderIdList.contains(o.getOrderId())).collect(Collectors.toList());
+        List<String> orderIdList = xCollectionTaskDao.selectOrderIds();
+        recordLoanList = recordLoanList.stream().filter(o -> !orderIdList.contains(o.getOrderId())).collect(Collectors.toList());
 
         if(recordLoanList.size() > 0) {
             List<XCollectionTask> collectionTaskList = new ArrayList<>();
@@ -138,13 +142,15 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
         //判断是否有逾期未还的借款
         if(recordLoan.getLoanStatus() == 1 &&
-                recordLoan.getRepaymentStatus() == RepaymentStatusEnum.OVERDUE.getStatus() &&
+                recordLoan.getRepaymentStatus() != CollectionRepayStatusEnum.FINISHED_REPAY.getStatus() &&
+                recordLoan.getDueTime().getTime() < System.currentTimeMillis() &&
                 recordLoan.getDueAmount() + recordLoan.getOverdueFee() > 0){
 
             //首次指派
             if(collectionTask.getCollectionStatus() == CollectionStatusEnum.WAITING_COLLECTION.getStatus()){
                 collectionTask.setCollectorId(collectorId);
                 collectionTask.setUpdateTime(new Date());
+                collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
                 collectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
 
                 return xCollectionTaskDao.update(collectionTask) >= 1;
@@ -164,6 +170,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 newXCollectionTask.setCollectorId(collectorId);
                 newXCollectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
                 newXCollectionTask.setDueCollectionAmount(collectionTask.getDueCollectionAmount());
+                newXCollectionTask.setCollectionRepayStatus(collectionTask.getCollectionRepayStatus());
                 newXCollectionTask.setCollectionAmount(0L);
                 newXCollectionTask.setCollectionOverdueFee(0L);
                 newXCollectionTask.setCreateTime(new Date());

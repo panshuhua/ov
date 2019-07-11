@@ -27,7 +27,7 @@ public class OverdueOrderScheduleTask {
     @Autowired
     private XCollectionTaskService collectionTaskService;
 
-    //@Scheduled(cron = "${timer.overdueOrder}")
+    @Scheduled(cron = "${timer.overdueOrder}")
     private void overdueOrder() {
 
         logger.info("开始扫描过期订单，生成催收档案 -- overdueOrder");

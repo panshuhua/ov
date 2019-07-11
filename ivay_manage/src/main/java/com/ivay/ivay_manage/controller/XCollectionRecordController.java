@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("xCollectionRecords")
+@RequestMapping("api/xCollectionRecords")
 @Api(tags = "催收记录")
 public class XCollectionRecordController {
 
@@ -51,8 +51,12 @@ public class XCollectionRecordController {
 
     @GetMapping("list")
     @ApiOperation(value = "列表")
-    public PageTableResponse selectCollectionRecordList(PageTableRequest request) {
-        return xCollectionRecordService.selectCollectionRecordList(request);
+    public Response<PageTableResponse> selectCollectionRecordList(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                                  @RequestParam(required = false, defaultValue = "1") int num,
+                                                                  @RequestParam int id) {
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xCollectionRecordService.selectCollectionRecordList(limit,num,id));
+        return response;
     }
 
     @DeleteMapping("delete")

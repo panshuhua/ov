@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("xCollectionTasks")
+@RequestMapping("api/xCollectionTasks")
 @Api(tags = "催收派单")
 public class XCollectionTaskController {
 
@@ -57,8 +57,13 @@ public class XCollectionTaskController {
 
     @GetMapping("list")
     @ApiOperation(value = "催收搜索列表")
-    public PageTableResponse list(PageTableRequest request, CollectionTaskInfo collectionTaskInfo) {
-        return xCollectionTaskService.list(request, collectionTaskInfo);
+    public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
+                                  @RequestParam(required = false, defaultValue = "1") int num,
+                                  PageTableRequest request, CollectionTaskInfo collectionTaskInfo) {
+
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xCollectionTaskService.list(limit, num, collectionTaskInfo));
+        return response;
     }
 
     @DeleteMapping("delete")

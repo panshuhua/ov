@@ -45,7 +45,7 @@ public class XCollectionTaskServiceImplTest {
         CollectionTaskInfo collectionTaskInfo = new CollectionTaskInfo();
         collectionTaskInfo.setOverdueLevel("M1");
         collectionTaskInfo.setPhone("9888888888");
-        PageTableResponse response = collectionTaskService.list(request,collectionTaskInfo);
+        PageTableResponse response = collectionTaskService.list(10,1, collectionTaskInfo);
         System.out.println("==========================");
         System.out.println(JSONObject.toJSONString(response));
     }

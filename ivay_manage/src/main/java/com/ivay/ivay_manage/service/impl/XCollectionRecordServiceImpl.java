@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class XCollectionRecordServiceImpl implements XCollectionRecordService {
@@ -33,6 +35,7 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
         if(xCollectionTask != null && xCollectionTask.getCollectorId() == xCollectionRecord.getCollectorId()){
             xCollectionRecord.setCreateTime(new Date());
             xCollectionRecord.setUpdateTime(xCollectionRecord.getCreateTime());
+            xCollectionRecord.setOrderId(xCollectionTask.getOrderId());
             xCollectionRecord.setEnableFlag("Y");
 
             return xCollectionRecordDao.save(xCollectionRecord);
@@ -64,7 +67,17 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
     }
 
     @Override
-    public PageTableResponse selectCollectionRecordList(PageTableRequest request) {
+    public PageTableResponse selectCollectionRecordList(int limit,int num, int id) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map param = request.getParams();
+
+        XCollectionTask xCollectionTask = xCollectionTaskService.get(id);
+        if(xCollectionTask != null){
+            param.put("orderId",xCollectionTask.getOrderId());
+        }
+
         return new PageTableHandler(
                 a -> xCollectionRecordDao.selectCollectionCount(a.getParams()),
                 a -> xCollectionRecordDao.selectCollectionRecordList(a.getParams(), a.getOffset(), a.getLimit())

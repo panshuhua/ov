@@ -31,7 +31,7 @@ public class XCollectionRecordServiceImplTest {
         PageTableRequest request = new PageTableRequest();
         request.setOffset(0);
         request.setLimit(10);
-        PageTableResponse response = xCollectionRecordService.list(request);
+        PageTableResponse response = xCollectionRecordService.selectCollectionRecordList(10,1,3661);
         System.out.println(JSONObject.toJSONString(response));
     }
 

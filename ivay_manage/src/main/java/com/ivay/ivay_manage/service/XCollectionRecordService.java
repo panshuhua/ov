@@ -22,5 +22,5 @@ public interface XCollectionRecordService {
      * @Return com.ivay.ivay_common.table.PageTableResponse
      * @Date 2019/7/10 19:29
      */
-    PageTableResponse selectCollectionRecordList(PageTableRequest request);
+    PageTableResponse selectCollectionRecordList(int limit, int num, int id);
 }
