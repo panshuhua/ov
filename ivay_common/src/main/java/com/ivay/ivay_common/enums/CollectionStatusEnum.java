@@ -4,7 +4,7 @@ import io.swagger.models.auth.In;
 
 /**
  * @EnumName CollectionStatusEnum
- * @Description 催收状态枚举
+ * @Description 催收指派状态枚举
  * @Author Ryan
  * @Date 2019/7/9 13:57
  */
