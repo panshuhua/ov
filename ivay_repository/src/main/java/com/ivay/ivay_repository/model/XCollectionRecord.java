@@ -16,8 +16,11 @@ public class XCollectionRecord {
     @ApiModelProperty("催收员id")
     private Integer collectorId;
 
-    @ApiModelProperty("催收员id")
-    private Integer collectorName;
+    @ApiModelProperty("借款订单id")
+    private String orderId;
+
+    @ApiModelProperty("催收员姓名")
+    private String collectorName;
 
     @ApiModelProperty("催收电话")
     private String collectionPhone;

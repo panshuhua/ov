@@ -100,6 +100,6 @@ public interface XRecordLoanDao {
      * @Return java.util.List<com.ivay.ivay_repository.model.XRecordLoan> 
      * @Date 2019/7/9 11:38
      */
-    @Select("SELECT id,order_id,loan_amount,user_gid FROM `x_record_loan` WHERE loan_status = 1 AND repayment_status in (0,1,3) AND due_time < DATE_FORMAT(SYSDATE(),'%Y%m%d')")
+    @Select("SELECT id,order_id,loan_amount,user_gid FROM `x_record_loan` WHERE loan_status = 1 AND repayment_status != 2 AND due_time < DATE_FORMAT(SYSDATE(),'%Y%m%d')")
     List<XRecordLoan> findOverdueOrder();
 }

@@ -18,7 +18,7 @@ public interface XCollectionRecordDao {
     int update(XCollectionRecord xCollectionRecord);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_collection_record(task_id, collector_id, collection_phone, collection_reason, collection_time, remark, create_time, update_time, enable_flag) values(#{taskId}, #{collectorId}, #{collectionPhone}, #{collectionReason}, #{collectionTime}, #{remark}, #{createTime}, #{updateTime}, #{enableFlag})")
+    @Insert("insert into x_collection_record(task_id, order_id, collector_id, collection_phone, collection_reason, collection_time, remark, create_time, update_time, enable_flag) values(#{taskId}, #{orderId}, #{collectorId}, #{collectionPhone}, #{collectionReason}, #{collectionTime}, #{remark}, #{createTime}, #{updateTime}, #{enableFlag})")
     int save(XCollectionRecord xCollectionRecord);
 
     int count(@Param("params") Map<String, Object> params);

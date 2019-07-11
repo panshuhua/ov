@@ -19,7 +19,7 @@ public interface XCollectionTaskDao {
     int update(XCollectionTask xCollectionTask);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag})")
+    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag,collection_repay_status) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag}),#{collectionRepayStatus}")
     int save(XCollectionTask xCollectionTask);
 
     int count(@Param("params") Map<String, Object> params);
@@ -65,4 +65,13 @@ public interface XCollectionTaskDao {
      * @Date 2019/7/10 10:25
      */
     int selectParamsListCount(@Param("params") Map<String, Object> params);
+
+    /**
+     * @Description 根据用户gid获取最新的催收任务
+     * @Author Ryan
+     * @Param [userGid]
+     * @Return com.ivay.ivay_repository.model.XCollectionTask
+     * @Date 2019/7/11 11:35
+     */
+    XCollectionTask findNewCollectionByUserGid(@Param("userGid") String userGid);
 }

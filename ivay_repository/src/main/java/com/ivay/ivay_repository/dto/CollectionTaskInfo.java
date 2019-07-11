@@ -27,8 +27,8 @@ public class CollectionTaskInfo {
     @ApiModelProperty("催收人")
     private String username;
 
-    @ApiModelProperty("还款状态")
-    private String repaymentStatus;
+    @ApiModelProperty("催收还款状态")
+    private String collectionRepayStatus;
 
     @ApiModelProperty("指派状态")
     private String collectionStatus;

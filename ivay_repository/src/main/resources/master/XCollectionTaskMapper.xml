@@ -29,6 +29,9 @@
 			<if test="params.collectionOverdueFee != null and params.collectionOverdueFee != ''">
 				and collection_overdue_fee = #{params.collectionOverdueFee} 
 			</if>
+			<if test="params.collectionRepayStatus != null">
+				collection_repay_status = #{params.collectionRepayStatus},
+			</if>
 			<if test="params.createTime != null and params.createTime != ''">
 				and create_time = #{params.createTime} 
 			</if>
@@ -78,8 +81,11 @@
 			<if test="collectionOverdueFee != null">
 				collection_overdue_fee = #{collectionOverdueFee}, 
 			</if>
-			<if test="createTime != null">
-				create_time = #{createTime}, 
+			<if test="collectionOverdueFee != null">
+				collection_overdue_fee = #{collectionOverdueFee},
+			</if>
+			<if test="collectionRepayStatus != null">
+				collection_repay_status = #{collectionRepayStatus},
 			</if>
 			<if test="updateTime != null">
 				update_time = #{updateTime}, 
@@ -93,13 +99,14 @@
 
 	<!-- 批量插入催收档案（定时任务） -->
 	<insert id="saveBatch" parameterType="java.util.List">
-		INSERT INTO x_collection_task(order_id,user_gid,collection_status,due_collection_amount,create_time,update_time)
+		INSERT INTO x_collection_task(order_id,user_gid,collection_status,due_collection_amount,collection_repay_status,create_time,update_time)
 		values
 		<foreach collection="list" item="item" index="index" separator=",">
 			(#{item.orderId},
 			#{item.userGid},
 			#{item.collectionStatus},
 			#{item.dueCollectionAmount},
+			#{item.collectionRepayStatus},
 			#{item.createTime},
 			#{item.updateTime})
 		</foreach>
@@ -117,6 +124,7 @@
 		t5.user_gid,
 		t5.assign_time,
 		t5.collector_id,
+		t5.collection_repay_status,
 		t5.name,
 		t5.phone,
 		t5.identity_card,
@@ -133,6 +141,7 @@
 		t3.user_gid,
 		t3.assign_time,
 		t3.collector_id,
+		t3.collection_repay_status,
 		t3.name,
 		t3.phone,
 		t3.identity_card,
@@ -148,13 +157,14 @@
 		t1.id,
 		t1.assign_time,
 		t1.collector_id,
+		t1.collection_repay_status,
 		t2.name,
 		t2.phone,
 		t2.identity_card
 		FROM
 		(
-		SELECT t0.order_id,any_value(id) as id,any_value(user_gid) as user_gid,any_value(assign_time) as assign_time,any_value(collector_id) as collector_id FROM
-		(SELECT id,order_id, user_gid, create_time AS assign_time, collector_id FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
+		SELECT t0.order_id,any_value(id) as id,any_value(user_gid) as user_gid,any_value(assign_time) as assign_time,any_value(collector_id) as collector_id, any_value(collection_repay_status) as collection_repay_status FROM
+		(SELECT id,order_id, user_gid, create_time AS assign_time, collector_id, collection_repay_status FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
 		GROUP BY t0.order_id
 		) t1
 		LEFT JOIN
@@ -197,8 +207,8 @@
 			<if test="params.username != null and params.username != ''">
 				and t7.username = #{params.username}
 			</if>
-			<if test="params.repaymentStatus != null and params.repaymentStatus != ''">
-				and t7.repayment_status = #{params.repaymentStatus}
+			<if test="params.collectionRepayStatus != null and params.collectionRepayStatus != ''">
+				and t7.collection_repay_status = #{params.collectionRepayStatus}
 			</if>
 			<if test="params.collectionStatus != null and params.collectionStatus != ''">
 				and t7.collection_status = #{params.collectionStatus}
@@ -314,6 +324,18 @@
 		<if test="limit != null and limit != 0">
 			limit #{offset}, #{limit}
 		</if>
+	</select>
+
+	<!-- 根据用户gid查找正在催收的订单 -->
+    <select id="findNewCollectionByUserGid" resultType="com.ivay.ivay_repository.model.XCollectionTask">
+		SELECT
+			*
+		FROM
+			x_collection_task
+		WHERE
+			user_gid = #{userGid}
+			AND collection_status != 3
+		ORDER BY create_time DESC limit 1
 	</select>
 
 </mapper>

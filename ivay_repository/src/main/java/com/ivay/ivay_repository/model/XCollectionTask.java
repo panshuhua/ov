@@ -33,6 +33,9 @@ public class XCollectionTask {
     @ApiModelProperty(value = "有效标志位")
     private String enableFlag;
 
+    @ApiModelProperty(value = "催收还款状态")
+    private Byte collectionRepayStatus;
+
     private Long id;
     private Date createTime;
     private Date updateTime;
