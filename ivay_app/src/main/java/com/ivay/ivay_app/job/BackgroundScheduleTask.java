@@ -45,7 +45,6 @@ public class BackgroundScheduleTask {
         }
     }
 
-
     @Scheduled(cron = "${timer.transferTimeout}")
     private void transferTimeout() {
         xRecordLoanService.timeoutTransferInfo();

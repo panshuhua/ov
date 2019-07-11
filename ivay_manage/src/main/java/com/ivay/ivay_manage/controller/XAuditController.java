@@ -5,6 +5,7 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_manage.service.XFirebaseNoticeService;
 import com.ivay.ivay_manage.service.XLoanService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -15,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +42,8 @@ public class XAuditController {
     })
     @ApiOperation("审核记录")
     public Response<PageTableResponse> auditListV2(@RequestParam(required = false, defaultValue = "0") int limit,
-                                                    @RequestParam(required = false, defaultValue = "1") int num,
-                                                    @RequestBody(required = false) XAuditListInfo xAuditListInfo) {
+                                                   @RequestParam(required = false, defaultValue = "1") int num,
+                                                   @RequestBody(required = false) XAuditListInfo xAuditListInfo) {
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xUserInfoService.auditList(limit, num, xAuditListInfo));
         return response;
@@ -78,6 +80,9 @@ public class XAuditController {
     @Autowired
     private XLoanService xLoanService;
 
+    @Autowired
+    private XFirebaseNoticeService xFirebaseNoticeService;
+
     @GetMapping("queryAuditQualification")
     @ApiOperation("查询贷款权限")
     @ApiImplicitParams({
@@ -86,8 +91,13 @@ public class XAuditController {
     })
     public String queryAuditQualification(@RequestParam String userGid,
                                           @RequestParam int flag) {
+        String result = xLoanService.queryRiskQualificationDemo(userGid, flag);
         // 获得某人的风控审核结果，返回未通过审核的理由，空字符串表示通过审核
-        return xLoanService.queryRiskQualificationDemo(userGid, flag);
+        if (flag == SysVariable.RISK_TYPE_LOAN && !StringUtils.isEmpty(result)) {
+            // 风控拒绝需要发送短信
+            xFirebaseNoticeService.sendLoanFail(userGid);
+        }
+        return result;
     }
 
     @PostMapping("repaymentSuccessPostHandle")

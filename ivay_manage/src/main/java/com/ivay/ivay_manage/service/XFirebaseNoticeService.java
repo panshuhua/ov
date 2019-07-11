@@ -22,7 +22,7 @@ public interface XFirebaseNoticeService {
     /**
      * 发送获额通知：首次获得额度/额度变更
      * 
-     * @param xRecordLoan
+     * @param xUserInfo
      */
     void sendGetCreditLine(XUserInfo xUserInfo);
 

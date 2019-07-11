@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -45,9 +44,6 @@ public class XLoanServiceImpl implements XLoanService {
 
     @Resource
     private XUserRiskDao xUserRiskDao;
-
-    @Autowired
-    private XFirebaseNoticeService xFirebaseNoticeService;
 
     @Override
     public XLoanQualification getAuditQualificationObj(String userGid, int flag) {
@@ -137,10 +133,6 @@ public class XLoanServiceImpl implements XLoanService {
                 // 黑名单用户 拒绝
                 if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
                     logger.info("黑名单用户: {}", userGid);
-                    // TODO 借款申请时被风控规则拒绝导致借款失败的发送通知
-                    if (flag == SysVariable.RISK_TYPE_LOAN) {
-                        xFirebaseNoticeService.sendLoanFail(userGid);
-                    }
                     return "黑名单用户: " + userGid;
                 }
             }
@@ -154,10 +146,6 @@ public class XLoanServiceImpl implements XLoanService {
                 List<RiskUser> whiteList = riskUserService.selectUserListByPhone(xUserInfo.getPhone());
                 if (whiteList.size() == 0) {
                     logger.info("非白名单用户，不允许通过风控: {}", userGid);
-                    // TODO 借款申请时被风控规则拒绝导致借款失败的发送通知
-                    if (flag == SysVariable.RISK_TYPE_LOAN) {
-                        xFirebaseNoticeService.sendLoanFail(userGid);
-                    }
                     return "非白名单用户，不允许通过风控: " + userGid;
                 }
             }
@@ -256,13 +244,6 @@ public class XLoanServiceImpl implements XLoanService {
         if (xLoanQualification.isOverdueFlag()) {
             sb.append("当前处于逾期中: ").append(userGid).append(";");
         }
-
-        // TODO 借款失败通知
-        // 借款申请时被风控规则拒绝导致借款失败的发送通知
-        if (flag == SysVariable.RISK_TYPE_LOAN && !StringUtils.isEmpty(sb.toString())) {
-            xFirebaseNoticeService.sendLoanFail(userGid);
-        }
-
         return sb.toString();
     }
 
@@ -320,6 +301,9 @@ public class XLoanServiceImpl implements XLoanService {
         return xLoanService.refreshCreditLimit(userGid);
     }
 
+    @Autowired
+    private XFirebaseNoticeService xFirebaseNoticeService;
+
     /**
      * 獲得某人的授信額度，如果滿足提額條件則提額
      *
@@ -333,6 +317,8 @@ public class XLoanServiceImpl implements XLoanService {
         }
         if (checkCreditLimitFlag(xUserInfo)) {
             updateCreditLimit(xUserInfo);
+            // 额度变化时短信通知
+            xFirebaseNoticeService.sendGetCreditLine(xUserInfo);
         }
         return xUserInfo.getCreditLine();
     }
@@ -453,11 +439,7 @@ public class XLoanServiceImpl implements XLoanService {
             logger.info("{}: 第{}次提額，提額數目: {}, 新額度: {}", xUserInfo.getUserGid(), xUserInfo.getCreditLineCount(), count,
                     xUserInfo.getCreditLine());
         }
-
-        // TODO xUserInfo.getCreditLine()=0时，>0时是其他的提额次数：发送初始化额度和提额短信通知
-        xFirebaseNoticeService.sendGetCreditLine(xUserInfo);
         xUserInfo.setUpdateTime(new Date());
         xUserInfoDao.update(xUserInfo);
     }
-
 }

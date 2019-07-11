@@ -1,17 +1,5 @@
 package com.ivay.ivay_manage.service.impl;
 
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
@@ -26,10 +14,20 @@ import com.ivay.ivay_manage.service.XFirebaseNoticeService;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
-
     private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeService.class);
 
     @Autowired
@@ -50,7 +48,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     @Override
     public MsgLinkData getLinkData(String key) {
-        String dataJson = (String)redisTemplate.opsForValue().get(key);
+        String dataJson = (String) redisTemplate.opsForValue().get(key);
         MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
         return data;
     }
@@ -61,7 +59,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         if (!StringUtils.isEmpty(msg.getFmcToken())) {
             sendMsgService.sendFirebaseNoticeMsg(msg);
         }
-
     }
 
     // 发送手机短信
@@ -74,17 +71,16 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     // 发送两种通知
     @Override
     public void sendAllNotice(NoticeMsg msg) {
-
         try {
             sendPhoneNoticeMsg(msg);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
 
         try {
             sendFirebaseNoticeMsg(msg);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
 
     }
@@ -130,7 +126,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 try {
                     responseBody = sendMsgService.sendMsgByFpt(msg.getPhone(), msg.getPhoneMsg());
                     map = JsonUtils.jsonToMap(responseBody);
-                    String messageId = (String)map.get("MessageId");
+                    String messageId = (String) map.get("MessageId");
                     logger.info("fpt方式发送的短信id：" + messageId);
                     if (messageId != null) {
                         logger.info("Fpt方式发送的短信验证码是：" + msg);
@@ -164,6 +160,10 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     }
 
+    /**
+     * creditLine=0时初始化，>0提额次数：发送初始化额度和提额短信通知
+     * @param xUserInfo
+     */
     @Override
     public void sendGetCreditLine(XUserInfo xUserInfo) {
         NoticeMsg msg = new NoticeMsg();
