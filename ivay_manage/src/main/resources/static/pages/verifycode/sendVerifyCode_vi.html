@@ -57,6 +57,12 @@
 
 $("#searchBt").click(function(){
     var phone=$("#phone").val();
+    
+    if(phone==""){
+        alert("Vui lòng nhập số điện thoại của bạn");
+        return;
+    }
+    
      //调用后台接口获取短信验证码
 	$.ajax({
 	    url:"/manage/verifyCode/getVerifyCode",

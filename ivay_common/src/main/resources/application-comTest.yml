@@ -34,7 +34,7 @@ api_paasoo_code_key: nzwzxcuv
 api_paasoo_code_secret: 2aandS4r
 #发送通知短信的key和secret
 api_paasoo_notice_key: cftpyvnv
-api_paasoo_notice_secret: cftpyvnv
+api_paasoo_notice_secret: 4jRCCSnf
 
 # 发送短信url-fpt
 api_fpt_grant_type: client_credentials

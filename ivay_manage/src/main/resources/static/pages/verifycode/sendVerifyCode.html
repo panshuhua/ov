@@ -57,6 +57,11 @@
 
 $("#searchBt").click(function(){
     var phone=$("#phone").val();
+    
+    if(phone==""){
+        alert("请输入手机号码");
+        return;
+    }
      //调用后台接口获取短信验证码
 	$.ajax({
 	    url:"/manage/verifyCode/getVerifyCode",
