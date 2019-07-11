@@ -3,7 +3,11 @@ package com.ivay.ivay_manage.controller;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_manage.service.XCollectionTaskService;
+import com.ivay.ivay_repository.dto.CollectionTaskInfo;
+import com.ivay.ivay_repository.dto.UserName;
+import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_repository.model.XCollectionTask;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -12,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("xCollectionTasks")
 @Api(tags = "催收派单")
@@ -19,6 +25,8 @@ public class XCollectionTaskController {
 
     @Autowired
     private XCollectionTaskService xCollectionTaskService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("save")
     @ApiOperation(value = "保存")
@@ -31,9 +39,9 @@ public class XCollectionTaskController {
     @GetMapping("get")
     @ApiOperation(value = "根据id获取")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "id", dataType = "Integer", paramType = "query")
     })
-    public Response<XCollectionTask> get(@RequestParam Long id) {
+    public Response<XCollectionTask> get(@RequestParam Integer id) {
         Response<XCollectionTask> response = new Response<>();
         response.setBo(xCollectionTaskService.get(id));
         return response;
@@ -48,9 +56,9 @@ public class XCollectionTaskController {
     }
 
     @GetMapping("list")
-    @ApiOperation(value = "列表")
-    public PageTableResponse list(PageTableRequest request) {
-        return xCollectionTaskService.list(request);
+    @ApiOperation(value = "催收搜索列表")
+    public PageTableResponse list(PageTableRequest request, CollectionTaskInfo collectionTaskInfo) {
+        return xCollectionTaskService.list(request, collectionTaskInfo);
     }
 
     @DeleteMapping("delete")
@@ -63,4 +71,21 @@ public class XCollectionTaskController {
         response.setBo(xCollectionTaskService.delete(id));
         return response;
     }
+
+    @GetMapping("updateCollector")
+    @ApiOperation(value = "指派催收人")
+    public Response<Boolean> updateCollector(@RequestParam(required = true) Integer collectorId,
+                                    @RequestParam(required = true) Integer id) {
+        Response<Boolean> response = new Response<>();
+        response.setBo(xCollectionTaskService.updateCollector(collectorId, id));
+
+        return response;
+    }
+
+    @ApiOperation(value = "获取用户名字列表")
+    @GetMapping("nameList")
+    public List<UserName> getUserNames() {
+        return userService.getUserNames();
+    }
+
 }

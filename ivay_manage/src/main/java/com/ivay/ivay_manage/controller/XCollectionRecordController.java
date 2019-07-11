@@ -4,6 +4,7 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.XCollectionRecordService;
+import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.model.XCollectionRecord;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,9 +23,10 @@ public class XCollectionRecordController {
 
     @PostMapping("save")
     @ApiOperation(value = "保存")
-    public Response<XCollectionRecord> save(@RequestBody XCollectionRecord xCollectionRecord) {
-        Response<XCollectionRecord> response = new Response<>();
-        response.setBo(xCollectionRecordService.save(xCollectionRecord));
+    public Response<Boolean> save(@RequestBody XCollectionRecord xCollectionRecord) {
+        Response<Boolean> response = new Response<>();
+        xCollectionRecord.setCollectorId(UserUtil.getLoginUser().getId().intValue());
+        response.setBo(xCollectionRecordService.save(xCollectionRecord) >= 1);
         return response;
     }
 
@@ -49,8 +51,8 @@ public class XCollectionRecordController {
 
     @GetMapping("list")
     @ApiOperation(value = "列表")
-    public PageTableResponse list(PageTableRequest request) {
-        return xCollectionRecordService.list(request);
+    public PageTableResponse selectCollectionRecordList(PageTableRequest request) {
+        return xCollectionRecordService.selectCollectionRecordList(request);
     }
 
     @DeleteMapping("delete")

@@ -3,6 +3,7 @@ package com.ivay.ivay_manage.service.impl;
 import com.ivay.ivay_manage.dto.UserDto;
 import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_repository.dao.master.UserDao;
+import com.ivay.ivay_repository.dto.UserName;
 import com.ivay.ivay_repository.model.SysUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,11 @@ public class UserServiceImpl implements UserService {
         saveUserRoles(userDto.getId(), userDto.getRoleIds());
 
         return userDto;
+    }
+
+    @Override
+    public List<UserName> getUserNames() {
+        return userDao.getUserNames();
     }
 
 }

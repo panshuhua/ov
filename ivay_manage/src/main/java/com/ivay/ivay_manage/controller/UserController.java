@@ -136,5 +136,4 @@ public class UserController {
     public SysUser user(@PathVariable Long id) {
         return userDao.getById(id);
     }
-
 }
