@@ -36,6 +36,7 @@ api_paasoo_code_secret: 2aandS4r
 api_paasoo_notice_key: cftpyvnv
 api_paasoo_notice_secret: 4jRCCSnf
 
+
 # 发送短信url-fpt
 api_fpt_grant_type: client_credentials
 api_fpt_client_id: b696C77E5FB5d553Ac771fea8834Ab86dAa0fda5
