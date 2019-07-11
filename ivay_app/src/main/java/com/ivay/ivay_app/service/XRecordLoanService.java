@@ -5,6 +5,7 @@ import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.XOverDueFee;
 import com.ivay.ivay_repository.model.XRecordLoan;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface XRecordLoanService {
@@ -51,11 +52,20 @@ public interface XRecordLoanService {
     boolean calcOverDueFee2();
 
     /**
+     * 计算总逾期费用
+     *
+     * @param dueAmount 剩余本金
+     * @param day       逾期天数
+     * @return
+     */
+    long calcOverDueFee2(long dueAmount, int day, BigDecimal loanRate, int loanPeriod);
+
+    /**
      * 计算逾期一天的滞纳金
      *
      * @param list
      */
-    void calc1DayOverDueFee(List<XOverDueFee> list);
+    void calcOverDueFeeFirstDay(List<XOverDueFee> list);
 
     /**
      * 确认放款

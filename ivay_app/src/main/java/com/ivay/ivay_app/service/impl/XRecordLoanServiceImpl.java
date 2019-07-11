@@ -521,12 +521,57 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     }
 
     /**
+     * 计算总逾期费用
+     *
+     * @param dueAmount 剩余本金
+     * @param day       逾期天数
+     * @return
+     */
+    @Override
+    public long calcOverDueFee2(long dueAmount, int day, BigDecimal loanRate, int loanPeriod) {
+        if (dueAmount <= 0 || day <= 0) {
+            return 0;
+        }
+
+        // 滞纳金配置
+        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
+
+        // 平台管理费 = 剩余本金 * 0.03
+        long totalFee = totalFee = CommonUtil.longMultiplyBigDecimal(dueAmount, new BigDecimal(config.get("0").toString()));
+
+        // 逾期计息
+        BigDecimal interestPer = loanRate.multiply(new BigDecimal(dueAmount / loanPeriod * day));
+        totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPer);
+
+        // 逾期滞纳金
+        for (Object key : config.keySet()) {
+            BigDecimal value = new BigDecimal(config.get(key).toString());
+            long start = Long.parseLong(key.toString().split("~")[0]);
+            if (start != 0L) {
+                long end = Long.parseLong(key.toString().split("~")[1]);
+                if (day >= start) {
+                    long feePerDay = CommonUtil.longMultiplyBigDecimal(dueAmount, value);
+                    if (day >= end) {
+                        totalFee += feePerDay * (end - start + 1);
+                    } else {
+                        totalFee += feePerDay * (day - start + 1);
+                    }
+                }
+            }
+        }
+        if (totalFee > dueAmount) {
+            totalFee = dueAmount;
+        }
+        return totalFee;
+    }
+
+    /**
      * 计算逾期一天的滞纳金
      *
      * @param list
      */
     @Override
-    public void calc1DayOverDueFee(List<XOverDueFee> list) {
+    public void calcOverDueFeeFirstDay(List<XOverDueFee> list) {
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
         // 逾期平台管理费率
         BigDecimal manageFeeRate = new BigDecimal(config.get("0").toString());
