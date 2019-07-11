@@ -500,8 +500,10 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     /**
      * 计算总逾期费用
      *
-     * @param dueAmount 剩余本金
-     * @param day       逾期天数
+     * @param dueAmount
+     *            剩余本金
+     * @param day
+     *            逾期天数
      * @return
      */
     @Override
@@ -514,7 +516,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
 
         // 平台管理费 = 剩余本金 * 0.03
-        long totalFee = totalFee = CommonUtil.longMultiplyBigDecimal(dueAmount, new BigDecimal(config.get("0").toString()));
+        long totalFee =
+            totalFee = CommonUtil.longMultiplyBigDecimal(dueAmount, new BigDecimal(config.get("0").toString()));
 
         // 逾期计息
         BigDecimal interestPer = loanRate.multiply(new BigDecimal(dueAmount / loanPeriod * day));

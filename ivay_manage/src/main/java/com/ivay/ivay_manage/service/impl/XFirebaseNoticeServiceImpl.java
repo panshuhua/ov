@@ -105,7 +105,8 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
             // 使用方法一发送短信验证码
             if (SysVariable.SMS_ONE.equals(value)) {
-                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(msg.getPhone(), msg.getPhoneMsg());
+                Map<String, String> msgMap =
+                    sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_NOTICE, msg.getPhone(), msg.getPhoneMsg());
                 String status = msgMap.get("status");
                 logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {

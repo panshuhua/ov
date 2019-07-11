@@ -207,7 +207,8 @@ public class XRegisterServiceImpl implements XRegisterService {
 
             // 使用方法一发送短信验证码：只要是10位数字的手机号码都不会报错
             if (SysVariable.SMS_ONE.equals(value)) {
-                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, phoneMsg);
+                // Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, phoneMsg); //TODO 下周审核通过后再使用
+                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_CODE, mobile, authCode);
                 String status = msgMap.get("status");
                 verifyCodeInfo.setStatus(status);
 
@@ -224,7 +225,8 @@ public class XRegisterServiceImpl implements XRegisterService {
             } else if (SysVariable.SMS_TWO.equals(value)) {
                 String responseBody = "";
                 try {
-                    responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg);
+                    // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); //TODO 下周审核通过后再使用
+                    responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
                     Map<String, Object> map = JsonUtils.jsonToMap(responseBody);
                     String messageId = (String)map.get("MessageId");
                     logger.info("fpt平台发送的短信id：" + messageId);

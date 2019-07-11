@@ -63,10 +63,10 @@ public class BillCommonController {
     @Value("${api_paasoo_url}")
     private String paasooUrl;
 
-    @Value("${api_paasoo_key}")
+    @Value("${api_paasoo_code_key}")
     private String paasooKey;
 
-    @Value("${api_paasoo_secret}")
+    @Value("${api_paasoo_code_secret}")
     private String paasooSecret;
 
     @Value("${api_fpt_grant_type}")

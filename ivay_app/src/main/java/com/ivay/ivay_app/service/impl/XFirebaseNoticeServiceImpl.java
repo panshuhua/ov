@@ -1,5 +1,19 @@
 package com.ivay.ivay_app.service.impl;
 
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
 import com.ivay.ivay_app.service.XRecordLoanService;
@@ -9,7 +23,12 @@ import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.dto.SMSResponseStatus;
-import com.ivay.ivay_common.utils.*;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.FirebaseUtil;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.MsgAuthCode;
+import com.ivay.ivay_common.utils.StringUtil;
+import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -18,19 +37,6 @@ import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XUserBankcardInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
@@ -200,7 +206,8 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
             // 使用方法一发送短信验证码
             if (SysVariable.SMS_ONE.equals(value)) {
-                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(msg.getPhone(), msg.getPhoneMsg());
+                Map<String, String> msgMap =
+                    sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_NOTICE, msg.getPhone(), msg.getPhoneMsg());
                 String status = msgMap.get("status");
                 logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
@@ -276,7 +283,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 long overdueFee = fee.getOverdueFee() + fee.getOverdueInterest(); // 逾期后：逾期费用+逾期利息
                 message = MessageFormat.format(message, dueDate, overdueFee);
                 title = StringUtil.vietnameseToEnglish(title);
-                message = StringUtil.vietnameseToEnglish(message);
+                message = StringUtil.vietnameseToEnglish(message).replace(",", ".");
 
                 logger.info("发送的第" + i + "条逾期消息为：" + message);
                 logger.info("正在发送第" + i + "条信息----------------");
@@ -551,7 +558,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
             // 使用方法一发送短信验证码
             if ("1".equals(value)) {
-                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, msg);
+                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_NOTICE, mobile, msg);
                 String status = msgMap.get("status");
                 logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
@@ -616,7 +623,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             msg.setFirebaseMsg(firebaseMsg);
             String phoneMsg = i18nService.getViMessage("firebase.notice.partrepay.remind.phonemsg");
             phoneMsg = StringUtil.vietnameseToEnglish(phoneMsg);
-            phoneMsg = MessageFormat.format(firebaseMsg, xRecordRepayment.getRepaymentAmount(),
+            phoneMsg = MessageFormat.format(phoneMsg, xRecordRepayment.getRepaymentAmount(),
                 xRecordLoan.getDueAmount() + xRecordLoan.getOverdueFee(), dueTime, url).replace(",", ".");
             logger.info("部分还款-发送的手机短信消息为:{}", phoneMsg);
             msg.setPhoneMsg(phoneMsg);
@@ -660,6 +667,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 xUserBankcardInfoDao.getByCardGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid()).get(0);
             String bankCardNo = bankCardNoInfo.getCardNo();
             bankCardNo = bankCardNo.substring(bankCardNo.length() - 4);
+            logger.info("借款成功-银行卡尾数为:{}", firebaseMsg);
             firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
             firebaseMsg = MessageFormat.format(firebaseMsg, bankCardNo);
             logger.info("借款成功-发送的firebase推送消息为:{}", firebaseMsg);

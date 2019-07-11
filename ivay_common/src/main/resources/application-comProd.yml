@@ -29,8 +29,12 @@ firebase_project_url: https://ovay-release.firebaseio.com
 
 # 发送短信url
 api_paasoo_url: https://api.paasoo.com/json?key={key}&secret={secret}&from={from}&to={to}&text={text}
-api_paasoo_key: nzwzxcuv
-api_paasoo_secret: 2aandS4r
+#发送短信验证码的key和secret
+api_paasoo_code_key: nzwzxcuv
+api_paasoo_code_secret: 2aandS4r
+#发送通知短信的key和secret
+api_paasoo_notice_key: cftpyvnv
+api_paasoo_notice_secret: cftpyvnv
 
 # 发送短信url-fpt
 api_fpt_grant_type: client_credentials

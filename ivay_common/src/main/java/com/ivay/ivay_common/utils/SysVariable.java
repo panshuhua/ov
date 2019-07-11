@@ -218,6 +218,10 @@ public class SysVariable {
     public static final String SMS_TWO = "2";
     public static final String SMS_THREE = "3";
 
+    // 使用pas国内运营上发送短信的类型
+    public static final String SMS_TYPE_CODE = "code"; // 短信验证码
+    public static final String SMS_TYPE_NOTICE = "notice"; // 通知
+
     // 发送短信返回成功的状态
     public static final String SMS_SEND_SUCCESS = "0";
 

@@ -20,6 +20,7 @@ import com.ivay.ivay_common.utils.Base64Util;
 import com.ivay.ivay_common.utils.FirebaseUtil;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.StringUtil;
+import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
 
 /**
@@ -37,10 +38,14 @@ public class SendMsgService {
 
     @Value("${api_paasoo_url}")
     private String paasooUrl;
-    @Value("${api_paasoo_key}")
-    private String paasooKey;
-    @Value("${api_paasoo_secret}")
-    private String paasooSecret;
+    @Value("${api_paasoo_code_key}")
+    private String paasooCodeKey;
+    @Value("${api_paasoo_notice_key}")
+    private String paasooNoticeKey;
+    @Value("${api_paasoo_code_secret}")
+    private String paasooCodeSecret;
+    @Value("${api_paasoo_notice_secret}")
+    private String paasooNoticeSecret;
 
     @Value("${api_fpt_grant_type}")
     private String grantType;
@@ -57,11 +62,17 @@ public class SendMsgService {
     @Value("${api_fpt_brandName}")
     private String brandName;
 
-    // 调用接口1发送短信
-    public Map<String, String> sendMsgBySMS(String mobile, String authCode) {
+    // 调用接口1发送短信-type表示发送类型
+    public Map<String, String> sendMsgBySMS(String type, String mobile, String authCode) {
         Map<String, Object> params = new HashMap<>();
-        params.put("key", paasooKey);
-        params.put("secret", paasooSecret);
+        if (SysVariable.SMS_TYPE_CODE.equals(type)) {
+            params.put("key", paasooCodeKey);
+            params.put("secret", paasooCodeSecret);
+        } else if (SysVariable.SMS_TYPE_NOTICE.equals(type)) {
+            params.put("key", paasooNoticeKey);
+            params.put("secret", paasooNoticeSecret);
+        }
+
         params.put("from", "SMS");
         params.put("to", "84" + mobile);
         params.put("text", authCode);
