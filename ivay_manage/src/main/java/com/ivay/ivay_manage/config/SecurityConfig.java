@@ -54,8 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(
                 "/", "/*.html", "/favicon.ico", "/css/**", "/js/**", "/fonts/**", "/layui/**", "/img/**",
                 "/v2/api-docs/**", "/swagger-resources/**", "/webjars/**", "/pages/**", "/druid/**",
-                "/statics/**", "/test/**", "/audit/**"
-                , "/manage/**", "/table/**"
+                "/statics/**", "/test/**", "/actuator/**"
+                , "/manage/**", "/table/**", "/audit/**"
         ).permitAll().anyRequest().authenticated();
         http.formLogin().loginProcessingUrl("/login")
                 .successHandler(authenticationSuccessHandler)

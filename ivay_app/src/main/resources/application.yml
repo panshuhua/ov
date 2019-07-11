@@ -8,6 +8,18 @@ dataSource:
   master: true
   slave: false
 
+info:
+  status: ok
+
+management:
+  endpoint:
+    info:
+      enabled: true
+  info:
+    git:
+      enabled: true
+      mode: full
+
 spring:
   profiles:
     # 多模块使用include取代active
