@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.dao.master;
 
+import com.ivay.ivay_repository.dto.CollectionTaskResult;
 import com.ivay.ivay_repository.model.XCollectionTask;
 import org.apache.ibatis.annotations.*;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 public interface XCollectionTaskDao {
 
     @Select("select * from x_collection_task t where t.id = #{id}")
-    XCollectionTask getById(Long id);
+    XCollectionTask getById(Integer id);
 
     @Delete("delete from x_collection_task where id = #{id}")
     int delete(Long id);
@@ -18,7 +19,7 @@ public interface XCollectionTaskDao {
     int update(XCollectionTask xCollectionTask);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_collection_task(order_id, repayment_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag) values(#{orderId}, #{repaymentGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag})")
+    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag})")
     int save(XCollectionTask xCollectionTask);
 
     int count(@Param("params") Map<String, Object> params);
@@ -26,4 +27,42 @@ public interface XCollectionTaskDao {
     List<XCollectionTask> list(@Param("params") Map<String, Object> params,
                                @Param("offset") Integer offset,
                                @Param("limit") Integer limit);
+
+    /**
+     * @Description 批量插入催收档案（定时任务）
+     * @Author Ryan
+     * @Param [collectionTaskList]
+     * @Return int
+     * @Date 2019/7/9 14:17
+     */
+    int saveBatch(List<XCollectionTask> collectionTaskList);
+
+    /**
+     * @Description 查询催收订单中的所有订单号
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.List<java.lang.String>
+     * @Date 2019/7/9 15:01
+     */
+    List<String> selectOrderIds();
+
+    /**
+     * @Description 根据搜索条件查找催收列表
+     * @Author Ryan
+     * @Param [params, offset, limit]
+     * @Return java.util.List<CollectionTaskResult>
+     * @Date 2019/7/9 16:43
+     */
+    List<CollectionTaskResult> listByParams(@Param("params") Map<String, Object> params,
+                                            @Param("offset") Integer offset,
+                                            @Param("limit") Integer limit);
+
+    /**
+     * @Description 获取列表查询总数
+     * @Author Ryan
+     * @Param [params]
+     * @Return int
+     * @Date 2019/7/10 10:25
+     */
+    int selectParamsListCount(@Param("params") Map<String, Object> params);
 }

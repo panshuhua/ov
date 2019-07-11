@@ -92,4 +92,14 @@ public interface XRecordLoanDao {
             "LEFT JOIN x_baokim_transfers_info ON x_record_loan.gid = x_baokim_transfers_info.loan_gid " +
             "WHERE x_record_loan.loan_status=2 AND x_baokim_transfers_info.operation='9002' AND x_baokim_transfers_info.loan_gid IS NOT NULL")
     List<XTimeoutTransferInfo> getTimeoutTransfer();
+    
+    /**
+     * @Description 查找过期订单（用来生成催收档案）
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.List<com.ivay.ivay_repository.model.XRecordLoan> 
+     * @Date 2019/7/9 11:38
+     */
+    @Select("SELECT id,order_id,loan_amount,user_gid FROM `x_record_loan` WHERE loan_status = 1 AND repayment_status in (0,1,3) AND due_time < DATE_FORMAT(SYSDATE(),'%Y%m%d')")
+    List<XRecordLoan> findOverdueOrder();
 }

@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,13 +16,28 @@ public class XCollectionRecord {
     @ApiModelProperty("催收员id")
     private Integer collectorId;
 
-    @ApiModelProperty("追回额度")
-    private String collectionAmount;
+    @ApiModelProperty("催收员id")
+    private Integer collectorName;
+
+    @ApiModelProperty("催收电话")
+    private String collectionPhone;
+
+    @ApiModelProperty("催收状态")
+    private String collectionReason;
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("催收时间")
+    private Date collectionTime;
+
+    @ApiModelProperty("备注")
+    private String remark;
 
     @ApiModelProperty("有效标志位")
     private String enableFlag;
 
-    private Long id;
+    private Integer id;
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     private Date updateTime;
 }

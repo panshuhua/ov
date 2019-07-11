@@ -14,9 +14,6 @@
 			<if test="params.collectorId != null and params.collectorId != ''">
 				and collector_id = #{params.collectorId} 
 			</if>
-			<if test="params.collectionAmount != null and params.collectionAmount != ''">
-				and collection_amount = #{params.collectionAmount} 
-			</if>
 			<if test="params.createTime != null and params.createTime != ''">
 				and create_time = #{params.createTime} 
 			</if>
@@ -37,15 +34,17 @@
     <select id="list" resultType="com.ivay.ivay_repository.model.XCollectionRecord">
         select * from x_collection_record t
         <include refid="list_condition"/>
-        <if test="params.orderBy!=null and params.orderBy!=''">
+        <!--<if test="params.orderBy!=null and params.orderBy!=''">
             ${params.orderBy}
-        </if>
+        </if>-->
+        ORDER BY
+        create_time DESC
         <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
         </if>
     </select>
 
-    <update id="update">
+	<update id="update">
         update x_collection_record t
         <set>
             <if test="taskId != null">
@@ -69,4 +68,23 @@
         </set>
         where t.id = #{id}
     </update>
+
+	<select id="selectCollectionCount" resultType="java.lang.Integer">
+		SELECT
+			count( 1 )
+		FROM
+			x_collection_record t1
+			LEFT JOIN sys_user t2 ON t1.collector_id = t2.id
+	</select>
+
+	<select id="selectCollectionRecordList" resultType="com.ivay.ivay_repository.model.XCollectionRecord">
+		SELECT
+			t1.*,
+			t2.username AS collectorName
+		FROM
+			x_collection_record t1
+			LEFT JOIN sys_user t2 ON t1.collector_id = t2.id
+		ORDER BY
+			t1.create_time DESC
+	</select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.dao.master;
 
+import com.ivay.ivay_repository.dto.UserName;
 import com.ivay.ivay_repository.model.SysUser;
 import org.apache.ibatis.annotations.*;
 
@@ -37,4 +38,7 @@ public interface UserDao {
     int saveUserRoles(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
 
     int update(SysUser user);
+
+    @Select("select id,username from sys_user where status = 1")
+    List<UserName> getUserNames();
 }

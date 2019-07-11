@@ -63,9 +63,6 @@
             <if test="orderId != null">
 				order_id = #{orderId}, 
 			</if>
-			<if test="repaymentGid != null">
-				repayment_gid = #{repaymentGid}, 
-			</if>
 			<if test="collectorId != null">
 				collector_id = #{collectorId}, 
 			</if>
@@ -93,5 +90,230 @@
         </set>
         where t.id = #{id}
     </update>
+
+	<!-- 批量插入催收档案（定时任务） -->
+	<insert id="saveBatch" parameterType="java.util.List">
+		INSERT INTO x_collection_task(order_id,user_gid,collection_status,due_collection_amount,create_time,update_time)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.orderId},
+			#{item.userGid},
+			#{item.collectionStatus},
+			#{item.dueCollectionAmount},
+			#{item.createTime},
+			#{item.updateTime})
+		</foreach>
+	</insert>
+
+	<!-- 查询催收订单中的所有订单号 -->
+	<select id="selectOrderIds" resultType="java.lang.String">
+		SELECT order_id FROM x_collection_task
+	</select>
+
+	<sql id="list_params_condition">
+		(
+		SELECT
+		t5.order_id,
+		t5.user_gid,
+		t5.assign_time,
+		t5.collector_id,
+		t5.name,
+		t5.phone,
+		t5.identity_card,
+		t5.due_time,
+		t5.overdue_day,
+		t5.amount,
+		t5.id,
+		t6.id as user_id,
+		t6.username
+		FROM
+		(
+		SELECT
+		t3.order_id,
+		t3.user_gid,
+		t3.assign_time,
+		t3.collector_id,
+		t3.name,
+		t3.phone,
+		t3.identity_card,
+		t3.id,
+		t4.due_time,
+		t4.amount,
+		t4.overdue_day
+		FROM
+		(
+		SELECT
+		t1.order_id,
+		t1.user_gid,
+		t1.id,
+		t1.assign_time,
+		t1.collector_id,
+		t2.name,
+		t2.phone,
+		t2.identity_card
+		FROM
+		(
+		SELECT t0.order_id,any_value(id) as id,any_value(user_gid) as user_gid,any_value(assign_time) as assign_time,any_value(collector_id) as collector_id FROM
+		(SELECT id,order_id, user_gid, create_time AS assign_time, collector_id FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
+		GROUP BY t0.order_id
+		) t1
+		LEFT JOIN
+		( SELECT user_gid, name, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2
+		ON t1.user_gid = t2.user_gid
+		) t3
+		LEFT JOIN (
+		SELECT
+		order_id,
+		due_time,
+		(due_amount + overdue_fee) as amount,
+		DATEDIFF( SYSDATE( ), DATE_FORMAT( due_time, "%y%m%d" ) ) AS overdue_day
+		FROM
+		x_record_loan
+		WHERE
+		1 = 1
+		) t4
+		ON t3.order_id = t4.order_id
+		) t5
+		LEFT JOIN
+		sys_user t6
+		ON t5.collector_id = t6.id
+		) t7
+		<where>
+			<if test="params.name != null and params.name != ''">
+				and t7.name = #{params.name}
+			</if>
+			<if test="params.phone != null and params.phone != ''">
+				and t7.phone = #{params.phone}
+			</if>
+			<if test="params.identityCard != null and params.identityCard != ''">
+				and t7.identity_card = #{params.identityCard}
+			</if>
+			<if test="params.overdueDayMin != null and params.overdueDayMin != ''">
+				and t7.overdue_day &gt;= #{params.overdueDayMin}
+			</if>
+			<if test="params.overdueDayMax != null and params.overdueDayMax != ''">
+				and t7.overdue_day &lt; #{params.overdueDayMax}
+			</if>
+			<if test="params.username != null and params.username != ''">
+				and t7.username = #{params.username}
+			</if>
+			<if test="params.repaymentStatus != null and params.repaymentStatus != ''">
+				and t7.repayment_status = #{params.repaymentStatus}
+			</if>
+			<if test="params.collectionStatus != null and params.collectionStatus != ''">
+				and t7.collection_status = #{params.collectionStatus}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectParamsListCount" resultType="int">
+		select count(1) from
+		<include refid="list_params_condition"/>
+	</select>
+
+	<select id="listByParams" resultType="com.ivay.ivay_repository.dto.CollectionTaskResult">
+		SELECT
+		*
+		FROM
+		<include refid="list_params_condition"/>
+		<!--(
+		SELECT
+			t5.order_id,
+			t5.user_gid,
+			t5.assign_time,
+			t5.collector_id,
+			t5.name,
+			t5.phone,
+			t5.identity_card,
+			t5.due_time,
+			t5.overdue_day,
+			t5.amount,
+			t6.username
+		FROM
+			(
+				SELECT
+					t3.order_id,
+					t3.user_gid,
+					t3.assign_time,
+					t3.collector_id,
+					t3.name,
+					t3.phone,
+					t3.identity_card,
+					t4.due_time,
+					t4.amount,
+					t4.overdue_day
+				FROM
+					(
+						SELECT
+							t1.order_id,
+							t1.user_gid,
+
+							t1.assign_time,
+							t1.collector_id,
+							t2.name,
+							t2.phone,
+							t2.identity_card
+						FROM
+							( SELECT order_id, user_gid, create_time AS assign_time, collector_id FROM x_collection_task
+								<where>
+									<if test="params.collectionStatus != null and params.collectionStatus != ''">
+										and collection_status = #{params.collectionStatus}
+									</if>
+								</where>
+							 ) t1
+						LEFT JOIN
+							( SELECT user_gid, name, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2
+						ON t1.user_gid = t2.user_gid
+					) t3
+				LEFT JOIN (
+					SELECT
+					order_id,
+					due_time,
+					(due_amount + overdue_fee) as amount,
+					DATEDIFF( SYSDATE( ), DATE_FORMAT( due_time, "%y%m%d" ) ) AS overdue_day
+					FROM
+					x_record_loan
+					WHERE
+					1 = 1
+					) t4
+				ON t3.order_id = t4.order_id
+			) t5
+		LEFT JOIN
+			sys_user t6
+		ON t5.collector_id = t6.id
+		) t7
+		<where>
+			<if test="params.name != null and params.name != ''">
+				and t7.name = #{params.name}
+			</if>
+			<if test="params.phone != null and params.phone != ''">
+				and t7.phone = #{params.phone}
+			</if>
+			<if test="params.identityCard != null and params.identityCard != ''">
+				and t7.identity_card = #{params.identityCard}
+			</if>
+			<if test="params.overdueDayMin != null and params.overdueDayMin != ''">
+				and t7.overdue_day &gt;= #{params.overdueDayMin}
+			</if>
+			<if test="params.overdueDayMax != null and params.overdueDayMax != ''">
+				and t7.overdue_day &lt; #{params.overdueDayMax}
+			</if>
+			<if test="params.username != null and params.username != ''">
+				and t7.username = #{params.username}
+			</if>
+			<if test="params.repaymentStatus != null and params.repaymentStatus != ''">
+				and t7.repayment_status = #{params.repaymentStatus}
+			</if>
+			<if test="params.collectionStatus != null and params.collectionStatus != ''">
+				and t7.collection_status = #{params.collectionStatus}
+			</if>
+		</where>-->
+		ORDER BY
+		t7.due_time DESC
+
+		<if test="limit != null and limit != 0">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
 
 </mapper>
