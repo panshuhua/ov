@@ -78,7 +78,7 @@ public class XAPIController {
                                @RequestParam(required = false) int day,
                                @RequestParam(required = false) String loanRate,
                                @RequestParam(required = false) int loanPeriod) {
-        return xRecordLoanService.calcOverDueFee2(dueAmount, day, new BigDecimal(loanRate), loanPeriod);
+        return xRecordLoanService.calcOverDueFee(dueAmount, day, new BigDecimal(loanRate), loanPeriod);
     }
 
     @GetMapping("test")

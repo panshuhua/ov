@@ -58,8 +58,8 @@
         <if test="params.overdueFeeTotal != null and params.overdueFeeTotal != ''">
             and overdue_fee_total = #{params.overdueFeeTotal}
         </if>
-        <if test="params.overdueInterestTotal != null and params.overdueInterestTotal != ''">
-            and overdue_interest_total = #{params.overdueInterestTotal}
+        <if test="params.moreRepaymentAmount != null and params.moreRepaymentAmount != ''">
+            and more_repayment_amount = #{params.moreRepaymentAmount}
         </if>
         <if test="params.loanStatus != null and params.loanStatus != ''">
             and loan_status = #{params.loanStatus}
@@ -171,8 +171,8 @@
             <if test="overdueFeeTotal != null">
                 overdue_fee_total = #{overdueFeeTotal},
             </if>
-            <if test="overdueInterestTotal != null">
-                overdue_interest_total = #{overdueInterestTotal},
+            <if test="moreRepaymentAmount != null">
+                more_repayment_amount = #{moreRepaymentAmount},
             </if>
             <if test="loanStatus != null">
                 loan_status = #{loanStatus},
@@ -203,21 +203,6 @@
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             update x_record_loan
             <set>
-                <if test="item.gid != null">
-                    gid = #{item.gid},
-                </if>
-                <if test="item.bankcardGid  != null">
-                    bankcard_gid = #{item.bankcardGid },
-                </if>
-                <if test="item.orderId != null">
-                    order_id = #{item.orderId},
-                </if>
-                <if test="item.userGid != null">
-                    user_gid = #{item.userGid},
-                </if>
-                <if test="item.createTime != null">
-                    create_time = #{item.createTime},
-                </if>
                 <if test="item.updateTime != null">
                     update_time = #{item.updateTime},
                 </if>
@@ -254,8 +239,8 @@
                 <if test="item.overdueFeeTotal != null">
                     overdue_fee_total = #{item.overdueFeeTotal},
                 </if>
-                <if test="item.overdueInterestTotal != null">
-                    overdue_interest_total = #{item.overdueInterestTotal},
+                <if test="item.more_repayment_amount != null">
+                    more_repayment_amount = #{item.moreRepaymentAmount},
                 </if>
                 <if test="item.loanStatus != null">
                     loan_status = #{item.loanStatus},

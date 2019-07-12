@@ -29,11 +29,11 @@ public interface XRecordLoanDao {
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into x_record_loan(gid, order_id, user_gid, bankcard_gid, product_id, loan_amount,loan_period, loan_rate, loan_time,"
-            + "fee,interest,memo, net_amount, due_amount, due_time,overdue_fee,overdue_fee_total, overdue_interest,overdue_interest_total,"
+            + "fee,interest,memo, net_amount, due_amount, due_time,overdue_fee,overdue_fee_total, overdue_interest,more_repayment_amount,"
             + "loan_status, repayment_status,last_repayment_time, fail_reason,create_time, update_time)"
             + "values(#{gid}, #{orderId}, #{userGid}, #{bankcardGid },#{productId},#{loanAmount},#{loanPeriod}, #{loanRate}, #{loanTime},"
             + "#{fee},#{interest},#{memo}, #{netAmount},#{dueAmount}, #{dueTime}, #{overdueFee},#{overdueFeeTotal},#{overdueInterest}," +
-            " #{overdueInterestTotal},"
+            " #{moreRepaymentAmount},"
             + "#{loanStatus}, #{repaymentStatus}, #{lastRepaymentTime}, #{failReason},#{createTime}, #{updateTime})")
     int save(XRecordLoan xRecordLoan);
 
