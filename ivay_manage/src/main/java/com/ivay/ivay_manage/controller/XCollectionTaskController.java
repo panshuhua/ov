@@ -59,7 +59,7 @@ public class XCollectionTaskController {
     @ApiOperation(value = "催收搜索列表")
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
                                   @RequestParam(required = false, defaultValue = "1") int num,
-                                  PageTableRequest request, CollectionTaskInfo collectionTaskInfo) {
+                                  CollectionTaskInfo collectionTaskInfo) {
 
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.list(limit, num, collectionTaskInfo));
@@ -97,18 +97,20 @@ public class XCollectionTaskController {
     @ApiOperation(value = "我的催收")
     @GetMapping("myCollections")
     public Response<PageTableResponse> getCollectionListByUserGid(@RequestParam(required = false, defaultValue = "0") int limit,
-                                                                  @RequestParam(required = false, defaultValue = "1") int num) {
+                                                                  @RequestParam(required = false, defaultValue = "1") int num,
+                                                                  CollectionTaskInfo collectionTaskInfo) {
         Response<PageTableResponse> response = new Response<>();
-        response.setBo(xCollectionTaskService.getCollectionListByUserGid(limit, num));
+        response.setBo(xCollectionTaskService.getCollectionListByUserGid(limit, num, collectionTaskInfo));
         return response;
     }
 
     @ApiOperation(value = "催收回款")
     @GetMapping("collectionsRepay")
     public Response<PageTableResponse> getCollectionsRepayList(@RequestParam(required = false, defaultValue = "0") int limit,
-                                                               @RequestParam(required = false, defaultValue = "1") int num) {
+                                                               @RequestParam(required = false, defaultValue = "1") int num,
+                                                               CollectionTaskInfo collectionTaskInfo) {
         Response<PageTableResponse> response = new Response<>();
-        //response.setBo(xCollectionTaskService.list(limit, num));
+        response.setBo(xCollectionTaskService.getCollectionsRepayList(limit, num, collectionTaskInfo));
         return response;
     }
 }

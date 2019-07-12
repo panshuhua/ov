@@ -38,9 +38,18 @@ public interface XCollectionTaskService {
     /**
      * @Description 我的催收
      * @Author Ryan
-     * @Param [limit, num]
+     * @Param [limit, num, collectionTaskInfo]
      * @Return com.ivay.ivay_common.table.PageTableResponse
      * @Date 2019/7/12 9:19
      */
-    PageTableResponse getCollectionListByUserGid(int limit, int num);
+    PageTableResponse getCollectionListByUserGid(int limit, int num, CollectionTaskInfo collectionTaskInfo);
+
+    /**
+     * @Description 催收回款列表
+     * @Author Ryan
+     * @Param [limit, num, collectionTaskInfo]
+     * @Return com.ivay.ivay_common.table.PageTableResponse
+     * @Date 2019/7/12 15:57
+     */
+    PageTableResponse getCollectionsRepayList(int limit, int num, CollectionTaskInfo collectionTaskInfo);
 }
