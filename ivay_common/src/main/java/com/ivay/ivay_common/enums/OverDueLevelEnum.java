@@ -50,7 +50,7 @@ public enum OverDueLevelEnum {
      * @Return java.lang.String
      * @Date 2019/7/9 16:10
      */
-    public static String getLevelByDay(Integer day){
+    public static String getLevelByDay(int day){
         if(day > 0){
             if(day < OVERDUE_LEVEL_ONE.day){
                 return OVERDUE_LEVEL_ONE.level;
