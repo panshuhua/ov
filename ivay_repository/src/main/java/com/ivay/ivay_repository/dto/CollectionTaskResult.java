@@ -51,6 +51,9 @@ public class CollectionTaskResult {
     @ApiModelProperty("催收人id")
     private String userId;
 
+    @ApiModelProperty("用戶gid")
+    private String userGid;
+
     @ApiModelProperty("催收还款状态")
     private Byte collectionRepayStatus;
 

@@ -338,4 +338,14 @@
 		ORDER BY create_time DESC limit 1
 	</select>
 
+	<!-- 我的催收記錄數量 -->
+    <select id="getCollectionListByUserGidCount" resultType="java.lang.Integer">
+
+	</select>
+
+	<!-- 查詢我的催收 -->
+	<select id="getCollectionListByUserGid" resultType="com.ivay.ivay_repository.dto.CollectionTaskResult">
+
+	</select>
+
 </mapper>

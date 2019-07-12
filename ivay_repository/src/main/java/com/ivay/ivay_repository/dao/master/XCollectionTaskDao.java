@@ -74,4 +74,22 @@ public interface XCollectionTaskDao {
      * @Date 2019/7/11 11:35
      */
     XCollectionTask findNewCollectionByUserGid(@Param("userGid") String userGid);
+
+    /**
+     * @Description 獲取我的催收記錄數量
+     * @Author Ryan
+     * @Param [params]
+     * @Return int
+     * @Date 2019/7/12 9:41
+     */
+    int getCollectionListByUserGidCount(Map<String, Object> params);
+
+    /**
+     * @Description 查詢我的催收
+     * @Author Ryan
+     * @Param [params, offset, limit]
+     * @Return java.util.List<com.ivay.ivay_repository.dto.CollectionTaskResult>
+     * @Date 2019/7/12 9:42
+     */
+    List<CollectionTaskResult> getCollectionListByUserGid(Map<String, Object> params, Integer offset, Integer limit);
 }
