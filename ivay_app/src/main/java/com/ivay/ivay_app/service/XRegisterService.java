@@ -34,7 +34,7 @@ public interface XRegisterService {
     /**
      * 注册
      *
-     * @param password
+     * @param loginInfo
      * @return
      */
     XUserInfo addUser(LoginInfo loginInfo);

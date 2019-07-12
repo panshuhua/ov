@@ -1,47 +1,14 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.TransfersRsp;
-import com.ivay.ivay_app.service.BillCommonService;
-import com.ivay.ivay_app.service.SysLogService;
-import com.ivay.ivay_app.service.ThreadPoolService;
-import com.ivay.ivay_app.service.XAPIService;
-import com.ivay.ivay_app.service.XAppEventService;
-import com.ivay.ivay_app.service.XConfigService;
-import com.ivay.ivay_app.service.XFirebaseNoticeService;
-import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_app.service.*;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.CommonUtil;
-import com.ivay.ivay_common.utils.DateUtils;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.RedisLock;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.XLoanRateDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
@@ -53,6 +20,20 @@ import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XLoanRate;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class XRecordLoanServiceImpl implements XRecordLoanService {
@@ -115,8 +96,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         }
         // 加锁： 防重复提交
         if (!redisLock.tryBorrowLock(xRecordLoan.getUserGid())) {
-            throw new BusinessException(i18nService.getMessage("response.error.borrow.redisError.code"),
-                i18nService.getMessage("response.error.borrow.redisError.msg"));
+            throw new BusinessException(i18nService.getMessage("response.error.borrow.repeat.code"),
+                i18nService.getMessage("response.error.borrow.repeat.msg"));
         }
         try {
             // region -- 借款
