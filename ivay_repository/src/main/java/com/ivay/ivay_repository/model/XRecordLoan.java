@@ -46,17 +46,17 @@ public class XRecordLoan {
     @ApiModelProperty("实际到账金额")
     private Long netAmount;
 
-    @ApiModelProperty("剩余应还逾期服务费")
+    @ApiModelProperty("剩余需要还的逾期费用")
     private Long overdueFee;
 
     @ApiModelProperty("总逾期服务费")
     private Long overdueFeeTotal;
 
-    @ApiModelProperty("剩余应还逾期借款利息")
+    @ApiModelProperty("应还逾期利息，暂时不用恒为0")
     private Long overdueInterest;
 
-    @ApiModelProperty("总借款利息")
-    private Long overdueInterestTotal;
+    @ApiModelProperty("用于记录多还的金额")
+    private Long moreRepaymentAmount;
 
     @ApiModelProperty("借款状态")
     private Integer loanStatus;
