@@ -315,7 +315,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                         xRecordLoan.setOverdueInterest(xRecordLoan.getOverdueInterest() - diff);
 
                         if(null != xCollectionTask) {
-                            // 更新催收任务中的追回逾期利息
+                            // 更新任务中的追回逾期利息
                             xCollectionTask.setCollectionOverdueFee(xCollectionTask.getCollectionOverdueFee() + diff);
                             xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
                         }
@@ -348,6 +348,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             if(null != xCollectionTask) {
                 if(xCollectionTask.getCollectorId() != null){
                     xCollectionTask.setUpdateTime(new Date());
+                    xCollectionTask.setRepayTime(now);
                     xCollectionTaskDao.update(xCollectionTask);
 
                 //如果未指派钱就还款
