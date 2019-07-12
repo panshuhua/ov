@@ -90,6 +90,10 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public XRecordLoan borrowMoney(XRecordLoan xRecordLoan, String password) {
+        if (xRecordLoan.getLoanAmount() < 500000) {
+            throw new BusinessException(i18nService.getMessage("response.error.borrow.maxAmount.code"),
+                    i18nService.getMessage("response.error.borrow.maxAmount.msg"));
+        }
         // 加锁： 防重复提交
         if (!redisLock.tryBorrowLock(xRecordLoan.getUserGid())) {
             throw new BusinessException(i18nService.getMessage("response.error.borrow.redisError.code"),
