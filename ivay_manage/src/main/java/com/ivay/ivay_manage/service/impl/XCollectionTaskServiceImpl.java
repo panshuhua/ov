@@ -99,17 +99,10 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveCollectionTaskBatch() {
         //查询出过期没修改状态的订单
         List<XRecordLoan> recordLoanList = xRecordLoanDao.findOverdueOrder();
-
-        //修改已经过期的订单状态
-        /*recordLoanList.forEach(o -> {
-            o.setRepaymentStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
-            o.setUpdateTime(new Date());
-                });
-        xRecordLoanDao.updateByBatch(recordLoanList);*/
 
         //过滤掉已经插入的数据
         List<String> orderIdList = xCollectionTaskDao.selectOrderIds();
@@ -123,7 +116,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 xCollectionTask.setOrderId(o.getOrderId());
                 xCollectionTask.setDueCollectionAmount(o.getLoanAmount());
                 xCollectionTask.setUserGid(o.getUserGid());
-                xCollectionTask.setCollectionStatus(CollectionStatusEnum.WAITING_COLLECTION.getStatus().byteValue());
+                xCollectionTask.setCollectionStatus(CollectionStatusEnum.WAITING_COLLECTION.getStatus());
                 xCollectionTask.setCreateTime(new Date());
                 xCollectionTask.setUpdateTime(o.getCreateTime());
                 collectionTaskList.add(xCollectionTask);
@@ -134,8 +127,8 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
     }
 
     @Override
-    @Transactional
-    public boolean updateCollector(Integer collectorId, Integer id) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateCollector(int collectorId, int id) {
         //判断是否重新指派，否-直接修改记录 是-重新生成订单记录
         XCollectionTask collectionTask = xCollectionTaskDao.getById(id);
         //查询该指派任务对应的还款信息
@@ -186,12 +179,13 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
     @Override
     public PageTableResponse getCollectionListByUserGid(int limit, int num) {
-        Long id = UserUtil.getLoginUser().getId();
 
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
         request.setOffset((num - 1) * limit);
+
         Map param = request.getParams();
+        Long id = UserUtil.getLoginUser().getId();
         param.put("collectorId", id.intValue());
         request.setParams(param);
 

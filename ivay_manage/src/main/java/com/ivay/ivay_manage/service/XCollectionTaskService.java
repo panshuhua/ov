@@ -33,7 +33,7 @@ public interface XCollectionTaskService {
      * @Return int
      * @Date 2019/7/10 11:44
      */
-    boolean updateCollector(Integer collectorId, Integer id);
+    boolean updateCollector(int collectorId, int id);
 
     /**
      * @Description 我的催收
