@@ -73,7 +73,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     @Override
     public void sendAllNotice(NoticeMsg msg) {
         logger.info("进入实际发送方法-------------userGid=" + msg.getUserGid() + "-------------");
-
+        // TODO
         try {
             sendPhoneNoticeMsg(msg);
             logger.info("发送首次获取额度/额度变更/借款风控失败-------短信成功-----------------------");
