@@ -10,6 +10,9 @@ import io.swagger.models.auth.In;
  */
 public enum CollectionStatusEnum {
 
+    /**
+     * 對應描述字段功能
+     */
     WAITING_COLLECTION((byte)0,"等待指派"),
     ASSIGNED_COLLECTION((byte)1,"已指派"),
     DOING_COLLECTION((byte)2,"正在催收"),

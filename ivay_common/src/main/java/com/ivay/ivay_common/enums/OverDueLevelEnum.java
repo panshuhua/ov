@@ -8,6 +8,9 @@ package com.ivay.ivay_common.enums;
  */
 public enum OverDueLevelEnum {
 
+    /**
+     * 逾期級別，day表示當前等級小於的天數
+     */
     OVERDUE_LEVEL_ONE("M1",31),
     OVERDUE_LEVEL_TWO("M2",61),
     OVERDUE_LEVEL_THREE("M3",91),

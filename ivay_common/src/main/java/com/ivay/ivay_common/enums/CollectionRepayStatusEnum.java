@@ -8,6 +8,9 @@ package com.ivay.ivay_common.enums;
  */
 public enum CollectionRepayStatusEnum {
 
+    /**
+     * 狀態對應描述字段
+     */
     UNDER_REPAYING((byte)1, "还款中"),
     FINISHED_REPAY((byte)2, "已还款"),
     FAILED_REPAY((byte)3, "还款失败"),
