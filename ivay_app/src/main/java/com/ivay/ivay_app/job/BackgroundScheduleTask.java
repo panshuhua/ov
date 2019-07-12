@@ -1,5 +1,6 @@
 package com.ivay.ivay_app.job;
 
+import com.ivay.ivay_app.service.XRecordLoanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.ivay.ivay_app.service.XRecordLoanService;
+import java.util.Date;
 
 @Component
 @Configuration
@@ -29,21 +30,25 @@ public class BackgroundScheduleTask {
                 start = "正在进行第" + count + "次重试--start";
             }
             logger.info(start);
-            flag = xRecordLoanService.calcOverDueFee2();
+            flag = xRecordLoanService.calcOverDueFee();
             logger.info("逾期费用计算结束---{}", flag ? "成功" : "失败");
             if (!flag) {
                 if ((count++ > 5)) {
                     flag = true;
-                    logger.error("逾期费用计算出错，请及时查看");
+                    logger.error("逾期费用计算出错，请及时查看: " + new Date());
                 } else {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(5000);
                     } catch (Exception ex) {
-                        logger.error("逾期费用计算暂停异常: {}", ex);
+                        logger.error("逾期费用计算暂停异常: {}", ex.getMessage());
                     }
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("" + new Date());
     }
 
     @Scheduled(cron = "${timer.transferTimeout}")

@@ -3,23 +3,32 @@ package com.ivay.ivay_app.controller;
 import com.ivay.ivay_app.dto.TransfersRsp;
 import com.ivay.ivay_app.service.XAPIService;
 import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_common.utils.SysVariable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("star/api")
 @Api(tags = "baokim借款接口联调 - test")
 public class XAPIController {
+    private static final Logger logger = LoggerFactory.getLogger(XAPIController.class);
+
     @Autowired
     private XAPIService xapiService;
 
@@ -78,12 +87,28 @@ public class XAPIController {
                                @RequestParam(required = false) int day,
                                @RequestParam(required = false) String loanRate,
                                @RequestParam(required = false) int loanPeriod) {
-        return xRecordLoanService.calcOverDueFee2(dueAmount, day, new BigDecimal(loanRate), loanPeriod);
+        return xRecordLoanService.calcOverDueFee(dueAmount, day, new BigDecimal(loanRate), loanPeriod);
     }
 
+    @Value("${risk_control_url}")
+    private String riskControlUrl;
+    @Autowired
+    private RestTemplate restTemplate;
+
     @GetMapping("test")
-    public boolean test() {
-        xRecordLoanService.timeoutTransferInfo();
-        return true;
+    public String test() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userGid", "e07da7c40c854f92a4620705b1a25669");
+        params.put("flag", SysVariable.RISK_TYPE_LOAN);
+        String loanQualify;
+        System.out.println("开始");
+        try {
+            loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
+            System.out.println("result:" + loanQualify);
+        } catch (Exception ex) {
+            logger.info(ex.toString());
+            loanQualify = "借款资格接口调用异常";
+        }
+        return loanQualify;
     }
 }

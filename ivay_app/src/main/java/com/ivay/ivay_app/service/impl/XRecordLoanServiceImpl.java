@@ -163,12 +163,12 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xRecordLoan.setDueAmount(xRecordLoan.getLoanAmount());
             // 应还逾期滞纳金
             xRecordLoan.setOverdueFee(0L);
-            // 逾期总滞纳金
+            // 总逾期滞纳金
             xRecordLoan.setOverdueFeeTotal(0L);
-            // 应还逾期计息
+            // 应还逾期利息
             xRecordLoan.setOverdueInterest(0L);
-            // 总计息
-            xRecordLoan.setOverdueInterestTotal(xRecordLoan.getInterest());
+            // 多还金额
+            xRecordLoan.setMoreRepaymentAmount(0L);
             // 借款状态
             xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_WAITING);
             // 还款状态
@@ -209,6 +209,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             try {
                 loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
             } catch (Exception ex) {
+                logger.error(ex.toString());
                 loanQualify = "借款资格接口调用异常";
             }
 
@@ -217,8 +218,13 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 boolean apiFlag = true;
                 logger.info("调用baokim接口，进行借款--用户:{},金额:{}", xRecordLoan.getUserGid(), xRecordLoan.getDueAmount());
                 try {
-                    transfersRsp = xapiService.transfers(bankNo, cardNo, xRecordLoan.getNetAmount(),
-                            xRecordLoan.getMemo(), accType, xRecordLoan.getGid());
+                    transfersRsp = xapiService.transfers(bankNo,
+                            cardNo,
+                            xRecordLoan.getNetAmount(),
+                            xRecordLoan.getMemo(),
+                            accType,
+                            xRecordLoan.getGid()
+                    );
                 } catch (Exception ex) {
                     apiFlag = false;
                     return;
@@ -270,9 +276,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             }
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_SUCCESS);
 
-            // TODO 发送借款成功通知
+            // 发送借款成功通知
             xFirebaseNoticeService.sendLoanSuccessNotice(xRecordLoan, xUserInfo);
-
         } else if (BaokimResponseStatus.TIMEOUT.getCode().equals(transfersRsp.getResponseCode())) {
             // 借款超时
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
@@ -295,7 +300,6 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xAppEvent.setGid(xRecordLoan.getOrderId());
             xAppEventService.save(xAppEvent);
         }
-
     }
 
     /**
@@ -335,101 +339,12 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     }
 
     /**
-     * 逾期计息 + 逾期滞纳金，都不能超过本金
+     * 逾期费用 = 逾期计息 + 逾期滞纳金，加起来不能超过本金
      *
      * @return
      */
     @Override
     public boolean calcOverDueFee() {
-        List<XRecordLoan> xrlList = xRecordLoanDao.list(new HashMap<>(), null, null);
-        // 滞纳金配置
-        Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
-        List<XRecordLoan> updateList = new ArrayList<>();
-        Date now = new Date();
-        try {
-            for (XRecordLoan xrl : xrlList) {
-                // 还没还清借款
-                if (xrl.getLoanStatus() == SysVariable.LOAN_STATUS_SUCCESS
-                        && xrl.getRepaymentStatus() != SysVariable.REPAYMENT_STATUS_SUCCESS) {
-                    // 逾期
-                    if (now.getTime() > xrl.getDueTime().getTime()) {
-                        // 逾期天数
-                        long day = (now.getTime() - xrl.getDueTime().getTime()) / (3600 * 1000 * 24) + 1;
-
-                        // 逾期计息
-                        if (xrl.getOverdueInterestTotal() < xrl.getDueAmount()) {
-                            // 每天利息
-                            BigDecimal interestPerDay =
-                                    xrl.getLoanRate().multiply(new BigDecimal(xrl.getDueAmount() / xrl.getLoanPeriod()));
-                            // 总利息 + 一天利息
-                            long interestTotalPlusDay =
-                                    CommonUtil.longAddBigDecimal(xrl.getOverdueInterestTotal(), interestPerDay);
-                            if (interestTotalPlusDay > xrl.getDueAmount()) {
-                                xrl.setOverdueInterest(
-                                        xrl.getOverdueInterest() + xrl.getDueAmount() - xrl.getOverdueInterestTotal());
-                                xrl.setOverdueInterestTotal(xrl.getDueAmount());
-                            } else {
-                                xrl.setOverdueInterest(
-                                        CommonUtil.longAddBigDecimal(xrl.getOverdueInterest(), interestPerDay));
-                                xrl.setOverdueInterestTotal(interestTotalPlusDay);
-                            }
-                        }
-
-                        // 逾期费用
-                        if (day == 1) {
-                            // 平台管理费 = 剩余本金 * 0.03
-                            long manager = CommonUtil.longAddBigDecimal(xrl.getDueAmount(),
-                                    new BigDecimal(config.get("0").toString()));
-                            if (manager >= xrl.getDueAmount()) {
-                                xrl.setOverdueFeeTotal(xrl.getDueAmount());
-                                xrl.setOverdueFee(xrl.getDueAmount());
-                            } else {
-                                xrl.setOverdueFeeTotal(manager);
-                                xrl.setOverdueFee(manager);
-                            }
-                        }
-                        // 逾期滞纳金
-                        if (xrl.getOverdueFeeTotal() < xrl.getDueAmount()) {
-                            for (Object key : config.keySet()) {
-                                BigDecimal value = new BigDecimal(config.get(key).toString());
-                                long start = Long.parseLong(key.toString().split("~")[0]);
-                                if (start != 0L) {
-                                    long end = Long.parseLong(key.toString().split("~")[1]);
-                                    if (day >= start && day <= end) {
-                                        long feePerDay = CommonUtil.longMultiplyBigDecimal(xrl.getDueAmount(), value);
-                                        if ((xrl.getOverdueFeeTotal() + feePerDay) <= xrl.getDueAmount()) {
-                                            xrl.setOverdueFeeTotal(xrl.getOverdueFeeTotal() + feePerDay);
-                                            xrl.setOverdueFee(xrl.getOverdueFee() + feePerDay);
-                                        } else {
-                                            xrl.setOverdueFee(
-                                                    xrl.getOverdueFee() + xrl.getDueAmount() - xrl.getOverdueFeeTotal());
-                                            xrl.setOverdueFeeTotal(xrl.getDueAmount());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    updateList.add(xrl);
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("滞纳金计算过程出错");
-            return false;
-        }
-        if (!updateList.isEmpty()) {
-            xRecordLoanDao.updateByBatch(updateList);
-        }
-        return true;
-    }
-
-    /**
-     * 逾期计息 + 逾期滞纳金，加起来不能超过本金
-     *
-     * @return
-     */
-    @Override
-    public boolean calcOverDueFee2() {
         List<XRecordLoan> xrlList = xRecordLoanDao.list(new HashMap<>(), null, null);
         // 滞纳金配置
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_OVERDUE_RATE));
@@ -476,8 +391,10 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                             }
                         }
                         if (xrl.getOverdueFee() + totalFee >= xrl.getDueAmount()) {
+                            xrl.setOverdueFeeTotal(xrl.getOverdueFeeTotal() + xrl.getDueAmount() - xrl.getOverdueFee());
                             xrl.setOverdueFee(xrl.getDueAmount());
                         } else {
+                            xrl.setOverdueFeeTotal(xrl.getOverdueFeeTotal() + totalFee);
                             xrl.setOverdueFee(xrl.getOverdueFee() + totalFee);
                         }
                         logger.info("用户: {}, 总逾期费用: {}", xrl.getUserGid(), xrl.getOverdueFee());
@@ -500,14 +417,12 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     /**
      * 计算总逾期费用
      *
-     * @param dueAmount
-     *            剩余本金
-     * @param day
-     *            逾期天数
+     * @param dueAmount 剩余本金
+     * @param day       逾期天数
      * @return
      */
     @Override
-    public long calcOverDueFee2(long dueAmount, int day, BigDecimal loanRate, int loanPeriod) {
+    public long calcOverDueFee(long dueAmount, int day, BigDecimal loanRate, int loanPeriod) {
         if (dueAmount <= 0 || day <= 0) {
             return 0;
         }
@@ -517,7 +432,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
 
         // 平台管理费 = 剩余本金 * 0.03
         long totalFee =
-            totalFee = CommonUtil.longMultiplyBigDecimal(dueAmount, new BigDecimal(config.get("0").toString()));
+                totalFee = CommonUtil.longMultiplyBigDecimal(dueAmount, new BigDecimal(config.get("0").toString()));
 
         // 逾期计息
         BigDecimal interestPer = loanRate.multiply(new BigDecimal(dueAmount / loanPeriod * day));

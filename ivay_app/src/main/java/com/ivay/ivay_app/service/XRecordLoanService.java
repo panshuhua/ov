@@ -38,18 +38,11 @@ public interface XRecordLoanService {
     XRecordLoan getRecordLoan(String gid, String userGid);
 
     /**
-     * 逾期计息 + 逾期滞纳金，都不能超过本金
+     * 逾期费用 = 逾期计息 + 逾期滞纳金，加起来不能超过本金
      *
      * @return
      */
     boolean calcOverDueFee();
-
-    /**
-     * 逾期计息 + 逾期滞纳金，加起来不能超过本金
-     *
-     * @return
-     */
-    boolean calcOverDueFee2();
 
     /**
      * 计算总逾期费用
@@ -58,7 +51,7 @@ public interface XRecordLoanService {
      * @param day       逾期天数
      * @return
      */
-    long calcOverDueFee2(long dueAmount, int day, BigDecimal loanRate, int loanPeriod);
+    long calcOverDueFee(long dueAmount, int day, BigDecimal loanRate, int loanPeriod);
 
     /**
      * 计算逾期一天的滞纳金
