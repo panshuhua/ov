@@ -97,7 +97,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         }
         try {
             // region -- 借款
-            XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+            XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid());
             if (xUserInfo == null) {
                 throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                         i18nService.getMessage("response.error.user.checkgid.msg"));
@@ -251,7 +251,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     public void confirmLoan(XRecordLoan xRecordLoan, TransfersRsp transfersRsp) {
         Date now = new Date();
         xRecordLoan.setUpdateTime(now);
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid());
         xUserInfo.setUpdateTime(now);
 
         XAppEvent xAppEvent = new XAppEvent();

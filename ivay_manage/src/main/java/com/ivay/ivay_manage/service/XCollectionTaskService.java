@@ -1,10 +1,9 @@
 package com.ivay.ivay_manage.service;
 
-import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
+import com.ivay.ivay_repository.model.XRecordLoan;
 
 public interface XCollectionTaskService {
     XCollectionTask save(XCollectionTask xCollectionTask);
@@ -52,4 +51,20 @@ public interface XCollectionTaskService {
      * @Date 2019/7/12 15:57
      */
     PageTableResponse getCollectionsRepayList(int limit, int num, CollectionTaskInfo collectionTaskInfo);
+
+    /**
+     * 借款订单详情
+     *
+     * @param taskId
+     * @return
+     */
+    XRecordLoan loanOrderInfo(long taskId);
+
+    /**
+     * 还款详情
+     *
+     * @param taskId
+     * @return
+     */
+    PageTableResponse repaymentInfo(long taskId);
 }

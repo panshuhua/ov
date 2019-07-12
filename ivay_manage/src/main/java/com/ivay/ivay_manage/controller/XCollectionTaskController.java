@@ -1,14 +1,13 @@
 package com.ivay.ivay_manage.controller;
 
 import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_manage.service.XCollectionTaskService;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
 import com.ivay.ivay_repository.dto.UserName;
-import com.ivay.ivay_repository.model.SysUser;
 import com.ivay.ivay_repository.model.XCollectionTask;
+import com.ivay.ivay_repository.model.XRecordLoan;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,7 +21,6 @@ import java.util.List;
 @RequestMapping("api/xCollectionTasks")
 @Api(tags = "催收派单")
 public class XCollectionTaskController {
-
     @Autowired
     private XCollectionTaskService xCollectionTaskService;
     @Autowired
@@ -58,8 +56,8 @@ public class XCollectionTaskController {
     @GetMapping("list")
     @ApiOperation(value = "催收搜索列表")
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
-                                  @RequestParam(required = false, defaultValue = "1") int num,
-                                  CollectionTaskInfo collectionTaskInfo) {
+                                            @RequestParam(required = false, defaultValue = "1") int num,
+                                            CollectionTaskInfo collectionTaskInfo) {
 
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.list(limit, num, collectionTaskInfo));
@@ -80,7 +78,7 @@ public class XCollectionTaskController {
     @GetMapping("updateCollector")
     @ApiOperation(value = "指派催收人")
     public Response<Boolean> updateCollector(@RequestParam(required = true) Integer collectorId,
-                                    @RequestParam(required = true) Integer id) {
+                                             @RequestParam(required = true) Integer id) {
         Response<Boolean> response = new Response<>();
         response.setBo(xCollectionTaskService.updateCollector(collectorId, id));
 
@@ -111,6 +109,28 @@ public class XCollectionTaskController {
                                                                CollectionTaskInfo collectionTaskInfo) {
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.getCollectionsRepayList(limit, num, collectionTaskInfo));
+        return response;
+    }
+
+    @GetMapping("loanOrderInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "taskId", value = "档案id", dataType = "Long", paramType = "query")
+    })
+    @ApiOperation("借款订单详情")
+    public Response<XRecordLoan> loanOrderInfo(@RequestParam long taskId) {
+        Response<XRecordLoan> response = new Response<>();
+        response.setBo(xCollectionTaskService.loanOrderInfo(taskId));
+        return response;
+    }
+
+    @GetMapping("repaymentInfo")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "taskId", value = "档案id", dataType = "Long", paramType = "query")
+    })
+    @ApiOperation("还款详情")
+    public Response<PageTableResponse> repaymentInfo(@RequestParam long taskId) {
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xCollectionTaskService.repaymentInfo(taskId));
         return response;
     }
 }

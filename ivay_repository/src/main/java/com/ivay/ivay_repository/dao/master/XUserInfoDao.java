@@ -40,8 +40,8 @@ public interface XUserInfoDao {
             + "#{refuseReason},#{refuseType},#{auditTime})")
     int save(XUserInfo xUserInfo);
 
-    @Select("select * from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y' and t.account_status='0'")
-    XUserInfo getByGid(String gid);
+    @Select("select * from x_user_info t where t.user_gid = #{userGid} and t.enable_flag='Y' and t.account_status='0'")
+    XUserInfo getByUserGid(String userGid);
 
     @Select("select phone from x_user_info t where t.user_gid = #{gid} and t.enable_flag='Y' and t.account_status='0'")
     String getPhone(String gid);
@@ -195,4 +195,6 @@ public interface XUserInfoDao {
 
     @Select("select phone from x_user_info where mac_code=#{macCode} and enable_flag='Y' and user_status!='7' and account_status='0'")
     List<String> checkMacCode(String macCode);
+
+    String getUserType(@Param("userGid") String userGid);
 }

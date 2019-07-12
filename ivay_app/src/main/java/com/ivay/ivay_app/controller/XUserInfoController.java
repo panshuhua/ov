@@ -11,6 +11,7 @@ import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.valid.IdentityCard;
 import com.ivay.ivay_common.valid.Password;
 import com.ivay.ivay_common.valid.Update;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.CreditLine;
 import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -33,10 +34,13 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "授信")
 @Validated
 public class XUserInfoController {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XUserInfoController.class);
 
     @Autowired
     private XUserInfoService xUserInfoService;
+
+    @Autowired
+    private XUserInfoDao xUserInfoDao;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -64,7 +68,7 @@ public class XUserInfoController {
     @LogAnnotation(module = "获取授信信息")
     public Response<XUserInfo> get(@RequestParam String userGid, HttpServletRequest request) {
         Response<XUserInfo> response = new Response<>();
-        response.setBo(xUserInfoService.getByGid(userGid));
+        response.setBo(xUserInfoDao.getByUserGid(userGid));
         return response;
     }
 
@@ -75,7 +79,7 @@ public class XUserInfoController {
     })
     @LogAnnotation(module = "删除授信信息")
     public void delete(@RequestParam String gid, HttpServletRequest request) {
-        xUserInfoService.delete(gid);
+        xUserInfoDao.delete(gid);
     }
 
     @GetMapping("getcreditLine/{gid}")
@@ -84,9 +88,9 @@ public class XUserInfoController {
     public Response<CreditLine> getCreditLine(@PathVariable String gid, HttpServletRequest request) {
         Response<CreditLine> response = new Response<>();
         //验证userGid有效性
-        XUserInfo xUserInfo = xUserInfoService.getByGid(gid);
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(gid);
         if (xUserInfo != null) {
-            response.setBo(xUserInfoService.getCreditLine(gid));
+            response.setBo(xUserInfoDao.getCreditLine(gid));
         } else {
             response.setStatus(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
@@ -102,7 +106,7 @@ public class XUserInfoController {
     @LogAnnotation(module = "获取授信认证信息状态")
     public Response<String> getUserStatus(@RequestParam String gid, HttpServletRequest request) {
         Response<String> response = new Response<>();
-        response.setBo(xUserInfoService.getUserStatus(gid));
+        response.setBo(xUserInfoDao.getUserStatus(gid));
         return response;
     }
 
@@ -185,7 +189,8 @@ public class XUserInfoController {
     @LogAnnotation(module = "修改交易密码")
     public Response<String> updateTransPwd(@RequestParam String codeToken,
                                            @RequestParam String userGid,
-                                           @Password @RequestParam String password, HttpServletRequest request) {
+                                           @Password @RequestParam String password,
+                                           HttpServletRequest request) {
         Response<String> response = new Response<>();
         long existTime = redisTemplate.boundHashOps(userGid).getExpire();
         logger.info("获取到key的有效时间existTime=" + existTime + "--------");
@@ -212,6 +217,18 @@ public class XUserInfoController {
 
         xUserInfoService.setTransPwd(userGid, password);
 
+        return response;
+    }
+
+    @GetMapping("getUserType")
+    @ApiOperation("获取用户类型")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userGid", value = "用户gid", dataType = "String", paramType = "query")
+    })
+    public Response<String> getUserType(@RequestParam(required = false) String userGid,
+                                        HttpServletRequest request) {
+        Response<String> response = new Response<>();
+        response.setBo(xUserInfoDao.getUserType(userGid));
         return response;
     }
 }

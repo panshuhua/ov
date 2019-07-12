@@ -131,7 +131,7 @@ public class XLoanServiceImpl implements XLoanService {
             boolean allowBlackFlag = (Boolean) config.get(flag == SysVariable.RISK_TYPE_AUDIT ? "audit" : "loan");
             logger.info("{}允许黑名单通过风控", allowBlackFlag ? "" : "不");
 
-            XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+            XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
             if (!allowBlackFlag) {
                 // 黑名单用户 拒绝
                 if (blackUserService.isBlackUser(xUserInfo.getPhone(), xUserInfo.getIdentityCard())) {
@@ -309,7 +309,7 @@ public class XLoanServiceImpl implements XLoanService {
      */
     @Override
     public long refreshCreditLimit(String userGid) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
         if (xUserInfo == null) {
             throw new BusinessException("0014", "用户不存在");
         }

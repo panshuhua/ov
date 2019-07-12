@@ -2,9 +2,9 @@ package com.ivay.ivay_manage.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.enums.CollectionRepayStatusEnum;
 import com.ivay.ivay_common.enums.CollectionStatusEnum;
 import com.ivay.ivay_common.enums.OverDueLevelEnum;
-import com.ivay.ivay_common.enums.CollectionRepayStatusEnum;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -55,7 +55,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
     @Override
     public PageTableResponse list(int limit, int num, CollectionTaskInfo collectionTaskInfo) {
-        try{
+        try {
             logger.info("催收任務搜索，搜索條件{}", JSONObject.toJSONString(collectionTaskInfo));
 
             PageTableRequest request = new PageTableRequest();
@@ -64,7 +64,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
             Map param = request.getParams();
 
             //根据条件搜索
-            if(null != collectionTaskInfo) {
+            if (null != collectionTaskInfo) {
                 param.put("name", collectionTaskInfo.getName());
                 param.put("phone", collectionTaskInfo.getPhone());
                 param.put("identityCard", collectionTaskInfo.getIdentityCard());
@@ -85,7 +85,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                     a -> xCollectionTaskDao.selectParamsListCount(a.getParams()),
                     a -> collectionTaskResultList
             ).handle(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -108,7 +108,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         List<String> orderIdList = xCollectionTaskDao.selectOrderIds();
         recordLoanList = recordLoanList.stream().filter(o -> !orderIdList.contains(o.getOrderId())).collect(Collectors.toList());
 
-        if(recordLoanList.size() > 0) {
+        if (recordLoanList.size() > 0) {
             List<XCollectionTask> collectionTaskList = new ArrayList<>();
 
             recordLoanList.forEach(o -> {
@@ -139,13 +139,13 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         XRecordLoan recordLoan = xRecordLoanDao.getXRecordLoanByOrderId(collectionTask.getOrderId());
 
         //判断是否有逾期未还的借款
-        if(recordLoan.getLoanStatus() == 1 &&
+        if (recordLoan.getLoanStatus() == 1 &&
                 recordLoan.getRepaymentStatus() != CollectionRepayStatusEnum.FINISHED_REPAY.getStatus() &&
                 recordLoan.getDueTime().getTime() < System.currentTimeMillis() &&
-                recordLoan.getDueAmount() + recordLoan.getOverdueFee() > 0){
+                recordLoan.getDueAmount() + recordLoan.getOverdueFee() > 0) {
 
             //首次指派
-            if(collectionTask.getCollectionStatus() == CollectionStatusEnum.WAITING_COLLECTION.getStatus()){
+            if (collectionTask.getCollectionStatus() == CollectionStatusEnum.WAITING_COLLECTION.getStatus()) {
                 collectionTask.setCollectorId(collectorId);
                 collectionTask.setUpdateTime(new Date());
                 collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
@@ -155,9 +155,9 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 return xCollectionTaskDao.update(collectionTask) >= 1;
 
                 //同一个人，无需重新指派
-            }else if(collectionTask.getCollectorId() == collectorId){
+            } else if (collectionTask.getCollectorId() == collectorId) {
                 throw new BusinessException("0014", "该用户已经被指派，无需重新指派！");
-            }else{
+            } else {
                 //先修改催收进度，再重新生成记录
                 collectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
                 collectionTask.setUpdateTime(new Date());
@@ -194,7 +194,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         Long id = UserUtil.getLoginUser().getId();
         param.put("collectorId", id.intValue());
 
-        if(null != collectionTaskInfo){
+        if (null != collectionTaskInfo) {
             param.put("name", collectionTaskInfo.getName());
             param.put("phone", collectionTaskInfo.getPhone());
             param.put("identityCard", collectionTaskInfo.getIdentityCard());
@@ -221,13 +221,14 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         ).handle(request);
     }
 
+
     private void changeLevelToTime(CollectionTaskInfo collectionTaskInfo, Map param) {
-        if(StringUtils.isNotBlank(collectionTaskInfo.getOverdueLevel())){
+        if (StringUtils.isNotBlank(collectionTaskInfo.getOverdueLevel())) {
             Integer day = OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel());
             //如果逾期等級為6+
-            if(OverDueLevelEnum.OVERDUE_LEVEL_SIX_PLUS.getLevel().equals(collectionTaskInfo.getOverdueLevel())){
+            if (OverDueLevelEnum.OVERDUE_LEVEL_SIX_PLUS.getLevel().equals(collectionTaskInfo.getOverdueLevel())) {
                 param.put("overdueDayMin", OverDueLevelEnum.OVERDUE_LEVEL_SIX.getDay());
-            }else{
+            } else {
                 param.put("overdueDayMin", OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel()) - 30);
             }
             param.put("overdueDayMax", OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel()));
@@ -243,7 +244,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
         Map param = request.getParams();
 
-        if(null != collectionTaskInfo){
+        if (null != collectionTaskInfo) {
             param.put("name", collectionTaskInfo.getName());
             param.put("phone", collectionTaskInfo.getPhone());
             param.put("identityCard", collectionTaskInfo.getIdentityCard());
@@ -255,6 +256,28 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         }
 
         return null;
+    }
+
+    /**
+     * 借款订单详情
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public XRecordLoan loanOrderInfo(long taskId) {
+        return xCollectionTaskDao.loanOrderInfo(taskId);
+    }
+
+    /**
+     * 还款详情
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public PageTableResponse repaymentInfo(long taskId) {
+        return new PageTableResponse<>(xCollectionTaskDao.repaymentInfo(taskId));
     }
 
 }

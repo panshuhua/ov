@@ -1,25 +1,11 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.ivay.ivay_app.dto.BaokimResponseStatus;
 import com.ivay.ivay_app.dto.ValVirtualAccountReq;
 import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
 import com.ivay.ivay_app.service.SysLogService;
 import com.ivay.ivay_app.service.XVirtualAccountService;
-import com.ivay.ivay_common.utils.HttpClientUtils;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.MsgAuthCode;
-import com.ivay.ivay_common.utils.RSAEncryptShaCollection;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.TokenDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -29,6 +15,14 @@ import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_repository.model.XVirtualAccount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class XVirtualAccountServiceImpl implements XVirtualAccountService {
@@ -73,7 +67,7 @@ public class XVirtualAccountServiceImpl implements XVirtualAccountService {
 
         // String orderId //订单id
         // 根据usergid查询用户信息
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid()); // accountType=1时需要
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid()); // accountType=1时需要
 
         String accName = xUserInfo.getName();
         if (accName != null) {

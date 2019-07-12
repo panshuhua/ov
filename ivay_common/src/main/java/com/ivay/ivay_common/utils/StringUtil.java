@@ -1,15 +1,14 @@
 package com.ivay.ivay_common.utils;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.Lists;
 
 /**
  * 字符串转化工具类
@@ -81,7 +80,7 @@ public class StringUtil {
      * @param str
      */
     public static boolean isNumeric(String str) {
-        for (int i = str.length(); --i >= 0;) {
+        for (int i = str.length(); --i >= 0; ) {
             if (!Character.isDigit(str.charAt(i))) {
                 return false;
             }
@@ -90,7 +89,7 @@ public class StringUtil {
     }
 
     private static final char[] BCD_LOOKUP =
-        {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
      * 将字节数组转换为16进制字符串的形式.
@@ -116,7 +115,7 @@ public class StringUtil {
         bytes = new byte[s.length() / 2];
 
         for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte)Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
+            bytes[i] = (byte) Integer.parseInt(s.substring(2 * i, 2 * i + 2), 16);
         }
 
         return bytes;
@@ -216,7 +215,7 @@ public class StringUtil {
         // 去掉重音符号
         String nfdNormalizedString = Normalizer.normalize(vi, Normalizer.Form.NFD);
         return PATTERN_ACCENTED_CHARACTERS.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D")
-            .replaceAll("đ", "d");
+                .replaceAll("đ", "d");
     }
 
     /**
@@ -235,7 +234,7 @@ public class StringUtil {
         // 去掉重音符号
         String nfdNormalizedString = Normalizer.normalize(vi, Normalizer.Form.NFD);
         return PATTERN_ACCENTED_CHARACTERS.matcher(nfdNormalizedString).replaceAll("").replaceAll("Đ", "D")
-            .replaceAll("đ", "d");
+                .replaceAll("đ", "d");
     }
 
     private static final Pattern PATTERN_BLANK_CHARACTERS = Pattern.compile("\\s*|\t|\r|\n");
@@ -269,10 +268,4 @@ public class StringUtil {
         }
         return phone.replaceAll("(\\d{3})(.+)(\\d{4})", "$1***$3");
     }
-
-    public static void main(String[] args) {
-        System.out.println(
-            vietnameseToEnglish("[OVAY] mã xác thực: {0}, mã xác thực có hiệu lực trong 10 phút,, không được để lộ"));
-    }
-
 }

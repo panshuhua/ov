@@ -254,7 +254,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                     xRecordRepayment.getRepaymentAmount(), xRecordLoan.getDueAmount(),
                     xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
             // 获取用户可借款金额
-            XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+            XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid());
             // 更新借款表的还款额度和滞纳金等
             long diff = xRecordRepayment.getRepaymentAmount() - xRecordLoan.getDueAmount();
 

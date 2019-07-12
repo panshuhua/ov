@@ -12,6 +12,7 @@ import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_common.utils.UUIDUtils;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.XUserBankcardInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
@@ -42,6 +43,9 @@ public class XUserBankcardInfoController {
     private XUserInfoService xUserInfoService;
 
     @Autowired
+    private XUserInfoDao xUserInfoDao;
+
+    @Autowired
     private XAPIService xapiService;
 
     @PostMapping("add")
@@ -70,7 +74,7 @@ public class XUserBankcardInfoController {
                     i18nService.getMessage("response.error.bank.repeat.msg"));
             return response;
         }
-        XUserInfo xUserInfo = xUserInfoService.getByGid(xUserBankcardInfo.getUserGid());
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xUserBankcardInfo.getUserGid());
 
         // 姓名和银行卡账号是否一致
         if (xUserInfo == null) {

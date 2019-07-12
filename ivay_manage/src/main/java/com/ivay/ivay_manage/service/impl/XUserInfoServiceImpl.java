@@ -16,9 +16,11 @@ import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.dto.XAuditListInfo;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.utils.DesensitizationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +138,11 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * @return
      */
     @Override
-    public PageTableResponse cardAndBankInfo(int limit, int num, String userGid) {
-        return new PageTableResponse(xUserBankcardInfoDao.getCardAndBankByGid(userGid, null));
+    public PageTableResponse<XUserCardAndBankInfo> cardAndBankInfo(int limit, int num, String userGid) {
+        List<XUserCardAndBankInfo> list = xUserBankcardInfoDao.getCardAndBankByGid(userGid, null);
+        // 脱敏处理
+        DesensitizationUtil.BankCardDesensitization(list);
+        return new PageTableResponse<>(list);
     }
 
     @Override
@@ -157,7 +162,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      */
     @Override
     public int auditUpdate(String userGid, int flag, String refuseCode, String refuseDemo, String type) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
         if (xUserInfo == null) {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
@@ -261,7 +266,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      */
     @Override
     public boolean autoAudit(String userGid) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
         String phone;
         if (xUserInfo == null) {
             logger.warn("当前用户不存在:{}", userGid);
