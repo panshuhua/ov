@@ -482,4 +482,133 @@
 		where x_collection_task.id=#{taskId}
 	</select>
 
+	<sql id="collection_repay_condition">
+		(
+		SELECT
+		t5.order_id,
+		t5.user_gid,
+		t5.assign_time,
+		t5.collector_id,
+		t5.collection_repay_status,
+		t5.repay_time,
+		t5.NAME,
+		t5.phone,
+		t5.identity_card,
+		t5.due_time,
+		t5.overdue_day,
+		t5.amount,
+		t5.id,
+		t6.id AS user_id,
+		t6.username
+		FROM
+		(
+		SELECT
+		t3.order_id,
+		t3.user_gid,
+		t3.assign_time,
+		t3.collector_id,
+		t3.collection_repay_status,
+		t3.repay_time,
+		t3.NAME,
+		t3.phone,
+		t3.identity_card,
+		t3.id,
+		t4.due_time,
+		t4.amount,
+		t4.overdue_day
+		FROM
+		(
+		SELECT
+		t1.order_id,
+		t1.user_gid,
+		t1.id,
+		t1.assign_time,
+		t1.collector_id,
+		t1.collection_repay_status,
+		t1.repay_time,
+		t2.NAME,
+		t2.phone,
+		t2.identity_card
+		FROM
+		( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time FROM x_collection_task WHERE collection_repay_status = 2 ) t1
+		LEFT JOIN ( SELECT user_gid, NAME, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2 ON t1.user_gid = t2.user_gid
+		) t3
+		LEFT JOIN (
+		SELECT
+		order_id,
+		due_time,
+		( due_amount + overdue_fee ) AS amount,
+		DATEDIFF( SYSDATE( ), DATE_FORMAT( due_time, "%y%m%d" ) ) AS overdue_day
+		FROM
+		x_record_loan
+		WHERE
+		1 = 1
+		) t4 ON t3.order_id = t4.order_id
+		) t5
+		LEFT JOIN sys_user t6 ON t5.collector_id = t6.id
+		) t7
+		<where>
+			<if test="params.name != null and params.name != ''">
+				and t7.name = #{params.name}
+			</if>
+			<if test="params.phone != null and params.phone != ''">
+				and t7.phone = #{params.phone}
+			</if>
+			<if test="params.identityCard != null and params.identityCard != ''">
+				and t7.identity_card = #{params.identityCard}
+			</if>
+			<if test="params.overdueDayMin != null and params.overdueDayMin != ''">
+				and t7.overdue_day &gt;= #{params.overdueDayMin}
+			</if>
+			<if test="params.overdueDayMax != null and params.overdueDayMax != ''">
+				and t7.overdue_day &lt; #{params.overdueDayMax}
+			</if>
+			<if test="params.username != null and params.username != ''">
+				and t7.username = #{params.username}
+			</if>
+			<if test="params.collectionRepayStatus != null and params.collectionRepayStatus != ''">
+				and t7.collection_repay_status = #{params.collectionRepayStatus}
+			</if>
+			<if test="params.collectionStatus != null and params.collectionStatus != ''">
+				and t7.collection_status = #{params.collectionStatus}
+			</if>
+
+			<if test="params.payDateStart != null and params.payDateStart != ''">
+				and t7.due_time &gt;= #{params.payDateStart}
+			</if>
+			<if test="params.payDateEnd != null and params.payDateEnd != ''">
+				and t7.due_time &lt;= #{params.payDateEnd}
+			</if>
+			<if test="params.collectionDateStart != null and params.collectionDateStart != ''">
+				and t7.assign_time &gt;= #{params.collectionDateStart}
+			</if>
+			<if test="params.collectionDateEnd != null and params.collectionDateEnd != ''">
+				and t7.assign_time &lt;= #{params.collectionDateEnd}
+			</if>
+
+			<if test="params.repayTimeStart != null and params.repayTimeStart != ''">
+				and t7.repay_time &gt;= #{params.repayTimeStart}
+			</if>
+			<if test="params.repayTimeEnd != null and params.repayTimeEnd != ''">
+				and t7.repay_time &lt;= #{params.repayTimeEnd}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询催收回款列表 -->
+	<select id="getCollectionsRepayList" resultType="com.ivay.ivay_repository.dto.CollectionTaskResult">
+		SELECT
+		*
+		FROM
+		<include refid="collection_repay_condition"/>
+		ORDER BY
+		t7.repay_time DESC
+	</select>
+
+	<!-- 查询催收回款列表数量 -->
+	<select id="getCollectionsRepayListCount" resultType="java.lang.Integer">
+		select count(1) from
+		<include refid="collection_repay_condition"/>
+	</select>
+
 </mapper>

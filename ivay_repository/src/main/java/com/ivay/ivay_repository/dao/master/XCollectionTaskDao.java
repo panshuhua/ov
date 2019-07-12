@@ -100,4 +100,24 @@ public interface XCollectionTaskDao {
     XRecordLoan loanOrderInfo(@Param("taskId") long taskId);
 
     List<XRepaymentAccountInfo> repaymentInfo(@Param("taskId") long taskId);
+
+    /**
+     * @Description 查询催收回款列表
+     * @Author Ryan
+     * @Param [params, offset, limit]
+     * @Return java.util.List<com.ivay.ivay_repository.dto.CollectionTaskResult>
+     * @Date 2019/7/12 17:28
+     */
+    List<CollectionTaskResult> getCollectionsRepayList(@Param("params") Map<String, Object> params,
+                                                       @Param("offset") Integer offset,
+                                                       @Param("limit") Integer limit);
+
+    /**
+     * @Description 查询催收回款列表数量
+     * @Author Ryan
+     * @Param [params]
+     * @Return int
+     * @Date 2019/7/12 17:28
+     */
+    int getCollectionsRepayListCount(@Param("params") Map<String, Object> params);
 }
