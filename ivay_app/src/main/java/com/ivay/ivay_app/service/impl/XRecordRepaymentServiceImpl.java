@@ -277,6 +277,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 logger.info("{}: 还有本金没还完:{}", xRecordRepayment.getOrderId(), xRecordLoan.getDueAmount());
             } else {
                 // 本金已还完
+                xRecordRepayment.setRepaymentOverdueFee(diff);
                 // 首先：更新可借额度, 注意顺序
                 xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
                 // 再更新剩余本金为零
@@ -307,7 +308,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                     if (xRecordLoan.getOverdueInterest() >= diff) {
                         xRecordLoan.setOverdueInterest(xRecordLoan.getOverdueInterest() - diff);
 
-                        if(null != xCollectionTask) {
+                        if (null != xCollectionTask) {
                             // 更新催收任务中的追回逾期利息
                             xCollectionTask.setCollectionOverdueFee(xCollectionTask.getCollectionOverdueFee() + diff);
                             xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
