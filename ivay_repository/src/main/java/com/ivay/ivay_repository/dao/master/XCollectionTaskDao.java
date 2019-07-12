@@ -1,7 +1,9 @@
 package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.dto.CollectionTaskResult;
+import com.ivay.ivay_repository.dto.XRepaymentAccountInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
+import com.ivay.ivay_repository.model.XRecordLoan;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public interface XCollectionTaskDao {
     int update(XCollectionTask xCollectionTask);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag,collection_repay_status) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag}),#{collectionRepayStatus}")
+    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag,collection_repay_status,repay_time) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag}),#{collectionRepayStatus},#{repayTime}")
     int save(XCollectionTask xCollectionTask);
 
     int count(@Param("params") Map<String, Object> params);
@@ -82,7 +84,7 @@ public interface XCollectionTaskDao {
      * @Return int
      * @Date 2019/7/12 9:41
      */
-    int getCollectionListByUserGidCount(Map<String, Object> params);
+    int getCollectionListByUserGidCount(@Param("params") Map<String, Object> params);
 
     /**
      * @Description 查詢我的催收
@@ -91,5 +93,31 @@ public interface XCollectionTaskDao {
      * @Return java.util.List<com.ivay.ivay_repository.dto.CollectionTaskResult>
      * @Date 2019/7/12 9:42
      */
-    List<CollectionTaskResult> getCollectionListByUserGid(Map<String, Object> params, Integer offset, Integer limit);
+    List<CollectionTaskResult> getCollectionListByUserGid(@Param("params") Map<String, Object> params,
+                                                          @Param("offset") Integer offset,
+                                                          @Param("limit") Integer limit);
+
+    XRecordLoan loanOrderInfo(@Param("taskId") long taskId);
+
+    List<XRepaymentAccountInfo> repaymentInfo(@Param("taskId") long taskId);
+
+    /**
+     * @Description 查询催收回款列表
+     * @Author Ryan
+     * @Param [params, offset, limit]
+     * @Return java.util.List<com.ivay.ivay_repository.dto.CollectionTaskResult>
+     * @Date 2019/7/12 17:28
+     */
+    List<CollectionTaskResult> getCollectionsRepayList(@Param("params") Map<String, Object> params,
+                                                       @Param("offset") Integer offset,
+                                                       @Param("limit") Integer limit);
+
+    /**
+     * @Description 查询催收回款列表数量
+     * @Author Ryan
+     * @Param [params]
+     * @Return int
+     * @Date 2019/7/12 17:28
+     */
+    int getCollectionsRepayListCount(@Param("params") Map<String, Object> params);
 }

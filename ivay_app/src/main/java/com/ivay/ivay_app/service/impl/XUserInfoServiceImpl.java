@@ -10,7 +10,6 @@ import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.dto.CreditLine;
 import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +60,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
 
     @Override
     public XUserInfo update(XUserInfo xUserInfo) {
-        XUserInfo old = xUserInfoDao.getByGid(xUserInfo.getUserGid());
+        XUserInfo old = xUserInfoDao.getByUserGid(xUserInfo.getUserGid());
         if (old == null) {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
@@ -84,7 +83,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         xUserInfo.setPhone(old.getPhone());
         if (StringUtils.isEmpty(old.getUserStatus())) {
             xUserInfo.setUserStatus(SysVariable.USER_STATUS_REGISTRY);
-        } else if(StringUtils.isEmpty(xUserInfo.getUserStatus())){
+        } else if (StringUtils.isEmpty(xUserInfo.getUserStatus())) {
             xUserInfo.setUserStatus(old.getUserStatus());
         }
         xUserInfo.setAccountStatus(old.getAccountStatus());
@@ -97,16 +96,6 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         xUserInfo.setEnableFlag(old.getEnableFlag());
 
         return xUserInfoDao.update(xUserInfo) == 1 ? xUserInfo : null;
-    }
-
-    @Override
-    public XUserInfo getByGid(String gid) {
-        return xUserInfoDao.getByGid(gid);
-    }
-
-    @Override
-    public void delete(String gid) {
-        xUserInfoDao.delete(gid);
     }
 
     @Override
@@ -128,8 +117,8 @@ public class XUserInfoServiceImpl implements XUserInfoService {
      * 更新用户状态
      */
     @Override
-    public int updateUserStatus(String gid, String status) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(gid);
+    public int updateUserStatus(String userGid, String status) {
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
         if (xUserInfo == null) {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
@@ -140,21 +129,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
     }
 
     @Override
-    public CreditLine getCreditLine(String gid) {
-        return xUserInfoDao.getCreditLine(gid);
-    }
-
-    @Override
-    public String getUserStatus(String gid) {
-        return xUserInfoDao.getUserStatus(gid);
-    }
-
-    @Override
     public boolean hasTransPwd(String gid) {
         String hasTransPwd = xUserInfoDao.getTranPwd(gid);
         return StringUtils.isNotBlank(hasTransPwd);
     }
-
 
     @Override
     public void setTransPwd(String userGid, String transPwd) {

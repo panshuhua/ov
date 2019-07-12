@@ -69,19 +69,24 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
 
     @Override
     public PageTableResponse selectCollectionRecordList(int limit,int num, int id) {
-        PageTableRequest request = new PageTableRequest();
-        request.setLimit(limit);
-        request.setOffset((num - 1) * limit);
-        Map param = request.getParams();
+        try {
+            PageTableRequest request = new PageTableRequest();
+            request.setLimit(limit);
+            request.setOffset((num - 1) * limit);
+            Map param = request.getParams();
 
-        XCollectionTask xCollectionTask = xCollectionTaskService.get(id);
-        if(xCollectionTask != null){
-            param.put("orderId",xCollectionTask.getOrderId());
+            XCollectionTask xCollectionTask = xCollectionTaskService.get(id);
+            if(xCollectionTask != null){
+                param.put("orderId",xCollectionTask.getOrderId());
+            }
+
+            return new PageTableHandler(
+                    a -> xCollectionRecordDao.selectCollectionCount(a.getParams()),
+                    a -> xCollectionRecordDao.selectCollectionRecordList(a.getParams(), a.getOffset(), a.getLimit())
+            ).handle(request);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
-
-        return new PageTableHandler(
-                a -> xCollectionRecordDao.selectCollectionCount(a.getParams()),
-                a -> xCollectionRecordDao.selectCollectionRecordList(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
     }
 }

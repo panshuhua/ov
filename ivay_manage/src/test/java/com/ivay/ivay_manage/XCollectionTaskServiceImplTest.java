@@ -44,7 +44,7 @@ public class XCollectionTaskServiceImplTest {
         request.setLimit(10);
         CollectionTaskInfo collectionTaskInfo = new CollectionTaskInfo();
         collectionTaskInfo.setOverdueLevel("M1");
-        collectionTaskInfo.setPhone("9888888888");
+        //collectionTaskInfo.setPhone("9888888888");
         PageTableResponse response = collectionTaskService.list(10,1, collectionTaskInfo);
         System.out.println("==========================");
         System.out.println(JSONObject.toJSONString(response));
@@ -61,5 +61,18 @@ public class XCollectionTaskServiceImplTest {
 
         List<UserName> sysUserList = userService.getUserNames();
         System.out.println(JSONObject.toJSONString(sysUserList));
+    }
+
+    @Test
+    public void getCollectionListByUserGidTest(){
+        CollectionTaskInfo collectionTaskInfo = new CollectionTaskInfo();
+        PageTableResponse response = collectionTaskService.getCollectionListByUserGid(10,1,collectionTaskInfo);
+        System.out.println(JSONObject.toJSONString(response));
+    }
+
+    @Test
+    public void getCollectionsRepayList(){
+        CollectionTaskInfo collectionTaskInfo = new CollectionTaskInfo();
+        System.out.println(JSONObject.toJSONString(collectionTaskService.getCollectionsRepayList(10,1,collectionTaskInfo)));
     }
 }

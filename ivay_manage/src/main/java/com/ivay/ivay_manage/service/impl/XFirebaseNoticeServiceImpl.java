@@ -228,7 +228,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     // 风控借款规则校验失败时，发送借款申请失败通知
     @Override
     public void sendLoanFail(String userGid) {
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(userGid);
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
         NoticeMsg msg = new NoticeMsg();
         // firebase消息推送参数
         msg.setFmcToken(xUserInfo.getFmcToken());

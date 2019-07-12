@@ -3,6 +3,8 @@ package com.ivay.ivay_repository.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @ClassName CollectionTaskInfo
  * @Description 催收任务信息
@@ -32,4 +34,22 @@ public class CollectionTaskInfo {
 
     @ApiModelProperty("指派状态")
     private String collectionStatus;
+
+    @ApiModelProperty("應還時間開始")
+    private Date payDateStart;
+
+    @ApiModelProperty("應還時間結束")
+    private Date payDateEnd;
+
+    @ApiModelProperty("指派時間開始")
+    private Date collectionDateStart;
+
+    @ApiModelProperty("指派時間結束")
+    private Date collectionDateEnd;
+
+    @ApiModelProperty("還款時間開始")
+    private Date repayTimeStart;
+
+    @ApiModelProperty("還款時間結束")
+    private Date repayTimeEnd;
 }

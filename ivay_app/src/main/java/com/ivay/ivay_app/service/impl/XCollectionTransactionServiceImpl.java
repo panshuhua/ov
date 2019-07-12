@@ -87,6 +87,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
 
     @Override
     public CollectionTransactionRsp noticeCollection(CollectionTransactionNotice notice) throws ParseException {
+        logger.info("baokim回调还款接口--------------------------------------");
         String TransId = notice.getTransId();
         String ResponseCode = BaokimResponseStatus.CollectionSuccess.getCode();
         String ResponseMessage = BaokimResponseStatus.CollectionSuccess.getMessage();
@@ -117,11 +118,11 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         Date reqTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(RequestTime);
         String RequestDate = new SimpleDateFormat("yyyyMMdd").format(reqTime);
         String ReferenceId = PartnerCode + "BK" + RequestDate + "00" + MsgAuthCode.getAuthCode();
-        System.out.println("ReferenceId=" + ReferenceId);
+        logger.info("ReferenceId=" + ReferenceId);
         rsp.setReferenceId(ReferenceId);
         String rspEncryptStr =
             ResponseCode + "|" + ResponseMessage + "|" + ReferenceId + "|" + AccNo + "|" + AffTransDebt;
-        System.out.println("返回给baokim的签名明文=" + rspEncryptStr);
+        logger.info("返回给baokim的签名明文=" + rspEncryptStr);
 
         String rspSignature = RSAEncryptShaCollection.encrypt2Sha1(rspEncryptStr);
         rsp.setSignature(rspSignature);
@@ -198,8 +199,8 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
             + TransId + "|" + TransAmount + "|" + TransTime + "|" + BefTransDebt + "|" + AffTransDebt + "|"
             + AccountType + "|" + OrderId;
 
-        System.out.println("baokim请求的签名明文：" + encryptStr);
-        System.out.println("baokim请求发送的签名：" + Signature);
+        logger.info("baokim请求的签名明文：" + encryptStr);
+        logger.info("baokim请求发送的签名：" + Signature);
 
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.BAOKIM_NOTICE_SIGNATURE));
         if (config == null) {
@@ -216,7 +217,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
                     if (environment.contains("prod")) {
                         // 验证签名认证
                         boolean b = RSAEncryptShaCollection.decrypt2Sha1(encryptStr, Signature);
-                        System.out.println("签名校验结果：" + b);
+                        logger.info("签名校验结果：" + b);
 
                         if (!b) {
                             ResponseCode = BaokimResponseStatus.IncorrectSignature.getCode();
@@ -261,6 +262,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
 
         // 更新还款记录
         if (!StringUtils.isEmpty(OrderId)) {
+            logger.info("更新还款状态------------------------");
             // 根据orderId查询借款记录
             XRecordLoan xRecordLoan = xRecordLoanDao.getXRecordLoanByOrderId(OrderId);
             // 新增一条还款记录

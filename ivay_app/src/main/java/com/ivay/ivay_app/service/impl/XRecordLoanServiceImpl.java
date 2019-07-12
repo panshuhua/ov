@@ -109,6 +109,10 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public XRecordLoan borrowMoney(XRecordLoan xRecordLoan, String password) {
+        if (xRecordLoan.getLoanAmount() < 500000) {
+            throw new BusinessException(i18nService.getMessage("response.error.borrow.maxAmount.code"),
+                    i18nService.getMessage("response.error.borrow.maxAmount.msg"));
+        }
         // 加锁： 防重复提交
         if (!redisLock.tryBorrowLock(xRecordLoan.getUserGid())) {
             throw new BusinessException(i18nService.getMessage("response.error.borrow.redisError.code"),
@@ -116,7 +120,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         }
         try {
             // region -- 借款
-            XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+            XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid());
             if (xUserInfo == null) {
                 throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
@@ -233,6 +237,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             try {
                 loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
             } catch (Exception ex) {
+                logger.error(ex.toString());
                 loanQualify = "借款资格接口调用异常";
             }
 
@@ -269,7 +274,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     public void confirmLoan(XRecordLoan xRecordLoan, TransfersRsp transfersRsp) {
         Date now = new Date();
         xRecordLoan.setUpdateTime(now);
-        XUserInfo xUserInfo = xUserInfoDao.getByGid(xRecordLoan.getUserGid());
+        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid());
         xUserInfo.setUpdateTime(now);
 
         XAppEvent xAppEvent = new XAppEvent();

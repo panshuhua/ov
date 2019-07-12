@@ -1,15 +1,12 @@
 package com.ivay.ivay_manage.job;
 
-import com.ivay.ivay_manage.service.XCollectionTaskService;
-import com.ivay.ivay_manage.service.XLoanService;
-import com.ivay.ivay_repository.model.XCollectionTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.ivay.ivay_manage.service.XCollectionTaskService;
 
 /**
  * @ClassName OverdueOrderScheduleTask
@@ -19,7 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Configuration
-@EnableScheduling
+// @EnableScheduling
 public class OverdueOrderScheduleTask {
 
     private static final Logger logger = LoggerFactory.getLogger(OverdueOrderScheduleTask.class);
@@ -27,7 +24,7 @@ public class OverdueOrderScheduleTask {
     @Autowired
     private XCollectionTaskService collectionTaskService;
 
-    @Scheduled(cron = "${timer.overdueOrder}")
+    // @Scheduled(cron = "${timer.overdueOrder}")
     private void overdueOrder() {
 
         logger.info("开始扫描过期订单，生成催收档案 -- overdueOrder");
@@ -36,4 +33,5 @@ public class OverdueOrderScheduleTask {
 
         logger.info("完成扫描过期订单，生成催收档案 -- overdueOrder");
     }
+
 }

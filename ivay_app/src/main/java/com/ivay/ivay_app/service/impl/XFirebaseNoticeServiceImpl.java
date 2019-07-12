@@ -76,23 +76,18 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         String message = "";
         // 短信发送内容
         String phoneMsg = "";
-        // 计算逾期一天的滞纳金
-        // xRecordLoanService.calc1DayOverDueFee(xOverDueFeeList);
 
         int i = 0;
         for (XOverDueFee fee : xOverDueFeeList) {
             try {
                 i++;
                 String fmcToken = fee.getFmcToken();
-                // 测试
-                // fmcToken =
-                // "fd23FeQwuyE:APA91bHeUhfS-suh6yZifvtCY8FJVTPZ3ApMDe9tKv6ogUhFmiF7hHxhGIyyr5CA0yICKDpwscFxgk9W6XEMKSPNg_2aUZ3pwdxG5ZHz94rW-Z-qz439T60LrsxjUfEtUvNdAu73zhhQ";
                 Date dueTime = fee.getDueTime();
                 String dt = DateUtils.dateToString_DD_MM_YYYY(dueTime);
                 // 随机生成短链接的key
                 String key = MsgAuthCode.getNumBigCharRandom(6);
                 String url = SysVariable.PHONEMSG_PREFIX_LINK + key;
-                logger.info("生成的key为：" + key + "------------------------");
+
                 Long dueAmount = fee.getDueAmount();
                 if (dueTime.getDate() == new Date().getDate()) {
                     title = i18nService.getViMessage("firebase.notice.dueDay.remind.titlemsg");
@@ -126,16 +121,17 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 // 发送firebase消息推送
                 logger.info("发送firebase到期通知开始-------------");
                 String gid = fee.getGid();
-                // 测试
-                // String gid = "3609752e4ded4abc80a3912b7b8181a9";
                 NoticeMsg msg = new NoticeMsg();
                 msg.setPageId(SysVariable.PAGE_BILLDETAIL);
                 msg.setGid(gid);
+                msg.setUserGid(fee.getUserGid());
+                logger.info("当天/明天到期通知userGid=" + msg.getUserGid() + "---------------------");
                 if (!StringUtils.isEmpty(fmcToken)) {
                     try {
                         msg.setFmcToken(fmcToken);
                         msg.setFirebaseMsg(message);
                         msg.setTitle(title);
+                        // TODO
                         FirebaseUtil.sendMsgToFmcToken(msg);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -148,24 +144,17 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 boolean phoneFlag = true;
                 // 发送手机短信
                 String phone = fee.getPhone();
-                // 测试
-                // phone = "0906716668";
-                String userGid = fee.getUserGid();
-                // String userGid="fd22ad29a344472eb3f35304a218bf01";
                 try {
-                    msg.setUserGid(userGid);
                     msg.setPhone(phone);
                     msg.setPhoneMsg(phoneMsg);
                     msg.setKey(key);
+                    // TODO
                     phoneFlag = sendPhoneNotice(msg);
+
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                     phoneFlag = false;
                 }
-                // 测试发1条
-                // if (i == 1) {
-                // break;
-                // }
 
                 // 推送和短信都出现异常
                 if (!firebaseFlag && !phoneFlag) {
@@ -231,7 +220,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     String messageId = (String)map.get("MessageId");
                     logger.info("fpt方式发送的短信id：" + messageId);
                     if (messageId != null) {
-                        logger.info("Fpt方式发送的短信验证码是：" + msg);
+                        logger.info("Fpt方式发送的短信验证码是:{}", msg);
                         if (!StringUtils.isEmpty(msg.getKey())) {
                             redisTemplate.opsForValue().set(msg.getKey(), dataJson, effectiveTime, TimeUnit.SECONDS);
                         }
@@ -274,9 +263,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             try {
                 i++;
                 String fmcToken = fee.getFmcToken();
-                // 测试
-                // fmcToken =
-                // "eXjyzQAuj2M:APA91bGV-yuE6ZCt_SCtVq4Xp6EpdzT_22Xq5ctlbCdk46cOLx4I7GP5zTf9BlTLrHqI4kW-i0EZlbtTRd-enm0QUxVkOhWvIRrH9JuiJ5ZY2MQTBoa4iKn0wp-fHEopMgESpj8fb54e";
                 title = i18nService.getViMessage("firebase.notice.overdue.remind.titlemsg");
                 message = i18nService.getViMessage("firebase.notice.overdue.remind.msg");
                 Integer dueDate = fee.getDueDate(); // 逾期天数
@@ -292,8 +278,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 if (!StringUtils.isEmpty(fmcToken)) {
                     String gid = fee.getGid();
                     String userGid = fee.getUserGid();
-                    // 测试
-                    // String gid = "513fa2f1c51448bebf886861991f9322"; // 借款gid
                     NoticeMsg msg = new NoticeMsg();
                     msg.setFmcToken(fmcToken);
                     msg.setFirebaseMsg(message);
@@ -301,13 +285,14 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     msg.setPageId(SysVariable.PAGE_BILLDETAIL);
                     msg.setGid(gid);
                     msg.setUserGid(userGid);
+
+                    logger.info("逾期通知userGid=" + userGid + "---------------------");
+                    // TODO
                     FirebaseUtil.sendMsgToFmcToken(msg);
                 }
+
                 logger.info("发送firebase到期通知结束-------------");
-                // 测试发1条
-                // if (i == 1) {
-                // break;
-                // }
+
                 Thread.sleep(10000);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -382,15 +367,17 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     // 发送两种通知
     @Override
     public void sendAllNotice(NoticeMsg msg) {
-
+        // TODO 发正式
         try {
             sendPhoneNoticeMsg(msg);
+            logger.info("发送部分/全部还款/借款成功-------短信成功-----------------------");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             sendFirebaseNoticeMsg(msg);
+            logger.info("发送部分/全部还款/借款成功----------firebase通知成功-----------------------");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -593,6 +580,9 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     @Override
     public void sendHadRepayNotice(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, XUserInfo xUserInfo) {
+        logger.info("进入发送还款成功参数准备方法-----------------------");
+        logger.info("还款状态:{},用户gid:{},借款gid:{}", xRecordLoan.getRepaymentStatus(), xRecordLoan.getUserGid(),
+            xRecordLoan.getGid());
         // TODO 发送还款成功的通知
         NoticeMsg msg = new NoticeMsg();
         // firebase消息推送参数

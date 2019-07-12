@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.enums.CollectionRepayStatusEnum;
 import com.ivay.ivay_common.enums.CollectionStatusEnum;
@@ -54,43 +55,40 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
     @Override
     public PageTableResponse list(int limit, int num, CollectionTaskInfo collectionTaskInfo) {
+        try {
+            logger.info("催收任務搜索，搜索條件{}", JSONObject.toJSONString(collectionTaskInfo));
 
-        PageTableRequest request = new PageTableRequest();
-        request.setLimit(limit);
-        request.setOffset((num - 1) * limit);
-        Map param = request.getParams();
+            PageTableRequest request = new PageTableRequest();
+            request.setLimit(limit);
+            request.setOffset((num - 1) * limit);
+            Map param = request.getParams();
 
-        //根据条件搜索
-        if (null != collectionTaskInfo) {
-            param.put("name", collectionTaskInfo.getName());
-            param.put("phone", collectionTaskInfo.getPhone());
-            param.put("identityCard", collectionTaskInfo.getIdentityCard());
-            param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
-            param.put("username", collectionTaskInfo.getUsername());
-            param.put("collectionRepayStatus", collectionTaskInfo.getCollectionRepayStatus());
-            param.put("collectionStatus", collectionTaskInfo.getCollectionStatus());
+            //根据条件搜索
+            if (null != collectionTaskInfo) {
+                param.put("name", collectionTaskInfo.getName());
+                param.put("phone", collectionTaskInfo.getPhone());
+                param.put("identityCard", collectionTaskInfo.getIdentityCard());
+                param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
+                param.put("username", collectionTaskInfo.getUsername());
+                param.put("collectionRepayStatus", collectionTaskInfo.getCollectionRepayStatus());
+                param.put("collectionStatus", collectionTaskInfo.getCollectionStatus());
 
-            if (StringUtils.isNotBlank(collectionTaskInfo.getOverdueLevel())) {
-                Integer day = OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel());
-                //如果逾期等級為6+
-                if (OverDueLevelEnum.OVERDUE_LEVEL_SIX_PLUS.getLevel().equals(collectionTaskInfo.getOverdueLevel())) {
-                    param.put("overdueDayMin", OverDueLevelEnum.OVERDUE_LEVEL_SIX.getDay());
-                } else {
-                    param.put("overdueDayMin", OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel()) - 30);
-                }
-                param.put("overdueDayMax", OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel()));
+                changeLevelToTime(collectionTaskInfo, param);
             }
+            request.setParams(param);
+
+            List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.listByParams(request.getParams(), request.getOffset(), request.getLimit());
+            //设置逾期级别
+            collectionTaskResultList.forEach(o -> o.setOverdueLevel(OverDueLevelEnum.getLevelByDay(o.getOverdueDay())));
+
+            return new PageTableHandler(
+                    a -> xCollectionTaskDao.selectParamsListCount(a.getParams()),
+                    a -> collectionTaskResultList
+            ).handle(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        request.setParams(param);
-
-        List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.listByParams(request.getParams(), request.getOffset(), request.getLimit());
-        //设置逾期级别
-        collectionTaskResultList.forEach(o -> o.setOverdueLevel(OverDueLevelEnum.getLevelByDay(o.getOverdueDay())));
-
-        return new PageTableHandler(
-                a -> xCollectionTaskDao.selectParamsListCount(a.getParams()),
-                a -> collectionTaskResultList
-        ).handle(request);
     }
 
     @Override
@@ -101,6 +99,8 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveCollectionTaskBatch() {
+        logger.info("催收定時任務開始執行");
+
         //查询出过期没修改状态的订单
         List<XRecordLoan> recordLoanList = xRecordLoanDao.findOverdueOrder();
 
@@ -118,17 +118,21 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 xCollectionTask.setUserGid(o.getUserGid());
                 xCollectionTask.setCollectionStatus(CollectionStatusEnum.WAITING_COLLECTION.getStatus());
                 xCollectionTask.setCreateTime(new Date());
-                xCollectionTask.setUpdateTime(o.getCreateTime());
+                xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
+                xCollectionTask.setUpdateTime(xCollectionTask.getCreateTime());
                 collectionTaskList.add(xCollectionTask);
             });
 
             xCollectionTaskDao.saveBatch(collectionTaskList);
         }
+        logger.info("催收定時任務執行完成");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateCollector(int collectorId, int id) {
+        logger.info("催收任務{}，指派催收人{}", id, collectorId);
+
         //判断是否重新指派，否-直接修改记录 是-重新生成订单记录
         XCollectionTask collectionTask = xCollectionTaskDao.getById(id);
         //查询该指派任务对应的还款信息
@@ -147,6 +151,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
                 collectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
 
+                logger.info("催收任務{}，首次指派催收人{}", id, collectorId);
                 return xCollectionTaskDao.update(collectionTask) >= 1;
 
                 //同一个人，无需重新指派
@@ -170,6 +175,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 newXCollectionTask.setCreateTime(new Date());
                 newXCollectionTask.setUpdateTime(new Date());
 
+                logger.info("催收任務{}，催收人{}，重新指派催收人{}", id, collectionTask.getCollectorId(), collectorId);
                 return xCollectionTaskDao.save(newXCollectionTask) >= 1;
             }
 
@@ -178,7 +184,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
     }
 
     @Override
-    public PageTableResponse getCollectionListByUserGid(int limit, int num) {
+    public PageTableResponse getCollectionListByUserGid(int limit, int num, CollectionTaskInfo collectionTaskInfo) {
 
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);
@@ -187,6 +193,22 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         Map param = request.getParams();
         Long id = UserUtil.getLoginUser().getId();
         param.put("collectorId", id.intValue());
+
+        if (null != collectionTaskInfo) {
+            param.put("name", collectionTaskInfo.getName());
+            param.put("phone", collectionTaskInfo.getPhone());
+            param.put("identityCard", collectionTaskInfo.getIdentityCard());
+            param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
+            param.put("payDateStart", collectionTaskInfo.getPayDateStart());
+            param.put("payDateEnd", collectionTaskInfo.getPayDateEnd());
+            param.put("collectionDateStart", collectionTaskInfo.getCollectionDateStart());
+            param.put("collectionDateEnd", collectionTaskInfo.getCollectionDateEnd());
+            param.put("repayTimeStart", collectionTaskInfo.getRepayTimeStart());
+            param.put("repayTimeEnd", collectionTaskInfo.getRepayTimeEnd());
+
+            changeLevelToTime(collectionTaskInfo, param);
+        }
+
         request.setParams(param);
 
         List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.getCollectionListByUserGid(request.getParams(), request.getOffset(), request.getLimit());
@@ -195,7 +217,75 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
         return new PageTableHandler(
                 a -> xCollectionTaskDao.getCollectionListByUserGidCount(a.getParams()),
-                a -> xCollectionTaskDao.getCollectionListByUserGid(a.getParams(), a.getOffset(), a.getLimit())
+                a -> collectionTaskResultList
         ).handle(request);
     }
+
+
+    private void changeLevelToTime(CollectionTaskInfo collectionTaskInfo, Map param) {
+        if (StringUtils.isNotBlank(collectionTaskInfo.getOverdueLevel())) {
+            Integer day = OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel());
+            //如果逾期等級為6+
+            if (OverDueLevelEnum.OVERDUE_LEVEL_SIX_PLUS.getLevel().equals(collectionTaskInfo.getOverdueLevel())) {
+                param.put("overdueDayMin", OverDueLevelEnum.OVERDUE_LEVEL_SIX.getDay());
+            } else {
+                param.put("overdueDayMin", OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel()) - 30);
+            }
+            param.put("overdueDayMax", OverDueLevelEnum.getDayByLevel(collectionTaskInfo.getOverdueLevel()));
+        }
+    }
+
+    @Override
+    public PageTableResponse getCollectionsRepayList(int limit, int num, CollectionTaskInfo collectionTaskInfo) {
+
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+
+        Map param = request.getParams();
+
+        if (null != collectionTaskInfo) {
+            param.put("name", collectionTaskInfo.getName());
+            param.put("phone", collectionTaskInfo.getPhone());
+            param.put("identityCard", collectionTaskInfo.getIdentityCard());
+            param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
+            param.put("repayTimeStart", collectionTaskInfo.getRepayTimeStart());
+            param.put("repayTimeEnd", collectionTaskInfo.getRepayTimeEnd());
+
+            changeLevelToTime(collectionTaskInfo, param);
+        }
+        request.setParams(param);
+
+        List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.getCollectionsRepayList(request.getParams(), request.getOffset(), request.getLimit());
+        //设置逾期级别
+        collectionTaskResultList.forEach(o -> o.setOverdueLevel(OverDueLevelEnum.getLevelByDay(o.getOverdueDay())));
+        int n = xCollectionTaskDao.getCollectionsRepayListCount(request.getParams());
+        return new PageTableHandler(
+                a -> xCollectionTaskDao.getCollectionsRepayListCount(a.getParams()),
+                a -> collectionTaskResultList
+        ).handle(request);
+    }
+
+    /**
+     * 借款订单详情
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public XRecordLoan loanOrderInfo(long taskId) {
+        return xCollectionTaskDao.loanOrderInfo(taskId);
+    }
+
+    /**
+     * 还款详情
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public PageTableResponse repaymentInfo(long taskId) {
+        return new PageTableResponse<>(xCollectionTaskDao.repaymentInfo(taskId));
+    }
+
 }

@@ -556,4 +556,8 @@
             limit #{offset}, #{limit}
         </if>
     </select>
+
+    <select id="getUserType" resultType="java.lang.String">
+        SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone
+    </select>
 </mapper>

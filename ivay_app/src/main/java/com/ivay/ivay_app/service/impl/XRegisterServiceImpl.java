@@ -225,7 +225,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             } else if (SysVariable.SMS_TWO.equals(value)) {
                 String responseBody = "";
                 try {
-                    // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); //TODO 下周审核通过后再使用
+                 // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); // TODO 下周审核通过后再使用
                     responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
                     Map<String, Object> map = JsonUtils.jsonToMap(responseBody);
                     String messageId = (String)map.get("MessageId");

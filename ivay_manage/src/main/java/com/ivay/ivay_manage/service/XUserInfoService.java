@@ -4,6 +4,7 @@ import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.dto.XAuditListInfo;
+import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
 
 
 public interface XUserInfoService {
@@ -33,7 +34,7 @@ public interface XUserInfoService {
      * @param userGid
      * @return
      */
-    PageTableResponse cardAndBankInfo(int limit, int num, String userGid);
+    PageTableResponse<XUserCardAndBankInfo> cardAndBankInfo(int limit, int num, String userGid);
 
     /**
      * 被审核人详细信息
