@@ -16,14 +16,14 @@ public enum CollectionStatusEnum {
     FINISH_COLLECTION((byte)3,"催收完成"),
     FAILED_COLLECTION((byte)4,"催收失败");
 
-    private Byte status;
+    private byte status;
     private String statusDesc;
 
-    public Byte getStatus() {
+    public byte getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(byte status) {
         this.status = status;
     }
 
@@ -35,7 +35,7 @@ public enum CollectionStatusEnum {
         this.statusDesc = statusDesc;
     }
 
-    private CollectionStatusEnum(Byte status, String statusDesc){
+    private CollectionStatusEnum(byte status, String statusDesc){
         this.status = status;
         this.statusDesc = statusDesc;
     }
