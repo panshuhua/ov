@@ -118,8 +118,10 @@ public class XUserInfoServiceImpl implements XUserInfoService {
         request.getParams().put("role", roleService.getLoginUserAuditRole());
         request.getParams().put("loginId", UserUtil.getLoginUser().getId());
 
-        return new PageTableHandler(a -> xUserInfoDao.auditCountV2(a.getParams()),
-                a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())).handle(request);
+        return new PageTableHandler(
+                a -> xUserInfoDao.auditCountV2(a.getParams()),
+                a -> xUserInfoDao.auditListV2(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 
     @Autowired

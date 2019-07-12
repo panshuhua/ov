@@ -97,16 +97,10 @@ CREATE TABLE `account_check_result` (
 
 -- todo 催收系统 2019-7-2
 
-
 -- todo 7-12 修改逾期利息字段
--- 修改多还金额字段名
-ALTER TABLE x_record_loan CHANGE overdue_interest_total more_repayment_amount bigint(15) NOT NULL DEFAULT '0' COMMENT '用于记录多还的金额';
+-- 删除overdue_interest_total字段
 -- 刷多还金额数据
-UPDATE x_record_loan SET more_repayment_amount = 0 ;
-UPDATE x_record_loan SET more_repayment_amount = overdue_fee_total WHERE overdue_fee_total !=0 ;
-
--- 增加总逾期利息字段
-ALTER TABLE x_record_loan MODIFY `overdue_fee_total` bigint(15) NOT NULL DEFAULT '0' COMMENT '记录总逾期费用';
+UPDATE x_record_loan SET more_repayment_amount = overdue_fee_total WHERE overdue_fee_total !=0 and more_repayment_amount != 0;
 -- 刷总逾期利息数据
 UPDATE x_record_loan SET overdue_fee_total = overdue_fee ;
 

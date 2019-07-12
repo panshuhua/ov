@@ -209,6 +209,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             try {
                 loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
             } catch (Exception ex) {
+                logger.error(ex.toString());
                 loanQualify = "借款资格接口调用异常";
             }
 

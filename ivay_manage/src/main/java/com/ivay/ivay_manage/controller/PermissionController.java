@@ -41,7 +41,7 @@ public class PermissionController {
     private PermissionService permissionService;
 
     @ApiOperation(value = "当前登录用户拥有的权限")
-    @GetMapping("/current")
+    @GetMapping("current")
     public List<Permission> permissionsCurrent() {
         LoginUser loginUser = UserUtil.getLoginUser();
         List<Permission> list = loginUser.getPermissions();

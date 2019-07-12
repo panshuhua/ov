@@ -15,17 +15,10 @@ public class ThreadPoolServiceImpl implements ThreadPoolService {
 
     @PostConstruct
     public void init() {
-        // 核心线程池数
-        int CORE_POOL_SIZE = 10;
-        // 最大线程池数
-        int MAXIMUM_POOL_SIZE = 50;
-        // 空闲时间
-        long KEEP_ALIVE_TIME = 60;
-        String THREAD_POOL_NAME_PREFIX = "x_pool_";
-        ThreadFactory threadFactory = r -> new Thread(r, THREAD_POOL_NAME_PREFIX + r.hashCode());
-        executor = new ThreadPoolExecutor(CORE_POOL_SIZE,
-                MAXIMUM_POOL_SIZE,
-                KEEP_ALIVE_TIME,
+        ThreadFactory threadFactory = r -> new Thread(r, "app_" + r.hashCode());
+        executor = new ThreadPoolExecutor(10, // 核心线程数
+                50, // 最大线程池数
+                60, // 空闲时间
                 TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(5000),
                 threadFactory,
