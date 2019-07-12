@@ -36,6 +36,9 @@ public class XCollectionTask {
     @ApiModelProperty(value = "催收还款状态")
     private Byte collectionRepayStatus;
 
+    @ApiModelProperty(value = "還款時間")
+    private Date repayTime;
+
     private Long id;
     private Date createTime;
     private Date updateTime;

@@ -19,7 +19,7 @@ public interface XCollectionTaskDao {
     int update(XCollectionTask xCollectionTask);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag,collection_repay_status) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag}),#{collectionRepayStatus}")
+    @Insert("insert into x_collection_task(order_id, user_gid, collector_id, collection_status, due_collection_amount, collection_amount, collection_overdue_fee, create_time, update_time, enable_flag,collection_repay_status,repay_time) values(#{orderId}, #{userGid}, #{collectorId}, #{collectionStatus}, #{dueCollectionAmount}, #{collectionAmount}, #{collectionOverdueFee}, #{createTime}, #{updateTime}, #{enableFlag}),#{collectionRepayStatus},#{repayTime}")
     int save(XCollectionTask xCollectionTask);
 
     int count(@Param("params") Map<String, Object> params);
@@ -82,7 +82,7 @@ public interface XCollectionTaskDao {
      * @Return int
      * @Date 2019/7/12 9:41
      */
-    int getCollectionListByUserGidCount(Map<String, Object> params);
+    int getCollectionListByUserGidCount(@Param("params") Map<String, Object> params);
 
     /**
      * @Description 查詢我的催收
@@ -91,5 +91,7 @@ public interface XCollectionTaskDao {
      * @Return java.util.List<com.ivay.ivay_repository.dto.CollectionTaskResult>
      * @Date 2019/7/12 9:42
      */
-    List<CollectionTaskResult> getCollectionListByUserGid(Map<String, Object> params, Integer offset, Integer limit);
+    List<CollectionTaskResult> getCollectionListByUserGid(@Param("params") Map<String, Object> params,
+                                                          @Param("offset") Integer offset,
+                                                          @Param("limit") Integer limit);
 }
