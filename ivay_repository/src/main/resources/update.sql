@@ -1,4 +1,4 @@
--- 新增 ebay还款虚拟账号表
+-- todo 新增 ebay还款虚拟账号表
 CREATE TABLE `x_ebay_virtual_account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pcode` varchar(4) DEFAULT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE `x_ebay_virtual_account` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
--- 新增 ebay还款回调接口信息表
+-- todo 新增 ebay还款回调接口信息表
 CREATE TABLE `x_ebay_collection_notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `request_id` varchar(50) DEFAULT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE `x_ebay_collection_notice` (
 -- 配置表添加baokim还款回调接口签名校验开关
 INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES ('33', 'baokimNoticeSignature', '', '{\"enable\":true}', '宝金回调接口是否开启公钥校验');
 
--- baokim后台导出的还款记录表
+-- todo baokim后台导出的还款记录表
 CREATE TABLE `baokim_collection_data` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `transaction_id_baokim` varchar(20) DEFAULT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE `baokim_collection_data` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=451 DEFAULT CHARSET=utf8mb4;
 
--- baokim后台导出的借款记录表
+-- todo baokim后台导出的借款记录表
 CREATE TABLE `baokim_transfer_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trans_time` varchar(20) DEFAULT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE `baokim_transfer_data` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3196 DEFAULT CHARSET=utf8mb4;
 
--- 对账比对结果表
+-- todo 对账比对结果表
 CREATE TABLE `account_check_result` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `baokim_count` int(50) DEFAULT NULL,
@@ -109,6 +109,3 @@ UPDATE x_record_loan SET more_repayment_amount = overdue_fee_total WHERE overdue
 ALTER TABLE x_record_loan MODIFY `overdue_fee_total` bigint(15) NOT NULL DEFAULT '0' COMMENT '记录总逾期费用';
 -- 刷总逾期利息数据
 UPDATE x_record_loan SET overdue_fee_total = overdue_fee ;
-
-
-
