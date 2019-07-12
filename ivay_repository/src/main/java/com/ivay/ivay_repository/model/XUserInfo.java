@@ -89,6 +89,16 @@ public class XUserInfo {
     @ApiModelProperty("审核时间")
     private Date auditTime;
 
+    // TODO 发生产需要加上这三个字段，否则登录会报错
+    @ApiModelProperty("经度")
+    private String longitude;
+
+    @ApiModelProperty("纬度")
+    private String latitude;
+
+    @ApiModelProperty("社交类app的个数")
+    private String appNum;
+
     private Long id;
     private Date createTime;
     private Date updateTime;
