@@ -1,122 +1,3 @@
--- 审计员角色分配 2019-6-10
-
--- DDL：删除无用表
-DROP TABLE IF EXISTS `user`;
-
--- DDL：新建一张审计员表
-CREATE TABLE IF NOT EXISTS `x_audit_user` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `sys_user_id` varchar(50) NOT NULL COMMENT '审计员id',
-  `user_gid` varchar(32) NOT NULL COMMENT '待审计用户gid',
-  `create_time` datetime NOT NULL,
-  `update_time` datetime NOT NULL,
-  `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COMMENT='审计员可审计用户';
-
--- DDL：为用户表和角色表增加字段
-ALTER TABLE `sys_role` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
-ALTER TABLE `sys_role_user` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
-ALTER TABLE `sys_user` ADD `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位';
-
--- DDL：修改索引先删除
-ALTER TABLE sys_user DROP INDEX username;
--- 再以修改后的内容创建同名索引
-CREATE INDEX username ON sys_user (username);
-
--- DML：增加角色
-INSERT INTO `sys_role` VALUES ('3', 'ovayAdmin', 'OVAY系统超级管理员权限', NOW(), NOW(), 'Y');
-INSERT INTO `sys_role` VALUES ('4', 'ovayAudit', '审核系统使用权限', NOW(), NOW(), 'Y');
-
--- 新增：社交类app个数表
-CREATE TABLE `x_user_app_num` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_gid` varchar(32) NOT NULL COMMENT '用户gid',
-  `app_num` int(10) DEFAULT NULL COMMENT '社交类app的个数',
-  `enable_flag` char(1) DEFAULT 'Y',
-  `update_date` varchar(50) DEFAULT NULL COMMENT '上传日期',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
-
--- x_config表风控规则数据修改：添加社交类app规则
-UPDATE `x_config` SET `id`='11', `type`='riskManage', `lang`=NULL, `content`='{\"enable\": true,\"audit\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"10~\",\"majorRelation\":\"0~2\",\"appNum\":\"0~\"},\"loan\":{\"age\":\"18~50\",\"gps\":\"0~1\",\"macCode\":\"0~1\",\"contact\":\"6~\",\"majorRelation\":\"0~2\",\"overdueDay\":\"0~30\",\"overdueDay2\":\"0~5\",\"appNum\":\"0~\"}}', `description`='风控配置：audit授权配置，loan借款配置，enable是否启动风控' WHERE (`id`='11');
-
-
--- 增加审核说明
-ALTER TABLE x_user_info ADD `refuse_reason` varchar(512) CHARACTER SET utf8 DEFAULT NULL COMMENT '审核拒绝原因';
-ALTER TABLE x_user_info ADD `refuse_type` char(1) DEFAULT NULL COMMENT '审核类型：0人工审核 1 自动审核';
-ALTER TABLE x_user_info ADD `audit_time` datetime DEFAULT NULL COMMENT '审核时间';
-
-
--- 更新 审核状态 配置
-
--- x_baokim_transfers_info表添加字段-ebay使用字段
-ALTER TABLE `x_baokim_transfers_info` ADD `contract_number` varchar(50) DEFAULT NULL COMMENT 'ebay: contract number of customer';
-ALTER TABLE `x_baokim_transfers_info` ADD `extend` varchar(500) DEFAULT NULL COMMENT 'ebay: extend msg';
-ALTER TABLE `x_baokim_transfers_info` ADD `sub_error_code` int(6) DEFAULT NULL COMMENT 'ebay';
-ALTER TABLE `x_baokim_transfers_info` ADD `sub_error_message` varchar(500) DEFAULT NULL COMMENT 'ebay';
-ALTER TABLE `x_baokim_transfers_info` ADD `reason` varchar(500) DEFAULT NULL COMMENT 'ebay';
-
--- 新建表：用户风控信息表
-CREATE TABLE `x_user_risk` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_gid` varchar(32) NOT NULL COMMENT '用户gid',
-  `longitude` decimal(10,6) DEFAULT NULL COMMENT '经度',
-  `latitude` decimal(10,6) DEFAULT NULL COMMENT '纬度',
-  `enable_flag` char(1) DEFAULT 'Y',
-  `create_time` datetime DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL,
-  `mac_address` varchar(36) DEFAULT NULL COMMENT 'mac地址',
-  `phone_brand` varchar(32) DEFAULT NULL COMMENT '手机品牌',
-  `traffic_way` char(1) DEFAULT NULL COMMENT '【手机流量类型：0:wifi;1:2G流量;2:3G流量;3:4G流量】',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 comment='用户风控信息表';
-
-
--- sys_logs可删除后再导入
-CREATE TABLE `sys_logs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_gid` varchar(32) DEFAULT NULL,
-  `module` varchar(50) DEFAULT NULL COMMENT '模块名',
-  `flag` tinyint(4) NOT NULL DEFAULT '1' COMMENT '成功失败',
-  `remark` text COMMENT '备注',
-  `createTime` datetime NOT NULL,
-  `phone` varchar(11) DEFAULT NULL,
-  `request_id` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `userId` (`user_gid`),
-  KEY `createTime` (`createTime`)
-) ENGINE=InnoDB AUTO_INCREMENT=379 DEFAULT CHARSET=utf8mb4;
-
-
--- 新增-版本更新表
-CREATE TABLE `x_version_update` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_gid` varchar(32) DEFAULT NULL COMMENT '用户gid',
-  `version_number` varchar(36) DEFAULT NULL COMMENT '版本号',
-  `version_content` varchar(500) DEFAULT NULL COMMENT '更新内容',
-  `need_update` char(1) DEFAULT NULL COMMENT '是否必要更新(1:是，0:否)',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 日志表新增字段
-ALTER TABLE `sys_logs` ADD `code` varchar(10) DEFAULT NULL COMMENT '返回状态码';
-
-
--- app 事件上报表
-CREATE TABLE `x_app_event` (
-   `id` int(10) NOT NULL AUTO_INCREMENT,
-   `gid` varchar(50) DEFAULT NULL COMMENT '用户gid 或 借款订单id',
-   `type` char(1) DEFAULT NULL COMMENT '0 授信 1 借款',
-   `is_success` char(1) DEFAULT NULL COMMENT '0失败 1成功',
-   `create_time` datetime DEFAULT NULL,
-   `update_time` datetime DEFAULT NULL,
-   `enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
-   PRIMARY KEY (`id`),
-   KEY `gid` (`gid`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COMMENT='app事件上报表';
-
-
 -- 新增 ebay还款虚拟账号表
 CREATE TABLE `x_ebay_virtual_account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -162,55 +43,8 @@ CREATE TABLE `x_ebay_collection_notice` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
--- 风控表新增新字段，删除没用字段
-ALTER TABLE `x_user_risk` ADD `imei` varchar(36) DEFAULT NULL COMMENT '设备imei';
-ALTER TABLE `x_user_risk` ADD `imsi` varchar(36) DEFAULT NULL COMMENT '设备imsi';
-ALTER TABLE `x_user_risk` ADD `phone_number` varchar(32) DEFAULT NULL COMMENT '手机号码';
-ALTER TABLE `x_user_risk` ADD `carrier_name` varchar(36) DEFAULT NULL COMMENT '手机运营商';
-ALTER TABLE `x_user_risk` ADD `phone_model` varchar(32) DEFAULT NULL COMMENT '手机型号';
-ALTER TABLE `x_user_risk` ADD `uid` varchar(36) DEFAULT NULL COMMENT '用户唯一识别id（userId，上报极光所用的别名）';
-ALTER TABLE `x_user_risk` ADD `wifi_mac_address` varchar(36) DEFAULT NULL COMMENT 'wifimac地址';
-ALTER TABLE `x_user_risk` ADD `system_version` varchar(32) DEFAULT NULL COMMENT '系统版本';
-ALTER TABLE `x_user_risk` ADD `ipv4_address` varchar(36) DEFAULT NULL COMMENT '设备ip4值';
-ALTER TABLE `x_user_risk` drop column `mac_address`;
-ALTER TABLE `x_user_risk` drop column `phone_brand`;
-ALTER TABLE `x_user_risk` drop column `traffic_way`;
-
 -- 配置表添加baokim还款回调接口签名校验开关
 INSERT INTO `x_config` (`id`, `type`, `lang`, `content`, `description`) VALUES ('33', 'baokimNoticeSignature', '', '{\"enable\":true}', '宝金回调接口是否开启公钥校验');
-
-alter table x_baokim_transfers_info add order_id varchar(32) DEFAULT NULL COMMENT '借款订单号';
-
-alter  table x_baokim_transfers_info change order_id loan_gid varchar(32) NULL COMMENT '借款记录gid';
-UPDATE x_baokim_transfers_info,x_record_loan set loan_gid = x_record_loan.gid WHERE loan_gid is not null AND x_record_loan.order_id = x_baokim_transfers_info.loan_gid;
-
-
--- 催收系统 2.19-7-2
-CREATE TABLE `x_collection_task` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `order_id` varchar(32) NOT NULL COMMENT '借款订单号',
-  `repayment_gid` varchar(32) COMMENT '还款gid',
-  `collector_id` int(11) COMMENT '催收员id',
-  `collection_status` char(1) NOT NULL DEFAULT '0' COMMENT '催收状态：0等待指派, 1已指派 2正在催收 3催收完成 4催收失败',
-  `due_collection_amount` bigint(32) NOT NULL DEFAULT '0' COMMENT '应追回的本金, 不含逾期利息',
-  `collection_amount` bigint(32) NOT NULL DEFAULT '0' COMMENT '追回本金',
-  `collection_overdue_fee` bigint(32) NOT NULL DEFAULT '0' COMMENT '追回逾期利息',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-	`enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收任务表';
-
-CREATE TABLE `x_collection_record` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `task_id` int(11) NOT NULL COMMENT '催收任务id',
-  `collector_id` int(11) COMMENT '催收员id',
-  `collection_amount` bigint(32) COMMENT '追回额度',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-	`enable_flag` char(1) DEFAULT 'Y' COMMENT '有效标志位',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='催收记录表';
 
 -- baokim后台导出的还款记录表
 CREATE TABLE `baokim_collection_data` (
@@ -260,5 +94,9 @@ CREATE TABLE `account_check_result` (
   `etime` varchar(50) DEFAULT NULL COMMENT '统计结束时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+
+
+-- todo 催收系统 2019-7-2
+
 
 
