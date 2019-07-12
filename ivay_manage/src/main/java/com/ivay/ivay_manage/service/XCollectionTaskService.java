@@ -34,4 +34,13 @@ public interface XCollectionTaskService {
      * @Date 2019/7/10 11:44
      */
     boolean updateCollector(Integer collectorId, Integer id);
+
+    /**
+     * @Description 我的催收
+     * @Author Ryan
+     * @Param [limit, num]
+     * @Return com.ivay.ivay_common.table.PageTableResponse
+     * @Date 2019/7/12 9:19
+     */
+    PageTableResponse getCollectionListByUserGid(int limit, int num);
 }

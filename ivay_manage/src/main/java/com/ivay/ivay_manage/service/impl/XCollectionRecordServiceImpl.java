@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -40,7 +41,7 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
 
             return xCollectionRecordDao.save(xCollectionRecord);
         }
-        return 0;
+        throw new BusinessException("你没有添加权限！");
     }
 
     @Override

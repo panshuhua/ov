@@ -93,4 +93,22 @@ public class XCollectionTaskController {
         return userService.getUserNames();
     }
 
+
+    @ApiOperation(value = "我的催收")
+    @GetMapping("myCollections")
+    public Response<PageTableResponse> getCollectionListByUserGid(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                                  @RequestParam(required = false, defaultValue = "1") int num) {
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xCollectionTaskService.getCollectionListByUserGid(limit, num));
+        return response;
+    }
+
+    @ApiOperation(value = "催收回款")
+    @GetMapping("collectionsRepay")
+    public Response<PageTableResponse> getCollectionsRepayList(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                               @RequestParam(required = false, defaultValue = "1") int num) {
+        Response<PageTableResponse> response = new Response<>();
+        //response.setBo(xCollectionTaskService.list(limit, num));
+        return response;
+    }
 }

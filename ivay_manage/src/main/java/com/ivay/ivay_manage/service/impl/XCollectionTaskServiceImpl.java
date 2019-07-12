@@ -8,6 +8,7 @@ import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.XCollectionTaskService;
+import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XCollectionTaskDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
@@ -181,6 +182,27 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
         }
         return false;
+    }
+
+    @Override
+    public PageTableResponse getCollectionListByUserGid(int limit, int num) {
+        Long id = UserUtil.getLoginUser().getId();
+
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map param = request.getParams();
+        param.put("collectorId", id.intValue());
+        request.setParams(param);
+
+        List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.getCollectionListByUserGid(request.getParams(), request.getOffset(), request.getLimit());
+        //设置逾期级别
+        collectionTaskResultList.forEach(o -> o.setOverdueLevel(OverDueLevelEnum.getLevelByDay(o.getOverdueDay())));
+
+        return new PageTableHandler(
+                a -> xCollectionTaskDao.getCollectionListByUserGidCount(a.getParams()),
+                a -> xCollectionTaskDao.getCollectionListByUserGid(a.getParams(), a.getOffset(), a.getLimit())
+        ).handle(request);
     }
 
 }
