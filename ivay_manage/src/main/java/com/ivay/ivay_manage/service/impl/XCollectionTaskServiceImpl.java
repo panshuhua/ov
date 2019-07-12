@@ -254,8 +254,16 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
             changeLevelToTime(collectionTaskInfo, param);
         }
+        request.setParams(param);
 
-        return null;
+        List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.getCollectionsRepayList(request.getParams(), request.getOffset(), request.getLimit());
+        //设置逾期级别
+        collectionTaskResultList.forEach(o -> o.setOverdueLevel(OverDueLevelEnum.getLevelByDay(o.getOverdueDay())));
+        int n = xCollectionTaskDao.getCollectionsRepayListCount(request.getParams());
+        return new PageTableHandler(
+                a -> xCollectionTaskDao.getCollectionsRepayListCount(a.getParams()),
+                a -> collectionTaskResultList
+        ).handle(request);
     }
 
     /**

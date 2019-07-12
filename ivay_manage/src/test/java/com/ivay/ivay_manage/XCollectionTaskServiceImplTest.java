@@ -69,4 +69,10 @@ public class XCollectionTaskServiceImplTest {
         PageTableResponse response = collectionTaskService.getCollectionListByUserGid(10,1,collectionTaskInfo);
         System.out.println(JSONObject.toJSONString(response));
     }
+
+    @Test
+    public void getCollectionsRepayList(){
+        CollectionTaskInfo collectionTaskInfo = new CollectionTaskInfo();
+        System.out.println(JSONObject.toJSONString(collectionTaskService.getCollectionsRepayList(10,1,collectionTaskInfo)));
+    }
 }
