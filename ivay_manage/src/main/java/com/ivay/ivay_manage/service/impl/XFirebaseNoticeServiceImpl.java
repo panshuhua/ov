@@ -1,5 +1,17 @@
 package com.ivay.ivay_manage.service.impl;
 
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
@@ -14,17 +26,6 @@ import com.ivay.ivay_manage.service.XFirebaseNoticeService;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.XUserInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
@@ -48,7 +49,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     @Override
     public MsgLinkData getLinkData(String key) {
-        String dataJson = (String) redisTemplate.opsForValue().get(key);
+        String dataJson = (String)redisTemplate.opsForValue().get(key);
         MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
         return data;
     }
@@ -71,16 +72,20 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     // 发送两种通知
     @Override
     public void sendAllNotice(NoticeMsg msg) {
+        logger.info("进入实际发送方法-------------userGid=" + msg.getUserGid() + "-------------");
+        // TODO
         try {
             sendPhoneNoticeMsg(msg);
+            logger.info("发送首次获取额度/额度变更/借款风控失败-------短信成功-----------------------");
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            e.printStackTrace();
         }
 
         try {
             sendFirebaseNoticeMsg(msg);
+            logger.info("发送首次获取额度/额度变更/借款风控失败---------firebase通知成功-----------------------");
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            e.printStackTrace();
         }
 
     }
@@ -127,7 +132,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 try {
                     responseBody = sendMsgService.sendMsgByFpt(msg.getPhone(), msg.getPhoneMsg());
                     map = JsonUtils.jsonToMap(responseBody);
-                    String messageId = (String) map.get("MessageId");
+                    String messageId = (String)map.get("MessageId");
                     logger.info("fpt方式发送的短信id：" + messageId);
                     if (messageId != null) {
                         logger.info("Fpt方式发送的短信验证码是：" + msg);
@@ -163,6 +168,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     /**
      * creditLine=0时初始化，>0提额次数：发送初始化额度和提额短信通知
+     * 
      * @param xUserInfo
      */
     @Override
@@ -179,7 +185,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         msg.setKey(key);
         String url = SysVariable.PHONEMSG_PREFIX_LINK + msg.getKey();
 
-        // 首次获取额度
+        // 首次获取额度－TODO短信存在问题，先不发
         if (xUserInfo.getCreditLineCount() == 0) {
             String title = i18nService.getViMessage("firebase.notice.getcredits.remind.titlemsg");
             title = StringUtil.vietnameseToEnglish(title);
@@ -209,11 +215,13 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             phoneMsg = MessageFormat.format(phoneMsg, creditLine, url).replace(",", ".");
             logger.info("额度变更-发送的手机短信消息为:{}", phoneMsg);
             msg.setPhoneMsg(phoneMsg);
+            // TODO
+            sendAllNotice(msg);
         }
 
         logger.info("发送消息所有参数：" + msg.toString());
-        // 发送
-        sendAllNotice(msg);
+        // TODO 首次获取额度的短信有问题，先只发送额度变更的
+        // sendAllNotice(msg);
 
     }
 

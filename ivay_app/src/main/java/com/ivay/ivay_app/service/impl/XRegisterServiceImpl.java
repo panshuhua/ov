@@ -1,20 +1,5 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.ivay.ivay_app.dto.Token;
 import com.ivay.ivay_app.dto.XLoginUser;
 import com.ivay.ivay_app.service.XConfigService;
@@ -25,16 +10,26 @@ import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.SMSResponseStatus;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.MsgAuthCode;
-import com.ivay.ivay_common.utils.StringUtil;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.dto.XUser;
 import com.ivay.ivay_repository.model.LoginInfo;
 import com.ivay.ivay_repository.model.ReturnUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author panshuhua
@@ -158,8 +153,7 @@ public class XRegisterServiceImpl implements XRegisterService {
         Token token = tokenService.saveToken(xLoginUser);
         String userToken = token.getToken();
         xUser.setUserToken(userToken);
-        redisTemplate.opsForValue().set(xUser.getUserGid(), userToken, (expireSeconds + 200) * 1000,
-            TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(xUser.getUserGid(), userToken, (expireSeconds + 200) * 1000, TimeUnit.MILLISECONDS);
         return xUser;
     }
 
@@ -225,7 +219,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             } else if (SysVariable.SMS_TWO.equals(value)) {
                 String responseBody = "";
                 try {
-                    // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); //TODO 下周审核通过后再使用
+                 // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); // TODO 下周审核通过后再使用
                     responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
                     Map<String, Object> map = JsonUtils.jsonToMap(responseBody);
                     String messageId = (String)map.get("MessageId");
