@@ -19,7 +19,7 @@ public class XCollectionTask {
     private Integer collectorId;
 
     @ApiModelProperty(value = "催收状态：0等待指派, 1已指派 2正在催收 3催收完成  4催收失败")
-    private Byte collectionStatus;
+    private byte collectionStatus;
 
     @ApiModelProperty(value = "应追回的本金, 不含逾期利息")
     private Long dueCollectionAmount;
