@@ -109,3 +109,6 @@ UPDATE x_record_loan SET more_repayment_amount = overdue_fee_total WHERE overdue
 ALTER TABLE x_record_loan MODIFY `overdue_fee_total` bigint(15) NOT NULL DEFAULT '0' COMMENT '记录总逾期费用';
 -- 刷总逾期利息数据
 UPDATE x_record_loan SET overdue_fee_total = overdue_fee ;
+
+
+
