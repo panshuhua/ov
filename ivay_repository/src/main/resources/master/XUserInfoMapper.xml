@@ -558,6 +558,14 @@
     </select>
 
     <select id="getUserType" resultType="java.lang.String">
-        SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone
+--         SELECT IF(
+--             (SELECT COUNT(1) FROM black_user WHERE phone = "0938216108")=0,
+--             IF((SELECT COUNT(1) FROM risk_user WHERE phone = "0938216108")>0,"w","n"),
+--             "b"
+--         ) userType;
+        SELECT IFNULL(
+            (SELECT "b" FROM black_user WHERE phone = "1"),
+            (SELECT "w" FROM white_user WHERE phone = "1")
+        ) userType
     </select>
 </mapper>
