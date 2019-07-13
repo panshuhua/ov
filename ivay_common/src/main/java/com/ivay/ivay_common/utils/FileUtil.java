@@ -1,6 +1,8 @@
 package com.ivay.ivay_common.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
  * @author xx
  */
 public class FileUtil {
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     public static String saveFile(MultipartFile file, String pathname) {
         try {
@@ -27,7 +30,7 @@ public class FileUtil {
 
             return pathname;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return null;
@@ -44,10 +47,8 @@ public class FileUtil {
                     file.getParentFile().delete();
                 }
             }
-
             return flag;
         }
-
         return false;
     }
 
@@ -55,7 +56,7 @@ public class FileUtil {
         try {
             return DigestUtils.md5Hex(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return null;
@@ -83,14 +84,14 @@ public class FileUtil {
             writer.write(value);
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             try {
                 if (writer != null) {
                     writer.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }
@@ -104,7 +105,7 @@ public class FileUtil {
         try {
             return getText(new FileInputStream(file));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return null;
@@ -124,20 +125,20 @@ public class FileUtil {
 
             return builder.toString();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
             if (isr != null) {
                 try {
                     isr.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }
