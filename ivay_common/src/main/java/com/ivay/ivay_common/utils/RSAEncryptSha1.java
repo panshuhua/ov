@@ -2,6 +2,8 @@ package com.ivay.ivay_common.utils;
 
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Decoder;
 
 import javax.crypto.BadPaddingException;
@@ -20,6 +22,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class RSAEncryptSha1 {
+    private static final Logger logger = LoggerFactory.getLogger(RSAEncryptSha1.class);
 
 //	@Value("${key.path}")
 //	private String filesPath;
@@ -89,21 +92,17 @@ public class RSAEncryptSha1 {
         //加载公钥
         try {
             RSA_ENCRYPT.loadPublicKey(RSAEncrypt.loadPublicKeyByFile(SpringUtil.getResourceFile()));
-            System.out.println("加载公钥成功");
+            logger.info("加载公钥成功");
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
-            System.err.println("加载公钥失败");
+            logger.error("加载公钥失败" + e.getMessage());
         }
 
         //加载私钥
         try {
             RSA_ENCRYPT.loadPrivateKey(RSAEncrypt.loadPrivateKeyByFile(SpringUtil.getResourceFile()));
-            System.out.println("加载私钥成功");
+            logger.info("加载公钥成功");
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
-            System.err.println("加载私钥失败");
+            logger.error("加载公钥失败" + e.getMessage());
         }
     }
 
@@ -149,7 +148,7 @@ public class RSAEncryptSha1 {
         try {
             keyPairGen = KeyPairGenerator.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         keyPairGen.initialize(1024, new SecureRandom());
         KeyPair keyPair = keyPairGen.generateKeyPair();
@@ -212,7 +211,7 @@ public class RSAEncryptSha1 {
     /**
      * 从文件中加载私钥
      *
-     * @param keyFileName 私钥文件名
+     * @param in 私钥文件名
      * @return 是否成功
      * @throws Exception
      */
@@ -247,7 +246,7 @@ public class RSAEncryptSha1 {
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此算法");
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             throw new Exception("私钥非法");
         } catch (IOException e) {
             throw new Exception("私钥数据内容读取错误");
@@ -277,7 +276,7 @@ public class RSAEncryptSha1 {
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此加密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
             throw new Exception("加密公钥非法,请检查");
@@ -310,7 +309,7 @@ public class RSAEncryptSha1 {
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此加密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
             throw new Exception("加密私钥非法,请检查");
@@ -330,13 +329,12 @@ public class RSAEncryptSha1 {
             sign.initSign(privatekey);
             sign.update(param.getBytes());
             signature = sign.sign();
-
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (SignatureException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         //将加签后的base64编码
         String terminal = Base64Util.encode(signature);
@@ -357,11 +355,11 @@ public class RSAEncryptSha1 {
             return sign.verify(base64Byte);
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (SignatureException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return false;
     }
@@ -388,7 +386,7 @@ public class RSAEncryptSha1 {
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此解密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
             throw new Exception("解密私钥非法,请检查");
@@ -412,7 +410,7 @@ public class RSAEncryptSha1 {
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此解密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
             throw new Exception("解密公钥非法,请检查");
@@ -470,7 +468,7 @@ public class RSAEncryptSha1 {
             System.out.println("加密后：" + str);
             return str;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return encryptStr;
     }
@@ -483,7 +481,7 @@ public class RSAEncryptSha1 {
             System.out.println("加密后：" + str);
             return str;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return encryptStr;
     }
@@ -497,7 +495,7 @@ public class RSAEncryptSha1 {
             System.out.println("加密后：" + str);
             return str;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return encryptStr;
     }
@@ -510,7 +508,7 @@ public class RSAEncryptSha1 {
             System.out.println("解密后：" + str);
             return str;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return encryptStr;
     }

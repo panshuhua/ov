@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Service
 public class XUserIContactsServiceImpl implements XUserContactsService {
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(XUserContactsService.class);
 
     @Autowired
     private XUserContactsDao xUserContactsDao;
@@ -122,7 +122,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
                                 xUserContacts.clear();
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.error(e.getMessage());
                         }
 
                     });

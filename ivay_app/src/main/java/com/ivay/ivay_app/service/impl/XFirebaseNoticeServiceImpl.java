@@ -1,19 +1,5 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
 import com.ivay.ivay_app.service.XRecordLoanService;
@@ -23,12 +9,7 @@ import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.dto.SMSResponseStatus;
-import com.ivay.ivay_common.utils.DateUtils;
-import com.ivay.ivay_common.utils.FirebaseUtil;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.MsgAuthCode;
-import com.ivay.ivay_common.utils.StringUtil;
-import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserBankcardInfoDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
@@ -37,6 +18,19 @@ import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import com.ivay.ivay_repository.model.XUserBankcardInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
@@ -134,7 +128,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                         // TODO
                         FirebaseUtil.sendMsgToFmcToken(msg);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                         firebaseFlag = false;
                     }
                 }
@@ -162,7 +156,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 }
                 Thread.sleep(10000);
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.error(e.getMessage());
                 return false;
             }
@@ -196,7 +189,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             // 使用方法一发送短信验证码
             if (SysVariable.SMS_ONE.equals(value)) {
                 Map<String, String> msgMap =
-                    sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_NOTICE, msg.getPhone(), msg.getPhoneMsg());
+                        sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_NOTICE, msg.getPhone(), msg.getPhoneMsg());
                 String status = msgMap.get("status");
                 logger.info("SMG方式发送短信验证码返回状态，返回码：{}", status);
                 if (SMSResponseStatus.SUCCESS.getCode().equals(status)) {
@@ -217,7 +210,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 try {
                     responseBody = sendMsgService.sendMsgByFpt(msg.getPhone(), msg.getPhoneMsg());
                     map = JsonUtils.jsonToMap(responseBody);
-                    String messageId = (String)map.get("MessageId");
+                    String messageId = (String) map.get("MessageId");
                     logger.info("fpt方式发送的短信id：" + messageId);
                     if (messageId != null) {
                         logger.info("Fpt方式发送的短信验证码是:{}", msg);
@@ -230,7 +223,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                         continue;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                     continue;
                 }
 
@@ -295,7 +288,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
                 Thread.sleep(10000);
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.error(e.getMessage());
                 return false;
             }
@@ -309,7 +301,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
     @Override
     public MsgLinkData getLinkData(String key) {
-        String dataJson = (String)redisTemplate.opsForValue().get(key);
+        String dataJson = (String) redisTemplate.opsForValue().get(key);
         MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
         return data;
     }
@@ -372,16 +364,15 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             sendPhoneNoticeMsg(msg);
             logger.info("发送部分/全部还款/借款成功-------短信成功-----------------------");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         try {
             sendFirebaseNoticeMsg(msg);
             logger.info("发送部分/全部还款/借款成功----------firebase通知成功-----------------------");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
-
     }
 
     // 旧的到期短信
@@ -436,7 +427,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                         String userGid = fee.getUserGid();
                         FirebaseUtil.sendMsgToFmcToken1(fmcToken, title, message, SysVariable.PAGE_BILLDETAIL, userGid);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                         firebaseFlag = false;
                     }
                 }
@@ -450,7 +441,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 try {
                     phoneFlag = sendPhoneNotice(phone, message);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                     phoneFlag = false;
                 }
                 // 测试发5条
@@ -464,7 +455,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 }
                 Thread.sleep(10000);
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.error(e.getMessage());
                 return false;
             }
@@ -520,7 +510,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 // }
                 Thread.sleep(10000);
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.error(e.getMessage());
                 return false;
             }
@@ -582,7 +571,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     public void sendHadRepayNotice(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, XUserInfo xUserInfo) {
         logger.info("进入发送还款成功参数准备方法-----------------------");
         logger.info("还款状态:{},用户gid:{},借款gid:{}", xRecordLoan.getRepaymentStatus(), xRecordLoan.getUserGid(),
-            xRecordLoan.getGid());
+                xRecordLoan.getGid());
         // TODO 发送还款成功的通知
         NoticeMsg msg = new NoticeMsg();
         // firebase消息推送参数
@@ -608,13 +597,13 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             String firebaseMsg = i18nService.getViMessage("firebase.notice.partrepay.remind.msg");
             firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
             firebaseMsg = MessageFormat.format(firebaseMsg, xRecordRepayment.getRepaymentAmount(),
-                xRecordLoan.getDueAmount() + xRecordLoan.getOverdueFee(), dueTime).replace(",", ".");
+                    xRecordLoan.getDueAmount() + xRecordLoan.getOverdueFee(), dueTime).replace(",", ".");
             logger.info("部分还款-发送的firebase推送消息为:{}", firebaseMsg);
             msg.setFirebaseMsg(firebaseMsg);
             String phoneMsg = i18nService.getViMessage("firebase.notice.partrepay.remind.phonemsg");
             phoneMsg = StringUtil.vietnameseToEnglish(phoneMsg);
             phoneMsg = MessageFormat.format(phoneMsg, xRecordRepayment.getRepaymentAmount(),
-                xRecordLoan.getDueAmount() + xRecordLoan.getOverdueFee(), dueTime, url).replace(",", ".");
+                    xRecordLoan.getDueAmount() + xRecordLoan.getOverdueFee(), dueTime, url).replace(",", ".");
             logger.info("部分还款-发送的手机短信消息为:{}", phoneMsg);
             msg.setPhoneMsg(phoneMsg);
             // 全部还款消息通知
@@ -654,7 +643,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
             msg.setTitle(title);
             String firebaseMsg = i18nService.getViMessage("firebase.notice.loansuccess.remind.msg");
             XUserBankcardInfo bankCardNoInfo =
-                xUserBankcardInfoDao.getByCardGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid()).get(0);
+                    xUserBankcardInfoDao.getByCardGid(xRecordLoan.getBankcardGid(), xRecordLoan.getUserGid()).get(0);
             String bankCardNo = bankCardNoInfo.getCardNo();
             bankCardNo = bankCardNo.substring(bankCardNo.length() - 4);
             logger.info("借款成功-银行卡尾数为:{}", firebaseMsg);

@@ -9,14 +9,12 @@ import com.ivay.ivay_manage.service.XCollectionTaskService;
 import com.ivay.ivay_repository.dao.master.XCollectionRecordDao;
 import com.ivay.ivay_repository.model.XCollectionRecord;
 import com.ivay.ivay_repository.model.XCollectionTask;
-import com.ivay.ivay_repository.model.XRecordLoan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,7 +31,7 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
         //查询该订单的指派人，判断是否有添加权限
         XCollectionTask xCollectionTask = xCollectionTaskService.get(xCollectionRecord.getTaskId());
 
-        if(xCollectionTask != null && xCollectionTask.getCollectorId() == xCollectionRecord.getCollectorId()){
+        if (xCollectionTask != null && xCollectionTask.getCollectorId() == xCollectionRecord.getCollectorId()) {
             xCollectionRecord.setCreateTime(new Date());
             xCollectionRecord.setUpdateTime(xCollectionRecord.getCreateTime());
             xCollectionRecord.setOrderId(xCollectionTask.getOrderId());
@@ -68,7 +66,7 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
     }
 
     @Override
-    public PageTableResponse selectCollectionRecordList(int limit,int num, int id) {
+    public PageTableResponse selectCollectionRecordList(int limit, int num, int id) {
         try {
             PageTableRequest request = new PageTableRequest();
             request.setLimit(limit);
@@ -76,15 +74,15 @@ public class XCollectionRecordServiceImpl implements XCollectionRecordService {
             Map param = request.getParams();
 
             XCollectionTask xCollectionTask = xCollectionTaskService.get(id);
-            if(xCollectionTask != null){
-                param.put("orderId",xCollectionTask.getOrderId());
+            if (xCollectionTask != null) {
+                param.put("orderId", xCollectionTask.getOrderId());
             }
 
             return new PageTableHandler(
                     a -> xCollectionRecordDao.selectCollectionCount(a.getParams()),
                     a -> xCollectionRecordDao.selectCollectionRecordList(a.getParams(), a.getOffset(), a.getLimit())
             ).handle(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
