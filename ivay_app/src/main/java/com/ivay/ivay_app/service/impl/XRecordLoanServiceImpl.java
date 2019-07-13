@@ -193,7 +193,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             }
             // endregion
         } finally {
-            redisLock.releaseLock(xRecordLoan.getUserGid());
+            redisLock.releaseBorrowLock(xRecordLoan.getUserGid());
         }
         return xRecordLoan;
     }

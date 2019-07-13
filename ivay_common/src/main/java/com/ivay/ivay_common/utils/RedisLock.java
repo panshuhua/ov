@@ -89,9 +89,20 @@ public class RedisLock {
         return tryLock(lockKey, userGid, EXPIRE_TIME, TimeUnit.MILLISECONDS);
     }
 
-    public boolean releaseLock(String userGid) {
+    public boolean releaseBorrowLock(String userGid) {
         String lockKey = SysVariable.REDIS_BORROW_MONEY_PREFIX + userGid;
         return releaseLock(lockKey, userGid);
+    }
+
+
+    public boolean tryOverdueFeeLock(String date) {
+        String lockKey = SysVariable.REDIS_OVERDUE_FEE_PREFIX + date;
+        return tryLock(lockKey, date, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseOverdueFeeLock(String date) {
+        String lockKey = SysVariable.REDIS_OVERDUE_FEE_PREFIX + date;
+        return releaseLock(lockKey, date);
     }
 
     /**

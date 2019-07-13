@@ -239,7 +239,7 @@
                 <if test="item.overdueFeeTotal != null">
                     overdue_fee_total = #{item.overdueFeeTotal},
                 </if>
-                <if test="item.more_repayment_amount != null">
+                <if test="item.moreRepaymentAmount != null">
                     more_repayment_amount = #{item.moreRepaymentAmount},
                 </if>
                 <if test="item.loanStatus != null">

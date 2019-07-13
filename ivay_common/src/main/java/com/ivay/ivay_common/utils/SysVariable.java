@@ -125,6 +125,9 @@ public class SysVariable {
     // redis 借款锁前缀
     public static final String REDIS_BORROW_MONEY_PREFIX = "borrrowMoney:";
 
+    // redis 逾期计算锁前缀
+    public static final String REDIS_OVERDUE_FEE_PREFIX = "overdueFee:";
+
     // 角色配置
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";

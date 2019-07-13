@@ -1,7 +1,8 @@
 package com.ivay.ivay_app.job;
 
-import java.util.Date;
-
+import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.RedisLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.ivay.ivay_app.service.XRecordLoanService;
+import java.util.Date;
 
 @Component
 @Configuration
@@ -19,10 +20,18 @@ public class BackgroundScheduleTask {
     private static final Logger logger = LoggerFactory.getLogger(BackgroundScheduleTask.class);
 
     @Autowired
+    private RedisLock redisLock;
+
+    @Autowired
     private XRecordLoanService xRecordLoanService;
 
     @Scheduled(cron = "${timer.overdueFee}")
     private void calcOverDueFee() {
+        String date = DateUtils.getNowDateYYYYMMDD();
+        if (!redisLock.tryOverdueFeeLock(date)) {
+            logger.error(date + ":已经开始计算逾期利息");
+            return;
+        }
         boolean flag = false;
         int count = 0;
         String start = "开始计算逾期费用---start";
@@ -49,7 +58,7 @@ public class BackgroundScheduleTask {
     }
 
     public static void main(String[] args) {
-        System.out.println("" + new Date());
+        System.out.println(DateUtils.getNowDateYYYYMMDD());
     }
 
     @Scheduled(cron = "${timer.transferTimeout}")
