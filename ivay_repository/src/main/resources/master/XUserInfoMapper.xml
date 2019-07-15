@@ -558,6 +558,17 @@
     </select>
 
     <select id="getUserType" resultType="java.lang.String">
-        SELECT "w" WHERE EXISTS (SELECT 1 FROM risk_user t WHERE t.phone = xui.phone
+        SELECT IFNULL(
+            (
+                SELECT "b" FROM black_user WHERE black_user.phone = x_user_info.phone
+                UNION DISTINCT
+                SELECT "b" FROM black_user WHERE black_user.identity_card = x_user_info.identity_card
+            ),
+            (
+                SELECT "w" FROM risk_user WHERE risk_user.phone = x_user_info.phone
+            )
+        ) userType
+        FROM x_user_info
+        WHERE user_gid = #{userGid};
     </select>
 </mapper>
