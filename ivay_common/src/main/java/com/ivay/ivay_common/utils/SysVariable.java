@@ -128,6 +128,15 @@ public class SysVariable {
     // redis 逾期计算锁前缀
     public static final String REDIS_OVERDUE_FEE_PREFIX = "overdueFee:";
 
+    // redis 自动创建虚拟账号锁前缀
+    public static final String REDIS_AUTO_CREATEVA_PREFIX = "autoCreateVirtualAccount:";
+
+    // redis 自动发送到期短信/通知提醒锁前缀
+    public static final String REDIS_EXPIRE_NOTICE_PREFIX = "expireNotice:";
+
+    // redis 自动发送逾期短信/通知提醒锁前缀
+    public static final String REDIS_OVERDUE_NOTICE_PREFIX = "overdueNotice:";
+
     // 角色配置
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";

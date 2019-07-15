@@ -1,6 +1,10 @@
 package com.ivay.ivay_common.utils;
 
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
+
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
@@ -8,9 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.nio.charset.Charset;
-import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Description: 分布式锁工具类
@@ -41,25 +43,22 @@ public class RedisLock {
         UNLOCK_LUA = sb.toString();
     }
 
-
     /**
      * 获取分布式锁，原子操作
      *
      * @param lockKey
-     * @param requestId 唯一ID, 可以使用UUID.randomUUID().toString();
+     * @param requestId
+     *            唯一ID, 可以使用UUID.randomUUID().toString();
      * @param expire
      * @param timeUnit
      * @return
      */
     public boolean tryLock(String lockKey, String requestId, long expire, TimeUnit timeUnit) {
         try {
-            RedisCallback<Boolean> callback = connection -> connection.set(
-                    lockKey.getBytes(Charset.forName("UTF-8")),
-                    requestId.getBytes(Charset.forName("UTF-8")),
-                    Expiration.seconds(timeUnit.toSeconds(expire)),
-                    RedisStringCommands.SetOption.SET_IF_ABSENT
-            );
-            return (Boolean) redisTemplate.execute(callback);
+            RedisCallback<Boolean> callback = connection -> connection.set(lockKey.getBytes(Charset.forName("UTF-8")),
+                requestId.getBytes(Charset.forName("UTF-8")), Expiration.seconds(timeUnit.toSeconds(expire)),
+                RedisStringCommands.SetOption.SET_IF_ABSENT);
+            return (Boolean)redisTemplate.execute(callback);
         } catch (Exception e) {
             log.error("redis lock error.", e);
         }
@@ -70,18 +69,14 @@ public class RedisLock {
      * 释放锁
      *
      * @param lockKey
-     * @param requestId 唯一ID
+     * @param requestId
+     *            唯一ID
      * @return
      */
     public boolean releaseLock(String lockKey, String requestId) {
-        RedisCallback<Boolean> callback = connection -> connection.eval(
-                UNLOCK_LUA.getBytes(),
-                ReturnType.BOOLEAN,
-                1,
-                lockKey.getBytes(Charset.forName("UTF-8")),
-                requestId.getBytes(Charset.forName("UTF-8"))
-        );
-        return (Boolean) redisTemplate.execute(callback);
+        RedisCallback<Boolean> callback = connection -> connection.eval(UNLOCK_LUA.getBytes(), ReturnType.BOOLEAN, 1,
+            lockKey.getBytes(Charset.forName("UTF-8")), requestId.getBytes(Charset.forName("UTF-8")));
+        return (Boolean)redisTemplate.execute(callback);
     }
 
     public boolean tryBorrowLock(String userGid) {
@@ -94,7 +89,6 @@ public class RedisLock {
         return releaseLock(lockKey, userGid);
     }
 
-
     public boolean tryOverdueFeeLock(String date) {
         String lockKey = SysVariable.REDIS_OVERDUE_FEE_PREFIX + date;
         return tryLock(lockKey, date, EXPIRE_TIME, TimeUnit.MILLISECONDS);
@@ -102,6 +96,36 @@ public class RedisLock {
 
     public boolean releaseOverdueFeeLock(String date) {
         String lockKey = SysVariable.REDIS_OVERDUE_FEE_PREFIX + date;
+        return releaseLock(lockKey, date);
+    }
+
+    public boolean tryAutoCreateVALock(String date) {
+        String lockKey = SysVariable.REDIS_AUTO_CREATEVA_PREFIX + date;
+        return tryLock(lockKey, date, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseAutoCreateVALock(String date) {
+        String lockKey = SysVariable.REDIS_AUTO_CREATEVA_PREFIX + date;
+        return releaseLock(lockKey, date);
+    }
+
+    public boolean tryeExpireNoticeLock(String date) {
+        String lockKey = SysVariable.REDIS_EXPIRE_NOTICE_PREFIX + date;
+        return tryLock(lockKey, date, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseExpireNoticeLock(String date) {
+        String lockKey = SysVariable.REDIS_EXPIRE_NOTICE_PREFIX + date;
+        return releaseLock(lockKey, date);
+    }
+
+    public boolean tryeOverdueNoticeLock(String date) {
+        String lockKey = SysVariable.REDIS_OVERDUE_NOTICE_PREFIX + date;
+        return tryLock(lockKey, date, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseOverdueNoticeLock(String date) {
+        String lockKey = SysVariable.REDIS_OVERDUE_NOTICE_PREFIX + date;
         return releaseLock(lockKey, date);
     }
 
@@ -113,8 +137,9 @@ public class RedisLock {
      */
     public String get(String lockKey) {
         try {
-            RedisCallback<String> callback = connection -> new String(connection.get(lockKey.getBytes()), Charset.forName("UTF-8"));
-            return (String) redisTemplate.execute(callback);
+            RedisCallback<String> callback =
+                connection -> new String(connection.get(lockKey.getBytes()), Charset.forName("UTF-8"));
+            return (String)redisTemplate.execute(callback);
         } catch (Exception e) {
             log.error("get redis occurred an exception", e);
         }

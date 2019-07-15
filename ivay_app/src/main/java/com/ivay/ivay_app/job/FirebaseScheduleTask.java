@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ivay.ivay_app.service.XFirebaseNoticeService;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.RedisLock;
 
 @Component
 @Configuration
@@ -19,9 +21,17 @@ public class FirebaseScheduleTask {
     @Autowired
     private XFirebaseNoticeService xFirebaseNoticeService;
 
-    // 到期提醒
+    @Autowired
+    private RedisLock redisLock;
+
+    // 到期提醒（当前当天/前一天发送通知）
     @Scheduled(cron = "${timer.firebaseExpireNotice}")
     private void expireNotice() {
+        String date = DateUtils.getNowDateYYYYMMDD();
+        if (!redisLock.tryeExpireNoticeLock(date)) {
+            logger.error(date + ":已经开始发送到期提醒");
+            return;
+        }
         boolean flag = false;
         int count = 0;
         String start = "开始发送---start";
@@ -54,6 +64,11 @@ public class FirebaseScheduleTask {
     // 逾期提醒：每3天发一次
     @Scheduled(cron = "${timer.firebaseOverDueNotice}")
     private void overDueNotice() {
+        String date = DateUtils.getNowDateYYYYMMDD();
+        if (!redisLock.tryeOverdueNoticeLock(date)) {
+            logger.error(date + ":已经开始发送逾期提醒");
+            return;
+        }
         boolean flag = false;
         int count = 0;
         String start = "开始发送---start";

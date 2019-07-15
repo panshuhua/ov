@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ivay.ivay_app.service.XVirtualAccountService;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.RedisLock;
 
 /**
  * 自动创建还款虚拟账号 一个小时创建一次
@@ -24,10 +26,18 @@ public class AutoCreateVAScheduleTask {
     private static final Logger logger = LoggerFactory.getLogger(AutoCreateVAScheduleTask.class);
 
     @Autowired
+    private RedisLock redisLock;
+
+    @Autowired
     XVirtualAccountService xVirtualAccountService;
 
     @Scheduled(cron = "${timer.autoCreateVA}")
     private void autoCreateVA() {
+        String date = DateUtils.getNowDateYYYYMMDD();
+        if (!redisLock.tryAutoCreateVALock(date)) {
+            logger.error(date + ":已经开始自动创建虚拟账号");
+            return;
+        }
         boolean flag = false;
         int count = 0;
         String start = "开始创建虚拟账号---start";
