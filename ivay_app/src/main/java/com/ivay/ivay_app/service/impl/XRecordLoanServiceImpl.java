@@ -383,8 +383,9 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                         logger.info("用户: {}, 一天的逾期计息: {}", xrl.getUserGid(), interestPerDay.toString());
 
                         // 逾期滞纳金
+                        BigDecimal value;
                         for (Object key : config.keySet()) {
-                            BigDecimal value = new BigDecimal(config.get(key).toString());
+                            value = new BigDecimal(config.get(key).toString());
                             long start = Long.parseLong(key.toString().split("~")[0]);
                             if (start != 0L) {
                                 long end = Long.parseLong(key.toString().split("~")[1]);
@@ -444,8 +445,9 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         totalFee = CommonUtil.longAddBigDecimal(totalFee, interestPer);
 
         // 逾期滞纳金
+        BigDecimal value;
         for (Object key : config.keySet()) {
-            BigDecimal value = new BigDecimal(config.get(key).toString());
+            value = new BigDecimal(config.get(key).toString());
             long start = Long.parseLong(key.toString().split("~")[0]);
             if (start != 0L) {
                 long end = Long.parseLong(key.toString().split("~")[1]);

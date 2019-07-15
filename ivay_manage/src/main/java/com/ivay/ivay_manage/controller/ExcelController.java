@@ -76,8 +76,9 @@ public class ExcelController {
             }
 
             List<Object[]> datas = new ArrayList<>(list.size());
+            Object[] objects;
             for (Map<String, Object> m : list) {
-                Object[] objects = new Object[headers.length];
+                objects = new Object[headers.length];
                 for (int j = 0; j < headers.length; j++) {
                     objects[j] = m.get(headers[j]);
                 }
@@ -110,8 +111,9 @@ public class ExcelController {
 
             List<Object[]> datas = new ArrayList<>(list.size());
             datas.add(headers);
+            Object[] objects;
             for (Map<String, Object> m : list) {
-                Object[] objects = new Object[headers.length];
+                objects = new Object[headers.length];
                 for (int j = 0; j < headers.length; j++) {
                     objects[j] = m.get(headers[j]);
                 }

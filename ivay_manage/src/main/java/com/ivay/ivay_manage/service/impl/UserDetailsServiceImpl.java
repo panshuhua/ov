@@ -34,13 +34,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUser sysUser = userService.getUser(username);
+        SysUser sysUser = userService.getUserByName(username);
         if (sysUser == null) {
             throw new AuthenticationCredentialsNotFoundException("用户名不存在");
         } else if (sysUser.getStatus() == SysUser.Status.LOCKED) {
             throw new LockedException("用户被锁定,请联系管理员");
         } else if (sysUser.getStatus() == SysUser.Status.DISABLED) {
-            throw new DisabledException("用户已作废");
+            throw new DisabledException("用户已注销");
         }
 
         LoginUser loginUser = new LoginUser();
@@ -51,5 +51,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return loginUser;
     }
-
 }

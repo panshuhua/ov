@@ -36,7 +36,7 @@ public class BillCommonController {
     @RequestMapping(value = "/test/risk/list/{username}/{phone}", method = {RequestMethod.GET})
     @ApiOperation(value = "取风控人员")
     public List<RiskUser> getBillNo(@PathVariable String username, @PathVariable String phone) {
-        SysUser sys = userService.getUser(username);
+        SysUser sys = userService.getUserByName(username);
         log.info("~~~~日志：" + sys);
         //return riskUserService.selectUserListByUserId(Integer.valueOf(userId));
 

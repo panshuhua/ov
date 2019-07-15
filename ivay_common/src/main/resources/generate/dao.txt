@@ -19,7 +19,7 @@ public interface {daoName} {
     
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into {table_name}({insert_columns}) values({insert_values})")
-    int save({beanName} {beanParamName});
+    int insert({beanName} {beanParamName});
     
     int count(@Param("params") Map<String, Object> params);
 

@@ -4,7 +4,7 @@ import com.ivay.ivay_repository.model.SysUser;
 
 import java.util.List;
 
-public class UserDto extends SysUser {
+public class SysRoleUser extends SysUser {
 
     private static final long serialVersionUID = -184009306207076712L;
 

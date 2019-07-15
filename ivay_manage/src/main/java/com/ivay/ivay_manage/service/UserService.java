@@ -1,18 +1,23 @@
 package com.ivay.ivay_manage.service;
 
-import com.ivay.ivay_manage.dto.UserDto;
+import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_repository.dto.UserName;
 import com.ivay.ivay_repository.model.SysUser;
 
 import java.util.List;
 
 public interface UserService {
+    /**
+     * 添加用户及其角色
+     *
+     * @param sysRoleUser
+     * @return
+     */
+    SysUser addUser(SysRoleUser sysRoleUser);
 
-    SysUser saveUser(UserDto userDto);
+    SysUser updateUser(SysRoleUser sysRoleUser);
 
-    SysUser updateUser(UserDto userDto);
-
-    SysUser getUser(String username);
+    SysUser getUserByName(String username);
 
     void changePassword(String username, String oldPassword, String newPassword);
 

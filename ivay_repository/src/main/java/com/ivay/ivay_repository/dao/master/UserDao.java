@@ -15,13 +15,13 @@ public interface UserDao {
             " birthday, sex, status, createTime, updateTime,enable_flag)" +
             "values(#{username}, #{password}, #{nickname}, #{headImgUrl}, #{phone}, #{telephone}, #{email}," +
             " #{birthday}, #{sex}, #{status}, now(), now(),'Y')")
-    int save(SysUser user);
+    int insert(SysUser user);
 
     @Select("select * from sys_user t where t.id = #{id} and t.enable_flag='Y'")
     SysUser getById(Long id);
 
     @Select("select * from sys_user t where t.username = #{username} and t.enable_flag='Y'")
-    SysUser getUser(String username);
+    SysUser getUserByName(String username);
 
     @Update("update sys_user t set t.password = #{password} where t.id = #{id}")
     int changePassword(@Param("id") Long id, @Param("password") String password);

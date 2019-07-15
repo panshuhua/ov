@@ -5,7 +5,7 @@ import com.ivay.ivay_common.table.PageTableResponse;
 import {beanPackageName}.{beanName};
 
 public interface {serviceName} {
-    {beanName} save({beanName} {beanParamName});
+    {beanName} add({beanName} {beanParamName});
 
     {beanName} get(Long id);
 

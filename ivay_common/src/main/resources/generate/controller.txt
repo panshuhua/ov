@@ -20,11 +20,11 @@ public class {controllerName} {
     @Autowired
     private {serviceName} {serviceParamName};
 
-    @PostMapping("save")
+    @PostMapping("add")
     @ApiOperation(value = "保存")
-    public Response<{beanName}> save(@RequestBody {beanName} {beanParamName}) {
+    public Response<{beanName}> add(@RequestBody {beanName} {beanParamName}) {
         Response<{beanName}> response = new Response<>();
-        response.setBo({serviceParamName}.save({beanParamName}));
+        response.setBo({serviceParamName}.add({beanParamName}));
         return response;
     }
 

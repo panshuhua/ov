@@ -5,7 +5,7 @@ import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_manage.dto.UserDto;
+import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_manage.service.XAuditService;
@@ -54,27 +54,27 @@ public class UserController {
 
     @LogAnnotation
     @PostMapping
-    @ApiOperation(value = "保存用户")
+    @ApiOperation(value = "添加用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
-    public SysUser saveUser(@RequestBody UserDto userDto) {
-        SysUser u = userService.getUser(userDto.getUsername());
+    public SysUser saveUser(@RequestBody SysRoleUser sysRoleUser) {
+        SysUser u = userService.getUserByName(sysRoleUser.getUsername());
         if (u != null) {
-            throw new IllegalArgumentException(userDto.getUsername() + "已存在");
+            throw new IllegalArgumentException(sysRoleUser.getUsername() + "已存在");
         }
 
-        return userService.saveUser(userDto);
+        return userService.addUser(sysRoleUser);
     }
 
     @LogAnnotation
     @PutMapping
     @ApiOperation(value = "修改用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
-    public SysUser updateUser(@RequestBody UserDto userDto) {
-        List<Role> roleList = roleDao.listByUserId(userDto.getId());
-        SysUser sysUser = userService.updateUser(userDto);
-        if (isDelOvayAuditRight(roleList, userDto.getRoleIds())) {
+    public SysUser updateUser(@RequestBody SysRoleUser sysRoleUser) {
+        List<Role> roleList = roleDao.listByUserId(sysRoleUser.getId());
+        SysUser sysUser = userService.updateUser(sysRoleUser);
+        if (isDelOvayAuditRight(roleList, sysRoleUser.getRoleIds())) {
             // 为被当前审计员审核的人员重新分配审计员
-            xAuditService.reAssignAudit(null, userDto.getId().toString());
+            xAuditService.reAssignAudit(null, sysRoleUser.getId().toString());
         }
         return sysUser;
     }
@@ -96,11 +96,11 @@ public class UserController {
     @ApiOperation(value = "修改头像")
     public void updateHeadImgUrl(String headImgUrl) {
         SysUser user = UserUtil.getLoginUser();
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(user, userDto);
-        userDto.setHeadImgUrl(headImgUrl);
+        SysRoleUser sysRoleUser = new SysRoleUser();
+        BeanUtils.copyProperties(user, sysRoleUser);
+        sysRoleUser.setHeadImgUrl(headImgUrl);
 
-        userService.updateUser(userDto);
+        userService.updateUser(sysRoleUser);
         log.debug("{}修改了头像", user.getUsername());
     }
 

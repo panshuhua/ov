@@ -19,8 +19,8 @@ public class {serviceImplName} implements {serviceName} {
     private {daoName} {daoParamName};
 
     @Override
-    public {beanName} save({beanName} {beanParamName}) {
-        return {daoParamName}.save({beanParamName}) == 1 ? {beanParamName} : null;
+    public {beanName} add({beanName} {beanParamName}) {
+        return {daoParamName}.insert({beanParamName}) == 1 ? {beanParamName} : null;
     }
 
     @Override

@@ -1,10 +1,11 @@
 package com.ivay.ivay_manage.service.impl;
 
-import com.ivay.ivay_manage.dto.UserDto;
+import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_repository.dao.master.UserDao;
 import com.ivay.ivay_repository.dto.UserName;
 import com.ivay.ivay_repository.model.SysUser;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,7 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-
-    private static final Logger log = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
     private UserDao userDao;
@@ -27,14 +27,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public SysUser saveUser(UserDto userDto) {
-        SysUser user = userDto;
+    public SysUser addUser(SysRoleUser sysRoleUser) {
+        SysUser user = sysRoleUser;
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setStatus(SysUser.Status.VALID);
-        userDao.save(user);
-        saveUserRoles(user.getId(), userDto.getRoleIds());
+        userDao.insert(user);
 
-        log.debug("新增用户{}", user.getUsername());
+        // 添加用户的角色
+        saveUserRoles(user.getId(), sysRoleUser.getRoleIds());
+
+        logger.debug("新增用户{}", user.getUsername());
         return user;
     }
 
@@ -48,13 +50,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SysUser getUser(String username) {
-        return userDao.getUser(username);
+    public SysUser getUserByName(String username) {
+        if (StringUtils.isEmpty(username)) {
+            return null;
+        }
+        return userDao.getUserByName(username);
     }
 
     @Override
     public void changePassword(String username, String oldPassword, String newPassword) {
-        SysUser u = userDao.getUser(username);
+        SysUser u = userDao.getUserByName(username);
         if (u == null) {
             throw new IllegalArgumentException("用户不存在");
         }
@@ -65,16 +70,16 @@ public class UserServiceImpl implements UserService {
 
         userDao.changePassword(u.getId(), passwordEncoder.encode(newPassword));
 
-        log.debug("修改{}的密码", username);
+        logger.debug("修改{}的密码", username);
     }
 
     @Override
     @Transactional
-    public SysUser updateUser(UserDto userDto) {
-        userDao.update(userDto);
-        saveUserRoles(userDto.getId(), userDto.getRoleIds());
+    public SysUser updateUser(SysRoleUser sysRoleUser) {
+        userDao.update(sysRoleUser);
+        saveUserRoles(sysRoleUser.getId(), sysRoleUser.getRoleIds());
 
-        return userDto;
+        return sysRoleUser;
     }
 
     @Override
