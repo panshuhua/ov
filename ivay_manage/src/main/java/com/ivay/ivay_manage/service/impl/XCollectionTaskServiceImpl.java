@@ -13,12 +13,14 @@ import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.XCollectionTaskDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
+import com.ivay.ivay_repository.dto.CollectionTaskLoanInfo;
 import com.ivay.ivay_repository.dto.CollectionTaskResult;
 import com.ivay.ivay_repository.model.XCollectionTask;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +70,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 param.put("name", collectionTaskInfo.getName());
                 param.put("phone", collectionTaskInfo.getPhone());
                 param.put("identityCard", collectionTaskInfo.getIdentityCard());
-                param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
+                //param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
                 param.put("username", collectionTaskInfo.getUsername());
                 param.put("collectionRepayStatus", collectionTaskInfo.getCollectionRepayStatus());
                 param.put("collectionStatus", collectionTaskInfo.getCollectionStatus());
@@ -130,57 +132,76 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateCollector(int collectorId, int id) {
-        logger.info("催收任務{}，指派催收人{}", id, collectorId);
+    public boolean updateCollector(int collectorId, List<Integer> ids) {
+        logger.info("催收任務{}，指派催收人{}", JSONObject.toJSONString(ids), collectorId);
 
-        //判断是否重新指派，否-直接修改记录 是-重新生成订单记录
-        XCollectionTask collectionTask = xCollectionTaskDao.getById(id);
-        //查询该指派任务对应的还款信息
-        XRecordLoan recordLoan = xRecordLoanDao.getXRecordLoanByOrderId(collectionTask.getOrderId());
-
-        //判断是否有逾期未还的借款
-        if (recordLoan.getLoanStatus() == 1 &&
-                recordLoan.getRepaymentStatus() != CollectionRepayStatusEnum.FINISHED_REPAY.getStatus() &&
-                recordLoan.getDueTime().getTime() < System.currentTimeMillis() &&
-                recordLoan.getDueAmount() + recordLoan.getOverdueFee() > 0) {
-
-            //首次指派
-            if (collectionTask.getCollectionStatus() == CollectionStatusEnum.WAITING_COLLECTION.getStatus()) {
-                collectionTask.setCollectorId(collectorId);
-                collectionTask.setUpdateTime(new Date());
-                collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
-                collectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
-
-                logger.info("催收任務{}，首次指派催收人{}", id, collectorId);
-                return xCollectionTaskDao.update(collectionTask) >= 1;
-
-                //同一个人，无需重新指派
-            } else if (collectionTask.getCollectorId() == collectorId) {
-                throw new BusinessException("0014", "该用户已经被指派，无需重新指派！");
-            } else {
-                //先修改催收进度，再重新生成记录
-                collectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
-                collectionTask.setUpdateTime(new Date());
-                xCollectionTaskDao.update(collectionTask);
-
-                XCollectionTask newXCollectionTask = new XCollectionTask();
-                newXCollectionTask.setOrderId(collectionTask.getOrderId());
-                newXCollectionTask.setUserGid(collectionTask.getUserGid());
-                newXCollectionTask.setCollectorId(collectorId);
-                newXCollectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
-                newXCollectionTask.setDueCollectionAmount(collectionTask.getDueCollectionAmount());
-                newXCollectionTask.setCollectionRepayStatus(collectionTask.getCollectionRepayStatus());
-                newXCollectionTask.setCollectionAmount(0L);
-                newXCollectionTask.setCollectionOverdueFee(0L);
-                newXCollectionTask.setCreateTime(new Date());
-                newXCollectionTask.setUpdateTime(new Date());
-
-                logger.info("催收任務{}，催收人{}，重新指派催收人{}", id, collectionTask.getCollectorId(), collectorId);
-                return xCollectionTaskDao.save(newXCollectionTask) >= 1;
-            }
-
+        if (null == ids && ids.size() == 0) {
+            throw new RuntimeException("参数ids不能为空！");
         }
-        return false;
+
+        //查询对应的催单记录和还款状态等信息，判断是未指派还是重新指派
+        List<CollectionTaskLoanInfo> results = xCollectionTaskDao.getCollectionsByIds(ids);
+        //重新指派的集合
+        List<XCollectionTask> assignList = new ArrayList<>();
+        //未指派的集合
+        List<XCollectionTask> notAssignList = new ArrayList<>();
+
+        for (CollectionTaskLoanInfo collectionTaskLoanInfo: results) {
+            //借款状态为 1打款成功 还款状态为 2已打款 还款时间已过时的
+            if (collectionTaskLoanInfo.getLoanStatus() == 1 && collectionTaskLoanInfo.getRepaymentStatus() != 2 &&
+                    collectionTaskLoanInfo.getDueTime().getTime() < System.currentTimeMillis()) {
+
+                XCollectionTask collectionTask = new CollectionTaskLoanInfo();
+                BeanUtils.copyProperties(collectionTaskLoanInfo,collectionTask);
+                //首次指派
+                if (collectionTask.getCollectionStatus() == CollectionStatusEnum.WAITING_COLLECTION.getStatus()) {
+                    collectionTask.setCollectorId(collectorId);
+                    collectionTask.setUpdateTime(new Date());
+                    collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
+                    collectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
+
+                    logger.info("催收任務{}，首次指派催收人{}", collectionTaskLoanInfo.getId(), collectorId);
+                    //return xCollectionTaskDao.update(collectionTask) >= 1;
+                    notAssignList.add(collectionTask);
+
+                    //同一个人，无需重新指派
+                } else if (collectionTask.getCollectorId() == collectorId) {
+                    throw new BusinessException("0014", "该用户已经被指派，无需重新指派！");
+                } else {
+                    //先修改催收进度，再重新生成记录
+                    collectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
+                    collectionTask.setUpdateTime(new Date());
+                    xCollectionTaskDao.update(collectionTask);
+
+                    XCollectionTask newXCollectionTask = new XCollectionTask();
+                    newXCollectionTask.setOrderId(collectionTask.getOrderId());
+                    newXCollectionTask.setUserGid(collectionTask.getUserGid());
+                    newXCollectionTask.setCollectorId(collectorId);
+                    newXCollectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
+                    newXCollectionTask.setDueCollectionAmount(collectionTask.getDueCollectionAmount());
+                    newXCollectionTask.setCollectionRepayStatus(collectionTask.getCollectionRepayStatus());
+                    newXCollectionTask.setCollectionAmount(0L);
+                    newXCollectionTask.setCollectionOverdueFee(0L);
+                    newXCollectionTask.setCreateTime(new Date());
+                    newXCollectionTask.setUpdateTime(new Date());
+
+                    logger.info("催收任務{}，催收人{}，重新指派催收人{}", collectionTaskLoanInfo.getId(), collectionTask.getCollectorId(), collectorId);
+                    assignList.add(newXCollectionTask);
+                    //return xCollectionTaskDao.save(newXCollectionTask) >= 1;
+                }
+            }
+        }
+
+        //批量更新
+        if (notAssignList.size() > 0) {
+            xCollectionTaskDao.updateBatch(notAssignList);
+        }
+
+        //批量插入
+        if (assignList.size() > 0) {
+            xCollectionTaskDao.saveBatch(assignList);
+        }
+        return true;
     }
 
     @Override

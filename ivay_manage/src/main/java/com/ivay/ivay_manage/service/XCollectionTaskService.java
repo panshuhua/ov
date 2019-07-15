@@ -5,6 +5,8 @@ import com.ivay.ivay_repository.dto.CollectionTaskInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
 import com.ivay.ivay_repository.model.XRecordLoan;
 
+import java.util.List;
+
 public interface XCollectionTaskService {
     XCollectionTask save(XCollectionTask xCollectionTask);
 
@@ -28,11 +30,11 @@ public interface XCollectionTaskService {
     /**
      * @Description 指派催收人
      * @Author Ryan
-     * @Param [collectorId, id]
+     * @Param [collectorId, ids]
      * @Return int
      * @Date 2019/7/10 11:44
      */
-    boolean updateCollector(int collectorId, int id);
+    boolean updateCollector(int collectorId, List<Integer> ids);
 
     /**
      * @Description 我的催收

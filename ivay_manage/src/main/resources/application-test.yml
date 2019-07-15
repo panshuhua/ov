@@ -40,15 +40,10 @@ token:
 xAppEvents_event_url: http://localhost:8080/star/xAppEvents/save
 
 # 定时器
-#timer:
-  # 逾期订单生成催收任务
-#  overdueOrder: 0 10 0 1/1 * ?
-
-
-# 定时器
 timer:
   # 逾期订单生成催收任务
-  overdueOrder: 0 30 10 15 * ?
+  overdueOrder: 0 10 0 1/1 * ?
+
 
 
 

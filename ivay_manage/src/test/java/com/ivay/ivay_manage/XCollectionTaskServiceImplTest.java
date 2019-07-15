@@ -43,7 +43,8 @@ public class XCollectionTaskServiceImplTest {
         request.setOffset(0);
         request.setLimit(10);
         CollectionTaskInfo collectionTaskInfo = new CollectionTaskInfo();
-        collectionTaskInfo.setOverdueLevel("M1");
+        //collectionTaskInfo.setOverdueLevel("M1");
+        //collectionTaskInfo.setCollectionStatus((byte)1);
         //collectionTaskInfo.setPhone("9888888888");
         PageTableResponse response = collectionTaskService.list(10,1, collectionTaskInfo);
         System.out.println("==========================");
@@ -53,7 +54,7 @@ public class XCollectionTaskServiceImplTest {
     @Test
     public void updateCollector(){
 
-        collectionTaskService.updateCollector(3, 3663);
+        //collectionTaskService.updateCollector(3, 3663);
     }
 
     @Test

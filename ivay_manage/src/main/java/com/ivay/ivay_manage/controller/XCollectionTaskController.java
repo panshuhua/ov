@@ -1,5 +1,7 @@
 package com.ivay.ivay_manage.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.UserService;
@@ -12,9 +14,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -57,7 +61,7 @@ public class XCollectionTaskController {
     @ApiOperation(value = "催收搜索列表")
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
                                             @RequestParam(required = false, defaultValue = "1") int num,
-                                            CollectionTaskInfo collectionTaskInfo) {
+                                            @RequestBody(required = false) CollectionTaskInfo collectionTaskInfo) {
 
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.list(limit, num, collectionTaskInfo));
@@ -75,12 +79,25 @@ public class XCollectionTaskController {
         return response;
     }
 
-    @GetMapping("updateCollector")
+    @GetMapping(value = "updateCollector")
     @ApiOperation(value = "指派催收人")
-    public Response<Boolean> updateCollector(@RequestParam(required = true) Integer collectorId,
-                                             @RequestParam(required = true) Integer id) {
+    public Response<Boolean> updateCollector(@RequestParam Integer collectorId,
+                                             @RequestParam(required = true) String ids) {
+        if(StringUtils.isBlank(ids)){
+            throw new BusinessException("参数不能为空！");
+        }
+        String[] stringIds = ids.split(",");
+        List<Integer> list = new ArrayList<>();
+        for (String strId : stringIds) {
+            try{
+                list.add(Integer.parseInt(strId));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
         Response<Boolean> response = new Response<>();
-        response.setBo(xCollectionTaskService.updateCollector(collectorId, id));
+        response.setBo(xCollectionTaskService.updateCollector(collectorId, list));
 
         return response;
     }
@@ -93,20 +110,20 @@ public class XCollectionTaskController {
 
 
     @ApiOperation(value = "我的催收")
-    @GetMapping("myCollections")
+    @PostMapping("myCollections")
     public Response<PageTableResponse> getCollectionListByUserGid(@RequestParam(required = false, defaultValue = "0") int limit,
                                                                   @RequestParam(required = false, defaultValue = "1") int num,
-                                                                  CollectionTaskInfo collectionTaskInfo) {
+                                                                  @RequestBody(required = false) CollectionTaskInfo collectionTaskInfo) {
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.getCollectionListByUserGid(limit, num, collectionTaskInfo));
         return response;
     }
 
     @ApiOperation(value = "催收回款")
-    @GetMapping("collectionsRepay")
+    @PostMapping("collectionsRepay")
     public Response<PageTableResponse> getCollectionsRepayList(@RequestParam(required = false, defaultValue = "0") int limit,
                                                                @RequestParam(required = false, defaultValue = "1") int num,
-                                                               CollectionTaskInfo collectionTaskInfo) {
+                                                               @RequestBody(required = false) CollectionTaskInfo collectionTaskInfo) {
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.getCollectionsRepayList(limit, num, collectionTaskInfo));
         return response;
