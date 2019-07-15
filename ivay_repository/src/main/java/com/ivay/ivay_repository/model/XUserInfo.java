@@ -89,7 +89,7 @@ public class XUserInfo {
     @ApiModelProperty("审核时间")
     private Date auditTime;
 
-    // TODO 发生产需要加上这三个字段，否则登录会报错
+    // TODO 发生产需要加上这三个字段，否则登录会报错：生产环境旧的redis数据中含有这3个字段
     @ApiModelProperty("经度")
     private String longitude;
 
