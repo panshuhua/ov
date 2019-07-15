@@ -133,4 +133,12 @@ public class XCollectionTaskController {
         response.setBo(xCollectionTaskService.repaymentInfo(taskId));
         return response;
     }
+
+    @GetMapping("overdueOrder")
+    @ApiOperation("手动触发定时任务")
+    public Response<Boolean> executeOverdueOrderJob(@RequestParam long taskId) {
+        xCollectionTaskService.saveCollectionTaskBatch();
+        Response<Boolean> response = new Response<>();
+        return response;
+    }
 }
