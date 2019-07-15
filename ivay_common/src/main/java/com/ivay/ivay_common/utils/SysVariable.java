@@ -224,7 +224,7 @@ public class SysVariable {
     // 发送通知短信链接固定前缀
     public static final String PHONEMSG_PREFIX_LINK = "https://ovay.vn/";
 
-    // 发送短信的第3方接口运营商类型
+    // 发送短信的第3方接口短信平台类型
     public static final String SMS_ZERO = "0";
     public static final String SMS_ONE = "1";
     public static final String SMS_TWO = "2";

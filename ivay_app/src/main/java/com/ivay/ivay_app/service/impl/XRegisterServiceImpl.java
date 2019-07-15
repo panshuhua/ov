@@ -1,21 +1,15 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dto.Token;
-import com.ivay.ivay_app.dto.XLoginUser;
-import com.ivay.ivay_app.service.XConfigService;
-import com.ivay.ivay_app.service.XRegisterService;
-import com.ivay.ivay_app.service.XTokenService;
-import com.ivay.ivay_app.service.XUserInfoService;
-import com.ivay.ivay_common.advice.BusinessException;
-import com.ivay.ivay_common.config.I18nService;
-import com.ivay.ivay_common.config.SendMsgService;
-import com.ivay.ivay_common.dto.SMSResponseStatus;
-import com.ivay.ivay_common.utils.*;
-import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.dto.VerifyCodeInfo;
-import com.ivay.ivay_repository.dto.XUser;
-import com.ivay.ivay_repository.model.LoginInfo;
-import com.ivay.ivay_repository.model.ReturnUser;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +20,27 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.ivay.ivay_app.dto.MsgVerifyCode;
+import com.ivay.ivay_app.dto.Token;
+import com.ivay.ivay_app.dto.XLoginUser;
+import com.ivay.ivay_app.service.XConfigService;
+import com.ivay.ivay_app.service.XRegisterService;
+import com.ivay.ivay_app.service.XTokenService;
+import com.ivay.ivay_app.service.XUserInfoService;
+import com.ivay.ivay_common.advice.BusinessException;
+import com.ivay.ivay_common.config.I18nService;
+import com.ivay.ivay_common.config.SendMsgService;
+import com.ivay.ivay_common.dto.SMSResponseStatus;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.MsgAuthCode;
+import com.ivay.ivay_common.utils.StringUtil;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dto.VerifyCodeInfo;
+import com.ivay.ivay_repository.dto.XUser;
+import com.ivay.ivay_repository.model.LoginInfo;
+import com.ivay.ivay_repository.model.ReturnUser;
 
 /**
  * @author panshuhua
@@ -153,7 +164,8 @@ public class XRegisterServiceImpl implements XRegisterService {
         Token token = tokenService.saveToken(xLoginUser);
         String userToken = token.getToken();
         xUser.setUserToken(userToken);
-        redisTemplate.opsForValue().set(xUser.getUserGid(), userToken, (expireSeconds + 200) * 1000, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(xUser.getUserGid(), userToken, (expireSeconds + 200) * 1000,
+            TimeUnit.MILLISECONDS);
         return xUser;
     }
 
@@ -181,6 +193,7 @@ public class XRegisterServiceImpl implements XRegisterService {
 
     @Override
     public VerifyCodeInfo sendPhoneMsg(String mobile) {
+
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.TEMPLATE_SEND_PHONEMSG));
         if (config == null) {
             logger.error("发送短信验证码配置获取出错");
@@ -196,63 +209,94 @@ public class XRegisterServiceImpl implements XRegisterService {
         String phoneMsg = i18nService.getViMessage("sms.send.msg.verfiycode");
         phoneMsg = MessageFormat.format(phoneMsg, authCode);
         phoneMsg = StringUtil.vietnameseToEnglish(phoneMsg);
-        for (Object key : config.keySet()) {
-            String value = config.get(key).toString();
 
-            // 使用方法一发送短信验证码：只要是10位数字的手机号码都不会报错
-            if (SysVariable.SMS_ONE.equals(value)) {
-                // Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, phoneMsg); //TODO 下周审核通过后再使用
-                Map<String, String> msgMap = sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_CODE, mobile, authCode);
-                String status = msgMap.get("status");
-                verifyCodeInfo.setStatus(status);
+        MsgVerifyCode msg = new MsgVerifyCode();
+        msg.setAuthCode(authCode);
+        msg.setMobile(mobile);
+        msg.setPhoneMsg(phoneMsg);
 
-                if (status.equals(SMSResponseStatus.SUCCESS.getCode())) {
-                    String messageid = msgMap.get("messageid");
-                    logger.info("国内短信平台paasoo发送的短信id:{}", messageid);
-                    logger.info("国内短信平台paasoo成功发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
-                    redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
-                    redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile, effectiveTime,
-                        TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
-                    return verifyCodeInfo;
-                }
+        Set<String> keySet = config.keySet();
+        List<String> keyList = new ArrayList<String>(keySet);
+        Collections.sort(keyList); // 排序：控制优先使用msg1配置项发送
+        Iterator<String> iter = keyList.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            String value = (String)config.get(key);
+            msg.setSendMethod(value);
 
-            } else if (SysVariable.SMS_TWO.equals(value)) {
-                String responseBody = "";
-                try {
-                 // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); // TODO 下周审核通过后再使用
-                    responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
-                    Map<String, Object> map = JsonUtils.jsonToMap(responseBody);
-                    String messageId = (String)map.get("MessageId");
-                    logger.info("fpt平台发送的短信id：" + messageId);
-                    if (messageId != null) {
-                        logger.info("Fpt平台成功发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
-                        redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
-                        redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile,
-                            effectiveTime, TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
-                        verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
-                        return verifyCodeInfo;
-                    } else {
-                        logger.info("fpt发送短信失败，返回的错误码为：{}", map.get("error"));
-                        continue;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    continue;
-                }
+            VerifyCodeInfo verifyCodeInfo2 = sendMsgByManyTypes(verifyCodeInfo, msg);
+            if (verifyCodeInfo2 == null) {
+                continue;
+            }
+            return verifyCodeInfo2;
+        }
 
-                // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
-            } else if (SysVariable.SMS_ZERO.equals(value)) {
-                verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
-                logger.info("发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
+        return verifyCodeInfo;
+
+    }
+
+    /**
+     * 使用多种方式发送短信验证码
+     */
+    private VerifyCodeInfo sendMsgByManyTypes(VerifyCodeInfo verifyCodeInfo, MsgVerifyCode msg) {
+        String value = msg.getSendMethod();
+        String mobile = msg.getMobile();
+        String authCode = msg.getAuthCode();
+        String phoneMsg = msg.getPhoneMsg();
+        // 使用方法一发送短信验证码：只要是10位数字的手机号码都不会报错
+        if (SysVariable.SMS_ONE.equals(value)) {
+            // Map<String, String> msgMap = sendMsgService.sendMsgBySMS(mobile, phoneMsg); //TODO 下周审核通过后再使用
+            Map<String, String> msgMap = sendMsgService.sendMsgBySMS(SysVariable.SMS_TYPE_CODE, mobile, authCode);
+            String status = msgMap.get("status");
+            verifyCodeInfo.setStatus(status);
+
+            if (status.equals(SMSResponseStatus.SUCCESS.getCode())) {
+                String messageid = msgMap.get("messageid");
+                logger.info("国内短信平台paasoo发送的短信id:{}", messageid);
+                logger.info("国内短信平台paasoo成功发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
                 redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
                 redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile, effectiveTime,
                     TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
                 return verifyCodeInfo;
             }
+
+        } else if (SysVariable.SMS_TWO.equals(value)) {
+            String responseBody = "";
+            try {
+                // responseBody = sendMsgService.sendMsgByFpt(mobile, phoneMsg); // TODO 下周审核通过后再使用
+                responseBody = sendMsgService.sendMsgByFpt(mobile, authCode);
+                Map<String, Object> map = JsonUtils.jsonToMap(responseBody);
+                String messageId = (String)map.get("MessageId");
+                logger.info("fpt平台发送的短信id：" + messageId);
+
+                if (messageId != null) {
+                    logger.info("Fpt平台成功发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
+                    redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
+                    redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile, effectiveTime,
+                        TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
+                    verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
+                    return verifyCodeInfo;
+                } else {
+                    logger.info("fpt发送短信失败，返回的错误码为：{}", map.get("error"));
+                    verifyCodeInfo.setStatus(map.get("error").toString());
+                    return null;
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                verifyCodeInfo.setStatus(null);
+                return null;
+            }
+
+            // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
+        } else if (SysVariable.SMS_ZERO.equals(value)) {
+            verifyCodeInfo.setStatus(SysVariable.SMS_SEND_SUCCESS);
+            logger.info("发送的短信验证码是:{},短信内容是:{}", authCode, phoneMsg);
+            redisTemplate.opsForValue().set(mobile, authCode, validTime, TimeUnit.MILLISECONDS); // 短信验证码有效时间
+            redisTemplate.opsForValue().set(mobile + SysVariable.SEND_AUTHCODE_SUFFIX, mobile, effectiveTime,
+                TimeUnit.MILLISECONDS); // 用来限制2min内不能重新发送的key
+            return verifyCodeInfo;
         }
-
-        return verifyCodeInfo;
-
+        return null;
     }
 
     @Override

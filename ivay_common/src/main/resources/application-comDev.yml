@@ -44,4 +44,5 @@ api_fpt_client_secret: aaad67b7d11bb83e10da122cdA8fda0b40Dbc00f61179a5e6c5cfCd59
 api_fpt_scope: send_brandname_otp
 api_fpt_accesstoken_url: http://sandbox.sms.fpt.net/oauth2/token
 api_fpt_sendmsg_url: http://sandbox.sms.fpt.net/api/push-brandname-otp
-api_fpt_brandName: FTI
+#api_fpt_brandName: FTI
+api_fpt_brandName: VFG CO
