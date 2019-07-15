@@ -10,8 +10,10 @@ import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
+import com.ivay.ivay_repository.dto.CreditLine;
 import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
+import com.ivay.ivay_repository.utils.DesensitizationUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,5 +165,20 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             return StringUtil.phoneDesensitization(phones.get(0));
         }
         return null;
+    }
+
+    /**
+     * 获取授信额度
+     *
+     * @param userGid
+     * @return
+     */
+    @Override
+    public CreditLine getCreditLine(String userGid) {
+        CreditLine creditLine = xUserInfoDao.getCreditLine(userGid);
+        creditLine.setRefuseReason(
+                DesensitizationUtil.refuseReason(creditLine.getRefuseType(), creditLine.getRefuseReason())
+        );
+        return creditLine;
     }
 }

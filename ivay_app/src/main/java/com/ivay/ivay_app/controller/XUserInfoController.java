@@ -90,7 +90,7 @@ public class XUserInfoController {
         //验证userGid有效性
         XUserInfo xUserInfo = xUserInfoDao.getByUserGid(gid);
         if (xUserInfo != null) {
-            response.setBo(xUserInfoDao.getCreditLine(gid));
+            response.setBo(xUserInfoService.getCreditLine(gid));
         } else {
             response.setStatus(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));

@@ -203,8 +203,7 @@ public class XLoanServiceImpl implements XLoanService {
                     break;
                 case "majorRelation":
                     // 亲密联系人号码出现次数>2，拒贷（人数使用配置）
-                    if (xLoanQualification.getOneMajorPhoneNum() < min
-                            || xLoanQualification.getOneMajorPhoneNum() > max) {
+                    if (xLoanQualification.getOneMajorPhoneNum() < min || xLoanQualification.getOneMajorPhoneNum() > max) {
                         sb.append("亲密联系人号码出现次数不符: ").append(xLoanQualification.getOneMajorPhoneNum()).append(";");
                     }
                     break;
@@ -221,15 +220,16 @@ public class XLoanServiceImpl implements XLoanService {
                     }
                     break;
                 case "overdueDay":
-                    // 历史最大逾期天数>=30天，拒贷
+                    // 历史最大逾期天数>=10天，拒贷
                     if (xLoanQualification.getMaxOverdueDay() >= max) {
                         sb.append("历史最大逾期天数不符: ").append(xLoanQualification.getMaxOverdueDay()).append(";");
                     }
                     break;
                 case "overdueDay2":
-                    // 历史最大逾期天数在[15,30)天且最近一笔结清交易逾期天数大于5天，拒贷
-                    if (xLoanQualification.getMaxOverdueDay() >= 15 && xLoanQualification.getMaxOverdueDay() < 30
-                            && xLoanQualification.getLastOverdueDay() > max) {
+                    // 历史最大逾期天数在[15,30)天且最近一笔结清交易逾期天数>=10天，拒贷
+                    if (xLoanQualification.getMaxOverdueDay() >= 15
+                            && xLoanQualification.getMaxOverdueDay() < 30
+                            && xLoanQualification.getLastOverdueDay() >= max) {
                         sb.append("历史最大逾期天数和结清交易逾期天数不符: ").append(xLoanQualification.getMaxOverdueDay()).append(";");
                     }
                     break;

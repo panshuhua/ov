@@ -1,6 +1,7 @@
 package com.ivay.ivay_app.service;
 
 
+import com.ivay.ivay_repository.dto.CreditLine;
 import com.ivay.ivay_repository.dto.VerifyCodeInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
 
@@ -64,5 +65,13 @@ public interface XUserInfoService {
      * @return
      */
     String checkMacCode(String macCode);
+
+    /**
+     * 获取授信额度
+     *
+     * @param userGid
+     * @return
+     */
+    CreditLine getCreditLine(String userGid);
 }
 

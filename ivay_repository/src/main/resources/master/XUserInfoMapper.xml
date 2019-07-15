@@ -185,7 +185,9 @@
             (
                 SELECT COUNT(*) FROM x_record_loan x WHERE x.user_gid = #{userGid}
                 AND x.loan_status=1 AND x.repayment_status!=2 and x.due_time &lt; sysdate()
-            ) overdueCount
+            ) overdueCount,
+            refuse_type,
+            refuse_reason
         from x_user_info t
         where t.user_gid = #{userGid} and t.enable_flag='Y'
     </select>

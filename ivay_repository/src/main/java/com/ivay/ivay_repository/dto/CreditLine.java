@@ -26,4 +26,10 @@ public class CreditLine {
 
     @ApiModelProperty("逾期笔数")
     private int overdueCount;
+
+    @ApiModelProperty("拒绝类型")
+    private String refuseType;
+
+    @ApiModelProperty("拒绝理由")
+    private String refuseReason;
 }
