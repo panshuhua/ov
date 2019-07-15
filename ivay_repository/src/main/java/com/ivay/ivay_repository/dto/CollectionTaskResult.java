@@ -24,8 +24,8 @@ public class CollectionTaskResult {
     @ApiModelProperty("手机号码")
     private String phone;
 
-    @ApiModelProperty("还款状态")
-    private Byte repaymentStatus;
+    //@ApiModelProperty("还款状态")
+    //private Byte repaymentStatus;
 
     @ApiModelProperty("逾期级别")
     private String overdueLevel;
@@ -55,6 +55,16 @@ public class CollectionTaskResult {
 
     @ApiModelProperty("催收还款状态")
     private Byte collectionRepayStatus;
+
+    @ApiModelProperty("催收状态")
+    private Byte collectionStatus;
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("还款时间")
+    private Date repayTime;
+
+    @ApiModelProperty("实还金额")
+    private Long realRepay;
 
 
 }

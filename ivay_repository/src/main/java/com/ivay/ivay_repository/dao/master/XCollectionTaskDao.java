@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.dao.master;
 
+import com.ivay.ivay_repository.dto.CollectionTaskLoanInfo;
 import com.ivay.ivay_repository.dto.CollectionTaskResult;
 import com.ivay.ivay_repository.dto.XRepaymentAccountInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
@@ -120,4 +121,22 @@ public interface XCollectionTaskDao {
      * @Date 2019/7/12 17:28
      */
     int getCollectionsRepayListCount(@Param("params") Map<String, Object> params);
+
+    /**
+     * @Description 获取催收派单时的任务信息
+     * @Author Ryan
+     * @Param [ids]
+     * @Return java.util.List<com.ivay.ivay_repository.dto.CollectionTaskLoanInfo>
+     * @Date 2019/7/15 17:01
+     */
+    List<CollectionTaskLoanInfo> getCollectionsByIds(@Param("ids") List<Integer> ids);
+
+    /**
+     * @Description 批量更新
+     * @Author Ryan
+     * @Param [notAssignList]
+     * @Return int
+     * @Date 2019/7/15 17:35
+     */
+    int updateBatch(@Param("list") List<XCollectionTask> notAssignList);
 }

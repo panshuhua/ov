@@ -30,10 +30,10 @@ public class CollectionTaskInfo {
     private String username;
 
     @ApiModelProperty("催收还款状态")
-    private String collectionRepayStatus;
+    private Integer collectionRepayStatus;
 
     @ApiModelProperty("指派状态")
-    private String collectionStatus;
+    private Integer collectionStatus;
 
     @ApiModelProperty("應還時間開始")
     private Date payDateStart;

@@ -81,9 +81,6 @@
 			<if test="collectionOverdueFee != null">
 				collection_overdue_fee = #{collectionOverdueFee}, 
 			</if>
-			<if test="collectionOverdueFee != null">
-				collection_overdue_fee = #{collectionOverdueFee},
-			</if>
 			<if test="collectionRepayStatus != null">
 				collection_repay_status = #{collectionRepayStatus},
 			</if>
@@ -135,6 +132,7 @@
 		t5.overdue_day,
 		t5.amount,
 		t5.id,
+		t5.collection_status,
 		t6.id as user_id,
 		t6.username
 		FROM
@@ -149,6 +147,7 @@
 		t3.phone,
 		t3.identity_card,
 		t3.id,
+		t3.collection_status,
 		t4.due_time,
 		t4.amount,
 		t4.overdue_day
@@ -161,13 +160,14 @@
 		t1.assign_time,
 		t1.collector_id,
 		t1.collection_repay_status,
+		t1.collection_status,
 		t2.name,
 		t2.phone,
 		t2.identity_card
 		FROM
 		(
-		SELECT t0.order_id,any_value(id) as id,any_value(user_gid) as user_gid,any_value(assign_time) as assign_time,any_value(collector_id) as collector_id, any_value(collection_repay_status) as collection_repay_status FROM
-		(SELECT id,order_id, user_gid, create_time AS assign_time, collector_id, collection_repay_status FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
+		SELECT t0.order_id,any_value(id) as id,any_value(user_gid) as user_gid,any_value(assign_time) as assign_time,any_value(collector_id) as collector_id, any_value(collection_repay_status) as collection_repay_status,any_value(collection_status) as collection_status FROM
+		(SELECT id,order_id, user_gid, create_time AS assign_time, collector_id, collection_repay_status,collection_status FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
 		GROUP BY t0.order_id
 		) t1
 		LEFT JOIN
@@ -208,7 +208,7 @@
 				and t7.overdue_day &lt; #{params.overdueDayMax}
 			</if>
 			<if test="params.username != null and params.username != ''">
-				and t7.username = #{params.username}
+				and t7.username like concat('%', #{params.username} ,'%')
 			</if>
 			<if test="params.collectionRepayStatus != null and params.collectionRepayStatus != ''">
 				and t7.collection_repay_status = #{params.collectionRepayStatus}
@@ -498,6 +498,7 @@
 		t5.overdue_day,
 		t5.amount,
 		t5.id,
+		t5.real_repay,
 		t6.id AS user_id,
 		t6.username
 		FROM
@@ -513,6 +514,7 @@
 		t3.phone,
 		t3.identity_card,
 		t3.id,
+		t3.real_repay,
 		t4.due_time,
 		t4.amount,
 		t4.overdue_day
@@ -526,11 +528,12 @@
 		t1.collector_id,
 		t1.collection_repay_status,
 		t1.repay_time,
+		t1.real_repay,
 		t2.NAME,
 		t2.phone,
 		t2.identity_card
 		FROM
-		( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time FROM x_collection_task WHERE collection_repay_status = 2 ) t1
+		( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time,(collection_amount + collection_overdue_fee) real_repay FROM x_collection_task WHERE collection_repay_status = 2 ) t1
 		LEFT JOIN ( SELECT user_gid, NAME, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2 ON t1.user_gid = t2.user_gid
 		) t3
 		LEFT JOIN (
@@ -610,5 +613,66 @@
 		select count(1) from
 		<include refid="collection_repay_condition"/>
 	</select>
+
+	<!-- 查询催收派单时的相关信息 -->
+	<select id="getCollectionsByIds" resultType="com.ivay.ivay_repository.dto.CollectionTaskLoanInfo">
+		SELECT
+			t1.*,
+			t2.loan_status,
+			t2.repayment_status,
+			t2.due_time,
+			t2.due_amount,
+			t2.overdue_fee
+		FROM
+			( SELECT id, order_id, collector_id FROM `x_collection_task` WHERE id IN
+				<foreach collection="ids" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			 ) t1
+			LEFT JOIN x_record_loan t2 ON t1.order_id = t2.order_id
+	</select>
+
+	<update id="updateBatch" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+			update x_collection_task
+			<set>
+				<if test="item.orderId != null">
+					order_id = #{item.orderId},
+				</if>
+				<if test="item.userGid != null">
+					user_gid = #{item.userGid},
+				</if>
+				<if test="item.collectorId != null">
+					collector_id = #{item.collectorId},
+				</if>
+				<if test="item.collectionStatus != null">
+					collection_status = #{item.collectionStatus},
+				</if>
+				<if test="item.dueCollectionAmount != null">
+					due_collection_amount = #{item.dueCollectionAmount},
+				</if>
+				<if test="item.collectionAmount != null">
+					collection_amount = #{item.collectionAmount},
+				</if>
+				<if test="item.collectionOverdueFee != null">
+					collection_overdue_fee = #{item.collectionOverdueFee},
+				</if>
+				<if test="item.collectionRepayStatus != null">
+					collection_repay_status = #{item.collectionRepayStatus},
+				</if>
+				<if test="item.updateTime != null">
+					update_time = #{item.updateTime},
+				</if>
+				<if test="item.repayTime != null">
+					repay_time = #{item.repayTime},
+				</if>
+				<if test="item.enableFlag != null">
+					enable_flag = #{item.enableFlag},
+				</if>
+			</set>
+			where id = #{item.id}
+		</foreach>
+
+	</update>
 
 </mapper>
