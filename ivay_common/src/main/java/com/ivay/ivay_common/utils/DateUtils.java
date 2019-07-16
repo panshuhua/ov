@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -608,10 +609,31 @@ public class DateUtils {
         return cal.getTime();
     }
 
-
+    //获取某个日期的开始时间
+    public static Date getDayStartTime(Date d) {
+        Calendar calendar = Calendar.getInstance();
+        if(null != d) {
+            calendar.setTime(d);
+        }
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),    calendar.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return new Date(calendar.getTimeInMillis());
+    }
+    //获取某个日期的结束时间
+    public static Date getDayEndTime(Date d) {
+        Calendar calendar = Calendar.getInstance();
+        if(null != d) {
+            calendar.setTime(d);
+        }
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),    calendar.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return new Date(calendar.getTimeInMillis());
+    }
 
     public static void main(String[] args) throws Exception {
         String time = "2019-05-11 10:50:00";
+        System.out.println(getDayEndTime(new Date()));
+        System.out.println(getDayStartTime(new Date()));
         System.out.println(getDateEnd(time));
         System.out.println(getDateEnd(new Date()));
         System.out.println(addYears(5));

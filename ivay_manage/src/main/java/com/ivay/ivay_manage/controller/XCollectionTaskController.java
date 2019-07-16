@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -56,12 +57,12 @@ public class XCollectionTaskController {
         return response;
     }
 
-    @GetMapping("list")
+    @PostMapping("list")
     @ApiOperation(value = "催收搜索列表")
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
                                             @RequestParam(required = false, defaultValue = "1") int num,
-                                            CollectionTaskInfo collectionTaskInfo) {
-
+                                            @RequestBody(required = false) CollectionTaskInfo collectionTaskInfo) {
+        System.out.println(JSONObject.toJSONString(collectionTaskInfo));
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.list(limit, num, collectionTaskInfo));
         return response;

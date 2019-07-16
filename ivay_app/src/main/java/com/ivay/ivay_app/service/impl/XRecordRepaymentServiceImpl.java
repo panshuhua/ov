@@ -283,23 +283,24 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             } else {
                 // 本金已还完
                 xRecordRepayment.setRepaymentOverdueFee(diff);
-                // 首先：更新可借额度, 注意顺序
-                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
-                // 再更新剩余本金为零
-                xRecordLoan.setDueAmount(0L);
 
                 if (null != xCollectionTask) {
                     // 更新任务中的追回本金
                     xCollectionTask.setCollectionAmount(
-                        xCollectionTask.getCollectionAmount() + xRecordLoan.getDueAmount());
+                            xCollectionTask.getCollectionAmount() + xRecordLoan.getDueAmount());
                 }
+
+                // 首先：更新可借额度, 注意顺序
+                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getDueAmount());
+                // 再更新剩余本金为零
+                xRecordLoan.setDueAmount(0L);
 
                 if (xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() <= diff) {
 
                     if (null != xCollectionTask) {
                         // 更新任务中的追回逾期利息
                         xCollectionTask.setCollectionOverdueFee(
-                                xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueInterest());
+                                xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueFee());
                         xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.FINISHED_REPAY.getStatus());
                         xCollectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
                     }
@@ -329,7 +330,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                         if (null != xCollectionTask) {
                             // 更新催收任务中的追回逾期利息
                             xCollectionTask.setCollectionOverdueFee(
-                                    xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueInterest());
+                                    xCollectionTask.getCollectionOverdueFee() + diff);
                             xCollectionTask
                                     .setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
                         }

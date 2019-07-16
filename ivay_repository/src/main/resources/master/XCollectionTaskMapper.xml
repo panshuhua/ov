@@ -213,7 +213,7 @@
 			<if test="params.collectionRepayStatus != null and params.collectionRepayStatus != ''">
 				and t7.collection_repay_status = #{params.collectionRepayStatus}
 			</if>
-			<if test="params.collectionStatus != null and params.collectionStatus != ''">
+			<if test="params.collectionStatus != null">
 				and t7.collection_status = #{params.collectionStatus}
 			</if>
 		</where>

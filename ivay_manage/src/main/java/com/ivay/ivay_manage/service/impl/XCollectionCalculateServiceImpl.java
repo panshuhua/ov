@@ -53,12 +53,13 @@ public class XCollectionCalculateServiceImpl implements XCollectionCalculateServ
     public void saveCollectionCalculateBatch(Date date) {
         logger.info("开始统计昨天催收报表定时任务{}",new Date());
 
-        Date beginDate = null;
-        Date endDate = null;
         // 默认统计昨天的数据
         if (null == date) {
-            //DateUtils.
+            date = DateUtils.getBeginDayOfYesterday();
         }
+
+        Date beginDate = DateUtils.getDayStartTime(date);
+        Date endDate = DateUtils.getDayEndTime(date);
 
         // 查询日期，逾期账单，逾期用户，逾期本金，应收总额
         //XCollectionCalculate xCollectionCalculate = xCollectionCalculateDao.selectCollectionsCalculate();
