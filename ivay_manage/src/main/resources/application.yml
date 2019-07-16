@@ -8,15 +8,15 @@ dataSource:
   master: true
   slave: true
 
-#短信通知失效时间(单位：s)
+#短信通知失效时间(3天，单位：s)
 noticemsg:
   effectiveTime: 259200
 
 verifycode:
   #发送短信验证码的间隔时间(约2min，单位ms)
   effectiveTime: 120001
-  #短信验证码有效时间(10min，单位ms)
-  validTime: 600000
+  #短信验证码有效时间(24h，单位ms)
+  validTime: 86400000
 
 info:
   status: ok
