@@ -42,6 +42,8 @@ public interface XRecordRepaymentService {
      *
      * @param xRecordLoan
      * @param xRecordRepayment
+     * @param responseCode
+     * @param transTime
      */
-    void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode);
+    void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode, String transTime);
 }

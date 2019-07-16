@@ -1,14 +1,21 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSONObject;
+import com.ivay.ivay_app.dto.BaokimResponseStatus;
+import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
+import com.ivay.ivay_app.service.*;
+import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.enums.CollectionRepayStatusEnum;
 import com.ivay.ivay_common.enums.CollectionStatusEnum;
+import com.ivay.ivay_common.table.PageTableHandler;
+import com.ivay.ivay_common.table.PageTableRequest;
+import com.ivay.ivay_common.table.PageTableResponse;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.*;
 import com.ivay.ivay_repository.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,24 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import com.ivay.ivay_app.dto.BaokimResponseStatus;
-import com.ivay.ivay_app.dto.ValVirtualAccountRsp;
-import com.ivay.ivay_app.service.SysLogService;
-import com.ivay.ivay_app.service.ThreadPoolService;
-import com.ivay.ivay_app.service.XFirebaseNoticeService;
-import com.ivay.ivay_app.service.XRecordRepaymentService;
-import com.ivay.ivay_app.service.XVirtualAccountService;
-import com.ivay.ivay_common.advice.BusinessException;
-import com.ivay.ivay_common.table.PageTableHandler;
-import com.ivay.ivay_common.table.PageTableRequest;
-import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
-import com.ivay.ivay_repository.dao.master.XCollectionTaskDao;
-import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
-import com.ivay.ivay_repository.dao.master.XRecordRepaymentDao;
-import com.ivay.ivay_repository.dao.master.XUserInfoDao;
-import com.ivay.ivay_repository.dao.master.XVirtualAccountDao;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
@@ -256,11 +249,10 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     }
 
     @Override
-    public void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode) {
+    public void confirmRepayment(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, String responseCode, String transTime) {
         Date now = new Date();
         xRecordRepayment.setUpdateTime(now);
-        logger.info("进入还款更新状态方法-------------------------");
-        logger.info("baokim还款返回:{}", responseCode);
+        logger.info("进入还款更新状态方法----------\nbaokim还款返回:{}", responseCode);
         if (BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             logger.info("{}: 还款金额:{}, 应还本金:{},应还利息:{}", xRecordRepayment.getOrderId(),
                 xRecordRepayment.getRepaymentAmount(), xRecordLoan.getDueAmount(),
@@ -392,8 +384,11 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 }
             }
             // 实际扣款时间
-            xRecordRepayment.setEndTime(now);
-
+            if (StringUtils.isEmpty(transTime)) {
+                xRecordRepayment.setEndTime(now);
+            }else {
+                xRecordRepayment.setEndTime(DateUtils.stringToDate_YYYY_MM_DD_HH_MM_SS(transTime));
+            }
         } else {
             // 还款失败原因
             xRecordRepayment.setFailReason("baokim调用接口失败，还款失败");
@@ -410,14 +405,5 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 restTemplate.postForObject(repayment_success_post_handle_url, null, Long.class, params);
             });
         }
-    }
-
-    XRecordRepayment repaymentSuccess(String orderGid, String userGid) {
-        XRecordRepayment xRecordRepayment = xRecordRepaymentDao.getByGid(orderGid, userGid);
-        xRecordRepayment.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_SUCCESS);
-        Date now = new Date();
-        xRecordRepayment.setEndTime(now);
-        xRecordRepayment.setUpdateTime(now);
-        return xRecordRepaymentDao.update(xRecordRepayment) == 1 ? xRecordRepayment : null;
     }
 }

@@ -217,6 +217,10 @@ public class SysVariable {
 
     // 借还款合作伙伴名称
     public static final String PARTNER_BAOKIM = "baokim";
+    public static final String PARTNER_EPAY = "epay";
+    // 借还款使用的第3方接口供应商
+    public static final String LOAN_REPAYMENT_PARTNER = "LoanRepaymentPartner";
+
     // 对账类型
     public static final String CHECK_TYPE_LOAN = "1"; // 1-借款
     public static final String CHECK_TYPE_REPAY = "2"; // 2-还款
@@ -256,4 +260,5 @@ public class SysVariable {
 
     // 2分钟内不能重复发送验证码的rediskey后缀
     public static final String SEND_AUTHCODE_SUFFIX = "_send";
+
 }
