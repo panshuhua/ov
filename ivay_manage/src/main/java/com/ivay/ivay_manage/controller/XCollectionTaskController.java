@@ -61,7 +61,7 @@ public class XCollectionTaskController {
     @ApiOperation(value = "催收搜索列表")
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
                                             @RequestParam(required = false, defaultValue = "1") int num,
-                                            @RequestBody(required = false) CollectionTaskInfo collectionTaskInfo) {
+                                            CollectionTaskInfo collectionTaskInfo) {
 
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionTaskService.list(limit, num, collectionTaskInfo));

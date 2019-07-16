@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.master.XCollectionCalculateDao">
+
+    <sql id="list_condition">
+        <where>
+            			<if test="params.id != null and params.id != ''">
+				and id = #{params.id} 
+			</if>
+			<if test="params.calculate_date != null and params.calculate_date != ''">
+				and calculate_date = #{params.calculateDate} 
+			</if>
+			<if test="params.overdue_order != null and params.overdue_order != ''">
+				and overdue_order = #{params.overdueOrder} 
+			</if>
+			<if test="params.overdue_user != null and params.overdue_user != ''">
+				and overdue_user = #{params.overdueUser} 
+			</if>
+			<if test="params.overdue_principal != null and params.overdue_principal != ''">
+				and overdue_principal = #{params.overduePrincipal} 
+			</if>
+			<if test="params.amount_receivable != null and params.amount_receivable != ''">
+				and amount_receivable = #{params.amountReceivable} 
+			</if>
+			<if test="params.number_repay != null and params.number_repay != ''">
+				and number_repay = #{params.numberRepay} 
+			</if>
+			<if test="params.amount_repay != null and params.amount_repay != ''">
+				and amount_repay = #{params.amountRepay} 
+			</if>
+			<if test="params.create_time != null and params.create_time != ''">
+				and create_time = #{params.createTime} 
+			</if>
+			<if test="params.update_time != null and params.update_time != ''">
+				and update_time = #{params.updateTime} 
+			</if>
+
+        </where>
+    </sql>
+
+    <select id="count" resultType="int">
+        select count(1) from x_collection_calculatesys_user t
+        <include refid="list_condition"/>
+    </select>
+
+    <select id="list" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+        select * from x_collection_calculatesys_user t
+        <include refid="list_condition"/>
+        <if test="params.orderBy!=null and params.orderBy!=''">
+            ${params.orderBy}
+        </if>
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <update id="update">
+        update x_collection_calculatesys_user t
+        <set>
+            			<if test="calculate_date != null">
+				calculate_date = #{calculateDate}, 
+			</if>
+			<if test="overdue_order != null">
+				overdue_order = #{overdueOrder}, 
+			</if>
+			<if test="overdue_user != null">
+				overdue_user = #{overdueUser}, 
+			</if>
+			<if test="overdue_principal != null">
+				overdue_principal = #{overduePrincipal}, 
+			</if>
+			<if test="amount_receivable != null">
+				amount_receivable = #{amountReceivable}, 
+			</if>
+			<if test="number_repay != null">
+				number_repay = #{numberRepay}, 
+			</if>
+			<if test="amount_repay != null">
+				amount_repay = #{amountRepay}, 
+			</if>
+			<if test="create_time != null">
+				create_time = #{createTime}, 
+			</if>
+			<if test="update_time != null">
+				update_time = #{updateTime}, 
+			</if>
+
+        </set>
+        where t.id = #{id}
+    </update>
+
+</mapper>
