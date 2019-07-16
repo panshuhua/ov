@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ivay.ivay_common.enums.CollectionRepayStatusEnum;
 import com.ivay.ivay_common.enums.CollectionStatusEnum;
 import com.ivay.ivay_repository.model.*;
@@ -367,11 +368,16 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             // 更新催收任务信息
             if (null != xCollectionTask) {
                 if (xCollectionTask.getCollectorId() != null) {
+                    logger.info("已指派催收人，更新催收任务{}", JSONObject.toJSONString(xCollectionTask));
+
                     xCollectionTask.setUpdateTime(new Date());
+                    xCollectionTask.setRepayTime(xRecordRepayment.getCreateTime());
+
                     xCollectionTaskDao.update(xCollectionTask);
             
                     // 如果未指派钱就还款
                 } else {
+                    logger.info("未指派催收人，更新催收任务{}", JSONObject.toJSONString(xCollectionTask));
                     xCollectionTask.setDueCollectionAmount(
                         xCollectionTask.getDueCollectionAmount() - xCollectionTask.getCollectionAmount());
                     xCollectionTask.setCollectionAmount(0L);
