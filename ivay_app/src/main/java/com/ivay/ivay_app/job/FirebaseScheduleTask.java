@@ -28,7 +28,7 @@ public class FirebaseScheduleTask {
     @Scheduled(cron = "${timer.firebaseExpireNotice}")
     private void expireNotice() {
         String date = DateUtils.getNowDateYYYYMMDD();
-        if (!redisLock.tryeExpireNoticeLock(date)) {
+        if (!redisLock.tryExpireNoticeLock(date)) {
             logger.error(date + ":已经开始发送到期提醒");
             return;
         }

@@ -1,7 +1,21 @@
 package com.ivay.ivay_app.service.impl;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.ivay.ivay_app.service.XUserContactsService;
 import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.RedisLock;
 import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_repository.dao.master.XUserAppNumDao;
 import com.ivay.ivay_repository.dao.master.XUserContactsDao;
@@ -11,17 +25,6 @@ import com.ivay.ivay_repository.model.XUserAppNum;
 import com.ivay.ivay_repository.model.XUserContacts;
 import com.ivay.ivay_repository.model.XUserInfo;
 import com.ivay.ivay_repository.model.XUserRisk;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class XUserIContactsServiceImpl implements XUserContactsService {
@@ -35,6 +38,9 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
 
     @Autowired
     private XUserRiskDao xUserRiskDao;
+
+    @Autowired
+    private RedisLock redisLock;
 
     @Override
     public boolean saveAll(String type, XRiskInfo riskInfo, HttpServletRequest request) throws Exception {
@@ -115,7 +121,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
                     contacts.forEach(u -> {
                         try {
                             XUserContacts xUserContact =
-                                    new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());
+                                new XUserContacts(gid, updateDate, u.getContactName(), u.getPhoneNumber());
                             xUserContacts.add(xUserContact);
                             if (xUserContacts.size() >= 200) {
                                 xUserContactsDao.insertBatchContacts(xUserContacts);
@@ -141,6 +147,10 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         // 查询当天是否已上传appNum，如果没有上传才能保存数据
         Integer count = xUserAppNumDao.countAppNum(gid, updateDate);
         if (count <= 0) {
+            if (!redisLock.tryAppNumLock(updateDate, gid)) {
+                logger.error(updateDate + ":" + gid + ":appNum已保存");
+                return;
+            }
             xUserAppNumDao.saveAppNum(xUserAppNum);
         }
 
@@ -152,6 +162,10 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         logger.info("gps风控表中已有的数据个数：" + userNum + "-------------------");
 
         if (userNum == 0 || userNum == null) {
+            if (!redisLock.tryGpsLock(gid)) {
+                logger.error(gid + ":gps已保存");
+                return;
+            }
             logger.info("保存风控表数据gps：" + userNum + "-------------------");
             xUserRiskDao.save(xUserRisk);
         } else {
@@ -166,6 +180,10 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
         Integer userNum = xUserRiskDao.countByUserGid(gid);
         logger.info("other风控表中已有的数据个数：" + userNum + "-------------------");
         if (userNum == null || userNum == 0) {
+            if (!redisLock.tryOtherRiskLock(gid)) {
+                logger.error(gid + ":其他风控数据已保存");
+                return;
+            }
             logger.info("保存风控表数据other：" + userNum + "-------------------");
             xUserRiskDao.save(xUserRisk);
         } else {
