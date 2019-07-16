@@ -549,6 +549,67 @@ public class DateUtils {
         return dateStr;
     }
 
+    /**
+     * @Description 获取昨天的开始时间
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.Date
+     * @Date 2019/7/16 14:16
+     */
+    public static Date getBeginDayOfYesterday() {
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(getDayBegin());
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        return cal.getTime();
+    }
+
+    /**
+     * @Description 获取昨天的结束时间
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.Date
+     * @Date 2019/7/16 14:16
+     */
+    public static Date getEndDayOfYesterDay() {
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(getDayEnd());
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        return cal.getTime();
+    }
+
+    /**
+     * @Description 获取当天的开始时间
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.Date
+     * @Date 2019/7/16 14:16
+     */
+    public static java.util.Date getDayBegin() {
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    /**
+     * @Description 获取当天的结束时间
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.Date
+     * @Date 2019/7/16 14:16
+     */
+    public static java.util.Date getDayEnd() {
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        return cal.getTime();
+    }
+
+
+
     public static void main(String[] args) throws Exception {
         String time = "2019-05-11 10:50:00";
         System.out.println(getDateEnd(time));

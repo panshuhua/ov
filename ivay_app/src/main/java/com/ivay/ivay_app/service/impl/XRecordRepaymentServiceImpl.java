@@ -299,10 +299,19 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 if (null != xCollectionTask) {
                     // 更新任务中的追回本金
                     xCollectionTask.setCollectionAmount(
-                        xCollectionTask.getCollectionAmount() + xRecordRepayment.getRepaymentAmount());
+                        xCollectionTask.getCollectionAmount() + xRecordLoan.getDueAmount());
                 }
 
                 if (xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() <= diff) {
+
+                    if (null != xCollectionTask) {
+                        // 更新任务中的追回逾期利息
+                        xCollectionTask.setCollectionOverdueFee(
+                                xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueInterest());
+                        xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.FINISHED_REPAY.getStatus());
+                        xCollectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
+                    }
+
                     // 记录或许多还的金额
                     xRecordLoan
                         .setMoreRepaymentAmount(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
@@ -311,13 +320,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                     xRecordLoan.setOverdueInterest(0L);
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_SUCCESS);
 
-                    if (null != xCollectionTask) {
-                        // 更新任务中的追回逾期利息
-                        xCollectionTask.setCollectionOverdueFee(
-                            xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueInterest());
-                        xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.FINISHED_REPAY.getStatus());
-                        xCollectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
-                    }
+
                     logger.info("{}: 还清全部费用", xRecordRepayment.getOrderId());
                 } else {
                     // 还有逾期费用没还, 先还利息, 再还滞纳金
@@ -331,17 +334,18 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                                 .setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
                         }
                     } else {
+                        if (null != xCollectionTask) {
+                            // 更新催收任务中的追回逾期利息
+                            xCollectionTask.setCollectionOverdueFee(
+                                    xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueInterest());
+                            xCollectionTask
+                                    .setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
+                        }
+
                         xRecordLoan.setOverdueInterest(0L);
                         xRecordLoan
                             .setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
 
-                        if (null != xCollectionTask) {
-                            // 更新催收任务中的追回逾期利息
-                            xCollectionTask.setCollectionOverdueFee(
-                                xCollectionTask.getCollectionOverdueFee() + xRecordLoan.getOverdueInterest());
-                            xCollectionTask
-                                .setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
-                        }
                     }
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
                     logger.info("{}: 部分逾期费用未还清:{}", xRecordRepayment.getOrderId(), xRecordLoan.getOverdueFee());

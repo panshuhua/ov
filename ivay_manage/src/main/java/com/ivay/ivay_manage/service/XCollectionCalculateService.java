@@ -4,6 +4,8 @@ import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.model.XCollectionCalculate;
 
+import java.util.Date;
+
 public interface XCollectionCalculateService {
     XCollectionCalculate save(XCollectionCalculate xCollectionCalculate);
 
@@ -18,9 +20,9 @@ public interface XCollectionCalculateService {
     /**
      * @Description 催收报表定时任务
      * @Author Ryan
-     * @Param []
+     * @Param [date]
      * @Return void
-     * @Date 2019/7/15 11:35
+     * @Date 2019/7/16 14:04
      */
-    void saveCollectionCalculateBatch();
+    void saveCollectionCalculateBatch(Date date);
 }

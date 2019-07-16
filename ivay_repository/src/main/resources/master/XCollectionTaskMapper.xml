@@ -509,9 +509,9 @@
 		t5.identity_card,
 		t5.due_time,
 		t5.overdue_day,
-		t5.amount,
 		t5.id,
 		t5.real_repay,
+		t5.amount,
 		t6.id AS user_id,
 		t6.username
 		FROM
@@ -528,8 +528,8 @@
 		t3.identity_card,
 		t3.id,
 		t3.real_repay,
+		t3.amount,
 		t4.due_time,
-		t4.amount,
 		t4.overdue_day
 		FROM
 		(
@@ -542,18 +542,19 @@
 		t1.collection_repay_status,
 		t1.repay_time,
 		t1.real_repay,
+		t1.amount,
 		t2.NAME,
 		t2.phone,
 		t2.identity_card
 		FROM
-		( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time,(collection_amount + collection_overdue_fee) real_repay FROM x_collection_task WHERE collection_repay_status = 2 ) t1
+		( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time,(collection_amount + collection_overdue_fee) real_repay,
+		(collection_amount + collection_overdue_fee) amount FROM x_collection_task WHERE collection_repay_status = 2 ) t1
 		LEFT JOIN ( SELECT user_gid, NAME, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2 ON t1.user_gid = t2.user_gid
 		) t3
 		LEFT JOIN (
 		SELECT
 		order_id,
 		due_time,
-		( due_amount + overdue_fee ) AS amount,
 		DATEDIFF( SYSDATE( ), DATE_FORMAT( due_time, "%y%m%d" ) ) AS overdue_day
 		FROM
 		x_record_loan
