@@ -1,6 +1,5 @@
 package com.ivay.ivay_manage.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -8,8 +7,8 @@ import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_manage.service.XCollectionTaskService;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
 import com.ivay.ivay_repository.dto.UserName;
+import com.ivay.ivay_repository.dto.XCollectionOrderInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
-import com.ivay.ivay_repository.model.XRecordLoan;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -83,15 +82,15 @@ public class XCollectionTaskController {
     @ApiOperation(value = "指派催收人")
     public Response<Boolean> updateCollector(@RequestParam Integer collectorId,
                                              @RequestParam(required = true) String ids) {
-        if(StringUtils.isBlank(ids)){
+        if (StringUtils.isBlank(ids)) {
             throw new BusinessException("参数不能为空！");
         }
         String[] stringIds = ids.split(",");
         List<Integer> list = new ArrayList<>();
         for (String strId : stringIds) {
-            try{
+            try {
                 list.add(Integer.parseInt(strId));
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -134,8 +133,8 @@ public class XCollectionTaskController {
             @ApiImplicitParam(name = "taskId", value = "档案id", dataType = "Long", paramType = "query")
     })
     @ApiOperation("借款订单详情")
-    public Response<XRecordLoan> loanOrderInfo(@RequestParam long taskId) {
-        Response<XRecordLoan> response = new Response<>();
+    public Response<XCollectionOrderInfo> loanOrderInfo(@RequestParam long taskId) {
+        Response<XCollectionOrderInfo> response = new Response<>();
         response.setBo(xCollectionTaskService.loanOrderInfo(taskId));
         return response;
     }

@@ -470,8 +470,21 @@
 			t7.due_time DESC
 	</select>
 
-	<select id="loanOrderInfo" resultType="com.ivay.ivay_repository.model.XRecordLoan">
-		SELECT x_record_loan.* FROM x_record_loan
+	<select id="loanOrderInfo" resultType="com.ivay.ivay_repository.dto.XCollectionOrderInfo">
+		SELECT
+			x_record_loan.user_gid,
+			x_record_loan.gid,
+			x_record_loan.order_id,
+			x_record_loan.loan_Time,
+			x_record_loan.loan_Amount,
+			x_record_loan.due_Amount,
+			x_record_loan.overdue_Fee,
+			x_record_loan.due_Time,
+			x_record_loan.loan_Status,
+			x_record_loan.repayment_Status,
+			x_record_loan.last_Repayment_Time,
+			DATEDIFF(sysdate(),x_record_loan.due_Time) overdueDay
+		FROM x_record_loan
 		left join x_collection_task on x_record_loan.order_id = x_collection_task.order_id
 		where x_collection_task.id=#{taskId}
 	</select>

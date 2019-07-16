@@ -15,6 +15,7 @@ import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
 import com.ivay.ivay_repository.dto.CollectionTaskLoanInfo;
 import com.ivay.ivay_repository.dto.CollectionTaskResult;
+import com.ivay.ivay_repository.dto.XCollectionOrderInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import org.apache.commons.lang3.StringUtils;
@@ -146,13 +147,13 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         //未指派的集合
         List<XCollectionTask> notAssignList = new ArrayList<>();
 
-        for (CollectionTaskLoanInfo collectionTaskLoanInfo: results) {
+        for (CollectionTaskLoanInfo collectionTaskLoanInfo : results) {
             //借款状态为 1打款成功 还款状态为 2已打款 还款时间已过时的
             if (collectionTaskLoanInfo.getLoanStatus() == 1 && collectionTaskLoanInfo.getRepaymentStatus() != 2 &&
                     collectionTaskLoanInfo.getDueTime().getTime() < System.currentTimeMillis()) {
 
                 XCollectionTask collectionTask = new CollectionTaskLoanInfo();
-                BeanUtils.copyProperties(collectionTaskLoanInfo,collectionTask);
+                BeanUtils.copyProperties(collectionTaskLoanInfo, collectionTask);
                 //首次指派
                 if (collectionTask.getCollectionStatus() == CollectionStatusEnum.WAITING_COLLECTION.getStatus()) {
                     collectionTask.setCollectorId(collectorId);
@@ -294,8 +295,10 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
      * @return
      */
     @Override
-    public XRecordLoan loanOrderInfo(long taskId) {
-        return xCollectionTaskDao.loanOrderInfo(taskId);
+    public XCollectionOrderInfo loanOrderInfo(long taskId) {
+        XCollectionOrderInfo xCollectionOrderInfo = xCollectionTaskDao.loanOrderInfo(taskId);
+        xCollectionOrderInfo.setOverdueLevel(OverDueLevelEnum.getLevelByDay(xCollectionOrderInfo.getOverdueDay()));
+        return xCollectionOrderInfo;
     }
 
     /**
@@ -308,5 +311,4 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
     public PageTableResponse repaymentInfo(long taskId) {
         return new PageTableResponse<>(xCollectionTaskDao.repaymentInfo(taskId));
     }
-
 }

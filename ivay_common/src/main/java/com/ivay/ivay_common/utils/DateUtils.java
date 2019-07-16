@@ -1,17 +1,13 @@
 package com.ivay.ivay_common.utils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DateUtils {
     private static Logger logger = LoggerFactory.getLogger(DateUtils.class);
@@ -199,8 +195,7 @@ public class DateUtils {
      * 补充年份 排除1月份获取同年12月份时间&12月份获取同年1月份时间
      *
      * @param dateStr
-     * @param date
-     *            参考时间
+     * @param date    参考时间
      * @return
      */
     public static Date strToDateDafueYear(String dateStr, Date date) {
@@ -217,10 +212,10 @@ public class DateUtils {
         } else {
             // 排除1月份获取同年12月份时间&12月份获取同年1月份时间
             if (calendar.getTimeInMillis() < now.getTimeInMillis() && calendar.get(Calendar.MONTH) == 0
-                && now.get(Calendar.MONTH) == 11) {
+                    && now.get(Calendar.MONTH) == 11) {
                 calendar.set(Calendar.YEAR, now.get(Calendar.YEAR) + 1);
             } else if (calendar.getTimeInMillis() > now.getTimeInMillis() && calendar.get(Calendar.MONTH) == 11
-                && now.get(Calendar.MONTH) == 0) {
+                    && now.get(Calendar.MONTH) == 0) {
                 calendar.set(Calendar.YEAR, now.get(Calendar.YEAR) - 1);
             }
         }
@@ -334,7 +329,7 @@ public class DateUtils {
         Calendar matchCal = Calendar.getInstance();
         matchCal.setTime(matchTime);
 
-        Calendar stopPlayTicketCal = (Calendar)matchCal.clone();
+        Calendar stopPlayTicketCal = (Calendar) matchCal.clone();
         stopPlayTicketCal.set(Calendar.HOUR_OF_DAY, 4);
         stopPlayTicketCal.set(Calendar.MINUTE, 50);
         stopPlayTicketCal.set(Calendar.SECOND, 0);
@@ -347,12 +342,12 @@ public class DateUtils {
         }
         stopPlayTicketCal.add(Calendar.MILLISECOND, -aheadMilli);
 
-        Calendar startPlayTicketCal = (Calendar)matchCal.clone();
+        Calendar startPlayTicketCal = (Calendar) matchCal.clone();
         startPlayTicketCal.set(Calendar.HOUR_OF_DAY, 9);
         startPlayTicketCal.set(Calendar.MINUTE, 0);
         startPlayTicketCal.set(Calendar.SECOND, 0);
 
-        Calendar weStartPlayTicketCal = (Calendar)startPlayTicketCal.clone();
+        Calendar weStartPlayTicketCal = (Calendar) startPlayTicketCal.clone();
         weStartPlayTicketCal.add(Calendar.MILLISECOND, +aheadMilli);
         // if(matchCal.after(stopPlayTicketCal)&&(matchCal.before(startPlayTicketCal)||matchCal.equals(startPlayTicketCal))){
         //
@@ -403,8 +398,7 @@ public class DateUtils {
     /**
      * 取得系统当前时间前n个月的相对应的一天
      *
-     * @param n
-     *            int
+     * @param n int
      * @return String yyyy-mm-dd
      */
     public static String getNMonthBeforeCurrentDay(int n) {
@@ -448,14 +442,14 @@ public class DateUtils {
      * @param endDate
      * @return
      */
-    public static String getTwoDay(Date startDate, Date endDate) {
+    public static long getTwoDay(Date startDate, Date endDate) {
         long day = 0;
         try {
             day = (endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000);
         } catch (Exception e) {
-            return "";
+            logger.error("日期计算报错：{}", e.getMessage());
         }
-        return day + "";
+        return day;
     }
 
     /**

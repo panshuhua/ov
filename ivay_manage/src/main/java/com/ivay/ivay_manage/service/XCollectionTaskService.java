@@ -2,8 +2,8 @@ package com.ivay.ivay_manage.service;
 
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
+import com.ivay.ivay_repository.dto.XCollectionOrderInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
-import com.ivay.ivay_repository.model.XRecordLoan;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ public interface XCollectionTaskService {
      * @param taskId
      * @return
      */
-    XRecordLoan loanOrderInfo(long taskId);
+    XCollectionOrderInfo loanOrderInfo(long taskId);
 
     /**
      * 还款详情

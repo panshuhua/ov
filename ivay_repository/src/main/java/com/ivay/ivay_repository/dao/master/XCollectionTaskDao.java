@@ -2,8 +2,8 @@ package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.dto.CollectionTaskLoanInfo;
 import com.ivay.ivay_repository.dto.CollectionTaskResult;
+import com.ivay.ivay_repository.dto.XCollectionOrderInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
-import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
 import org.apache.ibatis.annotations.*;
 
@@ -98,7 +98,7 @@ public interface XCollectionTaskDao {
                                                           @Param("offset") Integer offset,
                                                           @Param("limit") Integer limit);
 
-    XRecordLoan loanOrderInfo(@Param("taskId") long taskId);
+    XCollectionOrderInfo loanOrderInfo(@Param("taskId") long taskId);
 
     List<XRecordRepayment> repaymentInfo(@Param("taskId") long taskId);
 

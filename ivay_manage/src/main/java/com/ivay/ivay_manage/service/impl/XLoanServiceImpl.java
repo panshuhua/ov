@@ -358,7 +358,7 @@ public class XLoanServiceImpl implements XLoanService {
                         lastRepaymentDay = xrl.getLastRepaymentTime();
                         // 逾期
                         if (DateUtils.isDateAfter(lastRepaymentDay, xrl.getDueTime()) > 0) {
-                            overdueDay = Long.parseLong(DateUtils.getTwoDay(xrl.getDueTime(), lastRepaymentDay));
+                            overdueDay = DateUtils.getTwoDay(xrl.getDueTime(), lastRepaymentDay);
                         }
                     }
                     // 第一笔还款时间
@@ -382,7 +382,7 @@ public class XLoanServiceImpl implements XLoanService {
         }
 
         // 與第一次交易的天數間隔
-        long diff = Long.parseLong(DateUtils.getTwoDay(firstRepaymentTime, new Date()));
+        long diff = DateUtils.getTwoDay(firstRepaymentTime, new Date());
         int creditLineCount = xUserInfo.getCreditLineCount() == null ? 0 : xUserInfo.getCreditLineCount();
         // 根据实际还清借款时间触发, 第N次提额时间距离首笔交易时间分别不小于5*N天
         return 5 * (creditLineCount + 1) <= diff;
