@@ -15,8 +15,7 @@ public interface XUserExtInfoDao {
             " #{photo1Url}, #{photo2Url}, #{photo3Url}, #{createTime}, #{updateTime}, #{enableFlag})")
     int save(XUserExtInfo xUserExtInfo);
 
-    @Select("select * from x_user_ext_info t where t.user_gid = #{gid} and t.enable_flag='Y'")
-    XUserExtInfo getByGid(String gid);
+    XUserExtInfo getByGid(@Param("userGid") String gid);
 
     //    @Delete("delete from x_user_ext_info where id = #{id}") // 物理删除
     int delete(@Param("userGid") String gid);

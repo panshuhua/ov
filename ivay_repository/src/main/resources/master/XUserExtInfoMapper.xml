@@ -98,6 +98,22 @@
         update x_user_ext_info t set enable_flag = "N" where t.user_gid = #{userGid}
     </delete>
 
+    <!--邏輯刪除授信信息-->
+    <select id="getByGid" resultType="com.ivay.ivay_repository.model.XUserExtInfo">
+        select
+            user_Gid,
+            major_Relationship,
+            major_Name,
+            major_Phone,
+            bak_Relationship,
+            bak_Name,
+            bak_Phone,
+            (SELECT url from file_info t WHERE t.id=xuei.photo1_url) photo1_url,
+            (SELECT url from file_info t WHERE t.id=xuei.photo2_url) photo2_url,
+            (SELECT url from file_info t WHERE t.id=xuei.photo3_url) photo3_url
+        from x_user_ext_info xuei where xuei.user_gid = #{userGid} and xuei.enable_flag='Y'
+    </select>
+
     <select id="count" resultType="int">
         select count(1) from x_user_ext_info t
         <include refid="list_condition"/>
