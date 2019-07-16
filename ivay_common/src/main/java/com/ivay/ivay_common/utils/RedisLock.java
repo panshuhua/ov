@@ -109,7 +109,7 @@ public class RedisLock {
         return releaseLock(lockKey, date);
     }
 
-    public boolean tryeExpireNoticeLock(String date) {
+    public boolean tryExpireNoticeLock(String date) {
         String lockKey = SysVariable.REDIS_EXPIRE_NOTICE_PREFIX + date;
         return tryLock(lockKey, date, EXPIRE_TIME, TimeUnit.MILLISECONDS);
     }
@@ -127,6 +127,38 @@ public class RedisLock {
     public boolean releaseOverdueNoticeLock(String date) {
         String lockKey = SysVariable.REDIS_OVERDUE_NOTICE_PREFIX + date;
         return releaseLock(lockKey, date);
+    }
+
+    public boolean tryAppNumLock(String updateDate, String userGid) {
+        String requestId = updateDate + ":" + userGid;
+        String lockKey = SysVariable.REDIS_RISK_APPNUM_PREFIX + requestId;
+        return tryLock(lockKey, requestId, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseAppNumLock(String updateDate, String userGid) {
+        String requestId = updateDate + ":" + userGid;
+        String lockKey = SysVariable.REDIS_RISK_APPNUM_PREFIX + requestId;
+        return releaseLock(lockKey, requestId);
+    }
+
+    public boolean tryGpsLock(String userGid) {
+        String lockKey = SysVariable.REDIS_RISK_GPS_PREFIX + userGid;
+        return tryLock(lockKey, userGid, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseGpsLock(String userGid) {
+        String lockKey = SysVariable.REDIS_RISK_GPS_PREFIX + userGid;
+        return releaseLock(lockKey, userGid);
+    }
+
+    public boolean tryOtherRiskLock(String userGid) {
+        String lockKey = SysVariable.REDIS_RISK_OTHER_PREFIX + userGid;
+        return tryLock(lockKey, userGid, EXPIRE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean releaseOtherRiskLock(String userGid) {
+        String lockKey = SysVariable.REDIS_RISK_OTHER_PREFIX + userGid;
+        return releaseLock(lockKey, userGid);
     }
 
     /**

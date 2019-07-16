@@ -137,6 +137,12 @@ public class SysVariable {
     // redis 自动发送逾期短信/通知提醒锁前缀
     public static final String REDIS_OVERDUE_NOTICE_PREFIX = "overdueNotice:";
 
+    // redis 保存风控数据
+    public static final String REDIS_RISK_APPNUM_PREFIX = "appNum:";
+    public static final String REDIS_RISK_CONTACTS_PREFIX = "contacts:";
+    public static final String REDIS_RISK_GPS_PREFIX = "gps:";
+    public static final String REDIS_RISK_OTHER_PREFIX = "other:";
+
     // 角色配置
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";
