@@ -2,9 +2,9 @@ package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.dto.CollectionTaskLoanInfo;
 import com.ivay.ivay_repository.dto.CollectionTaskResult;
-import com.ivay.ivay_repository.dto.XRepaymentAccountInfo;
 import com.ivay.ivay_repository.model.XCollectionTask;
 import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -100,7 +100,7 @@ public interface XCollectionTaskDao {
 
     XRecordLoan loanOrderInfo(@Param("taskId") long taskId);
 
-    List<XRepaymentAccountInfo> repaymentInfo(@Param("taskId") long taskId);
+    List<XRecordRepayment> repaymentInfo(@Param("taskId") long taskId);
 
     /**
      * @Description 查询催收回款列表

@@ -33,24 +33,21 @@ import java.util.List;
 @Api(tags = "用户")
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("users")
 public class UserController {
-
-    private static final Logger log = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserDao userDao;
     @Autowired
     private RoleDao roleDao;
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private XAuditService xAuditService;
-
-    @Autowired
-    private RoleService roleService;
 
     @LogAnnotation
     @PostMapping
@@ -61,7 +58,6 @@ public class UserController {
         if (u != null) {
             throw new IllegalArgumentException(sysRoleUser.getUsername() + "已存在");
         }
-
         return userService.addUser(sysRoleUser);
     }
 
@@ -101,7 +97,7 @@ public class UserController {
         sysRoleUser.setHeadImgUrl(headImgUrl);
 
         userService.updateUser(sysRoleUser);
-        log.debug("{}修改了头像", user.getUsername());
+        logger.debug("{}修改了头像", user.getUsername());
     }
 
     @LogAnnotation

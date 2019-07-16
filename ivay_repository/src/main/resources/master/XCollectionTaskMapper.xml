@@ -476,7 +476,7 @@
 		where x_collection_task.id=#{taskId}
 	</select>
 
-	<select id="repaymentInfo" resultType="com.ivay.ivay_repository.dto.XRepaymentAccountInfo">
+	<select id="repaymentInfo" resultType="com.ivay.ivay_repository.model.XRecordRepayment">
 		SELECT x_record_repayment.* FROM x_record_repayment
 		left join x_collection_task on x_record_repayment.order_id = x_collection_task.order_id
 		where x_collection_task.id=#{taskId}
