@@ -38,3 +38,8 @@ token:
   jwtSecret: (XX:)_$^11244^%$_(XX:)_@@++--(XX:)_++++_.sds_(XX:)
 
 xAppEvents_event_url: http://10.53.138.16:8080/star/xAppEvents/save
+
+# 定时器
+timer:
+  # 逾期订单生成催收任务
+  overdueOrder: 0 10 0 1/1 * ?
