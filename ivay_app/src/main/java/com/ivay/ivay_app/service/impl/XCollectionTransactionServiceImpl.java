@@ -1,35 +1,10 @@
 package com.ivay.ivay_app.service.impl;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.ivay.ivay_app.dto.BaokimResponseStatus;
-import com.ivay.ivay_app.dto.CollectionTransactionNotice;
-import com.ivay.ivay_app.dto.CollectionTransactionRsp;
-import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
-import com.ivay.ivay_app.dto.EbayResponseStatus;
-import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
+import com.ivay.ivay_app.dto.*;
 import com.ivay.ivay_app.service.XCollectionTransactionService;
 import com.ivay.ivay_app.service.XConfigService;
 import com.ivay.ivay_app.service.XRecordRepaymentService;
-import com.ivay.ivay_common.utils.DateUtils;
-import com.ivay.ivay_common.utils.JsonUtils;
-import com.ivay.ivay_common.utils.MsgAuthCode;
-import com.ivay.ivay_common.utils.RSAEncryptShaCollection;
-import com.ivay.ivay_common.utils.RSASign;
-import com.ivay.ivay_common.utils.StringUtil;
-import com.ivay.ivay_common.utils.SysVariable;
-import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_common.utils.*;
 import com.ivay.ivay_repository.dao.master.TokenDao;
 import com.ivay.ivay_repository.dao.master.XCollectionTransactionDao;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
@@ -37,6 +12,18 @@ import com.ivay.ivay_repository.model.XCollectionTransaction;
 import com.ivay.ivay_repository.model.XEbayCollectionNotice;
 import com.ivay.ivay_repository.model.XRecordLoan;
 import com.ivay.ivay_repository.model.XRecordRepayment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 @Service
 public class XCollectionTransactionServiceImpl implements XCollectionTransactionService {
@@ -121,7 +108,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         logger.info("ReferenceId=" + ReferenceId);
         rsp.setReferenceId(ReferenceId);
         String rspEncryptStr =
-            ResponseCode + "|" + ResponseMessage + "|" + ReferenceId + "|" + AccNo + "|" + AffTransDebt;
+                ResponseCode + "|" + ResponseMessage + "|" + ReferenceId + "|" + AccNo + "|" + AffTransDebt;
         logger.info("返回给baokim的签名明文=" + rspEncryptStr);
 
         String rspSignature = RSAEncryptShaCollection.encrypt2Sha1(rspEncryptStr);
@@ -196,8 +183,8 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         }
 
         String encryptStr = RequestId + "|" + RequestTime + "|" + PartnerCode + "|" + AccNo + "|" + ClientIdNo + "|"
-            + TransId + "|" + TransAmount + "|" + TransTime + "|" + BefTransDebt + "|" + AffTransDebt + "|"
-            + AccountType + "|" + OrderId;
+                + TransId + "|" + TransAmount + "|" + TransTime + "|" + BefTransDebt + "|" + AffTransDebt + "|"
+                + AccountType + "|" + OrderId;
 
         logger.info("baokim请求的签名明文：" + encryptStr);
         logger.info("baokim请求发送的签名：" + Signature);
@@ -292,7 +279,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
             // 更新时间
             xRecordRepayment.setUpdateTime(now);
 
-            xRecordRepaymentService.confirmRepayment(xRecordLoan, xRecordRepayment, ResponseCode);
+            xRecordRepaymentService.confirmRepayment(xRecordLoan, xRecordRepayment, ResponseCode, TransTime);
             return rsp;
         }
 
@@ -354,9 +341,9 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
 
             // 有没有传递必要的字段
             if (StringUtils.isEmpty(requestId) || StringUtils.isEmpty(requestTime) || StringUtils.isEmpty(referenceId)
-                || StringUtils.isEmpty(mapId) || StringUtils.isEmpty(amount) || StringUtils.isEmpty(signature)
-                || StringUtils.isEmpty(merchantCode) || StringUtils.isEmpty(fee) || StringUtils.isEmpty(fee)
-                || StringUtils.isEmpty(vaName) || StringUtils.isEmpty(vaAcc)) {
+                    || StringUtils.isEmpty(mapId) || StringUtils.isEmpty(amount) || StringUtils.isEmpty(signature)
+                    || StringUtils.isEmpty(merchantCode) || StringUtils.isEmpty(fee) || StringUtils.isEmpty(fee)
+                    || StringUtils.isEmpty(vaName) || StringUtils.isEmpty(vaAcc)) {
                 responseCode = EbayResponseStatus.NOTICE_MISSING_FIELD.getCode();
                 responseMessage = EbayResponseStatus.NOTICE_MISSING_FIELD.getMessage();
                 setRsp(rsp, responseCode, responseMessage);
