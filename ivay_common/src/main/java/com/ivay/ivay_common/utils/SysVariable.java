@@ -55,6 +55,9 @@ public class SysVariable {
     public static final int LOAN_STATUS_SUCCESS = 1;
     // 借款状态: 等待打款
     public static final int LOAN_STATUS_WAITING = 2;
+    // 最小可借额度
+    public static final long LOAN_MIN_AMOUNT = 500000;
+
 
     // 还款状态: 待还款
     public static final int REPAYMENT_STATUS_NONE = 0;
@@ -147,6 +150,8 @@ public class SysVariable {
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";
     public static final String ROLE_OVAY_AUDIT = "ovayAudit";
+    public static final String ROLE_COLLECTION_ADMIN = "collectionAdmin";
+    public static final String ROLE_COLLECTION_PERSON = "collectionPerson";
 
     // 审核拒绝类型
     // 0人工审核

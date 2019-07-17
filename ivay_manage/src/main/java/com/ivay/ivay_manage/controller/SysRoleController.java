@@ -2,6 +2,7 @@ package com.ivay.ivay_manage.controller;
 
 import com.google.common.collect.Maps;
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -23,25 +24,25 @@ import java.util.Map;
  *
  * @author xx
  */
-@Api(tags = "角色")
+@Api(tags = "系统角色")
 @RestController
-@RequestMapping("manage/roles")
-public class RoleController {
-
+@RequestMapping("manage/role")
+public class SysRoleController {
     @Autowired
     private RoleService roleService;
     @Autowired
     private RoleDao roleDao;
 
     @LogAnnotation
-    @PostMapping
-    @ApiOperation(value = "保存角色")
+    @PostMapping("save")
+    @ApiOperation("保存角色")
     @PreAuthorize("hasAuthority('sys:role:add')")
-    public void saveRole(@RequestBody SysRolePermission roleDto) {
-        roleService.saveRole(roleDto);
+    public void saveRole(@RequestBody SysRolePermission sysRolePermission) {
+        // 新增角色时，id为空，否则为编辑角色
+        roleService.saveRole(sysRolePermission);
     }
 
-    @GetMapping
+    @GetMapping("list")
     @ApiOperation(value = "角色列表")
     @PreAuthorize("hasAuthority('sys:role:query')")
     public PageTableResponse listRoles(PageTableRequest request) {
@@ -51,24 +52,23 @@ public class RoleController {
         ).handle(request);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("get/{id}")
     @ApiOperation(value = "根据id获取角色")
     @PreAuthorize("hasAuthority('sys:role:query')")
     public SysRole get(@PathVariable Long id) {
         return roleDao.getById(id);
     }
 
-    @GetMapping("/all")
+    @GetMapping("all")
     @ApiOperation(value = "所有角色")
     @PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
     public List<SysRole> roles() {
         Map<String, Object> map = Maps.newHashMap();
-//        map.put("role", roleService.getLoginUserAuditRole());
-        map.put("role", "admin");
+        map.put("role", roleService.getLoginUserAuditRole());
         return roleDao.listVisible(map, null, null);
     }
 
-    @GetMapping(params = "userId")
+    @GetMapping("getUserRoles")
     @ApiOperation(value = "根据用户id获取拥有的角色")
     @PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
     public List<SysRole> roles(Long userId) {
@@ -76,10 +76,19 @@ public class RoleController {
     }
 
     @LogAnnotation
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     @ApiOperation(value = "删除角色")
     @PreAuthorize("hasAuthority('sys:role:del')")
     public void delete(@PathVariable Long id) {
         roleService.deleteRole(id);
+    }
+
+    @GetMapping("getCollectRole")
+    @ApiOperation("根据用户id获取催收角色")
+    @PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
+    public Response<String> getCollectRole(Long userId) {
+        Response<String> response = new Response<>();
+        response.setBo(roleService.getLoginUserCollectRole());
+        return response;
     }
 }

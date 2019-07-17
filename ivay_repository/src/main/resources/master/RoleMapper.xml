@@ -11,8 +11,9 @@
             <if test="params.role != null and params.role != ''">
                 AND CASE #{params.role}
                     WHEN 'admin' THEN 1=1
-                    WHEN 'ovayAdmin' THEN t.name in ('ovayAdmin','ovayAudit','collectionPerson')
+                    WHEN 'ovayAdmin' THEN t.name in ('ovayAdmin','ovayAudit')
                     WHEN 'ovayAudit' THEN t.name='ovayAudit'
+                    WHEN 'collectionAdmin' THEN t.name in ('collectionAdmin','collectionPerson')
                     WHEN 'collectionPerson' THEN t.name='collectionPerson'
                 END
             </if>
@@ -24,7 +25,7 @@
         <include refid="list_condition"/>
     </select>
 
-    <select id="list" resultType="com.ivay.ivay_repository.model.Role">
+    <select id="listVisible" resultType="com.ivay.ivay_repository.model.SysRole">
         select * from sys_role t
         <include refid="list_condition"/>
         ${params.orderBy}
@@ -35,8 +36,7 @@
 
     <insert id="saveRolePermission">
         insert into sys_role_permission(roleId, permissionId) values
-        <foreach collection="permissionIds" item="permissionId"
-                 separator=",">
+        <foreach collection="permissionIds" item="permissionId" separator=",">
             (#{roleId}, #{permissionId})
         </foreach>
     </insert>

@@ -1,6 +1,7 @@
 package com.ivay.ivay_manage.service.impl;
 
 import com.ivay.ivay_manage.dto.SysRoleUser;
+import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_repository.dao.master.UserDao;
 import com.ivay.ivay_repository.dto.UserName;
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
         SysUser user = sysRoleUser;
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setStatus(SysUser.Status.VALID);
+
+        // 添加用户
         userDao.insert(user);
 
         // 添加用户的角色
@@ -81,9 +84,11 @@ public class UserServiceImpl implements UserService {
         return sysRoleUser;
     }
 
-    @Override
-    public List<UserName> getUserNames() {
-        return userDao.getUserNames();
-    }
+    @Autowired
+    private RoleService roleService;
 
+    @Override
+    public List<UserName> getCollectUserNames() {
+        return userDao.getCollectUserNames(roleService.getLoginUserCollectRole());
+    }
 }

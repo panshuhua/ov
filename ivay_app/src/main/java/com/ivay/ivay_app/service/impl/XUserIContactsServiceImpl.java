@@ -43,6 +43,7 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
     private RedisLock redisLock;
 
     @Override
+
     public boolean saveAll(String type, XRiskInfo riskInfo, HttpServletRequest request) throws Exception {
         String gid = riskInfo.getUserGid();
         XUserInfo xUserInfo = new XUserInfo();

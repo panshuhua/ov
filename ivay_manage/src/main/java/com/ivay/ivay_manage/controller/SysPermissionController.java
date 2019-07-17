@@ -7,7 +7,6 @@ import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.service.PermissionService;
 import com.ivay.ivay_manage.service.RoleService;
-import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.PermissionDao;
 import com.ivay.ivay_repository.model.Permission;
@@ -29,10 +28,10 @@ import java.util.stream.Collectors;
  *
  * @author xx
  */
-@Api(tags = "权限")
+@Api(tags = "系统权限-菜单相关")
 @RestController
-@RequestMapping("manage/permissions")
-public class PermissionController {
+@RequestMapping("manage/permission")
+public class SysPermissionController {
 
     @Autowired
     private PermissionDao permissionDao;
@@ -40,7 +39,7 @@ public class PermissionController {
     @Autowired
     private PermissionService permissionService;
 
-    @ApiOperation(value = "当前登录用户拥有的权限")
+    @ApiOperation("当前登录用户拥有的权限")
     @GetMapping("current")
     public List<Permission> permissionsCurrent() {
         LoginUser loginUser = UserUtil.getLoginUser();
@@ -112,8 +111,8 @@ public class PermissionController {
         return list;
     }
 
-    @GetMapping("/all")
-    @ApiOperation(value = "所有菜单")
+    @GetMapping("all")
+    @ApiOperation("所有菜单")
     @PreAuthorize("hasAuthority('sys:menu:query')")
     public JSONArray permissionsAll() {
         List<Permission> permissionsAll = permissionDao.listAll();
@@ -123,13 +122,11 @@ public class PermissionController {
         return array;
     }
 
-    @GetMapping("/parents")
-    @ApiOperation(value = "一级菜单")
+    @GetMapping("parents")
+    @ApiOperation("一级菜单")
     @PreAuthorize("hasAuthority('sys:menu:query')")
     public List<Permission> parentMenu() {
-        List<Permission> parents = permissionDao.listParents();
-
-        return parents;
+        return permissionDao.listParents();
     }
 
     /**
@@ -163,14 +160,14 @@ public class PermissionController {
     }
 
     @LogAnnotation
-    @PostMapping
-    @ApiOperation(value = "保存菜单")
+    @PostMapping("add")
+    @ApiOperation("添加菜单")
     @PreAuthorize("hasAuthority('sys:menu:add')")
     public void save(@RequestBody Permission permission) {
         permissionDao.save(permission);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("get/{id}")
     @ApiOperation(value = "根据菜单id获取菜单")
     @PreAuthorize("hasAuthority('sys:menu:query')")
     public Permission get(@PathVariable Long id) {
@@ -178,8 +175,8 @@ public class PermissionController {
     }
 
     @LogAnnotation
-    @PutMapping
-    @ApiOperation(value = "修改菜单")
+    @PutMapping("update")
+    @ApiOperation("修改菜单")
     @PreAuthorize("hasAuthority('sys:menu:add')")
     public void update(@RequestBody Permission permission) {
         permissionService.update(permission);
@@ -190,8 +187,8 @@ public class PermissionController {
      *
      * @return
      */
-    @GetMapping("/owns")
-    @ApiOperation(value = "校验当前用户的权限")
+    @GetMapping("owns")
+    @ApiOperation("校验当前用户的权限")
     public Set<String> ownsPermission() {
         List<Permission> permissions = UserUtil.getLoginUser().getPermissions();
         if (CollectionUtils.isEmpty(permissions)) {
@@ -203,8 +200,8 @@ public class PermissionController {
     }
 
     @LogAnnotation
-    @DeleteMapping("/{id}")
-    @ApiOperation(value = "删除菜单")
+    @DeleteMapping("delete/{id}")
+    @ApiOperation("删除菜单")
     @PreAuthorize("hasAuthority('sys:menu:del')")
     public void delete(@PathVariable Long id) {
         permissionService.delete(id);
@@ -212,9 +209,6 @@ public class PermissionController {
 
     @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private XAuditService xAuditService;
 
     @GetMapping("getLoginAuditRole")
     @ApiOperation("获取当前用户的审计权限")

@@ -34,9 +34,17 @@ public interface XAPIService {
     TransfersRsp transfersInfo(String referenceId, String orderId);
 
     /**
-     * 接口：查询账户余额?
+     * 接口：查询账户余额
      *
      * @return
      */
     TransfersRsp balance();
+
+
+    /**
+     * 判断 是否有足够的余额借款
+     *
+     * @return -1表示接口调用失败
+     */
+    long getCanborrowBalance();
 }

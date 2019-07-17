@@ -28,5 +28,5 @@ public interface UserService {
      * @Return java.util.List<com.ivay.ivay_repository.dto.UserName>
      * @Date 2019/7/10 20:37
      */
-    List<UserName> getUserNames();
+    List<UserName> getCollectUserNames();
 }

@@ -67,11 +67,24 @@
 			<if test="status != null">
 				status = #{status},
 			</if>
-			<if test="enableFlag != null">
-				enable_flag = #{enableFlag},
-			</if>
 			updateTime = #{updateTime}
 		</set>
 		where t.id = #{id}
 	</update>
+
+	<select id="getCollectUserNames" resultType="com.ivay.ivay_repository.dto.UserName">
+		select distinct su.id,su.username
+		from sys_user su
+		<if test="role!=null and role != ''">
+			inner join sys_role_user sru on sru.userId=su.id
+			inner join sys_role sr on sr.id = sru.roleId
+		</if>
+		where su.status = 1
+		<if test="role !=null and role != ''">
+			AND CASE #{role}
+			WHEN 'collectionPerson' THEN sr.name='collectionPerson'
+			WHEN 'collectionAdmin' THEN sr.name in ('collectionAdmin','collectionPerson')
+			END
+		</if>
+	</select>
 </mapper>

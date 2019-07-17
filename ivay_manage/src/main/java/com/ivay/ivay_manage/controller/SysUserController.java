@@ -30,11 +30,10 @@ import java.util.List;
  *
  * @author xx
  */
-@Api(tags = "用户")
-
+@Api(tags = "系统用户")
 @RestController
-@RequestMapping("users")
-public class UserController {
+@RequestMapping("manage/user")
+public class SysUserController {
     private static final Logger logger = LoggerFactory.getLogger("adminLogger");
 
     @Autowired
@@ -50,7 +49,7 @@ public class UserController {
     private XAuditService xAuditService;
 
     @LogAnnotation
-    @PostMapping
+    @PostMapping("add")
     @ApiOperation("添加用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
     public SysUser saveUser(@RequestBody SysRoleUser sysRoleUser) {
@@ -62,7 +61,7 @@ public class UserController {
     }
 
     @LogAnnotation
-    @PutMapping
+    @PutMapping("update")
     @ApiOperation("修改用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
     public SysUser updateUser(@RequestBody SysRoleUser sysRoleUser) {
@@ -88,9 +87,9 @@ public class UserController {
     }
 
     @LogAnnotation
-    @PutMapping(params = "headImgUrl")
-    @ApiOperation(value = "修改头像")
-    public void updateHeadImgUrl(String headImgUrl) {
+    @PutMapping("headImg")
+    @ApiOperation("修改头像")
+    public void updateHeadImgUrl(@RequestParam String headImgUrl) {
         SysUser user = UserUtil.getLoginUser();
         SysRoleUser sysRoleUser = new SysRoleUser();
         BeanUtils.copyProperties(user, sysRoleUser);
@@ -101,15 +100,17 @@ public class UserController {
     }
 
     @LogAnnotation
-    @PutMapping("/{username}")
-    @ApiOperation(value = "修改密码")
+    @PutMapping("changePassword/{username}")
+    @ApiOperation("修改密码")
     @PreAuthorize("hasAuthority('sys:user:password')")
-    public void changePassword(@PathVariable String username, String oldPassword, String newPassword) {
+    public void changePassword(@PathVariable String username,
+                               String oldPassword,
+                               String newPassword) {
         userService.changePassword(username, oldPassword, newPassword);
     }
 
-    @GetMapping
-    @ApiOperation(value = "用户列表")
+    @GetMapping("listUsers")
+    @ApiOperation("用户列表")
     @PreAuthorize("hasAuthority('sys:user:query')")
     public PageTableResponse listUsers(PageTableRequest request) {
         // 设置角色
@@ -120,14 +121,14 @@ public class UserController {
         ).handle(request);
     }
 
-    @ApiOperation(value = "当前登录用户")
+    @ApiOperation("当前登录用户")
     @GetMapping("current")
     public SysUser currentUser() {
         return UserUtil.getLoginUser();
     }
 
-    @ApiOperation(value = "根据用户id获取用户")
-    @GetMapping("/{id}")
+    @ApiOperation("根据用户id获取用户")
+    @GetMapping("get/{id}")
     @PreAuthorize("hasAuthority('sys:user:query')")
     public SysUser user(@PathVariable Long id) {
         return userDao.getById(id);

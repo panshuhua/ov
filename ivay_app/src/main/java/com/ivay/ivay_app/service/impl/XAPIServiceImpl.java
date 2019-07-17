@@ -157,4 +157,25 @@ public class XAPIServiceImpl implements XAPIService {
         transfersReq.setSignature(signature);
         return callTransfersApi(transferUrl, transfersReq, null);
     }
+
+    /**
+     * 判断 是否有足够的余额借款
+     *
+     * @return -1表示接口调用失败
+     */
+    @Override
+    public long getCanborrowBalance() {
+        long result = -1;
+        TransfersRsp transfersRsp = balance();
+        if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
+            long availableAmount = Long.parseLong(transfersRsp.getAvailable());
+            long pendingAmount = Long.parseLong(transfersRsp.getHolding());
+            if (availableAmount >= pendingAmount) {
+                result = availableAmount - pendingAmount;
+            } else {
+                result = 0;
+            }
+        }
+        return result;
+    }
 }

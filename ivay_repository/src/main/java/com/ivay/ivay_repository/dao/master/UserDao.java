@@ -35,10 +35,10 @@ public interface UserDao {
     @Delete("delete from sys_role_user where userId = #{userId}")
     int deleteUserRole(Long userId);
 
-    int saveUserRoles(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
+    int saveUserRoles(@Param("userId") Long userId,
+                      @Param("roleIds") List<Long> roleIds);
 
     int update(SysUser user);
 
-    @Select("select id,username from sys_user where status = 1")
-    List<UserName> getUserNames();
+    List<UserName> getCollectUserNames(@Param("role") String role);
 }

@@ -1,22 +1,11 @@
 package com.ivay.ivay_manage.service.impl;
 
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.dto.SMSResponseStatus;
+import com.ivay.ivay_common.utils.FirebaseUtil;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
@@ -26,10 +15,21 @@ import com.ivay.ivay_manage.service.XFirebaseNoticeService;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
-    private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeServiceImpl.class);
 
     @Autowired
     XUserInfoDao xUserInfoDao;
@@ -50,8 +50,12 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     @Override
     public MsgLinkData getLinkData(String key) {
         String dataJson = (String)redisTemplate.opsForValue().get(key);
-        MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
-        return data;
+        if (!StringUtils.isEmpty(dataJson)) {
+            MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
+            return data;
+        }
+
+        return null;
     }
 
     // 发送firebase消息推送
@@ -150,7 +154,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     e.printStackTrace();
                     continue;
                 }
-
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if (SysVariable.SMS_ZERO.equals(value)) {
                 if (!StringUtils.isEmpty(msg.getKey())) {
@@ -288,6 +291,40 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         // 发送
         sendAllNotice(msg);
 
+    }
+
+    @Override
+    public String testSendMsg(NoticeMsg msg, String type) throws Exception {
+        if (SysVariable.NOTICE_FIREBASE_MSG.equals(type)) {
+            String firebaseTitle = msg.getTitle();
+            String firebaseMsg = msg.getFirebaseMsg();
+            firebaseTitle = StringUtil.vietnameseToEnglish(firebaseTitle);
+            firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
+            msg.setTitle(firebaseTitle);
+            msg.setFirebaseMsg(firebaseMsg);
+            logger.info("firebase推送标题：" + msg.getTitle());
+            logger.info("firebase推送内容：" + msg.getFirebaseMsg());
+            logger.info("firebase跳转页面to：" + msg.getPageId());
+            logger.info("firebase借款gid：" + msg.getGid());
+            logger.info("firebase用户gid：" + msg.getUserGid());
+            FirebaseUtil.sendMsgToFmcToken(msg);
+        } else if (SysVariable.NOTICE_PHONE_MSG.equals(type)) {
+            String key = MsgAuthCode.getNumBigCharRandom(6);
+            String phoneMsg = StringUtil.vietnameseToEnglish(msg.getPhoneMsg());
+            phoneMsg = phoneMsg + " " + SysVariable.PHONEMSG_PREFIX_LINK + key;
+            msg.setPhoneMsg(phoneMsg);
+            msg.setKey(key);
+            logger.info("短信页面短链接的key：" + msg.getKey());
+            logger.info("手机短信发送的电话号码：" + msg.getPhone());
+            logger.info("手机短信发送内容：" + msg.getPhoneMsg());
+            logger.info("手机短信跳转页面：" + msg.getPageId());
+            logger.info("手机短信借款gid：" + msg.getGid());
+            logger.info("手机短信用户gid：" + msg.getUserGid());
+            sendPhoneNotice(msg);
+            return key;
+        }
+
+        return null;
     }
 
 }

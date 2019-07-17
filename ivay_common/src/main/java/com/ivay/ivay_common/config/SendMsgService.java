@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.ivay.ivay_common.dto.FptAccessTokenReq;
@@ -103,28 +104,31 @@ public class SendMsgService {
         String responseBody = restTemplate.postForEntity(fptAccessTokenUrl, formEntity, String.class).getBody();
         logger.info("获取token返回：{}", responseBody);
 
-        Map<String, String> map = JsonUtils.jsonToMap(responseBody);
-        String accessToken = map.get("access_token");
+        if (!StringUtils.isEmpty(responseBody)) {
+            Map<String, String> map = JsonUtils.jsonToMap(responseBody);
+            String accessToken = map.get("access_token");
 
-        if (accessToken != null) {
-            // 发送短信
-            String message = Base64Util.encode(text);
-            FptSendReq sendReq = new FptSendReq();
-            sendReq.setAccess_token(accessToken);
-            sendReq.setBrandName(brandName);
-            sendReq.setMessage(message);
-            sendReq.setPhone(mobile);
-            sendReq.setSession_id(sessionId);
+            if (accessToken != null) {
+                // 发送短信
+                String message = Base64Util.encode(text);
+                FptSendReq sendReq = new FptSendReq();
+                sendReq.setAccess_token(accessToken);
+                sendReq.setBrandName(brandName);
+                sendReq.setMessage(message);
+                sendReq.setPhone(mobile);
+                sendReq.setSession_id(sessionId);
 
-            formEntity = new HttpEntity<String>(JsonUtils.objectToJson(sendReq), headers);
-            // 注意：如果手机号码不对，这里会直接报400
-            responseBody = restTemplate.postForEntity(fptSendmsgUrl, formEntity, String.class).getBody();
-            logger.info("发送短信返回:{}", responseBody);
+                formEntity = new HttpEntity<String>(JsonUtils.objectToJson(sendReq), headers);
+                // 注意：如果手机号码不对，这里会直接报400
+                responseBody = restTemplate.postForEntity(fptSendmsgUrl, formEntity, String.class).getBody();
+                logger.info("发送短信返回:{}", responseBody);
 
-            return responseBody;
+                return responseBody;
+            }
+
+            logger.info("fpt发送短信获取accessToken失败，返回的错误码为:{},", map.get("error"));
         }
 
-        logger.info("fpt发送短信获取accessToken失败，返回的错误码为:{},", map.get("error"));
         return null;
     }
 
