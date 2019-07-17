@@ -14,9 +14,9 @@ public interface XRecordLoanService {
      *
      * @param xRecordLoan
      * @param password
-     * @return
+     * @return 返回借款失败的理由
      */
-    XRecordLoan borrowMoney(XRecordLoan xRecordLoan, String password);
+    String borrowMoney(XRecordLoan xRecordLoan, String password);
 
     /**
      * 借款记录
