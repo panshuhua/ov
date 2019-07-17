@@ -133,7 +133,11 @@ public class XUserIContactsServiceImpl implements XUserContactsService {
                         }
 
                     });
-                    xUserContactsDao.insertBatchContacts(xUserContacts);
+
+                    if (xUserContacts.size() >= 1) {
+                        xUserContactsDao.insertBatchContacts(xUserContacts);
+                    }
+
                 }
             }
         }
