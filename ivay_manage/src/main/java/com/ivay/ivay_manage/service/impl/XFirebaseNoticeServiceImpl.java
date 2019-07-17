@@ -1,17 +1,5 @@
 package com.ivay.ivay_manage.service.impl;
 
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
@@ -27,6 +15,17 @@ import com.ivay.ivay_manage.service.XFirebaseNoticeService;
 import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
@@ -155,7 +154,6 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                     e.printStackTrace();
                     continue;
                 }
-
                 // 不发送短信验证码，直接返回随机数（把msg1和msg2都修改为0即可）
             } else if (SysVariable.SMS_ZERO.equals(value)) {
                 if (!StringUtils.isEmpty(msg.getKey())) {

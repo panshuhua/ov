@@ -105,7 +105,7 @@ public class XCollectionTaskController {
     @ApiOperation(value = "获取用户名字列表")
     @GetMapping("nameList")
     public List<UserName> getUserNames() {
-        return userService.getUserNames();
+        return userService.getCollectUserNames();
     }
 
 

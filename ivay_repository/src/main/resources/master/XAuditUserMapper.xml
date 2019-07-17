@@ -82,7 +82,7 @@
         FROM sys_role_user sru
         LEFT JOIN sys_role sr ON sru.roleId=sr.id
         LEFT JOIN sys_user su ON sru.userId=su.id
-        WHERE sr.enable_flag="Y" AND su.enable_flag="Y"
+        WHERE su.enable_flag="Y"
         <if test="role!=null and role != ''">
             AND sr.name=#{role}
         </if>

@@ -7,8 +7,6 @@ import com.ivay.ivay_manage.service.UserService;
 import com.ivay.ivay_manage.service.XCollectionTaskService;
 import com.ivay.ivay_repository.dto.CollectionTaskInfo;
 import com.ivay.ivay_repository.dto.UserName;
-import com.ivay.ivay_repository.model.SysUser;
-import com.ivay.ivay_repository.model.XCollectionTask;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +58,7 @@ public class XCollectionTaskServiceImplTest {
     @Test
     public void nameList(){
 
-        List<UserName> sysUserList = userService.getUserNames();
+        List<UserName> sysUserList = userService.getCollectUserNames();
         System.out.println(JSONObject.toJSONString(sysUserList));
     }
 

@@ -1,11 +1,11 @@
 package com.ivay.ivay_manage.dto;
 
 
-import com.ivay.ivay_repository.model.Role;
+import com.ivay.ivay_repository.model.SysRole;
 
 import java.util.List;
 
-public class RoleDto extends Role {
+public class SysRolePermission extends SysRole {
 
     private static final long serialVersionUID = 4218495592167610193L;
 

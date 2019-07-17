@@ -147,6 +147,8 @@ public class SysVariable {
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_OVAY_ADMIN = "ovayAdmin";
     public static final String ROLE_OVAY_AUDIT = "ovayAudit";
+    public static final String ROLE_COLLECTION_ADMIN = "collectionAdmin";
+    public static final String ROLE_COLLECTION_PERSON = "collectionPerson";
 
     // 审核拒绝类型
     // 0人工审核

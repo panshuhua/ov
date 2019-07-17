@@ -6,7 +6,8 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface XUserRiskDao {
     // 实时查询社交类app个数
-    @Select("select IFNULL((select app_num from x_user_app_num where update_date=#{updateDate} and user_gid=#{userGid} and enable_flag='Y'),0) ")
+    @Select("select IFNULL((select app_num from x_user_app_num where update_date=#{updateDate} " +
+            "and user_gid=#{userGid} and enable_flag='Y'),0) ")
     Integer queryAppNum(@Param("userGid") String userGid,
                         @Param("updateDate") String updateDate);
 
