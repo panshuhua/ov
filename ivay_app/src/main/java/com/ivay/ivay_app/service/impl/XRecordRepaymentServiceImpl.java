@@ -367,7 +367,6 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 if (xCollectionTask.getCollectorId() != null) {
                     logger.info("已指派催收人，更新催收任务{}", JSONObject.toJSONString(xCollectionTask));
 
-                    xCollectionTask.setUpdateTime(new Date());
                     xCollectionTask.setRepayTime(xRecordRepayment.getCreateTime());
 
                     xCollectionTaskDao.update(xCollectionTask);
@@ -379,7 +378,6 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                         xCollectionTask.getDueCollectionAmount() - xCollectionTask.getCollectionAmount());
                     xCollectionTask.setCollectionAmount(0L);
                     xCollectionTask.setCollectionOverdueFee(0L);
-                    xCollectionTask.setUpdateTime(new Date());
 
                     xCollectionTaskDao.update(xCollectionTask);
                 }

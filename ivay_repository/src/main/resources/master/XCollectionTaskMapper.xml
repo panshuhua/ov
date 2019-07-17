@@ -167,7 +167,7 @@
 		FROM
 		(
 		SELECT t0.order_id,any_value(id) as id,any_value(user_gid) as user_gid,any_value(assign_time) as assign_time,any_value(collector_id) as collector_id, any_value(collection_repay_status) as collection_repay_status,any_value(collection_status) as collection_status FROM
-		(SELECT id,order_id, user_gid, create_time AS assign_time, collector_id, collection_repay_status,collection_status FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
+		(SELECT id,order_id, user_gid, update_time AS assign_time, collector_id, collection_repay_status,collection_status FROM x_collection_task ORDER BY assign_time DESC limit 10000000000)t0
 		GROUP BY t0.order_id
 		) t1
 		LEFT JOIN
@@ -389,7 +389,7 @@
 			t2.phone,
 			t2.identity_card
 		FROM
-			( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time FROM x_collection_task WHERE collector_id = #{params.collectorId} ) t1
+			( SELECT order_id, user_gid, id, update_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time FROM x_collection_task WHERE collector_id = #{params.collectorId} ) t1
 			LEFT JOIN ( SELECT user_gid, NAME, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2 ON t1.user_gid = t2.user_gid
 			) t3
 			LEFT JOIN (
@@ -547,7 +547,7 @@
 		t2.phone,
 		t2.identity_card
 		FROM
-		( SELECT order_id, user_gid, id, create_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time,(collection_amount + collection_overdue_fee) real_repay,
+		( SELECT order_id, user_gid, id, update_time AS assign_time, collector_id, collection_repay_status, update_time, repay_time,(collection_amount + collection_overdue_fee) real_repay,
 		(collection_amount + collection_overdue_fee) amount FROM x_collection_task WHERE collection_repay_status = 2 ) t1
 		LEFT JOIN ( SELECT user_gid, NAME, phone, identity_card FROM x_user_info WHERE 1 = 1 ) t2 ON t1.user_gid = t2.user_gid
 		) t3

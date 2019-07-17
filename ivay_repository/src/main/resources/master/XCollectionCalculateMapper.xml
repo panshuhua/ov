@@ -55,7 +55,7 @@
         </if>
     </select>
 
-    <update id="update">
+	<update id="update">
         update x_collection_calculatesys_user t
         <set>
             			<if test="calculate_date != null">
@@ -89,5 +89,119 @@
         </set>
         where t.id = #{id}
     </update>
+
+	<!-- 获取催收报表的逾期订单统计 -->
+	<select id="selectCollectionsCalculate" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+		SELECT
+		t1.due_time,
+		SUM( t1.due_amount ) AS due_amount,
+		SUM( t1.amount ) AS amount,
+		COUNT( order_id ) AS due_order_count,
+		count( user_gid ) AS due_user_count
+		FROM
+		(
+		SELECT
+		DATE_FORMAT( due_time, '%Y%m%d' ) AS due_time,
+		due_amount,
+		( due_amount + overdue_interest ) AS amount,
+		order_id,
+		user_gid
+		FROM
+		x_record_loan
+		WHERE
+		loan_status = 1
+		AND repayment_status != 2
+		<!-- AND due_time &lt; DATE_FORMAT( SYSDATE( ), '%Y%m%d' )-->
+		AND due_time &lt;= #{endDate} AND due_time &gt; #{beginDate}
+		) t1
+	</select>
+
+	<!-- 获取催收报表的还款统计 -->
+	<select id="selectRepaytionCalculate" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+		SELECT
+		count( DISTINCT t5.user_gid ) AS number_repay,
+		SUM( t5.repayment_amount ) AS amount_repay
+		FROM
+		(
+		SELECT
+		t3.order_id,
+		t3.user_gid,
+		t4.record_loan_gid,
+		t4.repayment_amount,
+		DATE_FORMAT( SYSDATE( ), '%Y%m%d' ) AS calculate_time
+		FROM
+		(
+		SELECT
+			t1.*,
+			t2.gid
+		FROM
+			( SELECT order_id, any_value(user_gid) as user_gid, any_value(create_time) as create_time FROM x_collection_task WHERE collector_id IS NOT NULL
+				AND create_time &lt;= #{endDate} AND create_time &gt; #{beginDate} group by order_id) t1
+		LEFT JOIN x_record_loan t2 ON t1.order_id = t2.order_id) t3
+
+		INNER JOIN ( SELECT record_loan_gid, repayment_amount, create_time FROM x_record_repayment WHERE create_time &lt;= #{endDate}
+			AND create_time &gt; #{beginDate} AND repayment_status = 2 ) t4
+		ON t3.gid = t4.record_loan_gid AND t3.create_time &lt; t4.create_time
+		) t5
+	</select>
+
+	<!-- 查询催收统计列表 -->
+    <select id="selectCalculateList" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+		SELECT
+			*
+		FROM
+			x_collection_calculate
+		<where>
+			<if test="params.beginTime != null">
+				and calculate_date &gt;= #{params.beginTime}
+			</if>
+			<if test="params.endTime != null">
+				and calculate_date &lt;= #{params.endTime}
+			</if>
+		</where>
+		ORDER BY
+		calculate_date DESC
+
+		<if test="limit != null and limit != 0">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<!-- 查询催收统计总数 -->
+	<select id="selectTotalCalculate" resultType="com.ivay.ivay_repository.dto.CollectionCalculateResult">
+		SELECT
+		SUM( overdue_order ) AS total_overdue_order,
+		SUM( overdue_user ) AS total_overdue_user,
+		SUM( overdue_principal ) AS total_overdue_money,
+		SUM( amount_receivable ) AS total_receivable,
+		SUM( number_repay ) AS total_repay_user,
+		SUM( amount_repay ) AS total_repay_money
+		FROM
+		x_collection_calculate
+		<where>
+			<if test="params.beginTime != null">
+				and calculate_date &gt;= #{params.beginTime}
+			</if>
+			<if test="params.endTime != null">
+				and calculate_date &lt;= #{params.endTime}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询催收统计列表记录总数 -->
+	<select id="selectCalculateListCount" resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM
+		x_collection_calculate
+		<where>
+			<if test="params.beginTime != null">
+				and calculate_date &gt;= #{params.beginTime}
+			</if>
+			<if test="params.endTime != null">
+				and calculate_date &lt;= #{params.endTime}
+			</if>
+		</where>
+	</select>
 
 </mapper>

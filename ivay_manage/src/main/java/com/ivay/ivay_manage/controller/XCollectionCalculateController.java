@@ -4,6 +4,7 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.XCollectionCalculateService;
+import com.ivay.ivay_repository.dto.CollectionCalculateInfo;
 import com.ivay.ivay_repository.model.XCollectionCalculate;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("xCollectionCalculates")
+@RequestMapping("api/collectionCalculates")
 @Api(tags = "XCollectionCalculateController")
 public class XCollectionCalculateController {
 
@@ -53,6 +54,17 @@ public class XCollectionCalculateController {
         return xCollectionCalculateService.list(request);
     }
 
+    @PostMapping("calculateList")
+    @ApiOperation(value = "催收报表统计列表")
+    public Response<PageTableResponse> calculateList(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                     @RequestParam(required = false, defaultValue = "1") int num,
+                                                     @RequestBody(required = false) CollectionCalculateInfo collectionCalculateInfo) {
+
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xCollectionCalculateService.selectCalculateList(limit, num, collectionCalculateInfo));
+        return response;
+    }
+
     @DeleteMapping("delete")
     @ApiOperation(value = "删除")
     @ApiImplicitParams({
@@ -61,6 +73,14 @@ public class XCollectionCalculateController {
     public Response<Integer> delete(@RequestParam Long id) {
         Response<Integer> response = new Response<>();
         response.setBo(xCollectionCalculateService.delete(id));
+        return response;
+    }
+
+    @GetMapping("executeTask")
+    @ApiOperation(value = "手动触发催收报表定时任务")
+    public Response<Boolean> executeTask(PageTableRequest request) {
+        xCollectionCalculateService.saveCollectionCalculate(null);
+        Response<Boolean> response = new Response<>();
         return response;
     }
 }

@@ -32,7 +32,7 @@ public class CollectionCalculateScheduleTask {
 
         logger.info("开始执行催收报表数据统计 -- saveCollectionCalculateBatch");
 
-        collectionCalculateService.saveCollectionCalculateBatch(date);
+        collectionCalculateService.saveCollectionCalculate(date);
 
         logger.info("结束执行催收报表数据统计 -- overdueOrder");
     }

@@ -120,9 +120,8 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 xCollectionTask.setDueCollectionAmount(o.getLoanAmount());
                 xCollectionTask.setUserGid(o.getUserGid());
                 xCollectionTask.setCollectionStatus(CollectionStatusEnum.WAITING_COLLECTION.getStatus());
-                xCollectionTask.setCreateTime(new Date());
+                //xCollectionTask.setCreateTime(new Date());
                 xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
-                xCollectionTask.setUpdateTime(xCollectionTask.getCreateTime());
                 collectionTaskList.add(xCollectionTask);
             });
 
@@ -160,6 +159,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                     collectionTask.setUpdateTime(new Date());
                     collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
                     collectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
+                    collectionTask.setCreateTime(new Date());
 
                     logger.info("催收任務{}，首次指派催收人{}", collectionTaskLoanInfo.getId(), collectorId);
                     //return xCollectionTaskDao.update(collectionTask) >= 1;
@@ -171,7 +171,6 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 } else {
                     //先修改催收进度，再重新生成记录
                     collectionTask.setCollectionStatus(CollectionStatusEnum.FINISH_COLLECTION.getStatus());
-                    collectionTask.setUpdateTime(new Date());
                     xCollectionTaskDao.update(collectionTask);
 
                     XCollectionTask newXCollectionTask = new XCollectionTask();

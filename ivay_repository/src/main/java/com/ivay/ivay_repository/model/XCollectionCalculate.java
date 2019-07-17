@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.Date;
 public class XCollectionCalculate {
 	private Long id;
 
+	@JSONField(format = "yyyy-MM-dd")
 	@ApiModelProperty("统计日期")
 	private Date calculateDate;
 
