@@ -432,23 +432,23 @@
 				and t7.collection_status = #{params.collectionStatus}
 			</if>
 
-			<if test="params.payDateStart != null and params.payDateStart != ''">
+			<if test="params.payDateStart != null">
 				and t7.due_time &gt;= #{params.payDateStart}
 			</if>
-			<if test="params.payDateEnd != null and params.payDateEnd != ''">
+			<if test="params.payDateEnd != null">
 				and t7.due_time &lt;= #{params.payDateEnd}
 			</if>
-			<if test="params.collectionDateStart != null and params.collectionDateStart != ''">
+			<if test="params.collectionDateStart != null">
 				and t7.assign_time &gt;= #{params.collectionDateStart}
 			</if>
-			<if test="params.collectionDateEnd != null and params.collectionDateEnd != ''">
+			<if test="params.collectionDateEnd != null">
 				and t7.assign_time &lt;= #{params.collectionDateEnd}
 			</if>
 
-			<if test="params.repayTimeStart != null and params.repayTimeStart != ''">
+			<if test="params.repayTimeStart != null">
 				and t7.repay_time &gt;= #{params.repayTimeStart}
 			</if>
-			<if test="params.repayTimeEnd != null and params.repayTimeEnd != ''">
+			<if test="params.repayTimeEnd != null">
 				and t7.repay_time &lt;= #{params.repayTimeEnd}
 			</if>
 		</where>
@@ -590,23 +590,23 @@
 				and t7.collection_status = #{params.collectionStatus}
 			</if>
 
-			<if test="params.payDateStart != null and params.payDateStart != ''">
+			<if test="params.payDateStart != null">
 				and t7.due_time &gt;= #{params.payDateStart}
 			</if>
-			<if test="params.payDateEnd != null and params.payDateEnd != ''">
+			<if test="params.payDateEnd != null">
 				and t7.due_time &lt;= #{params.payDateEnd}
 			</if>
-			<if test="params.collectionDateStart != null and params.collectionDateStart != ''">
+			<if test="params.collectionDateStart != null">
 				and t7.assign_time &gt;= #{params.collectionDateStart}
 			</if>
-			<if test="params.collectionDateEnd != null and params.collectionDateEnd != ''">
+			<if test="params.collectionDateEnd != null">
 				and t7.assign_time &lt;= #{params.collectionDateEnd}
 			</if>
 
-			<if test="params.repayTimeStart != null and params.repayTimeStart != ''">
+			<if test="params.repayTimeStart != null">
 				and t7.repay_time &gt;= #{params.repayTimeStart}
 			</if>
-			<if test="params.repayTimeEnd != null and params.repayTimeEnd != ''">
+			<if test="params.repayTimeEnd != null">
 				and t7.repay_time &lt;= #{params.repayTimeEnd}
 			</if>
 		</where>
