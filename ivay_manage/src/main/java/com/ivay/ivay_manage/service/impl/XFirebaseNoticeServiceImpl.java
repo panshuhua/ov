@@ -17,6 +17,7 @@ import com.ivay.ivay_common.config.SendMsgService;
 import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.dto.SMSResponseStatus;
+import com.ivay.ivay_common.utils.FirebaseUtil;
 import com.ivay.ivay_common.utils.JsonUtils;
 import com.ivay.ivay_common.utils.MsgAuthCode;
 import com.ivay.ivay_common.utils.StringUtil;
@@ -29,7 +30,7 @@ import com.ivay.ivay_repository.model.XUserInfo;
 
 @Service
 public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
-    private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(XFirebaseNoticeServiceImpl.class);
 
     @Autowired
     XUserInfoDao xUserInfoDao;
@@ -50,8 +51,12 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     @Override
     public MsgLinkData getLinkData(String key) {
         String dataJson = (String)redisTemplate.opsForValue().get(key);
-        MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
-        return data;
+        if (!StringUtils.isEmpty(dataJson)) {
+            MsgLinkData data = JsonUtils.jsonToPojo(dataJson, MsgLinkData.class);
+            return data;
+        }
+
+        return null;
     }
 
     // 发送firebase消息推送
@@ -288,6 +293,40 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
         // 发送
         sendAllNotice(msg);
 
+    }
+
+    @Override
+    public String testSendMsg(NoticeMsg msg, String type) throws Exception {
+        if (SysVariable.NOTICE_FIREBASE_MSG.equals(type)) {
+            String firebaseTitle = msg.getTitle();
+            String firebaseMsg = msg.getFirebaseMsg();
+            firebaseTitle = StringUtil.vietnameseToEnglish(firebaseTitle);
+            firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
+            msg.setTitle(firebaseTitle);
+            msg.setFirebaseMsg(firebaseMsg);
+            logger.info("firebase推送标题：" + msg.getTitle());
+            logger.info("firebase推送内容：" + msg.getFirebaseMsg());
+            logger.info("firebase跳转页面to：" + msg.getPageId());
+            logger.info("firebase借款gid：" + msg.getGid());
+            logger.info("firebase用户gid：" + msg.getUserGid());
+            FirebaseUtil.sendMsgToFmcToken(msg);
+        } else if (SysVariable.NOTICE_PHONE_MSG.equals(type)) {
+            String key = MsgAuthCode.getNumBigCharRandom(6);
+            String phoneMsg = StringUtil.vietnameseToEnglish(msg.getPhoneMsg());
+            phoneMsg = phoneMsg + " " + SysVariable.PHONEMSG_PREFIX_LINK + key;
+            msg.setPhoneMsg(phoneMsg);
+            msg.setKey(key);
+            logger.info("短信页面短链接的key：" + msg.getKey());
+            logger.info("手机短信发送的电话号码：" + msg.getPhone());
+            logger.info("手机短信发送内容：" + msg.getPhoneMsg());
+            logger.info("手机短信跳转页面：" + msg.getPageId());
+            logger.info("手机短信借款gid：" + msg.getGid());
+            logger.info("手机短信用户gid：" + msg.getUserGid());
+            sendPhoneNotice(msg);
+            return key;
+        }
+
+        return null;
     }
 
 }

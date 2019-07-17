@@ -56,4 +56,9 @@ public interface XFirebaseNoticeService {
      */
     void sendManualAuditRjection(XUserInfo xUserInfo);
 
+    /**
+     * 测试发送消息推送和短信
+     */
+    String testSendMsg(NoticeMsg msg, String type) throws Exception;
+
 }

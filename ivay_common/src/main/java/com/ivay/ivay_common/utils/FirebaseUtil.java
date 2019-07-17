@@ -28,7 +28,7 @@ import com.ivay.ivay_common.dto.NoticeMsg;
 @Component
 public class FirebaseUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger("adminLogger");
+    private static final Logger logger = LoggerFactory.getLogger(FirebaseUtil.class);
 
     private static String firebaseSdkUrl;
 
