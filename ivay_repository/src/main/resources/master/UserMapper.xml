@@ -67,16 +67,13 @@
 			<if test="status != null">
 				status = #{status},
 			</if>
-			<if test="enableFlag != null">
-				enable_flag = #{enableFlag},
-			</if>
 			updateTime = #{updateTime}
 		</set>
 		where t.id = #{id}
 	</update>
 
 	<select id="getCollectUserNames" resultType="com.ivay.ivay_repository.dto.UserName">
-		select su.id,su.username
+		select distinct su.id,su.username
 		from sys_user su
 		<if test="role!=null and role != ''">
 			inner join sys_role_user sru on sru.userId=su.id

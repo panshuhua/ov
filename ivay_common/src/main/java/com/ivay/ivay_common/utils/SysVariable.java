@@ -55,6 +55,9 @@ public class SysVariable {
     public static final int LOAN_STATUS_SUCCESS = 1;
     // 借款状态: 等待打款
     public static final int LOAN_STATUS_WAITING = 2;
+    // 最小可借额度
+    public static final long LOAN_MIN_AMOUNT = 500000;
+
 
     // 还款状态: 待还款
     public static final int REPAYMENT_STATUS_NONE = 0;

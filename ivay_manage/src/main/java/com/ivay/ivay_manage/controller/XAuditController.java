@@ -1,6 +1,5 @@
 package com.ivay.ivay_manage.controller;
 
-import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -149,6 +148,6 @@ public class XAuditController {
 
     @GetMapping("test")
     public boolean test(String key) {
-        throw new BusinessException("0015","why.");
+        return true;
     }
 }
