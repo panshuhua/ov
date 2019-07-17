@@ -113,7 +113,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response exception(Throwable throwable) {
-        logger.error("系统内部错误: " + throwable);
+        logger.error("系统内部错误: {}" , throwable);
         return new Response(HttpStatus.INTERNAL_SERVER_ERROR.value() + "", throwable.getMessage());
     }
 }
