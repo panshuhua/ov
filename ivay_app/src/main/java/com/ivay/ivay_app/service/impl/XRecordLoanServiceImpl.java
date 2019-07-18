@@ -87,9 +87,17 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Autowired
     private RedisLock redisLock;
 
+    /**
+     * 提交借款申请
+     *
+     * @param xRecordLoan
+     * @param password
+     * @return 返回借款失败的理由
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public XRecordLoan borrowMoney(XRecordLoan xRecordLoan, String password) {
+    public String borrowMoney(XRecordLoan xRecordLoan, String password) {
+        String result = null;
         // 校验最小可借额度
         if (xRecordLoan.getLoanAmount() < SysVariable.LOAN_MIN_AMOUNT) {
             throw new BusinessException(i18nService.getMessage("response.error.borrow.maxAmount.code"),
@@ -187,7 +195,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xUserInfo.setUpdateTime(now);
             if (xRecordLoanDao.save(xRecordLoan) == 1 && xUserInfoDao.update(xUserInfo) == 1) {
                 // 调用合作方接口借款
-                borrowMoneyFromBank(xRecordLoan, cardList.get(0).getCardNo(), cardList.get(0).getBankNo(),
+                result = borrowMoneyFromBank(xRecordLoan, cardList.get(0).getCardNo(), cardList.get(0).getBankNo(),
                         cardList.get(0).getAccType());
             } else {
                 logger.error("借款失败：" + xRecordLoan.getOrderId());
@@ -196,7 +204,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
         } finally {
             redisLock.releaseBorrowLock(xRecordLoan.getUserGid());
         }
-        return xRecordLoan;
+        return result;
     }
 
     /**
@@ -206,14 +214,16 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
      * @param cardNo      借款方账号
      * @param bankNo      银行代码
      * @param accType
+     * @return 返回借款失败原因
      */
-    private void borrowMoneyFromBank(XRecordLoan xRecordLoan, String cardNo, String bankNo, String accType) {
+    private String borrowMoneyFromBank(XRecordLoan xRecordLoan, String cardNo, String bankNo, String accType) {
         // 账号余额不足
         if (xapiService.getCanborrowBalance() < xRecordLoan.getNetAmount()) {
             TransfersRsp transfersRsp = new TransfersRsp();
             transfersRsp.setResponseCode(BaokimResponseStatus.FAIL.getCode());
             transfersRsp.setResponseMessage("Not enough balance");
             confirmLoan(xRecordLoan, transfersRsp);
+            return "response.error.borrow.notEnoughBalance";
         } else {
             threadPoolService.execute(() -> {
                 // 调用风控规则接口判断是否有借款规则
@@ -255,6 +265,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
                 confirmLoan(xRecordLoan, transfersRsp);
             });
         }
+        return null;
     }
 
     @Override

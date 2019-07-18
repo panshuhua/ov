@@ -5,6 +5,7 @@ import com.ivay.ivay_app.service.XLoanRateService;
 import com.ivay.ivay_app.service.XRecordLoanService;
 import com.ivay.ivay_common.advice.BusinessException;
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.config.I18nService;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
@@ -13,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,13 +48,21 @@ public class XRecordLoanController {
 
     @PostMapping("loanRecord/add")
     @ApiOperation(value = "申请借款")
-    @ApiImplicitParams({@ApiImplicitParam(name = "password", value = "交易密码", dataType = "String", paramType = "query",
-            required = true)})
+    @ApiImplicitParams({@ApiImplicitParam(name = "password", value = "交易密码", dataType = "String", paramType = "query", required = true)})
     @LogAnnotation(module = "申请借款")
-    public Response<XRecordLoan> loanRecordSave(@RequestBody XRecordLoan xRecordLoan, @RequestParam String password,
-                                                HttpServletRequest request) {
-        Response<XRecordLoan> response = new Response<>();
-        response.setBo(xRecordLoanService.borrowMoney(xRecordLoan, password));
+    public Response<String> loanRecordSave(@RequestBody XRecordLoan xRecordLoan,
+                                           @RequestParam String password,
+                                           HttpServletRequest request) {
+        String result = xRecordLoanService.borrowMoney(xRecordLoan, password);
+        if (!StringUtils.isEmpty(result)) {
+            // 目前是借款余额不足会给提示
+            throw new BusinessException(
+                    i18nService.getMessage(result + ".code"),
+                    i18nService.getMessage(result + ".msg")
+            );
+        }
+        Response<String> response = new Response<>();
+        response.setBo(xRecordLoan.getOrderId());
         return response;
     }
 
@@ -92,12 +102,16 @@ public class XRecordLoanController {
     @Autowired
     private XAPIService xapiService;
 
+    @Autowired
+    private I18nService i18nService;
+
     @GetMapping("enoughBalance")
     @ApiOperation("银行余额是否足够")
     public Response<Boolean> enoughBalance() {
         long result = xapiService.getCanborrowBalance();
         if (result < 0) {
-            throw new BusinessException("银行余额不足，请稍后再试");
+            throw new BusinessException(i18nService.getMessage("response.error.borrow.notEnoughBalance.code"),
+                    i18nService.getMessage("response.error.borrow.notEnoughBalance.msg"));
         }
         Response<Boolean> response = new Response<>();
         response.setBo(result >= SysVariable.LOAN_MIN_AMOUNT);

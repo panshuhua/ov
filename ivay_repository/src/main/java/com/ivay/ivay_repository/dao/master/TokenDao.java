@@ -6,7 +6,8 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface TokenDao {
 
-    @Insert("insert into t_token(id, val, expireTime, createTime, updateTime) values (#{id}, #{val}, #{expireTime}, #{createTime}, #{updateTime})")
+    @Insert("insert into t_token(id, val, expireTime, createTime, updateTime) " +
+            "values (#{id}, #{val}, #{expireTime}, #{createTime}, #{updateTime})")
     int save(TokenModel model);
 
     @Select("select * from t_token t where t.id = #{id}")

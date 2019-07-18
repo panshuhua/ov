@@ -213,9 +213,6 @@ public class PermissionController {
     @Autowired
     private RoleService roleService;
 
-    @Autowired
-    private XAuditService xAuditService;
-
     @GetMapping("getLoginAuditRole")
     @ApiOperation("获取当前用户的审计权限")
     public String getLoginUserRole() {
