@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author xx
  */
-@Api(tags = "现金贷公共")
+@Api(tags = "测试接口")
 
 @RestController
 public class BillCommonController {
