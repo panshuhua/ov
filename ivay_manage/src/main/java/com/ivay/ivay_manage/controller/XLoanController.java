@@ -4,8 +4,8 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.service.CustomerService;
 import com.ivay.ivay_manage.service.XLoanService;
-import com.ivay.ivay_manage.service.XUserExtInfoService;
 import com.ivay.ivay_manage.service.XUserInfoService;
+import com.ivay.ivay_repository.dao.master.XUserExtInfoDao;
 import com.ivay.ivay_repository.model.XUserExtInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -65,7 +65,7 @@ public class XLoanController {
     private CustomerService customerService;
 
     @Autowired
-    private XUserExtInfoService xUserExtInfoService;
+    private XUserExtInfoDao xUserExtInfoDao;
 
     @GetMapping("get")
     @ApiOperation("获取用户扩展信息")
@@ -74,7 +74,7 @@ public class XLoanController {
     })
     public Response<XUserExtInfo> get(@RequestParam String userGid, HttpServletRequest request) {
         Response<XUserExtInfo> response = new Response<>();
-        response.setBo(xUserExtInfoService.getByGid(userGid));
+        response.setBo(xUserExtInfoDao.getRealPhotoUrl(userGid));
         return response;
     }
 

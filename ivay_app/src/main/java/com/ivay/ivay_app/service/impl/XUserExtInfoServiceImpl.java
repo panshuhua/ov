@@ -34,11 +34,6 @@ public class XUserExtInfoServiceImpl implements XUserExtInfoService {
     }
 
     @Override
-    public XUserExtInfo getByGid(String gid) {
-        return xUserExtInfoDao.getByGid(gid);
-    }
-
-    @Override
     public XUserExtInfo update(XUserExtInfo xUserExtInfo) {
         if (StringUtils.isEmpty(xUserExtInfo.getUserGid())) {
             throw new BusinessException(i18nService.getMessage("response.error.user.checkgid.code"),

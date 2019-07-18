@@ -1,7 +1,10 @@
 package com.ivay.ivay_repository.dao.master;
 
 import com.ivay.ivay_repository.model.XUserExtInfo;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +20,14 @@ public interface XUserExtInfoDao {
 
     XUserExtInfo getByGid(@Param("userGid") String gid);
 
-    //    @Delete("delete from x_user_ext_info where id = #{id}") // 物理删除
+    /**
+     * 给前台返回真实的照片地址
+     *
+     * @param gid
+     * @return
+     */
+    XUserExtInfo getRealPhotoUrl(@Param("userGid") String gid);
+
     int delete(@Param("userGid") String gid);
 
     int update(XUserExtInfo xUserExtInfo);

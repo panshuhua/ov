@@ -32,7 +32,7 @@ public class XFileController {
     @PostMapping("save")
     @ApiOperation(value = "身份证上传")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "flag", value = "照片类型标志位，0正面 1反面 2手持", dataType = "String", paramType = "query", required = true),
+            @ApiImplicitParam(name = "flag", value = "照片类型标志位，1正面 2反面 3手持", dataType = "String", paramType = "query", required = true),
             @ApiImplicitParam(name = "userGid", value = "用户gid，", dataType = "String", paramType = "query", required = true)
     })
     @LogAnnotation(module = "身份证上传")

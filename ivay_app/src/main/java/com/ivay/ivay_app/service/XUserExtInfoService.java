@@ -11,14 +11,6 @@ public interface XUserExtInfoService {
     XUserExtInfo save(XUserExtInfo xUserExtInfo);
 
     /**
-     * 根据id获取信息
-     *
-     * @param gid
-     * @return
-     */
-    XUserExtInfo getByGid(String gid);
-
-    /**
      * 编辑用户信息
      *
      * @param xUserExtInfo
