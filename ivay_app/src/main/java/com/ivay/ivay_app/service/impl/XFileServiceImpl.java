@@ -85,8 +85,6 @@ public class XFileServiceImpl implements XFileService {
         }
 
         // 保存授信扩展信息
-        logger.info("照片类型：" + flag);
-        logger.info("md5：" + md5);
         switch (flag) {
             case SysVariable.PHOTO_TYPE_FRONT:
                 xUserExtInfo.setPhoto1Url(md5);
@@ -101,9 +99,6 @@ public class XFileServiceImpl implements XFileService {
                 logger.info("传入照片类型出错");
         }
         xUserExtInfo.setUpdateTime(new Date());
-        logger.info("ex_url1: " + xUserExtInfo.getPhoto1Url());
-        logger.info("ex_url2: " + xUserExtInfo.getPhoto2Url());
-        logger.info("ex_url3: " + xUserExtInfo.getPhoto3Url());
         xUserExtInfoDao.update(xUserExtInfo);
         return xFileInfo;
     }
