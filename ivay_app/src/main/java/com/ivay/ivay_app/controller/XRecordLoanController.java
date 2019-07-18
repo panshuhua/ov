@@ -56,7 +56,10 @@ public class XRecordLoanController {
         String result = xRecordLoanService.borrowMoney(xRecordLoan, password);
         if (!StringUtils.isEmpty(result)) {
             // 目前是借款余额不足会给提示
-            throw new BusinessException(result);
+            throw new BusinessException(
+                    i18nService.getMessage(result + ".code"),
+                    i18nService.getMessage(result + ".msg")
+            );
         }
         Response<String> response = new Response<>();
         response.setBo(xRecordLoan.getOrderId());

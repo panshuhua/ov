@@ -223,7 +223,7 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             transfersRsp.setResponseCode(BaokimResponseStatus.FAIL.getCode());
             transfersRsp.setResponseMessage("Not enough balance");
             confirmLoan(xRecordLoan, transfersRsp);
-            return i18nService.getMessage("response.error.borrow.notEnoughBalance.msg");
+            return "response.error.borrow.notEnoughBalance";
         } else {
             threadPoolService.execute(() -> {
                 // 调用风控规则接口判断是否有借款规则

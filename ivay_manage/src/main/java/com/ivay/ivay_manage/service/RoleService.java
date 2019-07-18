@@ -21,4 +21,10 @@ public interface RoleService {
      * @return 催收管理员、催收员
      */
     String getLoginUserCollectRole();
+
+    /**
+     * 获取当前管理员权限
+     * @return
+     */
+    String getLoginAdminRole();
 }

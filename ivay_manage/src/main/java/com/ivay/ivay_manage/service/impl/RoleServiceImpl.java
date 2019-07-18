@@ -132,4 +132,32 @@ public class RoleServiceImpl implements RoleService {
         }
         return role;
     }
+
+    /**
+     * 获取当前管理员权限
+     *
+     * @return
+     */
+    @Override
+    public String getLoginAdminRole() {
+        LoginUser loginUser = UserUtil.getLoginUser();
+        if (loginUser == null) {
+            return null;
+        }
+        List<SysRole> sysRoles = roleDao.listByUserId(loginUser.getId());
+        if (sysRoles.size() == 0) {
+            return null;
+        }
+        String role = SysVariable.ROLE_COLLECTION_ADMIN;
+        for (SysRole r : sysRoles) {
+            if (SysVariable.ROLE_ADMIN.equals(r.getName())) {
+                role = SysVariable.ROLE_ADMIN;
+                break;
+            }
+            if (SysVariable.ROLE_OVAY_ADMIN.equals(r.getName())) {
+                role = SysVariable.ROLE_OVAY_ADMIN;
+            }
+        }
+        return role;
+    }
 }

@@ -63,8 +63,7 @@ public class RoleController {
     @PreAuthorize("hasAnyAuthority('sys:user:query','sys:role:query')")
     public List<SysRole> roles() {
         Map<String, Object> map = Maps.newHashMap();
-//        map.put("role", roleService.getLoginUserAuditRole());
-        map.put("role", "admin");
+        map.put("role", roleService.getLoginAdminRole());
         return roleDao.listVisible(map, null, null);
     }
 
