@@ -142,8 +142,6 @@ public class XCollectionCalculateServiceImpl implements XCollectionCalculateServ
         params.put("beginDate", DateUtils.getDayStartTime(xCollectionCalculate.getCalculateDate()));
         params.put("endDate",DateUtils.getDayEndTime(xCollectionCalculate.getCalculateDate()));
 
-        List<CollectionRepayDetail> list = xCollectionCalculateDao.selectRepayList(request.getParams(), request.getOffset(), request.getLimit());
-        int n = xCollectionCalculateDao.selectRepayListCount(request.getParams());
         return new PageTableHandler(
                 a -> xCollectionCalculateDao.selectRepayListCount(a.getParams()),
                 a -> xCollectionCalculateDao.selectRepayList(a.getParams(), a.getOffset(), a.getLimit())
