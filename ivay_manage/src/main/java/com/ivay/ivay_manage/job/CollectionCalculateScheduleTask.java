@@ -20,18 +20,18 @@ import java.util.Date;
  */
 @Component
 @Configuration
-//@EnableScheduling
+@EnableScheduling
 public class CollectionCalculateScheduleTask {
     private static final Logger logger = LoggerFactory.getLogger(OverdueOrderScheduleTask.class);
 
     @Autowired
     private XCollectionCalculateService collectionCalculateService;
 
-    //@Scheduled(cron = "${timer.overdueOrder}")
-    private void saveCollectionCalculateBatch(Date date) {
+    @Scheduled(cron = "${timer.calculateCollection}")
+    private void saveCollectionCalculateBatch() {
 
         logger.info("开始执行催收报表数据统计 -- saveCollectionCalculateBatch");
-
+        Date date = null;
         collectionCalculateService.saveCollectionCalculate(date);
 
         logger.info("结束执行催收报表数据统计 -- overdueOrder");

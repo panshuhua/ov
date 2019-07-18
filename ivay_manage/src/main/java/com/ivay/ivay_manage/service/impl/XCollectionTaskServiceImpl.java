@@ -272,6 +272,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
             param.put("overdueLevel", collectionTaskInfo.getOverdueLevel());
             param.put("repayTimeStart", collectionTaskInfo.getRepayTimeStart());
             param.put("repayTimeEnd", collectionTaskInfo.getRepayTimeEnd());
+            param.put("username", collectionTaskInfo.getUsername());
 
             changeLevelToTime(collectionTaskInfo, param);
         }

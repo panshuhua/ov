@@ -32,9 +32,9 @@ public class XCollectionCalculateController {
     @GetMapping("get")
     @ApiOperation(value = "根据id获取")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "id", dataType = "Integer", paramType = "query")
     })
-    public Response<XCollectionCalculate> get(@RequestParam Long id) {
+    public Response<XCollectionCalculate> get(@RequestParam Integer id) {
         Response<XCollectionCalculate> response = new Response<>();
         response.setBo(xCollectionCalculateService.get(id));
         return response;
@@ -68,9 +68,9 @@ public class XCollectionCalculateController {
     @DeleteMapping("delete")
     @ApiOperation(value = "删除")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "id", dataType = "Integer", paramType = "query")
     })
-    public Response<Integer> delete(@RequestParam Long id) {
+    public Response<Integer> delete(@RequestParam Integer id) {
         Response<Integer> response = new Response<>();
         response.setBo(xCollectionCalculateService.delete(id));
         return response;
@@ -81,6 +81,17 @@ public class XCollectionCalculateController {
     public Response<Boolean> executeTask(PageTableRequest request) {
         xCollectionCalculateService.saveCollectionCalculate(null);
         Response<Boolean> response = new Response<>();
+        return response;
+    }
+
+    @GetMapping("repayList")
+    @ApiOperation(value = "还款名单")
+    public Response<PageTableResponse> repayList(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                 @RequestParam(required = false, defaultValue = "1") int num,
+                                                 @RequestParam(required = true) int id) {
+
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(xCollectionCalculateService.selectRepayList(limit, num, id));
         return response;
     }
 }

@@ -41,9 +41,10 @@ xAppEvents_event_url: http://localhost:8080/star/xAppEvents/save
 
 # 定时器
 timer:
-  # 逾期订单生成催收任务
+  # 逾期订单生成催收任务 每天00:10触发
   overdueOrder: 0 10 0 1/1 * ?
-
+  # 催收报表统计 每天00:20触发
+  calculateCollection: 0 20 0 1/1 * ?
 
 
 

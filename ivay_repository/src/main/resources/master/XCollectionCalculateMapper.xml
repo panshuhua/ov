@@ -5,34 +5,34 @@
 
     <sql id="list_condition">
         <where>
-            			<if test="params.id != null and params.id != ''">
+			<if test="params.id != null and params.id != ''">
 				and id = #{params.id} 
 			</if>
-			<if test="params.calculate_date != null and params.calculate_date != ''">
+			<if test="params.calculateDate != null and params.calculateDate != ''">
 				and calculate_date = #{params.calculateDate} 
 			</if>
-			<if test="params.overdue_order != null and params.overdue_order != ''">
+			<if test="params.overdueOrder != null and params.overdueOrder != ''">
 				and overdue_order = #{params.overdueOrder} 
 			</if>
-			<if test="params.overdue_user != null and params.overdue_user != ''">
+			<if test="params.overdueUser != null and params.overdueUser != ''">
 				and overdue_user = #{params.overdueUser} 
 			</if>
-			<if test="params.overdue_principal != null and params.overdue_principal != ''">
+			<if test="params.overduePrincipal != null and params.overduePrincipal != ''">
 				and overdue_principal = #{params.overduePrincipal} 
 			</if>
-			<if test="params.amount_receivable != null and params.amount_receivable != ''">
+			<if test="params.amountReceivable != null and params.amountReceivable != ''">
 				and amount_receivable = #{params.amountReceivable} 
 			</if>
-			<if test="params.number_repay != null and params.number_repay != ''">
+			<if test="params.numberRepay != null and params.numberRepay != ''">
 				and number_repay = #{params.numberRepay} 
 			</if>
-			<if test="params.amount_repay != null and params.amount_repay != ''">
+			<if test="params.amountRepay != null and params.amountRepay != ''">
 				and amount_repay = #{params.amountRepay} 
 			</if>
-			<if test="params.create_time != null and params.create_time != ''">
+			<if test="params.createTime != null">
 				and create_time = #{params.createTime} 
 			</if>
-			<if test="params.update_time != null and params.update_time != ''">
+			<if test="params.updateTime != null">
 				and update_time = #{params.updateTime} 
 			</if>
 
@@ -40,12 +40,12 @@
     </sql>
 
     <select id="count" resultType="int">
-        select count(1) from x_collection_calculatesys_user t
+        select count(1) from x_collection_calculate t
         <include refid="list_condition"/>
     </select>
 
     <select id="list" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
-        select * from x_collection_calculatesys_user t
+        select * from x_collection_calculate t
         <include refid="list_condition"/>
         <if test="params.orderBy!=null and params.orderBy!=''">
             ${params.orderBy}
@@ -56,44 +56,44 @@
     </select>
 
 	<update id="update">
-        update x_collection_calculatesys_user t
+        update x_collection_calculate
         <set>
-            			<if test="calculate_date != null">
+			<if test="calculateDate != null">
 				calculate_date = #{calculateDate}, 
 			</if>
-			<if test="overdue_order != null">
+			<if test="overdueOrder != null">
 				overdue_order = #{overdueOrder}, 
 			</if>
-			<if test="overdue_user != null">
+			<if test="overdueUser != null">
 				overdue_user = #{overdueUser}, 
 			</if>
-			<if test="overdue_principal != null">
+			<if test="overduePrincipal != null">
 				overdue_principal = #{overduePrincipal}, 
 			</if>
-			<if test="amount_receivable != null">
+			<if test="amountReceivable != null">
 				amount_receivable = #{amountReceivable}, 
 			</if>
-			<if test="number_repay != null">
+			<if test="numberRepay != null">
 				number_repay = #{numberRepay}, 
 			</if>
-			<if test="amount_repay != null">
+			<if test="amountRepay != null">
 				amount_repay = #{amountRepay}, 
 			</if>
-			<if test="create_time != null">
+			<if test="createTime != null">
 				create_time = #{createTime}, 
 			</if>
-			<if test="update_time != null">
+			<if test="updateTime != null">
 				update_time = #{updateTime}, 
 			</if>
 
         </set>
-        where t.id = #{id}
+        where id = #{id}
     </update>
 
 	<!-- 获取催收报表的逾期订单统计 -->
 	<select id="selectCollectionsCalculate" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
 		SELECT
-		t1.due_time,
+		any_value(t1.due_time) AS calculateDate,
 		SUM( t1.due_amount ) AS due_amount,
 		SUM( t1.amount ) AS amount,
 		COUNT( order_id ) AS due_order_count,
@@ -119,6 +119,7 @@
 	<!-- 获取催收报表的还款统计 -->
 	<select id="selectRepaytionCalculate" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
 		SELECT
+		any_value(calculate_time) as calculate_time,
 		count( DISTINCT t5.user_gid ) AS number_repay,
 		SUM( t5.repayment_amount ) AS amount_repay
 		FROM
@@ -135,13 +136,17 @@
 			t1.*,
 			t2.gid
 		FROM
-			( SELECT order_id, any_value(user_gid) as user_gid, any_value(create_time) as create_time FROM x_collection_task WHERE collector_id IS NOT NULL
-				AND create_time &lt;= #{endDate} AND create_time &gt; #{beginDate} group by order_id) t1
+			( SELECT order_id, any_value(t0.user_gid) as user_gid, any_value(t0.update_time) as update_time FROM
+				(SELECT order_id, user_gid, update_time FROM x_collection_task WHERE collector_id IS NOT NULL
+
+				ORDER BY update_time limit 10000000000)t0 GROUP BY t0.order_id) t1
+
 		LEFT JOIN x_record_loan t2 ON t1.order_id = t2.order_id) t3
 
-		INNER JOIN ( SELECT record_loan_gid, repayment_amount, create_time FROM x_record_repayment WHERE create_time &lt;= #{endDate}
-			AND create_time &gt; #{beginDate} AND repayment_status = 2 ) t4
-		ON t3.gid = t4.record_loan_gid AND t3.create_time &lt; t4.create_time
+		INNER JOIN ( SELECT record_loan_gid, repayment_amount, create_time FROM x_record_repayment WHERE
+		    create_time &lt;= #{endDate} AND create_time &gt; #{beginDate} AND repayment_status = 2 ) t4
+
+		ON t3.gid = t4.record_loan_gid AND t3.update_time &lt; t4.create_time
 		) t5
 	</select>
 
@@ -202,6 +207,104 @@
 				and calculate_date &lt;= #{params.endTime}
 			</if>
 		</where>
+	</select>
+
+	<!-- 还款名单 -->
+	<select id="selectRepayList" resultType="com.ivay.ivay_repository.dto.CollectionRepayDetail">
+		SELECT
+			t5.*,
+			t6.name
+		FROM
+			(
+		SELECT
+			t3.order_id,
+			t3.user_gid,
+			t3.due_time,
+			t4.record_loan_gid,
+			t4.repayment_amount,
+			t4.create_time
+		FROM
+			(
+		SELECT
+			t1.*,
+			t2.gid,
+			t2.due_time
+		FROM
+			(
+		SELECT
+			order_id,
+			any_value ( t0.user_gid ) AS user_gid,
+			any_value ( t0.update_time ) AS update_time
+		FROM
+			( SELECT order_id, user_gid, update_time FROM x_collection_task WHERE collector_id IS NOT NULL
+			 ORDER BY update_time LIMIT 10000000000 ) t0
+		GROUP BY
+			t0.order_id
+			) t1
+			LEFT JOIN x_record_loan t2 ON t1.order_id = t2.order_id
+			) t3
+			INNER JOIN ( SELECT record_loan_gid, repayment_amount, create_time FROM x_record_repayment WHERE create_time &lt;= #{params.endDate}
+				AND create_time &gt; #{params.beginDate} AND repayment_status = 2 ) t4 ON t3.gid = t4.record_loan_gid
+				AND t3.update_time &lt; t4.create_time
+			) t5
+			LEFT JOIN x_user_info t6 ON t5.user_gid = t6.user_gid
+			ORDER BY
+			t5.due_time DESC
+
+			<if test="limit != null and limit != 0">
+				limit #{offset}, #{limit}
+			</if>
+	</select>
+
+	<!-- 还款名单记录数 -->
+	<select id="selectRepayListCount" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			(
+		SELECT
+			t3.order_id,
+			t3.user_gid,
+			t3.due_time,
+			t4.record_loan_gid,
+			t4.repayment_amount,
+			t4.create_time
+		FROM
+			(
+		SELECT
+			t1.*,
+			t2.gid,
+			t2.due_time
+		FROM
+			(
+		SELECT
+			order_id,
+			any_value ( t0.user_gid ) AS user_gid,
+			any_value ( t0.update_time ) AS update_time
+		FROM
+			( SELECT order_id, user_gid, update_time FROM x_collection_task WHERE collector_id IS NOT NULL
+
+			 ORDER BY update_time LIMIT 10000000000 ) t0
+		GROUP BY
+			t0.order_id
+			) t1
+			LEFT JOIN x_record_loan t2 ON t1.order_id = t2.order_id
+			) t3
+			INNER JOIN ( SELECT record_loan_gid, repayment_amount, create_time FROM x_record_repayment WHERE create_time &lt;= #{params.endDate}
+				AND create_time &gt; #{params.beginDate} AND repayment_status = 2 ) t4 ON t3.gid = t4.record_loan_gid
+				AND t3.update_time &lt; t4.create_time
+			) t5
+			LEFT JOIN x_user_info t6 ON t5.user_gid = t6.user_gid
+	</select>
+
+	<!-- 根据统计时间查询对象 -->
+	<select id="getByCalculateTime" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+		SELECT
+			*
+		FROM
+			x_collection_calculate
+		WHERE
+			calculate_date = DATE_FORMAT( #{date}, '%Y%m%d' )
 	</select>
 
 </mapper>

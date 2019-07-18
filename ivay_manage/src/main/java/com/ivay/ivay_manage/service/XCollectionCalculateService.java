@@ -10,13 +10,13 @@ import java.util.Date;
 public interface XCollectionCalculateService {
     XCollectionCalculate save(XCollectionCalculate xCollectionCalculate);
 
-    XCollectionCalculate get(Long id);
+    XCollectionCalculate get(Integer id);
 
     XCollectionCalculate update(XCollectionCalculate xCollectionCalculate);
 
     PageTableResponse list(PageTableRequest request);
 
-    int delete(Long id);
+    int delete(Integer id);
 
     /**
      * @Description 催收报表定时任务
@@ -35,4 +35,13 @@ public interface XCollectionCalculateService {
      * @Date 2019/7/17 14:56
      */
     PageTableResponse selectCalculateList(int limit, int num, CollectionCalculateInfo collectionCalculateInfo);
+
+    /**
+     * @Description 还款名单
+     * @Author Ryan
+     * @Param [limit, num, id]
+     * @Return com.ivay.ivay_common.table.PageTableResponse
+     * @Date 2019/7/17 18:59
+     */
+    PageTableResponse selectRepayList(int limit, int num, int id);
 }

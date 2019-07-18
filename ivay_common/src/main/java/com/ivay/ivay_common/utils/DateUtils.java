@@ -630,7 +630,32 @@ public class DateUtils {
         return new Date(calendar.getTimeInMillis());
     }
 
+    /**
+     * @Description 当前时间加上n年
+     * @Author Ryan
+     * @Param [n]
+     * @Return java.util.Date
+     * @Date 2019/7/18 14:08
+     */
+    public static Date getDateAddYear(int n){
+        Calendar curr = Calendar.getInstance();
+        curr.set(Calendar.YEAR,curr.get(Calendar.YEAR)+n);
+        return curr.getTime();
+    }
+
+    public static String addYears(int year,Date date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, year);
+        date = calendar.getTime();
+        String dateStr = dateToString_YYYY_MM_DD(date);
+        return dateStr;
+    }
+
     public static void main(String[] args) throws Exception {
+        System.out.println(addYears(10,getDateAddYear(0)));
+        System.out.println(addYears(0,new Date()));
+        System.out.println(getDateAddYear(-10));
         String time = "2019-05-11 10:50:00";
         System.out.println(getDayEndTime(new Date()));
         System.out.println(getDayStartTime(new Date()));

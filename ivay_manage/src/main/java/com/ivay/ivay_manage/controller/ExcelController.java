@@ -1,7 +1,9 @@
 package com.ivay.ivay_manage.controller;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.utils.DateUtils;
 import com.ivay.ivay_common.utils.ExcelUtil;
+import com.ivay.ivay_repository.dto.CollectionCalculateInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -12,14 +14,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Api(tags = "excel下载")
 @RestController
@@ -125,6 +125,52 @@ public class ExcelController {
         }
 
         return Collections.emptyList();
+    }
+
+    @ApiOperation("催收报表EXCEL导出")
+    @PostMapping("/collectionExcel")
+    public Integer checkSql1(@RequestBody(required = false) CollectionCalculateInfo collectionCalculateInfo) {
+        if (null == collectionCalculateInfo) {
+            collectionCalculateInfo.setBeginTime(DateUtils.getDateAddYear(-10));
+            collectionCalculateInfo.setEndTime(DateUtils.getDateAddYear(10));
+        } else {
+            if(null == collectionCalculateInfo.getBeginTime()) {
+                collectionCalculateInfo.setBeginTime(DateUtils.getDateAddYear(-10));
+            }
+            if (null == collectionCalculateInfo.getEndTime()) {
+                collectionCalculateInfo.setEndTime(DateUtils.getDateAddYear(10));
+            }
+        }
+
+        String beginDate = DateUtils.addYears(0,collectionCalculateInfo.getBeginTime());
+        String endDate = DateUtils.addYears(0,collectionCalculateInfo.getEndTime());
+
+        String sql = "SELECT\n" +
+                "\tcalculate_date AS 统计日期,\n" +
+                "\toverdue_order AS 逾期账单,\n" +
+                "\toverdue_user AS 逾期用户,\n" +
+                "\toverdue_principal AS 逾期本金,\n" +
+                "\tamount_receivable AS 应收总额,\n" +
+                "\tnumber_repay AS 还款用户,\n" +
+                "\tamount_repay AS 收回金额 \n" +
+                "FROM\n" +
+                "\tx_collection_calculate \n" +
+                "WHERE\n" +
+                "\tcalculate_date >= '" + beginDate + "' \n" +
+                "\tAND calculate_date <= '" + endDate + "' \n" +
+                "ORDER BY\n" +
+                "\tcalculate_date DESC";
+
+        sql = getAndCheckSql(sql);
+
+        Integer count = 0;
+        try {
+            count = jdbcTemplate.queryForObject("select count(1) from (" + sql + ") t", Integer.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
+        return count;
     }
 
 }

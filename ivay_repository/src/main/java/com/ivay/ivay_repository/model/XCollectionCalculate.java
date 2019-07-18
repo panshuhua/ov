@@ -14,22 +14,22 @@ public class XCollectionCalculate {
 	private Date calculateDate;
 
 	@ApiModelProperty("逾期账单（件）")
-	private Integer overdueOrder;
+	private Integer overdueOrder = 0;
 
 	@ApiModelProperty("逾期用户（人）")
-	private Integer overdueUser;
+	private Integer overdueUser = 0;
 
 	@ApiModelProperty("逾期本金（盾）")
-	private String overduePrincipal;
+	private Long overduePrincipal = 0L;
 
 	@ApiModelProperty("应收总额（盾）")
-	private String amountReceivable;
+	private Long amountReceivable = 0L;
 
 	@ApiModelProperty("还款用户（人）")
-	private Integer numberRepay;
+	private Integer numberRepay = 0;
 
 	@ApiModelProperty("收回金额（盾）")
-	private String amountRepay;
+	private Long amountRepay = 0L;
 
 	@ApiModelProperty("创建时间")
 	private Date createTime;
