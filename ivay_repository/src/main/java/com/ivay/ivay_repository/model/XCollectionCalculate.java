@@ -9,27 +9,27 @@ import java.util.Date;
 public class XCollectionCalculate {
 	private Long id;
 
-	@JSONField(format = "yyyy-MM-dd")
+	@JSONField(format = "yyyyMMdd")
 	@ApiModelProperty("统计日期")
 	private Date calculateDate;
 
 	@ApiModelProperty("逾期账单（件）")
-	private Integer overdueOrder = 0;
+	private Integer overdueOrder;
 
 	@ApiModelProperty("逾期用户（人）")
-	private Integer overdueUser = 0;
+	private Integer overdueUser;
 
 	@ApiModelProperty("逾期本金（盾）")
-	private Long overduePrincipal = 0L;
+	private Long overduePrincipal;
 
 	@ApiModelProperty("应收总额（盾）")
-	private Long amountReceivable = 0L;
+	private Long amountReceivable;
 
 	@ApiModelProperty("还款用户（人）")
-	private Integer numberRepay = 0;
+	private Integer numberRepay;
 
 	@ApiModelProperty("收回金额（盾）")
-	private Long amountRepay = 0L;
+	private Long amountRepay;
 
 	@ApiModelProperty("创建时间")
 	private Date createTime;

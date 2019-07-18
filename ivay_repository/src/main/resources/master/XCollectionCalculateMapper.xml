@@ -93,15 +93,15 @@
 	<!-- 获取催收报表的逾期订单统计 -->
 	<select id="selectCollectionsCalculate" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
 		SELECT
-		any_value(t1.due_time) AS calculateDate,
-		SUM( t1.due_amount ) AS due_amount,
-		SUM( t1.amount ) AS amount,
-		COUNT( order_id ) AS due_order_count,
-		count( user_gid ) AS due_user_count
+		any_value(t1.due_time) AS calculate_date,
+		SUM( t1.due_amount ) AS overdue_principal,
+		SUM( t1.amount ) AS amount_receivable,
+		COUNT( order_id ) AS overdue_order,
+		count( user_gid ) AS overdue_user
 		FROM
 		(
 		SELECT
-		DATE_FORMAT( due_time, '%Y%m%d' ) AS due_time,
+		due_time,
 		due_amount,
 		( due_amount + overdue_interest ) AS amount,
 		order_id,
@@ -129,7 +129,7 @@
 		t3.user_gid,
 		t4.record_loan_gid,
 		t4.repayment_amount,
-		DATE_FORMAT( SYSDATE( ), '%Y%m%d' ) AS calculate_time
+		DATE_FORMAT( t4.create_time, '%Y%m%d' ) AS calculate_time
 		FROM
 		(
 		SELECT

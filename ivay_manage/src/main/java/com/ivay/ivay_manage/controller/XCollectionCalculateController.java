@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/collectionCalculates")
-@Api(tags = "XCollectionCalculateController")
+@Api(tags = "催收报表统计")
 public class XCollectionCalculateController {
 
     @Autowired
