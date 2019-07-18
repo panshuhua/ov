@@ -104,16 +104,19 @@ public class XUserInfoController {
                     i18nService.getMessage("response.error.user.checkgid.msg"));
         } else {
             CreditLine creditLine = xUserInfoService.getCreditLine(gid);
-            try {
-                // 调用风控规则接口判断是否有借款规则
+            creditLine.setCanborrowFlag(false);
+            if ("3456".contains(xUserInfo.getUserStatus())) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("userGid", gid);
                 params.put("flag", SysVariable.RISK_TYPE_LOAN);
-                String loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
-                creditLine.setCanborrowFlag(StringUtils.isEmpty(loanQualify));
-            } catch (Exception ex) {
-                creditLine.setCanborrowFlag(false);
-                logger.info("借款资格接口调用异常:", ex.getMessage());
+                try {
+                    // 调用风控规则接口判断是否有借款规则
+                    creditLine.setCanborrowFlag(StringUtils.isEmpty(
+                            restTemplate.getForObject(riskControlUrl, String.class, params))
+                    );
+                } catch (Exception ex) {
+                    logger.info("借款资格接口调用异常:", ex.getMessage());
+                }
             }
             response.setBo(creditLine);
         }
