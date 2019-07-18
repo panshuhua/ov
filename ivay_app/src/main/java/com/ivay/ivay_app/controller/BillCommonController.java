@@ -1,12 +1,12 @@
 package com.ivay.ivay_app.controller;
 
-import com.ivay.ivay_app.dto.TransfersReq;
-import com.ivay.ivay_app.service.BillCommonService;
-import com.ivay.ivay_common.dto.FptAccessTokenReq;
-import com.ivay.ivay_common.dto.FptSendReq;
-import com.ivay.ivay_common.utils.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,24 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.ivay.ivay_app.dto.TransfersReq;
+import com.ivay.ivay_app.service.BillCommonService;
+import com.ivay.ivay_common.dto.FptAccessTokenReq;
+import com.ivay.ivay_common.dto.FptSendReq;
+import com.ivay.ivay_common.utils.Base64Util;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.RSAEncryptSha1;
+import com.ivay.ivay_common.utils.SCaptcha;
+import com.ivay.ivay_common.utils.UUIDUtils;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 用户相关接口
@@ -77,7 +87,6 @@ public class BillCommonController {
     @Value("${api_fpt_brandName}")
     private String brandName;
 
-    @PostMapping
     @GetMapping("star/bill/getbillNo")
     @ApiOperation("取订单号")
     public String getBillNo() {

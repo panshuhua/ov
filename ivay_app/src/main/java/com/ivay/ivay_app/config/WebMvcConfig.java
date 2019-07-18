@@ -1,7 +1,11 @@
 package com.ivay.ivay_app.config;
 
-import com.ivay.ivay_common.table.PageTableArgumentResolver;
-import com.ivay.ivay_common.utils.StringUtil;
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +20,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.io.File;
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.ivay.ivay_common.table.PageTableArgumentResolver;
+import com.ivay.ivay_common.utils.StringUtil;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -67,7 +68,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/statics/**")
-                .addResourceLocations(ResourceUtils.FILE_URL_PREFIX + filesPath + File.separator);
+            .addResourceLocations(ResourceUtils.FILE_URL_PREFIX + filesPath + File.separator);
     }
 
     @Autowired
