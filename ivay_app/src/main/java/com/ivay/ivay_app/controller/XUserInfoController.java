@@ -22,12 +22,16 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("star/userInfos")
@@ -82,6 +86,12 @@ public class XUserInfoController {
         xUserInfoDao.delete(gid);
     }
 
+    @Value("${risk_control_url}")
+    private String riskControlUrl;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     @GetMapping("getcreditLine/{gid}")
     @ApiOperation(value = "获取授信额度")
     @LogAnnotation(module = "获取授信额度")
@@ -89,11 +99,23 @@ public class XUserInfoController {
         Response<CreditLine> response = new Response<>();
         //验证userGid有效性
         XUserInfo xUserInfo = xUserInfoDao.getByUserGid(gid);
-        if (xUserInfo != null) {
-            response.setBo(xUserInfoService.getCreditLine(gid));
-        } else {
+        if (xUserInfo == null) {
             response.setStatus(i18nService.getMessage("response.error.user.checkgid.code"),
                     i18nService.getMessage("response.error.user.checkgid.msg"));
+        } else {
+            CreditLine creditLine = xUserInfoService.getCreditLine(gid);
+            try {
+                // 调用风控规则接口判断是否有借款规则
+                Map<String, Object> params = new HashMap<>();
+                params.put("userGid", gid);
+                params.put("flag", SysVariable.RISK_TYPE_LOAN);
+                String loanQualify = restTemplate.getForObject(riskControlUrl, String.class, params);
+                creditLine.setCanborrowFlag(StringUtils.isEmpty(loanQualify));
+            } catch (Exception ex) {
+                creditLine.setCanborrowFlag(false);
+                logger.info("借款资格接口调用异常:", ex.getMessage());
+            }
+            response.setBo(creditLine);
         }
         return response;
     }

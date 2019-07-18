@@ -32,4 +32,7 @@ public class CreditLine {
 
     @ApiModelProperty("拒绝理由")
     private String refuseReason;
+
+    @ApiModelProperty("借款资格")
+    private boolean canborrowFlag;
 }
