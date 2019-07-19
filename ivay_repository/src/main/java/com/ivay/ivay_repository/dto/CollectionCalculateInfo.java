@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,9 +16,11 @@ import java.util.Date;
 @Data
 public class CollectionCalculateInfo{
 
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("开始时间")
     private Date beginTime;
 
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("结束时间")
     private Date endTime;
 }

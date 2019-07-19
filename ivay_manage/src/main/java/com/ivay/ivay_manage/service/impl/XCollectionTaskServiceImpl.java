@@ -120,7 +120,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                 xCollectionTask.setDueCollectionAmount(o.getLoanAmount());
                 xCollectionTask.setUserGid(o.getUserGid());
                 xCollectionTask.setCollectionStatus(CollectionStatusEnum.WAITING_COLLECTION.getStatus());
-                //xCollectionTask.setCreateTime(new Date());
+                xCollectionTask.setCreateTime(new Date());
                 xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
                 collectionTaskList.add(xCollectionTask);
             });
