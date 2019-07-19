@@ -6,6 +6,7 @@ import com.ivay.ivay_repository.dto.CollectionCalculateInfo;
 import com.ivay.ivay_repository.model.XCollectionCalculate;
 
 import java.util.Date;
+import java.util.List;
 
 public interface XCollectionCalculateService {
     XCollectionCalculate save(XCollectionCalculate xCollectionCalculate);
@@ -44,4 +45,13 @@ public interface XCollectionCalculateService {
      * @Date 2019/7/17 18:59
      */
     PageTableResponse selectRepayList(int limit, int num, int id);
+
+    /**
+     * @Description 催收报表EXCEL导出数据
+     * @Author Ryan
+     * @Param [collectionCalculateInfo]
+     * @Return java.util.List<com.ivay.ivay_repository.model.XCollectionCalculate>
+     * @Date 2019/7/19 9:13
+     */
+    List<XCollectionCalculate> selectExcelList(CollectionCalculateInfo collectionCalculateInfo);
 }

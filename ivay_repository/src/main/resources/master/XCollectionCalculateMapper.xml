@@ -307,4 +307,21 @@
 			calculate_date = DATE_FORMAT( #{date}, '%Y%m%d' )
 	</select>
 
+	<select id="selectExcelList" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+		SELECT
+		*
+		FROM
+		x_collection_calculate
+		<where>
+			<if test="beginTime != null">
+				and calculate_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null">
+				and calculate_date &lt;= #{endTime}
+			</if>
+		</where>
+		ORDER BY
+		calculate_date DESC
+	</select>
+
 </mapper>

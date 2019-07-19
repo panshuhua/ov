@@ -101,4 +101,13 @@ public interface XCollectionCalculateDao {
      * @Date 2019/7/18 10:06
      */
     XCollectionCalculate getByCalculateTime(@Param("date") Date date);
+
+    /**
+     * @Description 催收报表EXCEL导出数据
+     * @Author Ryan
+     * @Param [beginTime, endTime]
+     * @Return java.util.List<com.ivay.ivay_repository.model.XCollectionCalculate>
+     * @Date 2019/7/19 9:15
+     */
+    List<XCollectionCalculate> selectExcelList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 }
