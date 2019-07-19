@@ -103,7 +103,7 @@
 		SELECT
 		due_time,
 		due_amount,
-		( due_amount + overdue_interest ) AS amount,
+		( due_amount + overdue_fee_total ) AS amount,
 		order_id,
 		user_gid
 		FROM
