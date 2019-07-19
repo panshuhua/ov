@@ -159,7 +159,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
                     collectionTask.setUpdateTime(new Date());
                     collectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.OVERDUE.getStatus());
                     collectionTask.setCollectionStatus(CollectionStatusEnum.ASSIGNED_COLLECTION.getStatus());
-                    collectionTask.setCreateTime(new Date());
+                    //collectionTask.setCreateTime(new Date());
 
                     logger.info("催收任務{}，首次指派催收人{}", collectionTaskLoanInfo.getId(), collectorId);
                     //return xCollectionTaskDao.update(collectionTask) >= 1;
