@@ -312,6 +312,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
             xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getLoanAmount());
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_FAIL);
+            // 发送借款失败短信
+            xFirebaseNoticeService.sendLoanFail(xUserInfo);
         }
         if (xUserInfo.getCanborrowAmount() > xUserInfo.getCreditLine()) {
             xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
