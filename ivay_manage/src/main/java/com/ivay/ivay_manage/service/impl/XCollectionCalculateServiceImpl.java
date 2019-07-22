@@ -75,8 +75,8 @@ public class XCollectionCalculateServiceImpl implements XCollectionCalculateServ
 
         if (null == collectonCalculate) {
             collectonCalculate = new XCollectionCalculate();
-            collectonCalculate.setCalculateDate(date);
         }
+        collectonCalculate.setCalculateDate(date);
 
         if (null != repaytionCalculate) {
             collectonCalculate.setNumberRepay(repaytionCalculate.getNumberRepay());

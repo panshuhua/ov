@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -78,10 +79,14 @@ public class XCollectionCalculateController {
         return response;
     }
 
-    @GetMapping("executeTask")
+    @PostMapping("executeTask")
     @ApiOperation(value = "手动触发催收报表定时任务")
-    public Response<Boolean> executeTask(PageTableRequest request) {
-        xCollectionCalculateService.saveCollectionCalculate(null);
+    public Response<Boolean> executeTask(@RequestBody CollectionCalculateInfo collectionCalculateInfo) {
+        Date date = null;
+        if (null != collectionCalculateInfo) {
+            date = collectionCalculateInfo.getBeginTime();
+        }
+        xCollectionCalculateService.saveCollectionCalculate(date);
         Response<Boolean> response = new Response<>();
         return response;
     }
