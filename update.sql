@@ -95,7 +95,8 @@ CREATE TABLE `account_check_result` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
--- todo 催收系统 2019-7-2
+-- todo 2019-7-22
+ALTER TABLE sys_permission MODIFY `type` tinyint(1) NOT NULL COMMENT '1菜单 2权限';
 
 
 

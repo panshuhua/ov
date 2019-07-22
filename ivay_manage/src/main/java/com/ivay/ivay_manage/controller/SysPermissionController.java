@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.service.PermissionService;
 import com.ivay.ivay_manage.service.RoleService;
@@ -32,55 +33,57 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("manage/permission")
 public class SysPermissionController {
-
     @Autowired
     private PermissionDao permissionDao;
-
     @Autowired
     private PermissionService permissionService;
 
-    @ApiOperation("当前登录用户拥有的权限")
-    @GetMapping("list")
-    public List<Permission> permissionsCurrent() {
+    @GetMapping("ownList")
+    @ApiOperation("获取当前用户可以查看的菜单列表")
+    public Response<List<Permission>> permissionsCurrent() {
         LoginUser loginUser = UserUtil.getLoginUser();
         List<Permission> list = loginUser.getPermissions();
-        final List<Permission> permissions = list.stream().filter(t -> t.getType().equals(1))
-                .collect(Collectors.toList());
+        // type=1 菜单  type=2 权限？
+        final List<Permission> permissions = list.stream().filter(t -> t.getType().equals(1)).collect(Collectors.toList());
 
-        // 2018.06.09 支持多级菜单
+        // parentId=0 一级目录
         List<Permission> firstLevel = permissions.stream().filter(p -> p.getParentId().equals(0L)).collect(Collectors.toList());
-        firstLevel.parallelStream().forEach(p -> {
-            setChild(p, permissions);
-        });
+        // 设置子菜单
+        firstLevel.parallelStream().forEach(p -> setChild(p, permissions));
 
-        return firstLevel;
+        Response<List<Permission>> response = new Response<>();
+        response.setBo(firstLevel);
+        return response;
     }
 
     /**
-     * 设置子元素
-     * 2018.06.09
+     * 设置子菜单，支持多级菜单
      *
-     * @param p
-     * @param permissions
+     * @param p           当前菜单
+     * @param permissions 全部菜单
      */
     private void setChild(Permission p, List<Permission> permissions) {
+        // 首先过滤出子菜单
         List<Permission> child = permissions.parallelStream().filter(a -> a.getParentId().equals(p.getId())).collect(Collectors.toList());
         p.setChild(child);
         if (!CollectionUtils.isEmpty(child)) {
-            child.parallelStream().forEach(c -> {
-                //递归设置子元素，多级菜单支持
-                setChild(c, permissions);
-            });
+            // 然后递归设置子子菜单
+            child.parallelStream().forEach(c -> setChild(c, permissions));
         }
     }
 
-//	private void setChild(List<Permission> permissions) {
-//		permissions.parallelStream().forEach(per -> {
-//			List<Permission> child = permissions.stream().filter(p -> p.getParentId().equals(per.getId()))
-//					.collect(Collectors.toList());
-//			per.setChild(child);
-//		});
-//	}
+    @GetMapping("allList")
+    @ApiOperation("查询完整的菜单列表")
+    @PreAuthorize("hasAuthority('sys:menu:query')")
+    public Response<List<Permission>> permissionsList() {
+        // 获得所有的菜单
+        List<Permission> permissionsAll = permissionDao.listAll();
+        List<Permission> list = Lists.newArrayList();
+        setPermissionsList(0L, permissionsAll, list);
+        Response<List<Permission>> response = new Response<>();
+        response.setBo(list);
+        return response;
+    }
 
     /**
      * 菜单列表
@@ -100,33 +103,17 @@ public class SysPermissionController {
         }
     }
 
-    @GetMapping
-    @ApiOperation(value = "菜单列表")
+    @GetMapping("allTree")
+    @ApiOperation("查看完整的菜单树, 包括新增查询等")
     @PreAuthorize("hasAuthority('sys:menu:query')")
-    public List<Permission> permissionsList() {
-        List<Permission> permissionsAll = permissionDao.listAll();
-        List<Permission> list = Lists.newArrayList();
-        setPermissionsList(0L, permissionsAll, list);
-
-        return list;
-    }
-
-    @GetMapping("all")
-    @ApiOperation("所有菜单")
-    @PreAuthorize("hasAuthority('sys:menu:query')")
-    public JSONArray permissionsAll() {
+    public Response<JSONArray> permissionsAll() {
         List<Permission> permissionsAll = permissionDao.listAll();
         JSONArray array = new JSONArray();
         setPermissionsTree(0L, permissionsAll, array);
 
-        return array;
-    }
-
-    @GetMapping("parents")
-    @ApiOperation("一级菜单")
-    @PreAuthorize("hasAuthority('sys:menu:query')")
-    public List<Permission> parentMenu() {
-        return permissionDao.listParents();
+        Response<JSONArray> response = new Response<>();
+        response.setBo(array);
+        return response;
     }
 
     /**
@@ -152,6 +139,15 @@ public class SysPermissionController {
         }
     }
 
+    @GetMapping("menuList")
+    @ApiOperation("下拉菜单列表")
+    @PreAuthorize("hasAuthority('sys:menu:query')")
+    public Response<List<Permission>> parentMenu() {
+        Response<List<Permission>> response = new Response<>();
+        response.setBo(permissionDao.listParents());
+        return response;
+    }
+
     @GetMapping(params = "roleId")
     @ApiOperation(value = "根据角色id获取权限")
     @PreAuthorize("hasAnyAuthority('sys:menu:query','sys:role:query')")
@@ -170,8 +166,10 @@ public class SysPermissionController {
     @GetMapping("get/{id}")
     @ApiOperation(value = "根据菜单id获取菜单")
     @PreAuthorize("hasAuthority('sys:menu:query')")
-    public Permission get(@PathVariable Long id) {
-        return permissionDao.getById(id);
+    public Response<Permission> get(@PathVariable Long id) {
+        Response<Permission> response = new Response<>();
+        response.setBo(permissionDao.getById(id));
+        return response;
     }
 
     @LogAnnotation
@@ -187,16 +185,21 @@ public class SysPermissionController {
      *
      * @return
      */
-    @GetMapping("owns")
-    @ApiOperation("校验当前用户的权限")
-    public Set<String> ownsPermission() {
+    @GetMapping("checkOwns")
+    @ApiOperation("校验当前用户用户的权限")
+    public Response<Set<String>> ownsPermission() {
+        Response<Set<String>> response = new Response<>();
         List<Permission> permissions = UserUtil.getLoginUser().getPermissions();
         if (CollectionUtils.isEmpty(permissions)) {
-            return Collections.emptySet();
+            response.setBo(Collections.emptySet());
+        } else {
+            response.setBo(permissions.parallelStream()
+                    .filter(p -> !StringUtils.isEmpty(p.getPermission()))
+                    .map(Permission::getPermission)
+                    .collect(Collectors.toSet())
+            );
         }
-
-        return permissions.parallelStream().filter(p -> !StringUtils.isEmpty(p.getPermission()))
-                .map(Permission::getPermission).collect(Collectors.toSet());
+        return response;
     }
 
     @LogAnnotation

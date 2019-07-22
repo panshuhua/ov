@@ -7,7 +7,6 @@ import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_manage.dto.LoginUser;
 import com.ivay.ivay_manage.service.PermissionService;
 import com.ivay.ivay_manage.service.RoleService;
-import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.PermissionDao;
 import com.ivay.ivay_repository.model.Permission;
@@ -74,14 +73,6 @@ public class PermissionController {
             });
         }
     }
-
-//	private void setChild(List<Permission> permissions) {
-//		permissions.parallelStream().forEach(per -> {
-//			List<Permission> child = permissions.stream().filter(p -> p.getParentId().equals(per.getId()))
-//					.collect(Collectors.toList());
-//			per.setChild(child);
-//		});
-//	}
 
     /**
      * 菜单列表
