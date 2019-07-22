@@ -73,9 +73,14 @@ public interface XFirebaseNoticeService {
     void sendHadRepayNotice(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment, XUserInfo xUserInfo);
 
     /**
-     * 发送借款通知：借款成功/失败
+     * 发送借款通知：借款成功
      * 
      * @param xRecordLoan
      */
     void sendLoanSuccessNotice(XRecordLoan xRecordLoan, XUserInfo xUserInfo);
+
+    /**
+     * 发送借款失败通知：借款申请失败
+     */
+    void sendLoanFail(XUserInfo xUserInfo);
 }
