@@ -40,7 +40,7 @@ public class SysPermissionController {
     private PermissionService permissionService;
 
     @ApiOperation("当前登录用户拥有的权限")
-    @GetMapping("current")
+    @GetMapping("list")
     public List<Permission> permissionsCurrent() {
         LoginUser loginUser = UserUtil.getLoginUser();
         List<Permission> list = loginUser.getPermissions();
