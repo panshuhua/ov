@@ -35,7 +35,7 @@ public interface XFirebaseNoticeService {
      * 
      * @param msg
      */
-    void sendAllNotice(NoticeMsg msg);
+    void sendAllNotice(NoticeMsg msg, boolean flag);
 
     /**
      * 发送借款失败通知：借款申请失败
