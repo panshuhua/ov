@@ -103,7 +103,7 @@
 		SELECT
 		due_time,
 		due_amount,
-		( due_amount + overdue_interest ) AS amount,
+		( due_amount + overdue_fee_total ) AS amount,
 		order_id,
 		user_gid
 		FROM
@@ -305,6 +305,23 @@
 			x_collection_calculate
 		WHERE
 			calculate_date = DATE_FORMAT( #{date}, '%Y%m%d' )
+	</select>
+
+	<select id="selectExcelList" resultType="com.ivay.ivay_repository.model.XCollectionCalculate">
+		SELECT
+		*
+		FROM
+		x_collection_calculate
+		<where>
+			<if test="beginTime != null">
+				and calculate_date &gt;= #{beginTime}
+			</if>
+			<if test="endTime != null">
+				and calculate_date &lt;= #{endTime}
+			</if>
+		</where>
+		ORDER BY
+		calculate_date DESC
 	</select>
 
 </mapper>

@@ -312,6 +312,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             xRecordLoan.setFailReason(transfersRsp.getResponseMessage());
             xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount() + xRecordLoan.getLoanAmount());
             xAppEvent.setIsSuccess(SysVariable.APP_EVENT_FAIL);
+            // 发送借款失败短信
+            xFirebaseNoticeService.sendLoanFail(xUserInfo);
         }
         if (xUserInfo.getCanborrowAmount() > xUserInfo.getCreditLine()) {
             xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
@@ -534,9 +536,11 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
     @Override
     public void timeoutTransferInfo() {
         List<XTimeoutTransferInfo> timeouts = xRecordLoanDao.getTimeoutTransfer();
+        logger.info("借款超时重试({}): {}----star", DateUtils.getNowDateYYYY_MM_DD_HH_MM_SS(), timeouts.size());
         for (XTimeoutTransferInfo x : timeouts) {
             // 出现超时，查询交易状态
             TransfersRsp rsp = xapiService.transfersInfo(x.getReferenceId(), x.getLoanGid());
+            logger.info("{}:{},{},{}", x.getLoanGid(), x.getReferenceId(), rsp.getResponseCode(), rsp.getResponseMessage());
             if (BaokimResponseStatus.SUCCESS.getCode().equals(rsp.getResponseCode())
                     || BaokimResponseStatus.FAIL.getCode().equals(rsp.getResponseCode())) {
                 XRecordLoan xrl = xRecordLoanDao.getByLoanGid(x.getLoanGid());

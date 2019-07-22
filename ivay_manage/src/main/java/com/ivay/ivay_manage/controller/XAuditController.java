@@ -15,7 +15,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,13 +89,8 @@ public class XAuditController {
     })
     public String queryAuditQualification(@RequestParam String userGid,
                                           @RequestParam int flag) {
-        String result = xLoanService.queryRiskQualificationDemo(userGid, flag);
         // 获得某人的风控审核结果，返回未通过审核的理由，空字符串表示通过审核
-        if (flag == SysVariable.RISK_TYPE_LOAN && !StringUtils.isEmpty(result)) {
-            // 风控拒绝需要发送短信
-            xFirebaseNoticeService.sendLoanFail(userGid);
-        }
-        return result;
+        return xLoanService.queryRiskQualificationDemo(userGid, flag);
     }
 
     @PostMapping("repaymentSuccessPostHandle")

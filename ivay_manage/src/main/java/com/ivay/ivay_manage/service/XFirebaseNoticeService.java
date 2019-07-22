@@ -38,11 +38,6 @@ public interface XFirebaseNoticeService {
     void sendAllNotice(NoticeMsg msg, boolean flag);
 
     /**
-     * 发送借款失败通知：借款申请失败
-     */
-    void sendLoanFail(String userGid);
-
-    /**
      * 发送获额通知：首次获得额度/额度变更
      * 
      * @param xUserInfo

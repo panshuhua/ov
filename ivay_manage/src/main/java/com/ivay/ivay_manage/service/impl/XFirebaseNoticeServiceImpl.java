@@ -422,35 +422,35 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
     }
 
     // 风控借款规则校验失败时，发送借款申请失败通知
-    @Override
-    public void sendLoanFail(String userGid) {
-        XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
-        NoticeMsg msg = new NoticeMsg();
-        // firebase消息推送参数
-        msg.setFmcToken(xUserInfo.getFmcToken());
-        // 两种消息共用参数
-        msg.setUserGid(userGid);
-        // 手机短信参数
-        msg.setPhone(xUserInfo.getPhone());
-
-        // 发送内容
-        String title = i18nService.getViMessage("firebase.notice.loanfail.remind.titlemsg");
-        title = StringUtil.vietnameseToEnglish(title);
-        msg.setTitle(title);
-        String firebaseMsg = i18nService.getViMessage("firebase.notice.loanfail.remind.msg");
-        firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
-        logger.info("借款申请失败-发送的firebase推送消息为:{}", firebaseMsg);
-        msg.setFirebaseMsg(firebaseMsg);
-        String phoneMsg = i18nService.getViMessage("firebase.notice.loanfail.remind.phonemsg");
-        phoneMsg = StringUtil.vietnameseToEnglish(phoneMsg);
-        logger.info("借款申请失败-发送的手机短信消息为:{}", phoneMsg);
-        msg.setPhoneMsg(phoneMsg);
-
-        logger.info("发送消息所有参数：" + msg.toString());
-        // 发送
-        sendAllNotice(msg, false);
-
-    }
+    // @Override
+    // public void sendLoanFail(String userGid) {
+    // XUserInfo xUserInfo = xUserInfoDao.getByUserGid(userGid);
+    // NoticeMsg msg = new NoticeMsg();
+    // // firebase消息推送参数
+    // msg.setFmcToken(xUserInfo.getFmcToken());
+    // // 两种消息共用参数
+    // msg.setUserGid(userGid);
+    // // 手机短信参数
+    // msg.setPhone(xUserInfo.getPhone());
+    //
+    // // 发送内容
+    // String title = i18nService.getViMessage("firebase.notice.loanfail.remind.titlemsg");
+    // title = StringUtil.vietnameseToEnglish(title);
+    // msg.setTitle(title);
+    // String firebaseMsg = i18nService.getViMessage("firebase.notice.loanfail.remind.msg");
+    // firebaseMsg = StringUtil.vietnameseToEnglish(firebaseMsg);
+    // logger.info("借款申请失败-发送的firebase推送消息为:{}", firebaseMsg);
+    // msg.setFirebaseMsg(firebaseMsg);
+    // String phoneMsg = i18nService.getViMessage("firebase.notice.loanfail.remind.phonemsg");
+    // phoneMsg = StringUtil.vietnameseToEnglish(phoneMsg);
+    // logger.info("借款申请失败-发送的手机短信消息为:{}", phoneMsg);
+    // msg.setPhoneMsg(phoneMsg);
+    //
+    // logger.info("发送消息所有参数：" + msg.toString());
+    // // 发送
+    // sendAllNotice(msg, false);
+    //
+    // }
 
     @Override
     public void sendManualAuditRjection(XUserInfo xUserInfo) {

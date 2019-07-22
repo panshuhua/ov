@@ -13,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/collectionCalculates")
 @Api(tags = "催收报表统计")
@@ -92,6 +94,15 @@ public class XCollectionCalculateController {
 
         Response<PageTableResponse> response = new Response<>();
         response.setBo(xCollectionCalculateService.selectRepayList(limit, num, id));
+        return response;
+    }
+
+    @ApiOperation("催收报表EXCEL导出数据")
+    @PostMapping("/excelList")
+    public Response<List<XCollectionCalculate>> checkSql1(@RequestBody(required = false) CollectionCalculateInfo collectionCalculateInfo) {
+
+        Response<List<XCollectionCalculate>> response = new Response<>();
+        response.setBo(xCollectionCalculateService.selectExcelList(collectionCalculateInfo));
         return response;
     }
 }

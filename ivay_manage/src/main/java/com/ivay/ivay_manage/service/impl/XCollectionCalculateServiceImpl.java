@@ -147,4 +147,12 @@ public class XCollectionCalculateServiceImpl implements XCollectionCalculateServ
                 a -> xCollectionCalculateDao.selectRepayList(a.getParams(), a.getOffset(), a.getLimit())
         ).handle(request);
     }
+
+    @Override
+    public List<XCollectionCalculate> selectExcelList(CollectionCalculateInfo collectionCalculateInfo) {
+        if (null == collectionCalculateInfo) {
+            collectionCalculateInfo = new CollectionCalculateInfo();
+        }
+        return xCollectionCalculateDao.selectExcelList(collectionCalculateInfo.getBeginTime(),collectionCalculateInfo.getEndTime());
+    }
 }
