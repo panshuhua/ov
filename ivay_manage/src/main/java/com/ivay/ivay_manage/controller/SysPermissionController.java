@@ -148,10 +148,10 @@ public class SysPermissionController {
         return response;
     }
 
-    @GetMapping(params = "roleId")
+    @GetMapping("getByRole")
     @ApiOperation(value = "根据角色id获取权限")
     @PreAuthorize("hasAnyAuthority('sys:menu:query','sys:role:query')")
-    public List<Permission> listByRoleId(Long roleId) {
+    public List<Permission> listByRoleId(@RequestParam Long roleId) {
         return permissionDao.listByRoleId(roleId);
     }
 

@@ -26,8 +26,8 @@
     <select id="listVisible" resultType="com.ivay.ivay_repository.model.SysRole">
         select * from sys_role t
         <include refid="list_condition"/>
-        ${params.orderBy}
-        <if test="offset != null and offset >= 0 and limit != null and limit >= 0">
+        order by updateTime desc
+        <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
         </if>
     </select>

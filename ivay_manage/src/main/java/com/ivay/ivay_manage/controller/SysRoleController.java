@@ -3,8 +3,6 @@ package com.ivay.ivay_manage.controller;
 import com.google.common.collect.Maps;
 import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.dto.Response;
-import com.ivay.ivay_common.table.PageTableHandler;
-import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.dto.SysRolePermission;
 import com.ivay.ivay_manage.service.RoleService;
@@ -45,11 +43,8 @@ public class SysRoleController {
     @GetMapping("list")
     @ApiOperation(value = "角色列表")
     @PreAuthorize("hasAuthority('sys:role:query')")
-    public PageTableResponse listRoles(PageTableRequest request) {
-        return new PageTableHandler(
-                a -> roleDao.count(a.getParams()),
-                a -> roleDao.listVisible(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+    public PageTableResponse listRoles() {
+        return new PageTableResponse<>(roleDao.listVisible(null, null, null));
     }
 
     @GetMapping("get/{id}")
