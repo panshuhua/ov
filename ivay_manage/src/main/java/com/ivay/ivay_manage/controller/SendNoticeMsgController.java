@@ -12,6 +12,7 @@ import com.ivay.ivay_common.dto.MsgLinkData;
 import com.ivay.ivay_common.dto.NoticeMsg;
 import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_manage.service.XFirebaseNoticeService;
+import com.ivay.ivay_repository.model.XUserInfo;
 
 import io.swagger.annotations.Api;
 
@@ -52,7 +53,15 @@ public class SendNoticeMsgController {
     @PostMapping("/testSendMsg")
     public Response<String> testSendMsg(@RequestParam String type, @RequestBody NoticeMsg msg) throws Exception {
         Response<String> response = new Response<String>();
-        response.setBo(xFirebaseNoticeService.testSendMsg(msg, type));
+        // response.setBo(xFirebaseNoticeService.testSendMsg(msg, type));
+        // 测试-首次获取额度
+        XUserInfo xUserInfo = new XUserInfo();
+        xUserInfo.setFmcToken(
+            "e4XxSYJN8fM:APA91bG0BPhiZIcI4Q-JHIp9t5_9zFytXumyfY1EEOgQ9IXbWLZCpD5aPeu1C-oltVp9CLvFALMsgjlJsqkasm5QaqhRIDpn7jcmsudfX4A9JCqkvTdF9lMyoBCbFSyZ93gZ8VhnOP1A");
+        xUserInfo.setPhone("0917143991");
+        xUserInfo.setCreditLineCount(1);
+        xUserInfo.setCreditLine(1000000L);
+        xFirebaseNoticeService.sendGetCreditLine(xUserInfo);
         return response;
     }
 

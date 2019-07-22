@@ -24,7 +24,8 @@ public interface PermissionDao {
     @Select("select * from sys_permission t where t.id = #{id}")
     Permission getById(Long id);
 
-    @Insert("insert into sys_permission(parentId, name, css, href, type, permission, sort) values(#{parentId}, #{name}, #{css}, #{href}, #{type}, #{permission}, #{sort})")
+    @Insert("insert into sys_permission(parentId, name, css, href, type, permission, sort) " +
+            "values(#{parentId}, #{name}, #{css}, #{href}, #{type}, #{permission}, #{sort})")
     int save(Permission permission);
 
     @Update("update sys_permission t set parentId = #{parentId}, name = #{name}, css = #{css}, href = #{href}, type = #{type}, permission = #{permission}, sort = #{sort} where t.id = #{id}")

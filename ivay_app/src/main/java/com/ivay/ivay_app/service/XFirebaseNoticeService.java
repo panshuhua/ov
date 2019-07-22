@@ -22,10 +22,6 @@ public interface XFirebaseNoticeService {
      */
     boolean sendOverDueNotice();
 
-    boolean sendRepaymentNotice1();
-
-    boolean sendOverDueNotice1();
-
     /**
      * 获取短链接包含的参数
      * 
@@ -65,7 +61,7 @@ public interface XFirebaseNoticeService {
      * 
      * @param msg
      */
-    void sendAllNotice(NoticeMsg msg);
+    void sendAllNotice(NoticeMsg msg, boolean flag);
 
     /**
      * 发送已还款通知：全部还款与部分还款

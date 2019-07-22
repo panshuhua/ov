@@ -35,7 +35,7 @@ public interface XFirebaseNoticeService {
      * 
      * @param msg
      */
-    void sendAllNotice(NoticeMsg msg);
+    void sendAllNotice(NoticeMsg msg, boolean flag);
 
     /**
      * 发送获额通知：首次获得额度/额度变更
