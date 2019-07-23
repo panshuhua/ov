@@ -95,8 +95,11 @@ CREATE TABLE `account_check_result` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
--- todo 2019-7-22
+-- todo 2019-7-22 菜单角色用户重构
 ALTER TABLE sys_permission MODIFY `type` tinyint(1) NOT NULL COMMENT '1菜单 2权限';
+alter table sys_role drop column enable_flag;
+alter table sys_role_user drop column enable_flag;
+alter table sys_user drop column enable_flag;
 
 -- VTP还款交易信息
 CREATE TABLE `vtp_transaction_process_input` (

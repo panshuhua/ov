@@ -15,7 +15,13 @@ public interface UserService {
      */
     SysUser addUser(SysRoleUser sysRoleUser);
 
-    SysUser updateUser(SysRoleUser sysRoleUser);
+    /**
+     * 更新用户基本信息和角色
+     *
+     * @param sysRoleUser
+     * @return
+     */
+    SysUser updateUserAndRole(SysRoleUser sysRoleUser);
 
     SysUser getUserByName(String username);
 

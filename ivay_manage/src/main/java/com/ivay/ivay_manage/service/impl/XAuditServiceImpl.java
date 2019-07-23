@@ -34,7 +34,7 @@ public class XAuditServiceImpl implements XAuditService {
         xAuditUserDao.save(xAuditUser);
         return xAuditUser;
     }
-    
+
     @Override
     public XAuditUser getById(Long id) {
         return xAuditUserDao.getById(id);

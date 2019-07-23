@@ -4,15 +4,11 @@ import com.ivay.ivay_common.annotation.LogAnnotation;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
-import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.utils.UserUtil;
-import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.dao.master.UserDao;
-import com.ivay.ivay_repository.model.SysRole;
 import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,8 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 用户相关接口
@@ -42,12 +36,7 @@ public class UserController {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private RoleDao roleDao;
-    @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private XAuditService xAuditService;
 
     @LogAnnotation
     @PostMapping
@@ -66,25 +55,7 @@ public class UserController {
     @ApiOperation("修改用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
     public SysUser updateUser(@RequestBody SysRoleUser sysRoleUser) {
-        List<SysRole> sysRoleList = roleDao.listByUserId(sysRoleUser.getId());
-        SysUser sysUser = userService.updateUser(sysRoleUser);
-        if (isDelOvayAuditRight(sysRoleList, sysRoleUser.getRoleIds())) {
-            // 为被当前审计员审核的人员重新分配审计员
-            xAuditService.reAssignAudit(null, sysRoleUser.getId().toString());
-        }
-        return sysUser;
-    }
-
-    private boolean isDelOvayAuditRight(List<SysRole> oldSysRoleList, List<Long> newRoleId) {
-        SysRole ovayAudit = roleDao.getRoleByName(SysVariable.ROLE_OVAY_AUDIT);
-        if (!newRoleId.contains(ovayAudit.getId())) {
-            for (SysRole r : oldSysRoleList) {
-                if (r.getId().equals(ovayAudit.getId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return userService.updateUserAndRole(sysRoleUser);
     }
 
     @LogAnnotation
@@ -96,7 +67,7 @@ public class UserController {
         BeanUtils.copyProperties(user, sysRoleUser);
         sysRoleUser.setHeadImgUrl(headImgUrl);
 
-        userService.updateUser(sysRoleUser);
+        userService.updateUserAndRole(sysRoleUser);
         logger.debug("{}修改了头像", user.getUsername());
     }
 

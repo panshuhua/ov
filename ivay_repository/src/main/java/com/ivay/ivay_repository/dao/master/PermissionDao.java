@@ -15,10 +15,13 @@ public interface PermissionDao {
     @Select("select * from sys_permission t where t.type = 1 order by t.sort")
     List<Permission> listParents();
 
-    @Select("select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId inner join sys_role_user ru on ru.roleId = rp.roleId where ru.userId = #{userId} order by p.sort")
+    @Select("select distinct p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId " +
+            "inner join sys_role_user ru on ru.roleId = rp.roleId " +
+            "where ru.userId = #{userId} order by p.sort")
     List<Permission> listByUserId(Long userId);
 
-    @Select("select p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId where rp.roleId = #{roleId} order by p.sort")
+    @Select("select p.* from sys_permission p inner join sys_role_permission rp on p.id = rp.permissionId " +
+            "where rp.roleId = #{roleId} order by p.sort")
     List<Permission> listByRoleId(Long roleId);
 
     @Select("select * from sys_permission t where t.id = #{id}")
@@ -28,7 +31,8 @@ public interface PermissionDao {
             "values(#{parentId}, #{name}, #{css}, #{href}, #{type}, #{permission}, #{sort})")
     int save(Permission permission);
 
-    @Update("update sys_permission t set parentId = #{parentId}, name = #{name}, css = #{css}, href = #{href}, type = #{type}, permission = #{permission}, sort = #{sort} where t.id = #{id}")
+    @Update("update sys_permission t set parentId = #{parentId}, name = #{name}, css = #{css}, href = #{href}, " +
+            "type = #{type}, permission = #{permission}, sort = #{sort} where t.id = #{id}")
     int update(Permission permission);
 
     @Delete("delete from sys_permission where id = #{id}")
@@ -40,6 +44,8 @@ public interface PermissionDao {
     @Delete("delete from sys_role_permission where permissionId = #{permissionId}")
     int deleteRolePermission(Long permissionId);
 
-    @Select("select ru.userId from sys_role_permission rp inner join sys_role_user ru on ru.roleId = rp.roleId where rp.permissionId = #{permissionId}")
+    @Select("select ru.userId from sys_role_permission rp " +
+            "inner join sys_role_user ru on ru.roleId = rp.roleId " +
+            "where rp.permissionId = #{permissionId}")
     Set<Long> listUserIds(Long permissionId);
 }

@@ -5,26 +5,23 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
-import com.ivay.ivay_common.utils.SysVariable;
 import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
-import com.ivay.ivay_manage.service.XAuditService;
 import com.ivay.ivay_manage.utils.UserUtil;
-import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.dao.master.UserDao;
-import com.ivay.ivay_repository.model.SysRole;
 import com.ivay.ivay_repository.model.SysUser;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 用户相关接口
@@ -42,12 +39,7 @@ public class SysUserController {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private RoleDao roleDao;
-    @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private XAuditService xAuditService;
 
     @LogAnnotation
     @PostMapping("add")
@@ -63,73 +55,82 @@ public class SysUserController {
     @PutMapping("update")
     @ApiOperation("修改用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
-    public SysUser updateUser(@RequestBody SysRoleUser sysRoleUser) {
-        List<SysRole> sysRoleList = roleDao.listByUserId(sysRoleUser.getId());
-        SysUser sysUser = userService.updateUser(sysRoleUser);
-        if (isDelOvayAuditRight(sysRoleList, sysRoleUser.getRoleIds())) {
-            // 为被当前审计员审核的人员重新分配审计员
-            xAuditService.reAssignAudit(null, sysRoleUser.getId().toString());
-        }
-        return sysUser;
-    }
-
-    private boolean isDelOvayAuditRight(List<SysRole> oldSysRoleList, List<Long> newRoleId) {
-        SysRole ovayAudit = roleDao.getRoleByName(SysVariable.ROLE_OVAY_AUDIT);
-        if (!newRoleId.contains(ovayAudit.getId())) {
-            for (SysRole r : oldSysRoleList) {
-                if (r.getId().equals(ovayAudit.getId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public Response<SysUser> updateUser(@RequestBody SysRoleUser sysRoleUser) {
+        Response<SysUser> response = new Response<>();
+        response.setBo(userService.updateUserAndRole(sysRoleUser));
+        return response;
     }
 
     @LogAnnotation
     @PutMapping("headImg")
-    @ApiOperation("修改头像")
+    @ApiOperation("修改用户头像")
     public void updateHeadImgUrl(@RequestParam String headImgUrl) {
         SysUser user = UserUtil.getLoginUser();
+        if (user == null) {
+            throw new AccessDeniedException("请登录");
+        }
         SysRoleUser sysRoleUser = new SysRoleUser();
         BeanUtils.copyProperties(user, sysRoleUser);
         sysRoleUser.setHeadImgUrl(headImgUrl);
 
-        userService.updateUser(sysRoleUser);
+        userDao.update(sysRoleUser);
         logger.debug("{}修改了头像", user.getUsername());
     }
 
     @LogAnnotation
-    @PutMapping("changePassword/{username}")
+    @PutMapping("changePassword")
     @ApiOperation("修改密码")
     @PreAuthorize("hasAuthority('sys:user:password')")
-    public void changePassword(@PathVariable String username,
-                               String oldPassword,
-                               String newPassword) {
+    public void changePassword(@RequestParam String username,
+                               @RequestParam String oldPassword,
+                               @RequestParam String newPassword) {
         userService.changePassword(username, oldPassword, newPassword);
     }
 
-    @GetMapping("listUsers")
+    @PostMapping("listUsers")
     @ApiOperation("用户列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数, 0不分页", dataType = "Long", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "num", value = "页数", dataType = "Long", paramType = "query", defaultValue = "1")
+    })
     @PreAuthorize("hasAuthority('sys:user:query')")
-    public PageTableResponse listUsers(PageTableRequest request) {
+    public Response<PageTableResponse> listUsers(@RequestParam(required = false, defaultValue = "0") int limit,
+                                                 @RequestParam(required = false, defaultValue = "1") int num,
+                                                 @RequestParam String role,
+                                                 @RequestBody(required = false) SysUser sysUser) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        if (sysUser != null) {
+            request.getParams().put("username", sysUser.getUsername());
+            request.getParams().put("nickname", sysUser.getNickname());
+            request.getParams().put("status", sysUser.getStatus());
+        }
         // 设置角色
-        request.getParams().put("role", roleService.getLoginUserAuditRole());
-        return new PageTableHandler(
-                a -> userDao.count(a.getParams()),
-                a -> userDao.list(a.getParams(), a.getOffset(), a.getLimit())
-        ).handle(request);
+        request.getParams().put("role", roleService.getLoginAdminRole());
+        Response<PageTableResponse> response = new Response<>();
+        response.setBo(new PageTableHandler(
+                        a -> userDao.count(a.getParams()),
+                        a -> userDao.list(a.getParams(), a.getOffset(), a.getLimit())
+                ).handle(request)
+        );
+        return response;
     }
 
     @ApiOperation("当前登录用户")
     @GetMapping("current")
-    public SysUser currentUser() {
-        return UserUtil.getLoginUser();
+    public Response<SysUser> currentUser() {
+        Response<SysUser> response = new Response<>();
+        response.setBo(UserUtil.getLoginUser());
+        return response;
     }
 
     @ApiOperation("根据用户id获取用户")
-    @GetMapping("get/{id}")
+    @GetMapping("get")
     @PreAuthorize("hasAuthority('sys:user:query')")
-    public SysUser user(@PathVariable Long id) {
-        return userDao.getById(id);
+    public Response<SysUser> user(@RequestParam Long id) {
+        Response<SysUser> response = new Response<>();
+        response.setBo(userDao.getById(id));
+        return response;
     }
 }

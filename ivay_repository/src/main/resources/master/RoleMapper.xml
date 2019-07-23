@@ -11,7 +11,7 @@
             <if test="params.role != null and params.role != ''">
                 AND CASE #{params.role}
                     WHEN 'admin' THEN 1=1
-                    WHEN 'ovayAdmin' THEN t.name in ('ovayAdmin','ovayAudit','collectionAdmin','collectionPerson')
+                    WHEN 'ovayAdmin' THEN t.name in ('ovayAdmin','ovayAudit','collectionAdmin','collectionPerson','customer system')
                     WHEN 'collectionAdmin' THEN t.name in ('collectionAdmin','collectionPerson')
                 END
             </if>
