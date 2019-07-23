@@ -41,9 +41,9 @@ public class RSAEncryptVTP {
     private static final char[] HEX_CHAR =
         {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-    private static final String PRIVATE_KEY = "pkcs8_private_key.pem";
+    private static final String PRIVATE_KEY = "vtp_pkcs8_private_key.pem";
 
-    private static final String PUBLIC_KEY = "rsa_public_key.pem";
+    private static final String PUBLIC_KEY = "vtp_rsa_public_key.pem";
 
     /**
      * 随机生成密钥对
