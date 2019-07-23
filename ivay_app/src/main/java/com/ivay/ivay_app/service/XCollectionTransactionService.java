@@ -1,12 +1,11 @@
 package com.ivay.ivay_app.service;
 
+import java.text.ParseException;
+
 import com.ivay.ivay_app.dto.CollectionTransactionNotice;
 import com.ivay.ivay_app.dto.CollectionTransactionRsp;
 import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
 import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
-import com.ivay.ivay_repository.model.XCollectionTransaction;
-
-import java.text.ParseException;
 
 public interface XCollectionTransactionService {
 
@@ -14,12 +13,10 @@ public interface XCollectionTransactionService {
 
     boolean checkRequestId(String requestId);
 
-    int insert(XCollectionTransaction xCollectionTransaction);
-
     long getCollectAmount(String accNo);
 
     CollectionTransactionRsp noticeCollection(CollectionTransactionNotice notice) throws ParseException;
-    
+
     EbayBlanceFlucNoticeRsp balanceFuctNotice(XBalanceFuctNoticeReq notice);
 
 }

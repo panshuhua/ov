@@ -76,11 +76,6 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
     }
 
     @Override
-    public int insert(XCollectionTransaction xCollectionTransaction) {
-        return xCollectionTransactionDao.insert(xCollectionTransaction);
-    }
-
-    @Override
     public long getCollectAmount(String accNo) {
         return xCollectionTransactionDao.getCollectAmount(accNo);
     }
@@ -245,13 +240,21 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         xCollectionTransaction.setAccountType(AccountType);
         xCollectionTransaction.setTransTime(TransTime);
         xCollectionTransaction.setOrderId(OrderId);
-        xCollectionTransaction.setCreateTime(new Date());
+        xCollectionTransaction.setReferenceId(ReferenceId);
+
         try {
-            insert(xCollectionTransaction);
+            xCollectionTransactionDao.insert(xCollectionTransaction);
         } catch (Exception e) {
             if (e.toString().contains("Duplicate")) {
-                ResponseCode = BaokimResponseStatus.IncorrectTransIdRepeat.getCode();
-                ResponseMessage = BaokimResponseStatus.IncorrectTransIdRepeat.getMessage();
+                // 如果TransId重复了，还是返回200和refenceId给baokim
+                ResponseCode = BaokimResponseStatus.CollectionSuccess.getCode();
+                ResponseMessage = BaokimResponseStatus.CollectionSuccess.getMessage();
+                XCollectionTransaction collectionTransaction = xCollectionTransactionDao.findDataByTransId(TransId);
+                // 返回数据库中存在的ReferenceId，把已存在的ReferenceId返回给baokim
+                if (collectionTransaction != null) {
+                    String referenceId = collectionTransaction.getReferenceId();
+                    rsp.setReferenceId(referenceId);
+                }
                 setRsp(rsp, ResponseCode, ResponseMessage);
                 return rsp;
             }
