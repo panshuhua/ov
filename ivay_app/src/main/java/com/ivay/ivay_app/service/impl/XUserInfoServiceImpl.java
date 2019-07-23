@@ -73,6 +73,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             xUserInfo.setName(name);
         }
         xUserInfo.setIdentityCard(StringUtil.replaceBlank(xUserInfo.getIdentityCard()));
+        // 校验身份证唯一性
         if (!xUserInfo.getIdentityCard().equals(old.getIdentityCard())) {
             List<XUserInfo> list = xUserInfoDao.getByIdentityCard(xUserInfo.getIdentityCard());
             if (list.size() > 1 || (list.size() == 1 && !list.get(0).getUserGid().equals(xUserInfo.getUserGid()))) {

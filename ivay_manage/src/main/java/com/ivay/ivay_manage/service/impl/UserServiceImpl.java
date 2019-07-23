@@ -29,18 +29,21 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public SysUser addUser(SysRoleUser sysRoleUser) {
-        SysUser user = sysRoleUser;
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setStatus(SysUser.Status.VALID);
+        SysUser u = getUserByName(sysRoleUser.getUsername());
+        if (u != null) {
+            throw new IllegalArgumentException(sysRoleUser.getUsername() + "已存在");
+        }
+        sysRoleUser.setPassword(passwordEncoder.encode(sysRoleUser.getPassword()));
+        sysRoleUser.setStatus(SysUser.Status.VALID);
 
         // 添加用户
-        userDao.insert(user);
+        userDao.insert(sysRoleUser);
 
         // 添加用户的角色
-        saveUserRoles(user.getId(), sysRoleUser.getRoleIds());
+        saveUserRoles(sysRoleUser.getId(), sysRoleUser.getRoleIds());
 
-        logger.debug("新增用户{}", user.getUsername());
-        return user;
+        logger.debug("新增用户{}", sysRoleUser.getUsername());
+        return sysRoleUser;
     }
 
     private void saveUserRoles(Long userId, List<Long> roleIds) {

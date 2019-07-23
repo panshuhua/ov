@@ -1,6 +1,7 @@
 package com.ivay.ivay_manage.controller;
 
 import com.ivay.ivay_common.annotation.LogAnnotation;
+import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableHandler;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * 用户相关接口
  *
- * @author xx
+ * @author sx
  */
 @Api(tags = "系统用户")
 @RestController
@@ -52,12 +53,10 @@ public class SysUserController {
     @PostMapping("add")
     @ApiOperation("添加用户")
     @PreAuthorize("hasAuthority('sys:user:add')")
-    public SysUser saveUser(@RequestBody SysRoleUser sysRoleUser) {
-        SysUser u = userService.getUserByName(sysRoleUser.getUsername());
-        if (u != null) {
-            throw new IllegalArgumentException(sysRoleUser.getUsername() + "已存在");
-        }
-        return userService.addUser(sysRoleUser);
+    public Response<SysUser> saveUser(@RequestBody SysRoleUser sysRoleUser) {
+        Response<SysUser> response = new Response<>();
+        response.setBo(userService.addUser(sysRoleUser));
+        return response;
     }
 
     @LogAnnotation

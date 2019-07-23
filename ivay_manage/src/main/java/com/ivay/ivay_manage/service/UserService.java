@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserService {
     /**
-     * 添加用户及其角色
+     * 新增用户及其角色
      *
      * @param sysRoleUser
      * @return

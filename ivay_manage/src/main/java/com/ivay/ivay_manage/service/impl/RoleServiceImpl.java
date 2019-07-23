@@ -7,6 +7,7 @@ import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.RoleDao;
 import com.ivay.ivay_repository.model.SysRole;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +135,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
-     * 获取当前管理员权限
+     * 获取当前管理员权限: admin > ovayAdmin > collectionAdmin
      *
      * @return
      */
@@ -148,7 +149,7 @@ public class RoleServiceImpl implements RoleService {
         if (sysRoles.size() == 0) {
             return null;
         }
-        String role = SysVariable.ROLE_COLLECTION_ADMIN;
+        String role = "";
         for (SysRole r : sysRoles) {
             if (SysVariable.ROLE_ADMIN.equals(r.getName())) {
                 role = SysVariable.ROLE_ADMIN;
@@ -156,6 +157,8 @@ public class RoleServiceImpl implements RoleService {
             }
             if (SysVariable.ROLE_OVAY_ADMIN.equals(r.getName())) {
                 role = SysVariable.ROLE_OVAY_ADMIN;
+            } else if (SysVariable.ROLE_COLLECTION_ADMIN.equals(r.getName()) && StringUtils.isEmpty(role)) {
+                role = SysVariable.ROLE_COLLECTION_ADMIN;
             }
         }
         return role;
