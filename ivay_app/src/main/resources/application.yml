@@ -23,7 +23,7 @@ management:
 spring:
   profiles:
     # 多模块使用include取代active
-#   include: transferProd, comDev, dbLoc
+#   include: dev, comDev, dbLoc
    include: dev, comDev, dbDev
 #   include: test, comTest, dbTest
 #   include: prod, comProd, dbProd
@@ -59,3 +59,5 @@ noticemsg:
 
 # 是否对敏感信息解密
 needDecrypt: false
+#app热更新的最小版本号，小于该版本号的才弹出更新框
+minAppVersionNumber: 1.0.3
