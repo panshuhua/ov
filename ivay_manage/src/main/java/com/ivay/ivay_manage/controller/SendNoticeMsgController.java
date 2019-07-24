@@ -55,13 +55,19 @@ public class SendNoticeMsgController {
         Response<String> response = new Response<String>();
         // response.setBo(xFirebaseNoticeService.testSendMsg(msg, type));
         // 测试-首次获取额度
-        XUserInfo xUserInfo = new XUserInfo();
+        /*XUserInfo xUserInfo = new XUserInfo();
         xUserInfo.setFmcToken(
             "e4XxSYJN8fM:APA91bG0BPhiZIcI4Q-JHIp9t5_9zFytXumyfY1EEOgQ9IXbWLZCpD5aPeu1C-oltVp9CLvFALMsgjlJsqkasm5QaqhRIDpn7jcmsudfX4A9JCqkvTdF9lMyoBCbFSyZ93gZ8VhnOP1A");
         xUserInfo.setPhone("0917143991");
         xUserInfo.setCreditLineCount(1);
         xUserInfo.setCreditLine(1000000L);
-        xFirebaseNoticeService.sendGetCreditLine(xUserInfo);
+        xFirebaseNoticeService.sendGetCreditLine(xUserInfo);*/
+        // 测试-人工拒绝后重新提交
+        XUserInfo xUserInfo = new XUserInfo();
+        xUserInfo.setFmcToken(
+            "e4XxSYJN8fM:APA91bG0BPhiZIcI4Q-JHIp9t5_9zFytXumyfY1EEOgQ9IXbWLZCpD5aPeu1C-oltVp9CLvFALMsgjlJsqkasm5QaqhRIDpn7jcmsudfX4A9JCqkvTdF9lMyoBCbFSyZ93gZ8VhnOP1A");
+        xUserInfo.setPhone("0973497955");
+        xFirebaseNoticeService.sendManualAuditRjection(xUserInfo);
         return response;
     }
 
