@@ -35,6 +35,9 @@ public interface UserDao {
     @Delete("delete from sys_role_user where userId = #{userId}")
     int deleteUserRole(Long userId);
 
+    @Delete("delete from sys_user where id = #{id}")
+    int delete(Long id);
+
     int saveUserRoles(@Param("userId") Long userId,
                       @Param("roleIds") List<Long> roleIds);
 

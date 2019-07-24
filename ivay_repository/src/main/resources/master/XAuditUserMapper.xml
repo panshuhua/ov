@@ -7,27 +7,11 @@
         LEFT JOIN sys_role_user sru ON t.id = sru.userId
         LEFT JOIN sys_role sr ON sr.id = sru.roleId
         <where>
-            t.enable_flag = "Y"
-            <if test="params.type != null and params.type != ''">
-                and sr.name = #{params.type}
-            </if>
-            <if test="params.id != null and params.id != ''">
-                and id = #{params.id}
+            <if test="params.role != null and params.role != ''">
+                and sr.name = #{params.role}
             </if>
             <if test="params.username != null and params.username != ''">
                 and username like concat("%",#{params.username},"%")
-            </if>
-            <if test="params.sysUserId != null and params.sysUserId != ''">
-                and sys_user_id = #{params.sysUserId}
-            </if>
-            <if test="params.userGid != null and params.userGid != ''">
-                and user_gid = #{params.userGid}
-            </if>
-            <if test="params.createTime != null and params.createTime != ''">
-                and create_time = #{params.createTime}
-            </if>
-            <if test="params.updateTime != null and params.updateTime != ''">
-                and update_time = #{params.updateTime}
             </if>
         </where>
     </sql>
@@ -38,9 +22,13 @@
     </select>
 
     <select id="list" resultType="com.ivay.ivay_repository.model.SysUser">
-        SELECT t.*,
-        ( SELECT count(1) FROM x_audit_user xau
-        WHERE xau.enable_flag='Y' AND xau.sys_user_id=t.id GROUP BY xau.sys_user_id) count
+        SELECT
+            t.*,
+            (
+                SELECT count(1) FROM x_audit_user xau
+                WHERE xau.enable_flag='Y' AND xau.sys_user_id=t.id
+                GROUP BY xau.sys_user_id
+            ) count
         FROM sys_user t
         <include refid="list_condition"/>
         order by username asc
@@ -82,22 +70,12 @@
         FROM sys_role_user sru
         LEFT JOIN sys_role sr ON sru.roleId=sr.id
         LEFT JOIN sys_user su ON sru.userId=su.id
-        WHERE su.enable_flag="Y"
-        <if test="role!=null and role != ''">
-            AND sr.name=#{role}
-        </if>
+        <where>
+            <if test="role!=null and role != ''">
+                AND sr.name=#{role}
+            </if>
+        </where>
     </select>
-
-    <delete id="deleteByBatch">
-        UPDATE sys_user su
-        LEFT JOIN sys_role_user sru on su.id=sru.userId
-        LEFT JOIN x_audit_user xau on su.id=xau.sys_user_id
-        SET su.enable_flag='N',sru.enable_flag='N',xau.enable_flag="N"
-        WHERE su.id in
-        <foreach collection="ids" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
 
     <delete id="deleteUser">
         UPDATE x_audit_user xau

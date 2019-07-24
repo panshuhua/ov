@@ -18,14 +18,14 @@ public interface XAuditUserDao {
     @Select("select * from x_audit_user t where t.sys_user_id = #{sysUserId} and t.enable_flag = 'Y'")
     List<XAuditUser> getBySysUserId(@Param("sysUserId") String sysUserId);
 
-    @Delete("delete from x_audit_user where id = #{id}")
+    @Update("update x_audit_user set enable_flag='N' where id = #{id}")
     int delete(Long id);
 
-    @Delete("delete from x_audit_user where enable_flag='Y'")
+    @Update("update x_audit_user set enable_flag='N'")
     int deleteAll();
 
-    // 批量逻辑删除
-    int deleteByBatch(@Param("ids") String[] ids);
+    @Update("update x_audit_user set enable_flag='N' where sys_user_id=#{id}")
+    int deleteAudit(Long id);
 
     // 批量逻辑删除
     int deleteUser(@Param("ids") String[] ids);
@@ -35,7 +35,8 @@ public interface XAuditUserDao {
     int reAssignAudit(@Param("acceptId") String acceptId, @Param("handleId") String handleId);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("insert into x_audit_user(sys_user_id, user_gid, create_time, update_time, enable_flag) values(#{sysUserId}, #{userGid}, #{createTime}, #{updateTime}, #{enableFlag})")
+    @Insert("insert into x_audit_user(sys_user_id, user_gid, create_time, update_time, enable_flag) " +
+            "values(#{sysUserId}, #{userGid}, #{createTime}, #{updateTime}, #{enableFlag})")
     int save(XAuditUser xAuditUser);
 
     // 查出某一角色的所有用户信息

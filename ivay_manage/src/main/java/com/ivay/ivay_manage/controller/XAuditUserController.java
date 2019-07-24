@@ -43,10 +43,10 @@ public class XAuditUserController {
     @DeleteMapping("deleteAudit")
     @ApiOperation("删除某个审计员")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "ids", value = "审计员id，可批量处理", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "审计员id", dataType = "Long", paramType = "query")
     })
-    public void deleteAudit(@RequestParam String ids) {
-        xAuditService.deleteAudit(ids);
+    public void deleteAudit(@RequestParam Long id) {
+        xAuditService.deleteAudit(id);
     }
 
     @DeleteMapping("deleteUser")
