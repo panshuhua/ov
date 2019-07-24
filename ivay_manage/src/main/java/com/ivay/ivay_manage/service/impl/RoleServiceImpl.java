@@ -160,4 +160,24 @@ public class RoleServiceImpl implements RoleService {
         }
         return role;
     }
+
+    @Override
+    public String getLoginUserSalesRole() {
+        LoginUser loginUser = UserUtil.getLoginUser();
+        if (loginUser == null) {
+            return null;
+        }
+        List<SysRole> sysRoles = roleDao.listByUserId(loginUser.getId());
+        if (sysRoles.size() == 0) {
+            return null;
+        }
+        String role = SysVariable.ROLE_SALES_PERSON;
+        for (SysRole r : sysRoles) {
+            if (SysVariable.ROLE_SALES_ADMIN.equals(r.getName())) {
+                role = SysVariable.ROLE_SALES_ADMIN;
+                break;
+            }
+        }
+        return role;
+    }
 }

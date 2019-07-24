@@ -2,6 +2,8 @@ package com.ivay.ivay_repository.model;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * descripiton:
  *
@@ -13,8 +15,21 @@ import lombok.Data;
  */
 @Data
 public class RiskUser {
+
+    private Integer id;
     
     private String phone;
 
     private String amount;
+
+    private Date importTime;
+
+    private Integer salesmanId;
+
+    private Integer assignStatus;
+
+    private Date assignTime;
+
+    private Integer dealStatus;
+
 }

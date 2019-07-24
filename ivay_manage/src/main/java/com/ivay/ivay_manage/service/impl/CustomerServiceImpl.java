@@ -9,6 +9,7 @@ import com.ivay.ivay_manage.service.CustomerService;
 import com.ivay.ivay_repository.dao.master.CustomerDao;
 import com.ivay.ivay_repository.dao.master.XRecordRepaymentDao;
 import com.ivay.ivay_repository.dao.master.XUserContactsDao;
+import com.ivay.ivay_repository.dto.CustomerInfo;
 import com.ivay.ivay_repository.dto.XRecordLoan2;
 import com.ivay.ivay_repository.dto.XRecordRepayment2;
 import com.ivay.ivay_repository.dto.XUserCardAndBankInfo;
@@ -16,6 +17,7 @@ import com.ivay.ivay_repository.model.XConfig;
 import com.ivay.ivay_repository.model.XFileInfo;
 import com.ivay.ivay_repository.model.XUserExtInfo;
 import com.ivay.ivay_repository.model.XUserInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,39 +41,59 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<XUserInfo> listBasicInfo(Map<String, Object> params, Integer offset, Integer limit) {
-        List<XUserInfo> list = customerDao.listBasicInfo(params, offset, limit);
-        String lang = (String) params.get("lang");
-        for (XUserInfo xUserInfo : list) {
-            // 用户状态
-            String userStatus = xUserInfo.getUserStatus();
-            XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_USER_STATUS, lang);
-            Map map = JsonUtils.jsonToMap(xConfig.getContent());
-            userStatus = (String) map.get(userStatus);
-            xUserInfo.setUserStatus(userStatus);
+    public PageTableResponse listBasicInfo(int limit, int num, CustomerInfo customerInfo) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map params = request.getParams();
 
-            // 性别
-            String sex = xUserInfo.getSex();
-            xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_SEX, lang);
-            map = JsonUtils.jsonToMap(xConfig.getContent());
-            sex = (String) map.get(sex);
-            xUserInfo.setSex(sex);
-
-            // 学历
-            String education = xUserInfo.getEducation();
-            xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_EDUCATION, lang);
-            map = JsonUtils.jsonToMap(xConfig.getContent());
-            education = (String) map.get(education);
-            xUserInfo.setEducation(education);
-
-            // 婚姻状况
-            String marital = xUserInfo.getMarital();
-            xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_MARITAL, lang);
-            map = JsonUtils.jsonToMap(xConfig.getContent());
-            marital = (String) map.get(marital);
-            xUserInfo.setMarital(marital);
+        if (null != customerInfo) {
+            params.put("mobile", customerInfo.getMobile());
+            params.put("name", customerInfo.getName());
+            params.put("identityCard", customerInfo.getIdentityCard());
+            params.put("birthday", customerInfo.getBirthday());
+            params.put("lang", customerInfo.getLang());
         }
-        return list;
+
+        List<XUserInfo> list = customerDao.listBasicInfo(request.getParams(), request.getOffset(), request.getLimit());
+        String lang = (String) params.get("lang");
+
+        if (StringUtils.isNotBlank(lang)){
+            for (XUserInfo xUserInfo : list) {
+                // 用户状态
+                String userStatus = xUserInfo.getUserStatus();
+                XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_USER_STATUS, lang);
+                Map map = JsonUtils.jsonToMap(xConfig.getContent());
+                userStatus = (String) map.get(userStatus);
+                xUserInfo.setUserStatus(userStatus);
+
+                // 性别
+                String sex = xUserInfo.getSex();
+                xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_SEX, lang);
+                map = JsonUtils.jsonToMap(xConfig.getContent());
+                sex = (String) map.get(sex);
+                xUserInfo.setSex(sex);
+
+                // 学历
+                String education = xUserInfo.getEducation();
+                xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_EDUCATION, lang);
+                map = JsonUtils.jsonToMap(xConfig.getContent());
+                education = (String) map.get(education);
+                xUserInfo.setEducation(education);
+
+                // 婚姻状况
+                String marital = xUserInfo.getMarital();
+                xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_MARITAL, lang);
+                map = JsonUtils.jsonToMap(xConfig.getContent());
+                marital = (String) map.get(marital);
+                xUserInfo.setMarital(marital);
+            }
+        }
+
+        return new PageTableHandler(
+                a -> customerDao.countBasicInfo(a.getParams()),
+                a -> list
+        ).handle(request);
     }
 
     @Override
@@ -80,45 +102,57 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<XUserExtInfo> listContactInfo(Map<String, Object> params, Integer offset, Integer limit) {
-        List<XUserExtInfo> list = customerDao.listContactInfo(params, offset, limit);
+    public PageTableResponse listContactInfo(String userGid, Integer num, Integer limit) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map params = request.getParams();
+
+        params.put("userGid", userGid);
+
+        List<XUserExtInfo> list = customerDao.listContactInfo(request.getParams(), request.getOffset(), request.getLimit());
         String lang = (String) params.get("lang");
-        for (XUserExtInfo xUserExtInfo : list) {
-            String majorRelationship = xUserExtInfo.getMajorRelationship();
-            XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_RELATION, lang);
-            Map map = JsonUtils.jsonToMap(xConfig.getContent());
-            majorRelationship = (String) map.get(majorRelationship);
-            xUserExtInfo.setMajorRelationship(majorRelationship);
 
-            String bakRelationship = xUserExtInfo.getBakRelationship();
-            xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_RELATION, lang);
-            map = JsonUtils.jsonToMap(xConfig.getContent());
-            bakRelationship = (String) map.get(bakRelationship);
-            xUserExtInfo.setBakRelationship(bakRelationship);
+        if (StringUtils.isNotBlank(lang)) {
+            for (XUserExtInfo xUserExtInfo : list) {
+                String majorRelationship = xUserExtInfo.getMajorRelationship();
+                XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_RELATION, lang);
+                Map map = JsonUtils.jsonToMap(xConfig.getContent());
+                majorRelationship = (String) map.get(majorRelationship);
+                xUserExtInfo.setMajorRelationship(majorRelationship);
 
-            // 各种照片的路径
-            String photo1UrlId = xUserExtInfo.getPhoto1Url();
-            XFileInfo xFileInfo = customerDao.queryphotoUrl(photo1UrlId);
-            if (xFileInfo != null) {
-                xUserExtInfo.setPhoto1Url(xFileInfo.getUrl());
+                String bakRelationship = xUserExtInfo.getBakRelationship();
+                xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_RELATION, lang);
+                map = JsonUtils.jsonToMap(xConfig.getContent());
+                bakRelationship = (String) map.get(bakRelationship);
+                xUserExtInfo.setBakRelationship(bakRelationship);
+
+                // 各种照片的路径
+                String photo1UrlId = xUserExtInfo.getPhoto1Url();
+                XFileInfo xFileInfo = customerDao.queryphotoUrl(photo1UrlId);
+                if (xFileInfo != null) {
+                    xUserExtInfo.setPhoto1Url(xFileInfo.getUrl());
+                }
+
+                String photo2UrlId = xUserExtInfo.getPhoto2Url();
+                xFileInfo = customerDao.queryphotoUrl(photo2UrlId);
+                if (xFileInfo != null) {
+                    xUserExtInfo.setPhoto2Url(xFileInfo.getUrl());
+                }
+
+                String photo3UrlId = xUserExtInfo.getPhoto3Url();
+                xFileInfo = customerDao.queryphotoUrl(photo3UrlId);
+                if (xFileInfo != null) {
+                    xUserExtInfo.setPhoto3Url(xFileInfo.getUrl());
+                }
+
             }
-
-            String photo2UrlId = xUserExtInfo.getPhoto2Url();
-            xFileInfo = customerDao.queryphotoUrl(photo2UrlId);
-            if (xFileInfo != null) {
-                xUserExtInfo.setPhoto2Url(xFileInfo.getUrl());
-            }
-
-            String photo3UrlId = xUserExtInfo.getPhoto3Url();
-            xFileInfo = customerDao.queryphotoUrl(photo3UrlId);
-            if (xFileInfo != null) {
-                xUserExtInfo.setPhoto3Url(xFileInfo.getUrl());
-            }
-
         }
 
-        return list;
-
+        return new PageTableHandler(
+                a -> customerDao.countContactInfo(a.getParams()),
+                a -> list
+        ).handle(request);
     }
 
     @Override
@@ -127,17 +161,30 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<XRecordLoan2> listLoan(Map<String, Object> params, Integer offset, Integer limit) {
-        List<XRecordLoan2> list = customerDao.listLoan(params, offset, limit);
+    public PageTableResponse listLoan(String userGid, int num, int limit) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map params = request.getParams();
+
+        params.put("userGid", userGid);
+
+        List<XRecordLoan2> list = customerDao.listLoan(request.getParams(), request.getOffset(), request.getLimit());
         String lang = (String) params.get("lang");
-        for (XRecordLoan2 xRecordLoan : list) {
-            String loanStatus = xRecordLoan.getLoanStatus();
-            XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_LOAN_STATUS, lang);
-            Map map = JsonUtils.jsonToMap(xConfig.getContent());
-            loanStatus = (String) map.get(loanStatus);
-            xRecordLoan.setLoanStatus(loanStatus);
+
+        if (StringUtils.isNotBlank(lang)) {
+            for (XRecordLoan2 xRecordLoan : list) {
+                String loanStatus = xRecordLoan.getLoanStatus();
+                XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_LOAN_STATUS, lang);
+                Map map = JsonUtils.jsonToMap(xConfig.getContent());
+                loanStatus = (String) map.get(loanStatus);
+                xRecordLoan.setLoanStatus(loanStatus);
+            }
         }
-        return list;
+        return new PageTableHandler(
+                a -> customerDao.countLoan(a.getParams()),
+                a -> list
+        ).handle(request);
     }
 
     @Override
@@ -146,18 +193,30 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<XRecordRepayment2> listRepay(Map<String, Object> params, Integer offset, Integer limit) {
-        List<XRecordRepayment2> list = customerDao.listRepay(params, offset, limit);
-        String lang = (String) params.get("lang");
-        for (XRecordRepayment2 xRecordRepayment : list) {
-            String repaymentStatus = xRecordRepayment.getRepaymentStatus();
-            XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_REPAYMENT_STATUS, lang);
-            Map map = JsonUtils.jsonToMap(xConfig.getContent());
-            repaymentStatus = (String) map.get(repaymentStatus);
-            xRecordRepayment.setRepaymentStatus(repaymentStatus);
-        }
+    public PageTableResponse listRepay(String userGid, int num, int limit) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map params = request.getParams();
 
-        return list;
+        params.put("userGid", userGid);
+
+        List<XRecordRepayment2> list = customerDao.listRepay(request.getParams(), request.getOffset(), request.getLimit());
+        String lang = (String) params.get("lang");
+
+        if (StringUtils.isNotBlank(lang)) {
+            for (XRecordRepayment2 xRecordRepayment : list) {
+                String repaymentStatus = xRecordRepayment.getRepaymentStatus();
+                XConfig xConfig = customerDao.findConfigByType(SysVariable.TEMPLATE_REPAYMENT_STATUS, lang);
+                Map map = JsonUtils.jsonToMap(xConfig.getContent());
+                repaymentStatus = (String) map.get(repaymentStatus);
+                xRecordRepayment.setRepaymentStatus(repaymentStatus);
+            }
+        }
+        return new PageTableHandler(
+                a -> customerDao.countRepay(a.getParams()),
+                a -> list
+        ).handle(request);
     }
 
     @Override
@@ -166,8 +225,20 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<XUserCardAndBankInfo> listBank(Map<String, Object> params, Integer offset, Integer limit) {
-        return customerDao.listBank(params, offset, limit);
+    public PageTableResponse listBank(String userGid, int num, int limit) {
+        PageTableRequest request = new PageTableRequest();
+        request.setLimit(limit);
+        request.setOffset((num - 1) * limit);
+        Map params = request.getParams();
+
+        params.put("userGid", userGid);
+
+        List<XUserCardAndBankInfo> list = customerDao.listBank(request.getParams(), request.getOffset(), request.getLimit());
+
+        return new PageTableHandler(
+                a -> customerDao.countBank(a.getParams()),
+                a -> list
+        ).handle(request);
     }
 
     @Autowired

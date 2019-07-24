@@ -24,4 +24,66 @@
       </foreach>
     </select>
 
+    <sql id="list_params_condition">
+        (
+        SELECT
+        t1.id,
+        t2.name,
+        t1.phone,
+        t2.user_status,
+        t1.import_time,
+        t3.id AS user_id,
+        t3.username
+        FROM
+        risk_user t1
+        LEFT JOIN x_user_info t2 ON t1.phone = t2.phone
+        LEFT JOIN sys_user t3 ON t1.salesman_id = t3.id
+        ) t4
+        <where>
+            <if test="params.name != null and params.name != ''">
+                and name like concat('%', #{params.name} ,'%')
+            </if>
+            <if test="params.phone != null and params.phone != ''">
+                and phone = #{params.phone}
+            </if>
+            <if test="params.userStatus != null">
+                and user_status = #{params.userStatus}
+            </if>
+            <if test="params.userId != null">
+                and user_id = #{params.userId}
+            </if>
+            <if test="params.assignStatus != null">
+                and assign_status = #{params.assignStatus}
+            </if>
+            <if test="params.importTimeStart != null">
+                and import_time = #{params.importTimeStart}
+            </if>
+            <if test="params.importTimeEnd != null">
+                and import_time = #{params.importTimeEnd}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 搜索白名单列表记录数 -->
+    <select id="selectListCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        <include refid="list_params_condition"/>
+    </select>
+
+    <!-- 搜索白名单列表 -->
+    <select id="selectRiskUserList" resultType="com.ivay.ivay_repository.dto.RiskUserInfo">
+        SELECT
+            *
+        FROM
+        <include refid="list_params_condition"/>
+        ORDER BY
+        t4.import_time DESC
+
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
 </mapper>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.master.XRiskUserDao">
+
+    <resultMap type="com.ivay.ivay_repository.model.RiskUser" id="UserResult">
+        <id property="phone" column="phone"/>
+        <result property="amount" column="amount"/>
+    </resultMap>
+
+    <select id="selectUserList" parameterType="com.ivay.ivay_repository.model.RiskUser" resultMap="UserResult">
+      select * from risk_user
+    </select>
+
+    <select id="selectUserListByPhone" parameterType="com.ivay.ivay_repository.model.RiskUser" resultMap="UserResult">
+      select * from risk_user where phone = #{phone}
+    </select>
+
+    <select id="selectPhoneByBatch" resultType="java.lang.String">
+      select GROUP_CONCAT(phone) from risk_user where phone in
+      <foreach collection="phones" item="phone" separator="," open="(" close=")">
+        #{phone}
+      </foreach>
+    </select>
+
+    <sql id="list_params_condition">
+        (
+        SELECT
+        t1.id,
+        t2.name,
+        t1.phone,
+        IFNULL(t2.user_status, 0) AS user_status,
+        IFNULL(t1.assign_status, 0) AS assign_status,
+        t1.import_time,
+        t3.id AS user_id,
+        t3.username
+        FROM
+        risk_user t1
+        LEFT JOIN x_user_info t2 ON t1.phone = t2.phone
+        LEFT JOIN sys_user t3 ON t1.salesman_id = t3.id
+        ) t4
+        <where>
+            <if test="params.name != null and params.name != ''">
+                and name like concat('%', #{params.name} ,'%')
+            </if>
+            <if test="params.phone != null and params.phone != ''">
+                and phone = #{params.phone}
+            </if>
+            <if test="params.userStatus != null">
+                and user_status = #{params.userStatus}
+            </if>
+            <if test="params.userId != null">
+                and user_id = #{params.userId}
+            </if>
+            <if test="params.assignStatus != null">
+                and assign_status = #{params.assignStatus}
+            </if>
+            <if test="params.importTimeStart != null">
+                and import_time &gt;= #{params.importTimeStart}
+            </if>
+            <if test="params.importTimeEnd != null">
+                and import_time &lt;= #{params.importTimeEnd}
+            </if>
+            <if test="params.username != null and params.username != ''">
+                and username like concat('%', #{params.username} ,'%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 搜索白名单列表记录数 -->
+    <select id="selectListCount" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        <include refid="list_params_condition"/>
+    </select>
+
+    <!-- 搜索白名单列表 -->
+    <select id="selectRiskUserList" resultType="com.ivay.ivay_repository.dto.RiskUserResult">
+        SELECT
+            *
+        FROM
+        <include refid="list_params_condition"/>
+        ORDER BY
+        t4.import_time DESC
+
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!-- 批量指派销售员 -->
+    <update id="updateSalesmanBatch">
+        UPDATE risk_user
+        SET
+            assign_time = NOW( ),
+            assign_status = 1,
+            salesman_id = #{salesmanId}
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 更新 -->
+    <update id="updateById">
+        update risk_user t
+        <set>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="amount != null and amount != ''">
+                amount = #{amount},
+            </if>
+            <if test="importTime != null">
+                import_time = #{importTime},
+            </if>
+            <if test="salesmanId != null">
+                salesman_id = #{salesmanId},
+            </if>
+            <if test="assignStatus != null">
+                assign_status = #{assignStatus},
+            </if>
+            <if test="assignTime != null">
+                assign_time = #{assignTime},
+            </if>
+            <if test="dealStatus != null">
+                deal_status = #{dealStatus},
+            </if>
+        </set>
+        where t.id = #{id}
+    </update>
+
+    <sql id="my_sales_list_condition">
+        (
+        SELECT
+        risk_user.id,
+        risk_user.phone,
+        risk_user.assign_time,
+        risk_user.deal_status,
+        x_user_info.`name`,
+        x_user_info.user_status
+        FROM
+        risk_user
+        LEFT JOIN x_user_info ON risk_user.phone = x_user_info.phone
+        WHERE
+        risk_user.salesman_id = #{params.salesmanId}
+        )t1
+        <where>
+            <if test="params.name != null and params.name != ''">
+                and t1.name like concat('%', #{params.name} ,'%')
+            </if>
+            <if test="params.phone != null and params.phone != ''">
+                and t1.phone = #{params.phone}
+            </if>
+            <if test="params.userStatus != null">
+                and t1.user_status = #{params.userStatus}
+            </if>
+            <if test="params.dealStatus != null">
+                and t1.deal_status = #{params.dealStatus}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询我的电销列表记录数 -->
+    <select id="selectMySalesListCount" resultType="java.lang.Integer">
+        select count(1) from
+        <include refid="my_sales_list_condition"/>
+    </select>
+
+    <!-- 查询我的电销列表 -->
+    <select id="selectMySalesList" resultType="com.ivay.ivay_repository.dto.RiskUserResult">
+        SELECT * FROM
+        <include refid="my_sales_list_condition"/>
+        ORDER BY t1.assign_time DESC
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="getById" resultType="com.ivay.ivay_repository.model.RiskUser">
+        SELECT * FROM risk_user where id = #{id}
+    </select>
+
+    <!-- 查询所有没分配电销的白名单 -->
+    <select id="selectNotAssignedList" resultType="com.ivay.ivay_repository.model.RiskUser">
+        SELECT * FROM risk_user WHERE salesman_id is null
+    </select>
+
+    <!-- 自动指派销售员 -->
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update risk_user
+            <set>
+                <if test="item.salesmanId != null">
+                    salesman_id = #{item.salesmanId},
+                </if>
+                <if test="item.assignTime != null">
+                    assign_time = #{item.assignTime},
+                </if>
+                <if test="item.assignStatus != null">
+                    assign_status = #{item.assignStatus},
+                </if>
+                <if test="item.dealStatus != null">
+                    deal_status = #{item.dealStatus},
+                </if>
+            </set>
+            where id = #{item.id}
+        </foreach>
+    </update>
+</mapper>

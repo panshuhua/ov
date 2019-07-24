@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.service;
 
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_repository.dto.UserName;
 import com.ivay.ivay_repository.model.SysUser;
@@ -29,4 +30,13 @@ public interface UserService {
      * @Date 2019/7/10 20:37
      */
     List<UserName> getCollectUserNames();
+
+    /**
+     * @Description 查询销售员
+     * @Author Ryan
+     * @Param []
+     * @Return java.util.List<com.ivay.ivay_repository.dto.UserName>
+     * @Date 2019/7/24 10:08
+     */
+    List<UserName> getSalesmanNames();
 }

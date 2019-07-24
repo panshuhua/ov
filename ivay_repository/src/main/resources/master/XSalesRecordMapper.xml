@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivay.ivay_repository.dao.master.XSalesRecordDao">
+
+    <sql id="list_condition">
+        <where>
+            			<if test="params.id != null and params.id != ''">
+				and id = #{params.id} 
+			</if>
+			<if test="params.risk_user_id != null and params.risk_user_id != ''">
+				and risk_user_id = #{params.riskUserId} 
+			</if>
+			<if test="params.salesman_id != null and params.salesman_id != ''">
+				and salesman_id = #{params.salesmanId} 
+			</if>
+			<if test="params.content != null and params.content != ''">
+				and content = #{params.content} 
+			</if>
+			<if test="params.create_time != null and params.create_time != ''">
+				and create_time = #{params.createTime} 
+			</if>
+			<if test="params.update_time != null and params.update_time != ''">
+				and update_time = #{params.updateTime} 
+			</if>
+
+        </where>
+    </sql>
+
+    <select id="count" resultType="int">
+        select count(1) from x_sales_record t
+        <include refid="list_condition"/>
+    </select>
+
+    <select id="list" resultType="com.ivay.ivay_repository.model.XSalesRecord">
+        select * from x_sales_record t
+        <include refid="list_condition"/>
+        <if test="params.orderBy!=null and params.orderBy!=''">
+            ${params.orderBy}
+        </if>
+        <if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+	<update id="update">
+        update x_sales_record t
+        <set>
+            			<if test="risk_user_id != null">
+				risk_user_id = #{riskUserId}, 
+			</if>
+			<if test="salesman_id != null">
+				salesman_id = #{salesmanId}, 
+			</if>
+			<if test="content != null">
+				content = #{content}, 
+			</if>
+			<if test="create_time != null">
+				create_time = #{createTime}, 
+			</if>
+			<if test="update_time != null">
+				update_time = #{updateTime}, 
+			</if>
+
+        </set>
+        where t.id = #{id}
+    </update>
+
+	<!-- 查询销售记录数量 -->
+	<select id="getSalesRecordListCount" resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM
+		x_sales_record
+		LEFT JOIN sys_user ON sys_user.id = x_sales_record.salesman_id
+		WHERE
+		x_sales_record.risk_user_id = #{id}
+	</select>
+
+	<!-- 查询销售记录 -->
+	<select id="getSalesRecordList" resultType="com.ivay.ivay_repository.dto.SalesRecordResult">
+		SELECT
+		x_sales_record.id,
+		x_sales_record.content,
+		x_sales_record.create_time,
+		sys_user.username
+		FROM
+		x_sales_record
+		LEFT JOIN sys_user ON sys_user.id = x_sales_record.salesman_id
+		WHERE
+		x_sales_record.risk_user_id = #{id}
+		ORDER BY create_time DESC
+		<if test="limit != null and limit != 0">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

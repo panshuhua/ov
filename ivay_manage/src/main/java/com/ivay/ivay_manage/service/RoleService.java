@@ -27,4 +27,13 @@ public interface RoleService {
      * @return
      */
     String getLoginAdminRole();
+
+    /**
+     * @Description 获取当前用户销售角色
+     * @Author Ryan
+     * @Param []
+     * @Return java.lang.String
+     * @Date 2019/7/24 10:39
+     */
+    String getLoginUserSalesRole();
 }

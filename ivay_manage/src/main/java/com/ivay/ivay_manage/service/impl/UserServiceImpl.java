@@ -1,5 +1,6 @@
 package com.ivay.ivay_manage.service.impl;
 
+import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_manage.dto.SysRoleUser;
 import com.ivay.ivay_manage.service.RoleService;
 import com.ivay.ivay_manage.service.UserService;
@@ -91,4 +92,11 @@ public class UserServiceImpl implements UserService {
     public List<UserName> getCollectUserNames() {
         return userDao.getCollectUserNames(roleService.getLoginUserCollectRole());
     }
+
+    @Override
+    public List<UserName> getSalesmanNames() {
+        return userDao.getSalesNames(roleService.getLoginUserSalesRole());
+    }
+
+
 }

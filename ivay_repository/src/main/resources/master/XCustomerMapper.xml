@@ -14,9 +14,9 @@
 		   <if test="params.identityCard !='' and params.identityCard !=null">
 		      and identity_card like concat('%', #{params.identityCard} ,'%')
 		   </if>
-		   <if test="params.birthday !='' and params.birthday !=null">
-		      and birthday like concat('%', #{params.birthday} ,'%')
-		   </if>
+			<if test="params.birthday !=null">
+				and birthday like concat('%', #{params.birthday} ,'%')
+			</if>
 		</where>
 	</sql>
 	
@@ -26,9 +26,9 @@
 	</select>
 
 	<select id="listBasicInfo" resultType="com.ivay.ivay_repository.model.XUserInfo">
-		select * from x_user_info t
+		select * from x_user_info
 		<include refid="where" />
-		${params.orderBy}
+		/*ORDER BY */
 		limit #{offset}, #{limit}
 	</select>
 	

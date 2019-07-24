@@ -41,4 +41,6 @@ public interface UserDao {
     int update(SysUser user);
 
     List<UserName> getCollectUserNames(@Param("role") String role);
+
+    List<UserName> getSalesNames(@Param("role") String loginUserSalesRole);
 }

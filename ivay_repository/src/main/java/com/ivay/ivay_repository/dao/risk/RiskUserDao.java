@@ -1,11 +1,13 @@
 package com.ivay.ivay_repository.dao.risk;
 
 
+import com.ivay.ivay_repository.dto.RiskUserInfo;
 import com.ivay.ivay_repository.model.RiskUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * descripiton:
@@ -24,4 +26,5 @@ public interface RiskUserDao {
     List<RiskUser> selectUserListByPhone(String phone);
 
     String selectPhoneByBatch(@Param("phones") String[] phones);
+
 }
