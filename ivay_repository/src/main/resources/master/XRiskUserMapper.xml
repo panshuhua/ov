@@ -160,6 +160,12 @@
             <if test="params.dealStatus != null">
                 and t1.deal_status = #{params.dealStatus}
             </if>
+            <if test="params.assignTimeStart != null">
+                and t1.assign_time &gt;= #{params.assignTimeStart}
+            </if>
+            <if test="params.assignTimeEnd != null">
+                and t1.assign_time &lt;= #{params.assignTimeEnd}
+            </if>
         </where>
     </sql>
 

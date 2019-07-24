@@ -40,4 +40,10 @@ public class RiskUserInfo {
 
     @ApiModelProperty("导入时间结束")
     private Date importTimeEnd;
+
+    @ApiModelProperty("指派时间开始")
+    private Date assignTimeStart;
+
+    @ApiModelProperty("指派时间结束")
+    private Date assignTimeEnd;
 }

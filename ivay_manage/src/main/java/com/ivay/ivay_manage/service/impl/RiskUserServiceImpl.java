@@ -107,6 +107,8 @@ public class RiskUserServiceImpl implements RiskUserService {
             params.put("phone", riskUserInfo.getPhone());
             params.put("userStatus", riskUserInfo.getUserStatus());
             params.put("dealStatus", riskUserInfo.getDealStatus());
+            params.put("assignTimeStart", riskUserInfo.getAssignTimeStart());
+            params.put("assignTimeEnd", riskUserInfo.getAssignTimeEnd());
         }
 
         return new PageTableHandler(
