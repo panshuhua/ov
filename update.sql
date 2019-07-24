@@ -100,6 +100,7 @@ ALTER TABLE sys_permission MODIFY `type` tinyint(1) NOT NULL COMMENT '1菜单 2�
 alter table sys_role drop column enable_flag;
 alter table sys_role_user drop column enable_flag;
 alter table sys_user drop column enable_flag;
+alter table x_audit_user drop column enable_flag;
 
 -- VTP还款交易信息
 CREATE TABLE `vtp_transaction_process_input` (

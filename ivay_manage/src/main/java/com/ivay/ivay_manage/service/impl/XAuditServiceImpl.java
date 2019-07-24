@@ -81,7 +81,6 @@ public class XAuditServiceImpl implements XAuditService {
         if (xAuditUser == null) {
             xAuditUser = new XAuditUser();
             xAuditUser.setCreateTime(now);
-            xAuditUser.setEnableFlag(SysVariable.ENABLE_FLAG_YES);
             xAuditUser.setUserGid(userGid);
         }
         xAuditUser.setSysUserId(auditId);
@@ -112,14 +111,13 @@ public class XAuditServiceImpl implements XAuditService {
             // 查出所有的审计员
             List<String> auditIds = xAuditUserDao.getSysUserByRole(SysVariable.ROLE_OVAY_AUDIT);
             if (auditIds.size() == 0) {
-                xAuditUserDao.deleteAll();
-                return false;
+                return xAuditUserDao.deleteAll() == 0;
             }
             acceptId = auditIds.get((int) (Math.random() * (auditIds.size())));
             logger.info("随机分配审计员id：{}", acceptId);
         }
         xAuditUserDao.reAssignAudit(acceptId, handleId);
-        return false;
+        return true;
     }
 
     @Override
