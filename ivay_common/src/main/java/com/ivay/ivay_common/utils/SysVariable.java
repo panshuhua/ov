@@ -58,7 +58,6 @@ public class SysVariable {
     // 最小可借额度
     public static final long LOAN_MIN_AMOUNT = 500000;
 
-
     // 还款状态: 待还款
     public static final int REPAYMENT_STATUS_NONE = 0;
     // 还款状态: 还款中
@@ -273,5 +272,10 @@ public class SysVariable {
 
     // 2分钟内不能重复发送验证码的rediskey后缀
     public static final String SEND_AUTHCODE_SUFFIX = "_send";
+
+    // app版本更新方式
+    public static final String NEED_FORCE_UPDATE = "2"; // 需要强制更新
+    public static final String NEED_NORMAL_UPDATE = "1"; // 需要一般更新
+    public static final String NEED_NO_UPDATE = "0"; // 不需要更新
 
 }

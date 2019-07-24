@@ -49,6 +49,11 @@ ebay_api_keyMahoa: 31feae316de0a42520ef5ec4
 ebay_api_effective_year: 5
 #ebay还款回调接口公钥路径
 ebay_api_notice_publickey: /usr/ebay_notice_key/ebay_notice_public_key.pem
+#VTP还款
+# partnerCode
+VTPpartnerCode: VTP2019
+# 更新交易状态url
+VTPApiUrl: https://dvtc2.viettelpost.vn/api/callback/trans
 
 # 风控授权url
 risk_control_url: http://localhost:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}

@@ -23,10 +23,10 @@ public interface XAuditService {
     /**
      * 删除某个审计员
      *
-     * @param ids
+     * @param id
      * @return
      */
-    int deleteAudit(String ids);
+    int deleteAudit(Long id);
 
     /**
      * 删除被某个审计员审计的用户

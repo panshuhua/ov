@@ -1,5 +1,22 @@
 package com.ivay.ivay_common.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -20,28 +37,12 @@ import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
 public class HttpClientUtils {
 
     private static final Logger log = LoggerFactory.getLogger("adminLogger");
 
-    public static CloseableHttpClient acceptsUntrustedCertsHttpClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    public static CloseableHttpClient acceptsUntrustedCertsHttpClient()
+        throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         HttpClientBuilder b = HttpClientBuilder.create();
 
         // setup a Trust Strategy that allows all certificates.
@@ -55,34 +56,33 @@ public class HttpClientUtils {
         b.setSSLContext(sslContext);
 
         // don't check Hostnames, either.
-        //      -- use SSLConnectionSocketFactory.getDefaultHostnameVerifier(), if you don't want to weaken
+        // -- use SSLConnectionSocketFactory.getDefaultHostnameVerifier(), if you don't want to weaken
         HostnameVerifier hostnameVerifier = NoopHostnameVerifier.INSTANCE;
 
         // here's the special part:
-        //      -- need to create an SSL Socket Factory, to use our weakened "trust strategy";
-        //      -- and create a Registry, to register it.
+        // -- need to create an SSL Socket Factory, to use our weakened "trust strategy";
+        // -- and create a Registry, to register it.
         //
         SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                .register("https", sslSocketFactory)
-                .build();
+            .register("http", PlainConnectionSocketFactory.getSocketFactory()).register("https", sslSocketFactory)
+            .build();
 
         // now, we create connection-manager using our Registry.
-        //      -- allows multi-threaded use
+        // -- allows multi-threaded use
         PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
         connMgr.setMaxTotal(200);
         connMgr.setDefaultMaxPerRoute(100);
         b.setConnectionManager(connMgr);
 
         // finally, build the HttpClient;
-        //      -- done!
+        // -- done!
         CloseableHttpClient client = b.build();
 
         return client;
     }
 
-    //以表单形式提交
+    // 以表单形式提交
     public static <T> String postForObject(String url, T req) {
         RestTemplate client = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -97,51 +97,96 @@ public class HttpClientUtils {
         String responseBody = client.postForObject(url, requestEntity, String.class);
         log.info("返回json：" + responseBody);
 
-        //System.out.println("返回valCustomerInfoRspMap：" + JsonUtils.jsonToMap(responseBody));
+        // System.out.println("返回valCustomerInfoRspMap：" + JsonUtils.jsonToMap(responseBody));
         return responseBody;
     }
-    
-    //post请求发送json数据
-    public static <T> String postByJson(String url, T req) throws IOException {
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		
-		// Add request header
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setUseCaches(false);
-		con.setDoInput(true);
-		con.setDoOutput(true);
-		String input = JsonUtils.objectToJson(req);
-		log.info("请求参数："+input);
-		
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
 
-		writer.write(input);
-		writer.close();
-		wr.close();
-		
-		// Get response
-		int responseCode = con.getResponseCode();
+    // post请求发送json数据
+    public static <T> String postByJson(String url, T req) throws IOException {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection)obj.openConnection();
+
+        // Add request header
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setUseCaches(false);
+        con.setDoInput(true);
+        con.setDoOutput(true);
+        String input = JsonUtils.objectToJson(req);
+        log.info("请求参数：" + input);
+
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
+
+        writer.write(input);
+        writer.close();
+        wr.close();
+
+        // Get response
+        int responseCode = con.getResponseCode();
         String responseMsg = con.getResponseMessage();
-        log.info("responseCode: "+ responseCode);
-        log.info("responseMsg: "+ responseMsg);
+        log.info("responseCode: " + responseCode);
+        log.info("responseMsg: " + responseMsg);
 
         BufferedReader br = null;
         String output;
         StringBuilder sb = new StringBuilder();
         if (responseCode == 200) {
-        	br = new BufferedReader(new InputStreamReader(con.getInputStream()));             
+            br = new BufferedReader(new InputStreamReader(con.getInputStream()));
         } else {
-        	br = new BufferedReader(new InputStreamReader(con.getErrorStream()));                 	 
+            br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
         }
         while ((output = br.readLine()) != null) {
-      	  sb.append(output);
-      	}
-        
-        log.info("Response body"+ sb.toString()); 
+            sb.append(output);
+        }
+
+        log.info("Response body" + sb.toString());
         return sb.toString();
     }
-    
+
+    // post请求发送json数据-VTP还款
+    public static <T> String postByJsonVTP(String url, T req, String xToken) throws IOException {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection)obj.openConnection();
+
+        // Add request header
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        // 添加请求头
+        con.setRequestProperty("X-TOKEN", xToken);
+        con.setUseCaches(false);
+        con.setDoInput(true);
+        con.setDoOutput(true);
+        String input = JsonUtils.objectToJson(req);
+        log.info("请求参数：" + input);
+
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
+
+        writer.write(input);
+        writer.close();
+        wr.close();
+
+        // Get response
+        int responseCode = con.getResponseCode();
+        String responseMsg = con.getResponseMessage();
+        log.info("responseCode: " + responseCode);
+        log.info("responseMsg: " + responseMsg);
+
+        BufferedReader br = null;
+        String output;
+        StringBuilder sb = new StringBuilder();
+        if (responseCode == 200) {
+            br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        } else {
+            br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+        }
+        while ((output = br.readLine()) != null) {
+            sb.append(output);
+        }
+
+        log.info("Response body" + sb.toString());
+        return sb.toString();
+    }
+
 }

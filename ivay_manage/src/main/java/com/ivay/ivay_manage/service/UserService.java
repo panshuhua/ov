@@ -9,14 +9,20 @@ import java.util.List;
 
 public interface UserService {
     /**
-     * 添加用户及其角色
+     * 新增用户及其角色
      *
      * @param sysRoleUser
      * @return
      */
     SysUser addUser(SysRoleUser sysRoleUser);
 
-    SysUser updateUser(SysRoleUser sysRoleUser);
+    /**
+     * 更新用户基本信息和角色
+     *
+     * @param sysRoleUser
+     * @return
+     */
+    SysUser updateUserAndRole(SysRoleUser sysRoleUser);
 
     SysUser getUserByName(String username);
 

@@ -95,8 +95,34 @@ CREATE TABLE `account_check_result` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
--- todo 2019-7-22
+-- todo 2019-7-22 菜单角色用户重构
 ALTER TABLE sys_permission MODIFY `type` tinyint(1) NOT NULL COMMENT '1菜单 2权限';
+alter table sys_role drop column enable_flag;
+alter table sys_role_user drop column enable_flag;
+alter table sys_user drop column enable_flag;
+alter table x_audit_user drop column enable_flag;
+
+-- VTP还款交易信息
+CREATE TABLE `vtp_transaction_process_input` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `trans_id` varchar(60) DEFAULT NULL,
+  `ref_id` varchar(60) DEFAULT NULL,
+  `customer_code` varchar(60) DEFAULT NULL,
+  `amount` bigint(50) DEFAULT NULL,
+  `fee` bigint(50) DEFAULT NULL,
+  `content` varchar(500) DEFAULT NULL,
+  `agent_user` varchar(50) DEFAULT NULL,
+  `agent_name` varchar(50) DEFAULT NULL,
+  `trans_date` varchar(60) DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT NULL,
+  `update_time` timestamp NULL DEFAULT NULL,
+  `enable_flag` char(1) DEFAULT 'Y',
+  `trans_msg` varchar(100) DEFAULT NULL,
+  `trans_status` tinyint(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+
+
 
 
 

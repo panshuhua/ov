@@ -81,14 +81,14 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         params.put("userGid", userGid);
         request.setParams(params);
         return new PageTableHandler(a -> xRecordRepaymentDao.count(a.getParams()),
-            a -> xRecordRepaymentDao.list(request.getParams(), request.getOffset(), request.getLimit()))
+                a -> xRecordRepaymentDao.list(request.getParams(), request.getOffset(), request.getLimit()))
                 .handle(request);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public XVirtualAccount repaymentMoney(String loanGid, String userGid, String bankShortName, long repaymentAmount,
-        Integer deductType) {
+                                          Integer deductType) {
         XRecordLoan xRecordLoan = xRecordLoanDao.getByGid(loanGid, userGid);
 
         XVirtualAccount xVirtualAccount = xVirtualAccountService.selectByOrderId(xRecordLoan.getOrderId());
@@ -161,7 +161,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
     public XVirtualAccount createVirtualCount(XRecordLoan xRecordLoan, XRecordRepayment xRecordRepayment) {
         ValVirtualAccountRsp valVirtualAccountRsp =
-            xVirtualAccountService.addVirtualAccount(xRecordLoan, xRecordRepayment);
+                xVirtualAccountService.addVirtualAccount(xRecordLoan, xRecordRepayment);
         String responseCode = valVirtualAccountRsp.getResponseCode();
         String responseMsg = valVirtualAccountRsp.getResponseMessage();
         XVirtualAccount xVirtualAccount = new XVirtualAccount();
@@ -212,7 +212,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
     public XVirtualAccount updateVirtualCount(XVirtualAccount xVirtualAccount, XRecordRepayment xRecordRepayment) {
         Long collectAmount = xRecordRepayment.getRepaymentAmount();
         ValVirtualAccountRsp valVirtualAccountRsp =
-            xVirtualAccountService.updateXVirtualAccount(xVirtualAccount, collectAmount);
+                xVirtualAccountService.updateXVirtualAccount(xVirtualAccount, collectAmount);
         String responseCode = valVirtualAccountRsp.getResponseCode();
         String responseMsg = valVirtualAccountRsp.getResponseMessage();
         if (BaokimResponseStatus.CollectionSuccess.getCode().equals(responseCode)) {
@@ -255,8 +255,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         logger.info("进入还款更新状态方法----------\nbaokim还款返回:{}", responseCode);
         if (BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             logger.info("{}: 还款金额:{}, 应还本金:{},应还利息:{}", xRecordRepayment.getOrderId(),
-                xRecordRepayment.getRepaymentAmount(), xRecordLoan.getDueAmount(),
-                xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
+                    xRecordRepayment.getRepaymentAmount(), xRecordLoan.getDueAmount(),
+                    xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest());
             // 获取用户可借款金额
             XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xRecordLoan.getUserGid());
             // 更新借款表的还款额度和滞纳金等
@@ -276,7 +276,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 // 更新任务中的追回本金
                 if (null != xCollectionTask) {
                     xCollectionTask.setCollectionAmount(
-                        xCollectionTask.getCollectionAmount() + xRecordRepayment.getRepaymentAmount());
+                            xCollectionTask.getCollectionAmount() + xRecordRepayment.getRepaymentAmount());
                     xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
                 }
                 logger.info("{}: 还有本金没还完:{}", xRecordRepayment.getOrderId(), xRecordLoan.getDueAmount());
@@ -307,7 +307,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
                     // 记录或许多还的金额
                     xRecordLoan
-                        .setMoreRepaymentAmount(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
+                            .setMoreRepaymentAmount(diff - xRecordLoan.getOverdueFee() - xRecordLoan.getOverdueInterest());
                     // 还清全部逾期费用
                     xRecordLoan.setOverdueFee(0L);
                     xRecordLoan.setOverdueInterest(0L);
@@ -324,7 +324,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                             // 更新催收任务中的追回逾期利息
                             xCollectionTask.setCollectionOverdueFee(xCollectionTask.getCollectionOverdueFee() + diff);
                             xCollectionTask
-                                .setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
+                                    .setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
                         }
                     } else {
                         if (null != xCollectionTask) {
@@ -337,7 +337,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
 
                         xRecordLoan.setOverdueInterest(0L);
                         xRecordLoan
-                            .setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
+                                .setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
 
                     }
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
@@ -352,12 +352,12 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             logger.info("更新最后一次还款时间------------------------");
             xRecordLoan.setUpdateTime(now);
             if (xUserInfo.getCreditLine() < xUserInfo.getCanborrowAmount()) {
-                xUserInfo.setCanborrowAmount(xUserInfo.getCanborrowAmount());
+                xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
             }
             xUserInfoDao.updateCanborrowAmount(xUserInfo.getCanborrowAmount(), xRecordLoan.getUserGid());
             xRecordLoanDao.update(xRecordLoan);
 
-            // TODO 发送还款成功的通知
+            // 发送还款成功的通知
             logger.info("开始发送还款成功通知------------------------");
             xFirebaseNoticeService.sendHadRepayNotice(xRecordLoan, xRecordRepayment, xUserInfo);
             logger.info("结束发送还款成功通知------------------------");
@@ -370,12 +370,12 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                     xCollectionTask.setRepayTime(xRecordRepayment.getCreateTime());
 
                     xCollectionTaskDao.update(xCollectionTask);
-            
+
                     // 如果未指派钱就还款
                 } else {
                     logger.info("未指派催收人，更新催收任务{}", JSONObject.toJSONString(xCollectionTask));
                     xCollectionTask.setDueCollectionAmount(
-                        xCollectionTask.getDueCollectionAmount() - xCollectionTask.getCollectionAmount());
+                            xCollectionTask.getDueCollectionAmount() - xCollectionTask.getCollectionAmount());
                     xCollectionTask.setCollectionAmount(0L);
                     xCollectionTask.setCollectionOverdueFee(0L);
 
@@ -385,7 +385,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             // 实际扣款时间
             if (StringUtils.isEmpty(transTime)) {
                 xRecordRepayment.setEndTime(now);
-            }else {
+            } else {
                 xRecordRepayment.setEndTime(DateUtils.stringToDate_YYYY_MM_DD_HH_MM_SS(transTime));
             }
         } else {
@@ -396,7 +396,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
         }
 
         if (xRecordRepaymentDao.save(xRecordRepayment) == 1
-            && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
+                && BaokimResponseStatus.SUCCESS.getCode().equals(responseCode)) {
             // 还款提升授信額度
             threadPoolService.execute(() -> {
                 Map<String, Object> params = new HashMap<>();

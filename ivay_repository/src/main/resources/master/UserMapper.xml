@@ -4,8 +4,9 @@
 <mapper namespace="com.ivay.ivay_repository.dao.master.UserDao">
 
 	<sql id="list_condition">
+        LEFT JOIN sys_role_user sru ON t.id = sru.userId
+        LEFT JOIN sys_role sr ON sr.id = sru.roleId
 		<where>
-			t.enable_flag = "Y"
 			<if test="params.username != null and params.username != ''">
 				and t.username like concat('%', #{params.username}, '%')
 			</if>
@@ -15,19 +16,29 @@
 			<if test="params.status != null and params.status != ''">
 				and t.status = #{params.status}
 			</if>
+			<if test="params.role != null and params.role != ''">
+				AND CASE #{params.role}
+				WHEN 'admin' THEN 1=1
+				WHEN 'ovayAdmin' THEN sr.name in ('ovayAdmin','ovayAudit','collectionAdmin','collectionPerson','customer system')
+				WHEN 'collectionAdmin' THEN sr.name in ('collectionAdmin','collectionPerson')
+				else 1=0
+				END
+			</if>
 		</where>
 	</sql>
 
 	<select id="count" resultType="int">
-		select count(1) from sys_user t
+		select count(distinct t.id) from sys_user t
 		<include refid="list_condition" />
 	</select>
 
 	<select id="list" resultType="com.ivay.ivay_repository.model.SysUser">
-		select * from sys_user t
+		select distinct t.* from sys_user t
 		<include refid="list_condition" />
-		${params.orderBy}
-		limit #{offset}, #{limit}
+		order by username asc
+		<if test="limit != null and limit != 0">
+            limit #{offset}, #{limit}
+        </if>
 	</select>
 
 	<insert id="saveUserRoles">

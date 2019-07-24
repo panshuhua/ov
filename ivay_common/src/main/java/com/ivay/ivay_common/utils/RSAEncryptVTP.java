@@ -1,19 +1,30 @@
 package com.ivay.ivay_common.utils;
 
-import org.apache.commons.codec.binary.Base64;
-import sun.misc.BASE64Decoder;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.*;
-import java.security.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import org.apache.commons.codec.binary.Base64;
+
+import sun.misc.BASE64Decoder;
 
 /**
  * <p>
@@ -23,16 +34,16 @@ import java.security.spec.X509EncodedKeySpec;
  * @author xx
  * @version 1.0.0
  */
-public class RSAEncrypt {
+public class RSAEncryptVTP {
     /**
      * 字节数据转字符串专用集合
      */
-    private static final char[] HEX_CHAR = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
-            'f' };
+    private static final char[] HEX_CHAR =
+        {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-    private static final String PRIVATE_KEY = "baokim_private_key.pem";
+    private static final String PRIVATE_KEY = "vtp_pkcs8_private_key.pem";
 
-    private static final String PUBLIC_KEY = "baokim_public_key.pem";
+    private static final String PUBLIC_KEY = "vtp_rsa_public_key.pem";
 
     /**
      * 随机生成密钥对
@@ -50,9 +61,9 @@ public class RSAEncrypt {
         // 生成一个密钥对，保存在keyPair中
         KeyPair keyPair = keyPairGen.generateKeyPair();
         // 得到私钥
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
         // 得到公钥
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPublicKey publicKey = (RSAPublicKey)keyPair.getPublic();
         try {
             // 得到公钥字符串
             Base64 base64 = new Base64();
@@ -80,8 +91,10 @@ public class RSAEncrypt {
     /**
      * 从文件中输入流中加载公钥
      *
-     * @param path 公钥输入流
-     * @throws Exception 加载公钥时产生的异常
+     * @param path
+     *            公钥输入流
+     * @throws Exception
+     *             加载公钥时产生的异常
      */
     public static String loadPublicKeyByFile(String path) throws Exception {
         try {
@@ -108,8 +121,10 @@ public class RSAEncrypt {
     /**
      * 从字符串中加载公钥
      *
-     * @param publicKeyStr 公钥数据字符串
-     * @throws Exception 加载公钥时产生的异常
+     * @param publicKeyStr
+     *            公钥数据字符串
+     * @throws Exception
+     *             加载公钥时产生的异常
      */
     public static RSAPublicKey loadPublicKeyByStr(String publicKeyStr) throws Exception {
         try {
@@ -117,7 +132,7 @@ public class RSAEncrypt {
             byte[] buffer = base64.decodeBuffer(publicKeyStr);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
-            return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+            return (RSAPublicKey)keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此算法");
         } catch (InvalidKeySpecException e) {
@@ -130,7 +145,8 @@ public class RSAEncrypt {
     /**
      * 从文件中加载私钥
      *
-     * @param path 私钥文件名
+     * @param path
+     *            私钥文件名
      * @return 是否成功
      * @throws Exception
      */
@@ -162,7 +178,7 @@ public class RSAEncrypt {
             byte[] buffer = base64Decoder.decodeBuffer(privateKeyStr);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+            return (RSAPrivateKey)keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             throw new Exception("无此算法");
         } catch (InvalidKeySpecException e) {
@@ -175,10 +191,13 @@ public class RSAEncrypt {
     /**
      * 公钥加密过程
      *
-     * @param publicKey     公钥
-     * @param plainTextData 明文数据
+     * @param publicKey
+     *            公钥
+     * @param plainTextData
+     *            明文数据
      * @return
-     * @throws Exception 加密过程中的异常信息
+     * @throws Exception
+     *             加密过程中的异常信息
      */
     public static byte[] encrypt(RSAPublicKey publicKey, byte[] plainTextData) throws Exception {
         if (publicKey == null) {
@@ -209,10 +228,13 @@ public class RSAEncrypt {
     /**
      * 私钥加密过程
      *
-     * @param privateKey    私钥
-     * @param plainTextData 明文数据
+     * @param privateKey
+     *            私钥
+     * @param plainTextData
+     *            明文数据
      * @return
-     * @throws Exception 加密过程中的异常信息
+     * @throws Exception
+     *             加密过程中的异常信息
      */
     public static byte[] encrypt(RSAPrivateKey privateKey, byte[] plainTextData) throws Exception {
         if (privateKey == null) {
@@ -242,10 +264,13 @@ public class RSAEncrypt {
     /**
      * 私钥解密过程
      *
-     * @param privateKey 私钥
-     * @param cipherData 密文数据
+     * @param privateKey
+     *            私钥
+     * @param cipherData
+     *            密文数据
      * @return 明文
-     * @throws Exception 解密过程中的异常信息
+     * @throws Exception
+     *             解密过程中的异常信息
      */
     public static byte[] decrypt(RSAPrivateKey privateKey, byte[] cipherData) throws Exception {
         if (privateKey == null) {
@@ -276,10 +301,13 @@ public class RSAEncrypt {
     /**
      * 公钥解密过程
      *
-     * @param publicKey  公钥
-     * @param cipherData 密文数据
+     * @param publicKey
+     *            公钥
+     * @param cipherData
+     *            密文数据
      * @return 明文
-     * @throws Exception 解密过程中的异常信息
+     * @throws Exception
+     *             解密过程中的异常信息
      */
     public static byte[] decrypt(RSAPublicKey publicKey, byte[] cipherData) throws Exception {
         if (publicKey == null) {
@@ -310,7 +338,8 @@ public class RSAEncrypt {
     /**
      * 字节数据转十六进制字符串
      *
-     * @param data 输入数据
+     * @param data
+     *            输入数据
      * @return 十六进制内容
      */
     public static String byteArrayToString(byte[] data) {

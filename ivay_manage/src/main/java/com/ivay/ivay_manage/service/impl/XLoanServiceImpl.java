@@ -439,6 +439,9 @@ public class XLoanServiceImpl implements XLoanService {
                     xUserInfo.getCreditLine());
         }
         xUserInfo.setUpdateTime(new Date());
+        if (xUserInfo.getCreditLine() < xUserInfo.getCanborrowAmount()) {
+            xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
+        }
         xUserInfoDao.update(xUserInfo);
     }
 

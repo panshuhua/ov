@@ -11,7 +11,7 @@
             <if test="params.role != null and params.role != ''">
                 AND CASE #{params.role}
                     WHEN 'admin' THEN 1=1
-                    WHEN 'ovayAdmin' THEN t.name in ('ovayAdmin','ovayAudit','collectionAdmin','collectionPerson')
+                    WHEN 'ovayAdmin' THEN t.name in ('ovayAdmin','ovayAudit','collectionAdmin','collectionPerson','customer system')
                     WHEN 'collectionAdmin' THEN t.name in ('collectionAdmin','collectionPerson')
                 END
             </if>
@@ -26,8 +26,8 @@
     <select id="listVisible" resultType="com.ivay.ivay_repository.model.SysRole">
         select * from sys_role t
         <include refid="list_condition"/>
-        ${params.orderBy}
-        <if test="offset != null and offset >= 0 and limit != null and limit >= 0">
+        order by updateTime desc
+        <if test="limit != null and limit != 0">
             limit #{offset}, #{limit}
         </if>
     </select>

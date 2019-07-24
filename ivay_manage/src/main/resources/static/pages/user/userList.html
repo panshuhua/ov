@@ -155,7 +155,7 @@
         }, function () {
             $.ajax({
                 type: 'delete',
-                url: '/manage/xAuditUsers/deleteAudit?ids=' + id,
+                url: '/manage/xAuditUsers/deleteAudit?id=' + id,
                 success: function (data) {
                     example.ajax.reload();
                     layer.msg("删除成功");

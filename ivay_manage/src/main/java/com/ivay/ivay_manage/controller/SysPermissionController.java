@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * 权限相关接口
  *
- * @author xx
+ * @author sx
  */
 @Api(tags = "系统权限-菜单相关")
 @RestController
@@ -148,10 +148,10 @@ public class SysPermissionController {
         return response;
     }
 
-    @GetMapping(params = "roleId")
-    @ApiOperation(value = "根据角色id获取权限")
+    @GetMapping("getByRole")
+    @ApiOperation("根据角色id获取权限")
     @PreAuthorize("hasAnyAuthority('sys:menu:query','sys:role:query')")
-    public List<Permission> listByRoleId(Long roleId) {
+    public List<Permission> listByRoleId(@RequestParam Long roleId) {
         return permissionDao.listByRoleId(roleId);
     }
 
@@ -163,10 +163,10 @@ public class SysPermissionController {
         permissionDao.save(permission);
     }
 
-    @GetMapping("get/{id}")
-    @ApiOperation(value = "根据菜单id获取菜单")
+    @GetMapping("get")
+    @ApiOperation("根据菜单id获取菜单")
     @PreAuthorize("hasAuthority('sys:menu:query')")
-    public Response<Permission> get(@PathVariable Long id) {
+    public Response<Permission> get(@RequestParam Long id) {
         Response<Permission> response = new Response<>();
         response.setBo(permissionDao.getById(id));
         return response;
@@ -203,10 +203,10 @@ public class SysPermissionController {
     }
 
     @LogAnnotation
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("delete")
     @ApiOperation("删除菜单")
     @PreAuthorize("hasAuthority('sys:menu:del')")
-    public void delete(@PathVariable Long id) {
+    public void delete(@RequestParam Long id) {
         permissionService.delete(id);
     }
 

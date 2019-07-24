@@ -52,11 +52,15 @@ public class XUserBankcardInfoController {
     @ApiOperation(value = "添加银行卡")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "bankNo", value = "银行编号", dataType = "String", paramType = "query", required = true)})
-    @ApiResponses({@ApiResponse(code = 200, message = "result => 1 已经设置了交易密碼，0 还沒设置之交易密碼")})
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "result => 1 已经设置了交易密碼，0 还沒设置之交易密碼")
+    })
     @LogAnnotation(module = "添加银行卡")
-    public Response<String> save(@RequestBody XUserBankcardInfo xUserBankcardInfo, @RequestParam String bankNo,
+    public Response<String> save(@RequestBody XUserBankcardInfo xUserBankcardInfo,
+                                 @RequestParam String bankNo,
                                  HttpServletRequest request) {
         Response<String> response = new Response<>();
+        // 校验银行卡姓名
         if (StringUtils.isEmpty(xUserBankcardInfo.getCardUserName())) {
             logger.info("{}: 输入姓名为空", xUserBankcardInfo.getUserGid());
             response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
@@ -76,7 +80,7 @@ public class XUserBankcardInfoController {
         }
         XUserInfo xUserInfo = xUserInfoDao.getByUserGid(xUserBankcardInfo.getUserGid());
 
-        // 姓名和银行卡账号是否一致
+        // 用户姓名和银行卡账号是否一致
         if (xUserInfo == null) {
             logger.info("{}: 用户不存在: {}", xUserBankcardInfo.getUserGid(), xUserBankcardInfo.getUserGid());
             response.setStatus(i18nService.getMessage("response.error.user.checkgid.code"),
@@ -84,15 +88,14 @@ public class XUserBankcardInfoController {
             return response;
         } else if (StringUtils.isEmpty(xUserInfo.getName())
                 || MinDistance.minDistance(xUserInfo.getName(), xUserBankcardInfo.getCardUserName()) > 1) {
-            logger.info("{}: 绑定银行卡姓名与系统姓名不一致:{},{}", xUserBankcardInfo.getUserGid(),
+            logger.info("{}: 绑定银行卡姓名与用户姓名不一致:{},{}", xUserBankcardInfo.getUserGid(),
                     xUserBankcardInfo.getCardUserName(), xUserInfo.getName());
             response.setStatus(i18nService.getMessage("response.error.bank.account.code"),
                     i18nService.getMessage("response.error.bank.account.msg"));
             return response;
         }
 
-        // 需要判断传入的accType 是否是银行支持的类型
-        // 校验身份信息
+        // 校验绑定银行卡的身份信息
         TransfersRsp transfersRsp = xapiService.validateCustomerInformation(bankNo, xUserBankcardInfo.getCardNo(),
                 xUserBankcardInfo.getAccType());
         if (BaokimResponseStatus.SUCCESS.getCode().equals(transfersRsp.getResponseCode())) {
@@ -109,14 +112,17 @@ public class XUserBankcardInfoController {
             xUserBankcardInfo.setEnableFlag(SysVariable.ENABLE_FLAG_YES);
             xUserBankcardInfo.setStatus(SysVariable.CARD_STATUS_DOING);
             xUserBankcardInfoDao.save(xUserBankcardInfo);
-            // 如果没有帮过卡，则更新用户状态
-            if ("0123".indexOf(xUserInfo.getUserStatus()) != -1) {
+            // 如果没有绑过卡，则更新用户状态
+            if ("0123".contains(xUserInfo.getUserStatus())) {
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_BANKCARD_SUCCESS);
                 xUserInfo.setUpdateTime(now);
                 xUserInfoService.update(xUserInfo);
             }
-            response.setBo(StringUtils.isEmpty(xUserInfo.getTransPwd()) ? SysVariable.TRANSFER_PWD_NONE
-                    : SysVariable.TRANSFER_PWD_HAS);
+            response.setBo(
+                    StringUtils.isEmpty(xUserInfo.getTransPwd())
+                            ? SysVariable.TRANSFER_PWD_NONE
+                            : SysVariable.TRANSFER_PWD_HAS
+            );
         } else {
             response.setStatus(transfersRsp.getResponseCode(), transfersRsp.getResponseMessage());
             logger.info("{}: 绑卡身份验证失败： {}", xUserBankcardInfo.getUserGid(), response.getStatus().getMessage());
@@ -161,8 +167,7 @@ public class XUserBankcardInfoController {
     public Response<List<XUserBankcardInfo>> getCardStatus(@RequestBody XUserBankcardInfo xUserBankcardInfo,
                                                            HttpServletRequest request) {
         Response<List<XUserBankcardInfo>> response = new Response<>();
-        response.setBo(
-                xUserBankcardInfoDao.getByCardGid(xUserBankcardInfo.getBankcardGid(), xUserBankcardInfo.getUserGid()));
+        response.setBo(xUserBankcardInfoDao.getByCardGid(xUserBankcardInfo.getBankcardGid(), xUserBankcardInfo.getUserGid()));
         return response;
     }
 }

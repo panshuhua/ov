@@ -1,17 +1,11 @@
 package com.ivay.ivay_app.service.impl;
 
-import com.ivay.ivay_app.dto.*;
-import com.ivay.ivay_app.service.XCollectionTransactionService;
-import com.ivay.ivay_app.service.XConfigService;
-import com.ivay.ivay_app.service.XRecordRepaymentService;
-import com.ivay.ivay_common.utils.*;
-import com.ivay.ivay_repository.dao.master.TokenDao;
-import com.ivay.ivay_repository.dao.master.XCollectionTransactionDao;
-import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
-import com.ivay.ivay_repository.model.XCollectionTransaction;
-import com.ivay.ivay_repository.model.XEbayCollectionNotice;
-import com.ivay.ivay_repository.model.XRecordLoan;
-import com.ivay.ivay_repository.model.XRecordRepayment;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +13,30 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import com.ivay.ivay_app.dto.BaokimResponseStatus;
+import com.ivay.ivay_app.dto.CollectionTransactionNotice;
+import com.ivay.ivay_app.dto.CollectionTransactionRsp;
+import com.ivay.ivay_app.dto.EbayBlanceFlucNoticeRsp;
+import com.ivay.ivay_app.dto.EbayResponseStatus;
+import com.ivay.ivay_app.dto.XBalanceFuctNoticeReq;
+import com.ivay.ivay_app.service.XCollectionTransactionService;
+import com.ivay.ivay_app.service.XConfigService;
+import com.ivay.ivay_app.service.XRecordRepaymentService;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.JsonUtils;
+import com.ivay.ivay_common.utils.MsgAuthCode;
+import com.ivay.ivay_common.utils.RSAEncryptShaCollection;
+import com.ivay.ivay_common.utils.RSASign;
+import com.ivay.ivay_common.utils.StringUtil;
+import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_common.utils.UUIDUtils;
+import com.ivay.ivay_repository.dao.master.TokenDao;
+import com.ivay.ivay_repository.dao.master.XCollectionTransactionDao;
+import com.ivay.ivay_repository.dao.master.XRecordLoanDao;
+import com.ivay.ivay_repository.model.XCollectionTransaction;
+import com.ivay.ivay_repository.model.XEbayCollectionNotice;
+import com.ivay.ivay_repository.model.XRecordLoan;
+import com.ivay.ivay_repository.model.XRecordRepayment;
 
 @Service
 public class XCollectionTransactionServiceImpl implements XCollectionTransactionService {
@@ -60,11 +73,6 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
             return true;
         }
         return false;
-    }
-
-    @Override
-    public int insert(XCollectionTransaction xCollectionTransaction) {
-        return xCollectionTransactionDao.insert(xCollectionTransaction);
     }
 
     @Override
@@ -108,7 +116,7 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         logger.info("ReferenceId=" + ReferenceId);
         rsp.setReferenceId(ReferenceId);
         String rspEncryptStr =
-                ResponseCode + "|" + ResponseMessage + "|" + ReferenceId + "|" + AccNo + "|" + AffTransDebt;
+            ResponseCode + "|" + ResponseMessage + "|" + ReferenceId + "|" + AccNo + "|" + AffTransDebt;
         logger.info("返回给baokim的签名明文=" + rspEncryptStr);
 
         String rspSignature = RSAEncryptShaCollection.encrypt2Sha1(rspEncryptStr);
@@ -183,15 +191,15 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         }
 
         String encryptStr = RequestId + "|" + RequestTime + "|" + PartnerCode + "|" + AccNo + "|" + ClientIdNo + "|"
-                + TransId + "|" + TransAmount + "|" + TransTime + "|" + BefTransDebt + "|" + AffTransDebt + "|"
-                + AccountType + "|" + OrderId;
+            + TransId + "|" + TransAmount + "|" + TransTime + "|" + BefTransDebt + "|" + AffTransDebt + "|"
+            + AccountType + "|" + OrderId;
 
         logger.info("baokim请求的签名明文：" + encryptStr);
         logger.info("baokim请求发送的签名：" + Signature);
 
         Map config = JsonUtils.jsonToMap(xConfigService.getContentByType(SysVariable.BAOKIM_NOTICE_SIGNATURE));
         if (config == null) {
-            logger.error("发送短信验证码配置获取出错");
+            logger.error("还款回调接口配置获取出错");
             return null;
         }
 
@@ -232,13 +240,21 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
         xCollectionTransaction.setAccountType(AccountType);
         xCollectionTransaction.setTransTime(TransTime);
         xCollectionTransaction.setOrderId(OrderId);
-        xCollectionTransaction.setCreateTime(new Date());
+        xCollectionTransaction.setReferenceId(ReferenceId);
+
         try {
-            insert(xCollectionTransaction);
+            xCollectionTransactionDao.insert(xCollectionTransaction);
         } catch (Exception e) {
             if (e.toString().contains("Duplicate")) {
-                ResponseCode = BaokimResponseStatus.IncorrectTransIdRepeat.getCode();
-                ResponseMessage = BaokimResponseStatus.IncorrectTransIdRepeat.getMessage();
+                // 如果TransId重复了，还是返回200和refenceId给baokim
+                ResponseCode = BaokimResponseStatus.CollectionSuccess.getCode();
+                ResponseMessage = BaokimResponseStatus.CollectionSuccess.getMessage();
+                XCollectionTransaction collectionTransaction = xCollectionTransactionDao.findDataByTransId(TransId);
+                // 返回数据库中存在的ReferenceId，把已存在的ReferenceId返回给baokim
+                if (collectionTransaction != null) {
+                    String referenceId = collectionTransaction.getReferenceId();
+                    rsp.setReferenceId(referenceId);
+                }
                 setRsp(rsp, ResponseCode, ResponseMessage);
                 return rsp;
             }
@@ -341,9 +357,9 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
 
             // 有没有传递必要的字段
             if (StringUtils.isEmpty(requestId) || StringUtils.isEmpty(requestTime) || StringUtils.isEmpty(referenceId)
-                    || StringUtils.isEmpty(mapId) || StringUtils.isEmpty(amount) || StringUtils.isEmpty(signature)
-                    || StringUtils.isEmpty(merchantCode) || StringUtils.isEmpty(fee) || StringUtils.isEmpty(fee)
-                    || StringUtils.isEmpty(vaName) || StringUtils.isEmpty(vaAcc)) {
+                || StringUtils.isEmpty(mapId) || StringUtils.isEmpty(amount) || StringUtils.isEmpty(signature)
+                || StringUtils.isEmpty(merchantCode) || StringUtils.isEmpty(fee) || StringUtils.isEmpty(fee)
+                || StringUtils.isEmpty(vaName) || StringUtils.isEmpty(vaAcc)) {
                 responseCode = EbayResponseStatus.NOTICE_MISSING_FIELD.getCode();
                 responseMessage = EbayResponseStatus.NOTICE_MISSING_FIELD.getMessage();
                 setRsp(rsp, responseCode, responseMessage);

@@ -291,7 +291,8 @@ public class XRecordLoanServiceImpl implements XRecordLoanService {
             // 借款状态
             xRecordLoan.setLoanStatus(SysVariable.LOAN_STATUS_SUCCESS);
             // 用户状态
-            if (SysVariable.USER_STATUS_LOAN_SUCCESS.equals(xUserInfo.getUserStatus())) {
+            if (SysVariable.USER_STATUS_LOAN_REPEATEDLY.equals(xUserInfo.getUserStatus())
+                    || SysVariable.USER_STATUS_LOAN_SUCCESS.equals(xUserInfo.getUserStatus())) {
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_REPEATEDLY);
             } else {
                 xUserInfo.setUserStatus(SysVariable.USER_STATUS_LOAN_SUCCESS);

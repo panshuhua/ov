@@ -17,5 +17,4 @@ public class XAuditUser {
     private long id;
     private Date createTime;
     private Date updateTime;
-    private String enableFlag;
 }
