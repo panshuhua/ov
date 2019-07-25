@@ -249,7 +249,6 @@
             <if test="params.role != null and params.role != ''">
                 <if test="params.role == 'ovayAudit'">
                     and xau.sys_user_id = #{params.loginId}
-                    and xau.enable_flag='Y'
                 </if>
             </if>
         </where>
@@ -333,7 +332,6 @@
             <if test="params.role != null and params.role != ''">
                 <if test="params.role == 'ovayAudit'">
                     and xau.sys_user_id = #{params.loginId}
-                    and xau.enable_flag='Y'
                 </if>
             </if>
         </where>

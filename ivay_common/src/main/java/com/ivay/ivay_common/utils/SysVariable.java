@@ -175,8 +175,8 @@ public class SysVariable {
     // app事件是否上传
     public static final String APP_EVENT_AUDIT = "0";
     public static final String APP_EVENT_LOAN = "1";
-    public static final String APP_EVENT_SUCCESS = "1";
     public static final String APP_EVENT_FAIL = "0";
+    public static final String APP_EVENT_SUCCESS = "1";
 
     // 上传风控数据的类型
     public static final String CONTACT = "contacts"; // 通讯录联系人

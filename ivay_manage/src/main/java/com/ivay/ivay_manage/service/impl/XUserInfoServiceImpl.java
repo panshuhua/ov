@@ -212,7 +212,7 @@ public class XUserInfoServiceImpl implements XUserInfoService {
             // 拒绝理由
             xUserInfo.setRefuseReason(refuseDemo);
 
-            // TODO 发送人工审核(拒绝后)短信提醒
+            // 发送人工审核(拒绝后)短信提醒
             xFirebaseNoticeService.sendManualAuditRjection(xUserInfo);
 
         }

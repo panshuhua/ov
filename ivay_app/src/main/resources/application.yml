@@ -2,11 +2,16 @@
 server:
   port: 8080
   name: ivay-app
+  managePort: 8081
 
 # 数据库配置
 dataSource:
   master: true
   slave: false
+
+# redis配置
+redis:
+  database: 0
 
 spring:
   profiles:

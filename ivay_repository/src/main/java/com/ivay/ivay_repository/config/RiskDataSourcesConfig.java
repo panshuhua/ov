@@ -13,7 +13,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 @Configuration
-@ConditionalOnProperty(prefix = "dataSource", name = "slave", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "dataSource", name = "slave", havingValue = "true")
 @MapperScan(basePackages = RiskDataSourcesConfig.PACKAGES, sqlSessionFactoryRef = "slaveSqlSessionFactory")
 public class RiskDataSourcesConfig {
 

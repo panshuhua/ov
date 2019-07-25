@@ -5,8 +5,8 @@
     <springProperty name="logPath" source="logfile.path"/>
     <springProperty name="totalSizeCap" source="logfile.totalSizeCap"/>
     <!--自定义属性-->
-    <property name="maxFileSize" value="30MB"/>
-    <property name="maxHistory" value="5"/>
+    <property name="maxFileSize" value="128MB"/>
+    <property name="maxHistory" value="8"/>
 
     <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】 -->
     <!-- appender：负责定义写日志格式的组件。 -->

@@ -1,5 +1,5 @@
 # app事件上报
-xAppEvents_event_url: http://localhost:8080/star/xAppEvents/save
+xAppEvents_event_url: http://localhost:${server.appPort}/star/xAppEvents/save
 
 spring:
   redis:
@@ -12,7 +12,7 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
-    database: 0
+    database: ${redis.database}
     password: ivay_redis_test
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
