@@ -1,5 +1,6 @@
 package com.ivay.ivay_repository.dto;
 
+import com.alibaba.druid.sql.visitor.functions.Char;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

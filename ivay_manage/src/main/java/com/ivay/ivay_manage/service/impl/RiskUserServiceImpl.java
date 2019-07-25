@@ -76,10 +76,11 @@ public class RiskUserServiceImpl implements RiskUserService {
         }
         List<RiskUserResult> riskUserResultList = riskUserDao.selectRiskUserList(request.getParams(), request.getOffset(), request.getLimit());
         riskUserResultList.forEach(o -> {
-            if (o.getAccountStatus() == 1) {
+            if (o.getAccountStatus() !=null &&o.getAccountStatus() == 1) {
                 o.setUserStatus(8);
             }
         });
+
         return new PageTableHandler(
                 a -> riskUserDao.selectListCount(a.getParams()),
                 a -> riskUserResultList
@@ -129,10 +130,11 @@ public class RiskUserServiceImpl implements RiskUserService {
 
         List<RiskUserResult> resultList = riskUserDao.selectMySalesList(request.getParams(), request.getOffset(), request.getLimit());
         resultList.forEach(o -> {
-            if (o.getAccountStatus() == 1) {
+            if (o.getAccountStatus() != null && o.getAccountStatus() == 1) {
                 o.setUserStatus(8);
             }
         });
+
         return new PageTableHandler(
                 a -> riskUserDao.selectMySalesListCount(a.getParams()),
                 a -> resultList
