@@ -47,7 +47,7 @@ public class VTPRepayApiController {
      */
     @GetMapping("/get-info")
     public VTPTranInfo getTransationInfo(@RequestParam String id, HttpServletRequest req) {
-        String xToken = req.getHeader("X-TOKEN");
+        String xToken = req.getHeader("X_TOKEN");
         String xSigned = req.getHeader("X_SIGNED");
         logger.info("xToken=" + xToken);
         logger.info("xSigned=" + xSigned);
@@ -65,7 +65,7 @@ public class VTPRepayApiController {
 
     @PostMapping("/transaction-process")
     public VTPTranProcessOutput transactionProcess(@RequestBody VTPTranProcessInput input, HttpServletRequest req) {
-        String xToken = req.getHeader("X-TOKEN");
+        String xToken = req.getHeader("X_TOKEN");
         String xSigned = req.getHeader("X_SIGNED");
         VTPTranProcessOutput VTPTranProcessOutput = vTPRepayApiService.transactionProcess(input, xToken, xSigned);
         return VTPTranProcessOutput;
@@ -80,7 +80,7 @@ public class VTPRepayApiController {
      */
     @GetMapping("/tracking-status")
     public VTPTranProcessOutput trackingStatus(@RequestParam String tid, HttpServletRequest req) {
-        String xToken = req.getHeader("X-TOKEN");
+        String xToken = req.getHeader("X_TOKEN");
         String xSigned = req.getHeader("X_SIGNED");
         VTPTranProcessOutput VTPTranProcessOutput = vTPRepayApiService.trackingStatus(tid, xToken, xSigned);
         return VTPTranProcessOutput;

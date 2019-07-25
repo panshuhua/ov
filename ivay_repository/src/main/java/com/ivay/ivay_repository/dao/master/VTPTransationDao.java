@@ -17,7 +17,7 @@ public interface VTPTransationDao {
      * @param orderId
      * @return
      */
-    @Select("SELECT x.order_id, SUM(overdue_fee + overdue_interest + due_amount) AS shouldRepayAmount,i.* FROM x_record_loan x LEFT JOIN x_user_info i ON x.user_gid = i.user_gid WHERE order_id = #{orderId}")
+    @Select("SELECT x.order_id, SUM(x.overdue_fee + x.overdue_interest + x.due_amount) AS shouldRepayAmount,i.* FROM x_record_loan x LEFT JOIN x_user_info i ON x.user_gid = i.user_gid WHERE order_id = #{orderId} GROUP BY i.id")
     XVtpRepayTranInfo queryRepayTranInfo(@Param("orderId") String orderId);
 
     /**
