@@ -9,7 +9,7 @@ spring:
         max-idle: 8
         max-active: 8
         max-wait: -1ms
-    database: 0
+    database: ${redis.database}
 #    password: ivayRedisB038
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -56,11 +56,11 @@ VTPpartnerCode: VTP2019
 VTPApiUrl: https://dvtc2.viettelpost.vn/api/callback/trans
 
 # 风控授权url
-risk_control_url: http://10.53.104.178:8081/audit/queryAuditQualification?userGid={userGid}&flag={flag}
+risk_control_url: http://10.53.104.178:${server.managePort}/audit/queryAuditQualification?userGid={userGid}&flag={flag}
 # 还款成功的后置处理url, 提额、增加白名单
-repayment_success_post_handle_url: http://10.53.104.178:8081/audit/repaymentSuccessPostHandle?userGid={userGid}
+repayment_success_post_handle_url: http://10.53.104.178:${server.managePort}/audit/repaymentSuccessPostHandle?userGid={userGid}
 # 授信自动审计url
-auto_audit_url: http://10.53.104.178:8081/audit/autoAudit?userGid={userGid}
+auto_audit_url: http://10.53.104.178:${server.managePort}/audit/autoAudit?userGid={userGid}
 
 
 # 前端错误日志路径：

@@ -4,19 +4,23 @@ import com.ivay.ivay_common.dto.Response;
 import com.ivay.ivay_common.table.PageTableRequest;
 import com.ivay.ivay_common.table.PageTableResponse;
 import com.ivay.ivay_common.utils.SysVariable;
+import com.ivay.ivay_manage.service.ThreadPoolService;
 import com.ivay.ivay_manage.service.XFirebaseNoticeService;
 import com.ivay.ivay_manage.service.XLoanService;
 import com.ivay.ivay_manage.service.XUserInfoService;
 import com.ivay.ivay_repository.dao.master.XUserInfoDao;
 import com.ivay.ivay_repository.dto.XAuditDetail;
 import com.ivay.ivay_repository.dto.XAuditListInfo;
+import com.ivay.ivay_repository.model.XAppEvent;
 import com.ivay.ivay_repository.model.XUserInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -140,8 +144,25 @@ public class XAuditController {
         return response;
     }
 
+    @Autowired
+    private ThreadPoolService threadPoolService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${xAppEvents_event_url}")
+    private String xAppEvents_event_url;
+
     @GetMapping("test")
     public boolean test(String key) {
+        // 记录待上报的app事件
+        threadPoolService.execute(() -> {
+            XAppEvent xAppEvent = new XAppEvent();
+            xAppEvent.setType(SysVariable.APP_EVENT_AUDIT);
+            xAppEvent.setGid("123");
+            xAppEvent.setIsSuccess(key);
+            restTemplate.postForObject(xAppEvents_event_url, xAppEvent, Response.class);
+        });
         return true;
     }
 }
