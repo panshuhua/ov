@@ -63,7 +63,7 @@ public interface XRegisterService {
      * @param password
      * @return
      */
-    int updatePassword(String userGid, String mobile, String password);
+    int updatePassword(String userGid, String password);
 
     /**
      * 调用第三方接口发送手机验证码

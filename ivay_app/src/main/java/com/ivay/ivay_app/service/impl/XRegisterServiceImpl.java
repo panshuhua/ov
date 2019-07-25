@@ -187,8 +187,8 @@ public class XRegisterServiceImpl implements XRegisterService {
     }
 
     @Override
-    public int updatePassword(String userGid, String mobile, String password) {
-        return xUserInfoDao.updatePassword(mobile, password);
+    public int updatePassword(String userGid, String password) {
+        return xUserInfoDao.updatePassword(userGid, password);
     }
 
     @Override
@@ -592,7 +592,7 @@ public class XRegisterServiceImpl implements XRegisterService {
             password = bCryptPasswordEncoder.encode(password);
             String userGid = getUserGid(mobile);
             if (!StringUtils.isEmpty(userGid)) {
-                updatePassword(userGid, mobile, password);
+                updatePassword(userGid, password);
             } else {
                 throw new BusinessException(i18nService.getMessage("response.error.register.phoneerror.code"),
                     i18nService.getMessage("response.error.register.phoneerror.msg"));
