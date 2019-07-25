@@ -43,7 +43,8 @@ public class RSAEncryptVTP {
 
     private static final String PRIVATE_KEY = "vtp_pkcs8_private_key.pem";
 
-    private static final String PUBLIC_KEY = "vtp_rsa_public_key.pem";
+    // private static final String PUBLIC_KEY = "vtp_rsa_public_key.pem"; //ovay私钥生成的public key-本地测试时用
+    private static final String PUBLIC_KEY = "vtp_public_key.pem"; // vtp的私钥生成的public key-跟vtp联调接口时需使用
 
     /**
      * 随机生成密钥对
