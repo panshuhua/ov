@@ -29,6 +29,7 @@
         SELECT
         t1.id,
         t2.name,
+        t2.account_status,
         t1.phone,
         IFNULL(t2.user_status, 0) AS user_status,
         IFNULL(t1.assign_status, 0) AS assign_status,
@@ -49,6 +50,9 @@
             </if>
             <if test="params.userStatus != null">
                 and user_status = #{params.userStatus}
+            </if>
+            <if test="params.accountStatus != null">
+                and account_status = #{params.accountStatus}
             </if>
             <if test="params.userId != null">
                 and user_id = #{params.userId}

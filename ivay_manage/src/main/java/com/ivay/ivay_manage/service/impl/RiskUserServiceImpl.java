@@ -10,6 +10,7 @@ import com.ivay.ivay_manage.utils.UserUtil;
 import com.ivay.ivay_repository.dao.master.UserDao;
 import com.ivay.ivay_repository.dao.master.XRiskUserDao;
 import com.ivay.ivay_repository.dto.RiskUserInfo;
+import com.ivay.ivay_repository.dto.RiskUserResult;
 import com.ivay.ivay_repository.dto.UserName;
 import com.ivay.ivay_repository.model.RiskUser;
 import com.ivay.ivay_repository.model.SysUser;
@@ -61,17 +62,27 @@ public class RiskUserServiceImpl implements RiskUserService {
         if (null != riskUserInfo) {
             params.put("name", riskUserInfo.getName());
             params.put("phone", riskUserInfo.getPhone());
-            params.put("userStatus", riskUserInfo.getUserStatus());
+            //如果用户是冻结状态
+            if (riskUserInfo.getUserStatus() == 8) {
+                params.put("account_status", 1);
+            }else {
+                params.put("userStatus", riskUserInfo.getUserStatus());
+            }
             params.put("userId", riskUserInfo.getUserId());
             params.put("assignStatus", riskUserInfo.getAssignStatus());
             params.put("username", riskUserInfo.getUsername());
             params.put("importTimeStart", riskUserInfo.getImportTimeStart());
             params.put("importTimeEnd", riskUserInfo.getImportTimeEnd());
         }
-
+        List<RiskUserResult> riskUserResultList = riskUserDao.selectRiskUserList(request.getParams(), request.getOffset(), request.getLimit());
+        riskUserResultList.forEach(o -> {
+            if (o.getAccountStatus() == 1) {
+                o.setUserStatus(8);
+            }
+        });
         return new PageTableHandler(
                 a -> riskUserDao.selectListCount(a.getParams()),
-                a -> riskUserDao.selectRiskUserList(a.getParams(), a.getOffset(), a.getLimit())
+                a -> riskUserResultList
         ).handle(request);
     }
 
@@ -105,15 +116,26 @@ public class RiskUserServiceImpl implements RiskUserService {
         if (null != riskUserInfo) {
             params.put("name", riskUserInfo.getName());
             params.put("phone", riskUserInfo.getPhone());
-            params.put("userStatus", riskUserInfo.getUserStatus());
+            //如果用户是冻结状态
+            if (riskUserInfo.getUserStatus() == 8) {
+                params.put("account_status", 1);
+            }else {
+                params.put("userStatus", riskUserInfo.getUserStatus());
+            }
             params.put("dealStatus", riskUserInfo.getDealStatus());
             params.put("assignTimeStart", riskUserInfo.getAssignTimeStart());
             params.put("assignTimeEnd", riskUserInfo.getAssignTimeEnd());
         }
 
+        List<RiskUserResult> resultList = riskUserDao.selectMySalesList(request.getParams(), request.getOffset(), request.getLimit());
+        resultList.forEach(o -> {
+            if (o.getAccountStatus() == 1) {
+                o.setUserStatus(8);
+            }
+        });
         return new PageTableHandler(
                 a -> riskUserDao.selectMySalesListCount(a.getParams()),
-                a -> riskUserDao.selectMySalesList(a.getParams(), a.getOffset(), a.getLimit())
+                a -> resultList
         ).handle(request);
     }
 

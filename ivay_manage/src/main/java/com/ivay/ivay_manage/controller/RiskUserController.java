@@ -34,7 +34,7 @@ public class RiskUserController {
     private UserService userService;
 
     @PostMapping("list")
-    @ApiOperation(value = "催收搜索列表")
+    @ApiOperation(value = "白名单搜索列表")
     public Response<PageTableResponse> list(@RequestParam(required = false, defaultValue = "0") int limit,
                                             @RequestParam(required = false, defaultValue = "1") int num,
                                             @RequestBody(required = false) RiskUserInfo riskUserInfo) {

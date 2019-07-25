@@ -28,6 +28,8 @@ public class RiskUserResult implements Serializable {
     @ApiModelProperty("用户状态")
     private Integer userStatus;
 
+    private Integer accountStatus;
+
     @ApiModelProperty("销售人id")
     private Integer userId;
 
