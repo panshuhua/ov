@@ -622,6 +622,9 @@
 		<include refid="collection_repay_condition"/>
 		ORDER BY
 		t7.repay_time DESC
+		<if test="limit != null and limit != 0">
+			limit #{offset}, #{limit}
+		</if>
 	</select>
 
 	<!-- 查询催收回款列表数量 -->
