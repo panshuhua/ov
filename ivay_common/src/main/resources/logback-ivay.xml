@@ -39,14 +39,14 @@
     <!-- 以下的大概意思是：1.先按日期存日志，日期变了，将前一天的日志文件名重命名为XXX%日期%索引，新的日志仍然是sys.log -->
     <!--             2.如果日期没有发生变化，但是当前日志的文件大小超过1KB时，对当前日志进行分割 重命名-->
     <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/${serverName}_error.log</file>
+        <file>${logPath}/${serverName}.log.error</file>
         <encoder>
             <pattern>%d [%thread] %-5level %logger{36} -[%file:%line]- %msg%n
             </pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/${serverName}_error.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <fileNamePattern>${logPath}/${serverName}.log.error.%d{yyyy-MM-dd}.%i</fileNamePattern>
             <maxFileSize>${maxFileSize}</maxFileSize>
             <maxHistory>${maxHistory}</maxHistory>
             <totalSizeCap>${totalSizeCap}</totalSizeCap>            
@@ -60,13 +60,13 @@
 
     <!--sql日志-->
     <appender name="SQL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/${serverName}_sql.log</file>
+        <file>${logPath}/${serverName}.log.sql</file>
         <encoder>
             <pattern>%d [%thread] %msg%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/${serverName}_sql.log.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <fileNamePattern>${logPath}/${serverName}.log.sql.%d{yyyy-MM-dd}.%i</fileNamePattern>
             <maxFileSize>${maxFileSize}</maxFileSize>
             <maxHistory>${maxHistory}</maxHistory>
             <totalSizeCap>${totalSizeCap}</totalSizeCap>            

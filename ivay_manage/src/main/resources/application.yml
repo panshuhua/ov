@@ -8,6 +8,14 @@ dataSource:
   master: true
   slave: true
 
+spring:
+  profiles:
+    # 多模块使用include取代active
+    #    include: dev, comDev, dbLoc
+    include: dev, comDev, dbLoc
+#    include: test, comTest, dbTest
+#    include: prod, comProd, dbProd
+
 #短信通知失效时间(3天，单位：s)
 noticemsg:
   effectiveTime: 259200
@@ -29,11 +37,3 @@ management:
     git:
       enabled: true
       mode: full
-
-spring:
-  profiles:
-    # 多模块使用include取代active
-#    include: dev, comDev, dbLoc
-    include: dev, comDev, dbLoc
-#    include: test, comTest, dbTest
-#    include: prod, comProd, dbProd

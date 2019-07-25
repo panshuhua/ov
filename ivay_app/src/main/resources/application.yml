@@ -8,23 +8,11 @@ dataSource:
   master: true
   slave: false
 
-info:
-  status: ok
-
-management:
-  endpoint:
-    info:
-      enabled: true
-  info:
-    git:
-      enabled: true
-      mode: full
-
 spring:
   profiles:
     # 多模块使用include取代active
 #   include: dev, comDev, dbLoc
-   include: dev, comDev, dbDev
+   include: dev, comDev, dbLoc
 #   include: test, comTest, dbTest
 #   include: prod, comProd, dbProd
   servlet:
@@ -61,3 +49,15 @@ noticemsg:
 needDecrypt: false
 #app热更新的最小版本号，小于该版本号的才弹出更新框
 minAppVersionNumber: 1.0.3
+
+info:
+  status: ok
+
+management:
+  endpoint:
+    info:
+      enabled: true
+  info:
+    git:
+      enabled: true
+      mode: full
