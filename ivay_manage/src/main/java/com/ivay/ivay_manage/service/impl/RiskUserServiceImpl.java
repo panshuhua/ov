@@ -63,7 +63,7 @@ public class RiskUserServiceImpl implements RiskUserService {
             params.put("name", riskUserInfo.getName());
             params.put("phone", riskUserInfo.getPhone());
             //如果用户是冻结状态
-            if (riskUserInfo.getUserStatus() == 8) {
+            if (riskUserInfo.getUserStatus() != null && riskUserInfo.getUserStatus() == 8) {
                 params.put("account_status", 1);
             }else {
                 params.put("userStatus", riskUserInfo.getUserStatus());
@@ -118,7 +118,7 @@ public class RiskUserServiceImpl implements RiskUserService {
             params.put("name", riskUserInfo.getName());
             params.put("phone", riskUserInfo.getPhone());
             //如果用户是冻结状态
-            if (riskUserInfo.getUserStatus() == 8) {
+            if (riskUserInfo.getUserStatus() != null && riskUserInfo.getUserStatus() == 8) {
                 params.put("account_status", 1);
             }else {
                 params.put("userStatus", riskUserInfo.getUserStatus());
