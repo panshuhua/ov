@@ -50,6 +50,8 @@ public class XAppVersionUpdateImpl implements XAppVersionUpdateService {
                 versionUpdate.setNeedUpdate(SysVariable.NEED_NO_UPDATE);
             }
 
+            // app下载地址：数据库读取
+            versionUpdate.setAppDownloadUrl(versionUpdate.getAppDownloadUrl());
             return versionUpdate;
 
         }

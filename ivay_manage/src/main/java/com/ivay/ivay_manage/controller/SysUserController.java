@@ -41,6 +41,23 @@ public class SysUserController {
     @Autowired
     private RoleService roleService;
 
+    @GetMapping("current")
+    @ApiOperation("当前登录用户的基本信息")
+    public Response<SysUser> currentUser() {
+        Response<SysUser> response = new Response<>();
+        response.setBo(UserUtil.getLoginUser());
+        return response;
+    }
+
+    @GetMapping("get")
+    @ApiOperation("根据用户id获取用户基本信息")
+    @PreAuthorize("hasAuthority('sys:user:query')")
+    public Response<SysUser> user(@RequestParam Long id) {
+        Response<SysUser> response = new Response<>();
+        response.setBo(userDao.getById(id));
+        return response;
+    }
+
     @LogAnnotation
     @PostMapping("add")
     @ApiOperation("添加用户")
@@ -114,23 +131,6 @@ public class SysUserController {
                         a -> userDao.list(a.getParams(), a.getOffset(), a.getLimit())
                 ).handle(request)
         );
-        return response;
-    }
-
-    @ApiOperation("当前登录用户")
-    @GetMapping("current")
-    public Response<SysUser> currentUser() {
-        Response<SysUser> response = new Response<>();
-        response.setBo(UserUtil.getLoginUser());
-        return response;
-    }
-
-    @ApiOperation("根据用户id获取用户")
-    @GetMapping("get")
-    @PreAuthorize("hasAuthority('sys:user:query')")
-    public Response<SysUser> user(@RequestParam Long id) {
-        Response<SysUser> response = new Response<>();
-        response.setBo(userDao.getById(id));
         return response;
     }
 }

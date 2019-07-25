@@ -259,6 +259,12 @@ public class XCollectionTransactionServiceImpl implements XCollectionTransaction
                 return rsp;
             }
 
+            // 出现其他异常时，清空referenceId，返回失败
+            rsp.setReferenceId(null);
+            ResponseCode = BaokimResponseStatus.Fail.getCode();
+            ResponseMessage = BaokimResponseStatus.Fail.getMessage();
+            setRsp(rsp, ResponseCode, ResponseMessage);
+            return rsp;
         }
 
         setRsp(rsp, ResponseCode, ResponseMessage);

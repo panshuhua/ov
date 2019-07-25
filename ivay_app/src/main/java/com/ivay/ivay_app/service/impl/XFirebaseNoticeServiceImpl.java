@@ -163,7 +163,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
                 if (!firebaseFlag && !phoneFlag) {
                     return false;
                 }
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 return false;
@@ -471,7 +471,7 @@ public class XFirebaseNoticeServiceImpl implements XFirebaseNoticeService {
 
                 logger.info("发送firebase到期通知结束-------------");
 
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 return false;

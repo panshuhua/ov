@@ -32,8 +32,7 @@ public class SendNoticeMsgController {
     /**
      * 获取页面短链接和借款gid
      * 
-     * @param pageName
-     * @param mobile
+     * @param key
      */
     @GetMapping("/getLinkData")
     public Response<MsgLinkData> getLinkData(@RequestParam String key) {
@@ -46,7 +45,7 @@ public class SendNoticeMsgController {
     /**
      * 发送推送消息/短信测试 ：type=1 推送消息|type=2 短信
      * 
-     * @param pageId
+     * @param msg
      * @return
      * @throws Exception
      */
