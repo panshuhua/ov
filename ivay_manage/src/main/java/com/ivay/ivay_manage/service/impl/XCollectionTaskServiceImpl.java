@@ -64,7 +64,7 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
             PageTableRequest request = new PageTableRequest();
             request.setLimit(limit);
             request.setOffset((num - 1) * limit);
-            Map param = request.getParams();
+            Map<String,Object> param = request.getParams();
 
             //根据条件搜索
             if (null != collectionTaskInfo) {

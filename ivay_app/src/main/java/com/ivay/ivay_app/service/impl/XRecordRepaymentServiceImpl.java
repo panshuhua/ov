@@ -276,7 +276,8 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 // 更新任务中的追回本金
                 if (null != xCollectionTask) {
                     xCollectionTask.setCollectionAmount(
-                            xCollectionTask.getCollectionAmount() + xRecordRepayment.getRepaymentAmount());
+                            xCollectionTask.getCollectionAmount() + xRecordRepayment.getRepaymentAmount()
+                    );
                     xCollectionTask.setCollectionRepayStatus(CollectionRepayStatusEnum.UNDER_REPAYING.getStatus());
                 }
                 logger.info("{}: 还有本金没还完:{}", xRecordRepayment.getOrderId(), xRecordLoan.getDueAmount());
@@ -336,8 +337,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                         }
 
                         xRecordLoan.setOverdueInterest(0L);
-                        xRecordLoan
-                                .setOverdueFee(xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff);
+                        xRecordLoan.setOverdueFee(
+                                xRecordLoan.getOverdueFee() + xRecordLoan.getOverdueInterest() - diff)
+                        ;
 
                     }
                     xRecordLoan.setRepaymentStatus(SysVariable.REPAYMENT_STATUS_DOING);
@@ -345,11 +347,9 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
                 }
             }
 
-            logger.info("还款状态更新完毕-----------------------");
             xUserInfo.setUpdateTime(now);
             // 最后一次还款时间
             xRecordLoan.setLastRepaymentTime(now);
-            logger.info("更新最后一次还款时间------------------------");
             xRecordLoan.setUpdateTime(now);
             if (xUserInfo.getCreditLine() < xUserInfo.getCanborrowAmount()) {
                 xUserInfo.setCanborrowAmount(xUserInfo.getCreditLine());
@@ -358,9 +358,7 @@ public class XRecordRepaymentServiceImpl implements XRecordRepaymentService {
             xRecordLoanDao.update(xRecordLoan);
 
             // 发送还款成功的通知
-            logger.info("开始发送还款成功通知------------------------");
             xFirebaseNoticeService.sendHadRepayNotice(xRecordLoan, xRecordRepayment, xUserInfo);
-            logger.info("结束发送还款成功通知------------------------");
 
             // 更新催收任务信息
             if (null != xCollectionTask) {

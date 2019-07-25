@@ -1,22 +1,19 @@
 package com.ivay.ivay_app.job;
 
-import java.util.Date;
-
+import com.ivay.ivay_app.service.XRecordLoanService;
+import com.ivay.ivay_common.utils.DateUtils;
+import com.ivay.ivay_common.utils.RedisLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.ivay.ivay_app.service.XRecordLoanService;
-import com.ivay.ivay_common.utils.DateUtils;
-import com.ivay.ivay_common.utils.RedisLock;
+import java.util.Date;
 
 @Component
 @Configuration
-@EnableScheduling
 public class BackgroundScheduleTask {
     private static final Logger logger = LoggerFactory.getLogger(BackgroundScheduleTask.class);
 

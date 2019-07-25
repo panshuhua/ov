@@ -19,7 +19,6 @@ import java.util.Date;
  */
 @Component
 @Configuration
-@EnableScheduling
 public class CollectionCalculateScheduleTask {
     private static final Logger logger = LoggerFactory.getLogger(OverdueOrderScheduleTask.class);
 
