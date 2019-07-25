@@ -113,7 +113,6 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('sys:user:query')")
     public Response<PageTableResponse> listUsers(@RequestParam(required = false, defaultValue = "0") int limit,
                                                  @RequestParam(required = false, defaultValue = "1") int num,
-                                                 @RequestParam String role,
                                                  @RequestBody(required = false) SysUser sysUser) {
         PageTableRequest request = new PageTableRequest();
         request.setLimit(limit);

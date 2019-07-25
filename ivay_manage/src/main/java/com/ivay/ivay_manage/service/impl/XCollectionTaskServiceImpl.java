@@ -281,7 +281,9 @@ public class XCollectionTaskServiceImpl implements XCollectionTaskService {
         List<CollectionTaskResult> collectionTaskResultList = xCollectionTaskDao.getCollectionsRepayList(request.getParams(), request.getOffset(), request.getLimit());
         //设置逾期级别
         collectionTaskResultList.forEach(o -> o.setOverdueLevel(OverDueLevelEnum.getLevelByDay(o.getOverdueDay())));
+
         collectionTaskResultList.stream().filter(o -> o.getRealRepay() > 0).collect(Collectors.toList());
+
         return new PageTableHandler(
                 a -> xCollectionTaskDao.getCollectionsRepayListCount(a.getParams()),
                 a -> collectionTaskResultList
