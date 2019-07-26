@@ -467,16 +467,17 @@ public class RSAEncryptShaVTP {
         // 测试字符串
         String encryptStr = "Test String xjd 哈哈 xxxx |二 |";
         // id(orderId加密)
-        // encryptStr = "DD20190605000096";
-        // encryptStr = DigestUtils.md5DigestAsHex(encryptStr.getBytes());
+        encryptStr = "DD20190605000096";
+        // encryptStr = "123456789";
+        encryptStr = DigestUtils.md5DigestAsHex(encryptStr.getBytes());
 
         // TRANS_ID||value1||REF_ID||value2||CUSTOMER_CODE||value3||AMOUNT||value4||TRANS_DATE||value4
-
-        String encryptStr2 =
-            "TRANS_ID||123456789||REF_ID||dfbc6000a6694e37aa7c3586720cc8fc||CUSTOMER_CODE||DD20190605000096||AMOUNT||5000||TRANS_DATE||1563793996843";
-        System.out.println("md5加密前：" + encryptStr2);
-        encryptStr2 = "1234567890";
-        encryptStr = DigestUtils.md5DigestAsHex(encryptStr2.getBytes());
+        //
+        // String encryptStr2 =
+        // "TRANS_ID||123456789||REF_ID||dfbc6000a6694e37aa7c3586720cc8fc||CUSTOMER_CODE||DD20190605000096||AMOUNT||5000||TRANS_DATE||1563793996843";
+        // System.out.println("md5加密前：" + encryptStr2);
+        // encryptStr2 = "1234567890";
+        // encryptStr = DigestUtils.md5DigestAsHex(encryptStr2.getBytes());
 
         try {
             System.out.println("加密前：" + encryptStr);
