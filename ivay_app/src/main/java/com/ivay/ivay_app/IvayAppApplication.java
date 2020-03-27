@@ -17,7 +17,7 @@ public class IvayAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(IvayAppApplication.class, args);
         System.out.println("App start...");
-        System.out.println("这是dev分支修改的内容");
+        System.out.println("这是dev分支merge的内容");
         
     }
 
