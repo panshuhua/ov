@@ -17,6 +17,7 @@ public class IvayAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(IvayAppApplication.class, args);
         System.out.println("App start...");
+        System.out.println("test打印测试代码");
     }
 
     @Bean

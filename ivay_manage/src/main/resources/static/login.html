@@ -61,6 +61,7 @@
             $("#info").html('用户名或者密码不能为空');
             $(obj).attr("disabled", false);
         } else {
+        	alert("login");
             $.ajax({
                 type: 'post',
                 url: '/login',
